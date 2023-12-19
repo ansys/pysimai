@@ -44,9 +44,9 @@ doc = [
 name = "ansys.simai.core"
 
 [project.urls]
-Source = "https://github.com/ansys/simai"
-Tracker = "https://github.com/ansys/simai/issues"
-Homepage = "https://github.com/ansys/simai"
+Source = "https://github.com/ansys/pysimai"
+Tracker = "https://github.com/ansys/pysimai/issues"
+Homepage = "https://github.com/ansys/pysimai"
 
 
 [tool.black]

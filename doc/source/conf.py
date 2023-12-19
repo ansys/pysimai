@@ -8,7 +8,7 @@ from ansys_sphinx_theme import pyansys_logo_black as logo
 from ansys.simai.core import __version__
 
 # Project information
-project = "ansys-simai-core"
+project = "ansys-pysimai-core"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "ANSYS, Inc."
 release = version = __version__
@@ -21,7 +21,7 @@ html_short_title = html_title = "simai"
 
 # specify the location of your github repo
 html_theme_options = {
-    "github_url": "https://github.com/ansys/simai",
+    "github_url": "https://github.com/ansys/pysimai",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [

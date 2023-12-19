@@ -11,7 +11,6 @@ env:
   MAIN_PYTHON_VERSION: '3.10'
   DOCUMENTATION_CNAME: 'simai.docs.pyansys.com'
   LIBRARY_NAME: 'ansys-simai-core'
-  LIBRARY_NAMESPACE: 'ansys.simai.core'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

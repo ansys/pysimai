@@ -14,12 +14,12 @@ Pysimai simai
    :target: https://pypi.org/project/simai
    :alt: PyPI
 
-.. |codecov| image:: https://codecov.io/gh/ansys/simai/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/ansys/simai
+.. |codecov| image:: https://codecov.io/gh/ansys/pysimai/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/ansys/pysimai
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/ansys/simai/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/ansys/simai/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/ansys/pysimai/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/ansys/pysimai/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -53,7 +53,7 @@ Then, you can simply execute:
 
 .. code:: bash
 
-    python -m pip install ansys-simai-core
+    python -m pip install ansys-pysimai-core
 
 For developers
 ^^^^^^^^^^^^^^
@@ -68,7 +68,7 @@ need to follow these steps:
 
    .. code:: bash
 
-      git clone https://github.com/ansys/simai
+      git clone https://github.com/ansys/pysimai
 
 #. Create a fresh-clean Python environment and activate it:
 
@@ -100,7 +100,7 @@ need to follow these steps:
 
     .. code:: bash
 
-      python -m pip install --editable ansys-simai-core
+      python -m pip install --editable ansys-pysimai-core
 
     #. Finally, verify your development installation by running:
 
