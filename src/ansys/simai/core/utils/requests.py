@@ -20,11 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from json.decoder import JSONDecodeError
 import logging
+from json.decoder import JSONDecodeError
 
 import requests
-
 from ansys.simai.core.data.types import APIResponse
 from ansys.simai.core.errors import ApiClientError, NotFoundError
 

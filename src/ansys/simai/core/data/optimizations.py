@@ -23,14 +23,13 @@
 import logging
 from typing import Callable, Dict, List, Optional, Tuple
 
-from tqdm import tqdm
-from wakepy import keep
-
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.types import Identifiable, NamedFile, get_id_from_identifiable
 from ansys.simai.core.data.workspaces import Workspace
 from ansys.simai.core.errors import InvalidArguments
+from tqdm import tqdm
+from wakepy import keep
 
 logger = logging.getLogger(__name__)
 

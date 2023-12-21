@@ -23,7 +23,6 @@
 import json
 
 import responses
-
 from ansys.simai.core.data.training_data import TrainingData
 
 

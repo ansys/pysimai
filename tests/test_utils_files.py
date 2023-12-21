@@ -21,12 +21,11 @@
 # SOFTWARE.
 
 import os
-from pathlib import Path
 import platform
 import time
+from pathlib import Path
 
 import pytest
-
 from ansys.simai.core.utils.files import get_cache_dir
 
 

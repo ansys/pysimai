@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from abc import ABC, abstractmethod
 import logging
+from abc import ABC, abstractmethod
 from threading import Event
 from typing import Dict, Generic, Optional, Type, TypeVar
 

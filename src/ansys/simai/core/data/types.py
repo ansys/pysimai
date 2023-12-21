@@ -20,14 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from contextlib import contextmanager
 import io
-from numbers import Number
 import os
 import pathlib
+from contextlib import contextmanager
+from numbers import Number
 from typing import Any, BinaryIO, Callable, Dict, Generator, List, Optional, Tuple, Union
-
-from requests import Response
 
 from ansys.simai.core.data.base import DataModel, DataModelType, Directory
 from ansys.simai.core.errors import InvalidArguments
@@ -39,6 +37,7 @@ from ansys.simai.core.utils.numerical import (
     is_smaller_or_equal_with_tolerance,
     validate_tolerance_parameter,
 )
+from requests import Response
 
 BoundaryConditions = Dict[str, Number]
 """

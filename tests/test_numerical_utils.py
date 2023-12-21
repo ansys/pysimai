@@ -22,7 +22,6 @@
 
 import math
 
-
 from ansys.simai.core.utils.numerical import (
     convert_axis_and_coordinate_to_plane_eq_coeffs,
     is_bigger_or_equal_with_tolerance,

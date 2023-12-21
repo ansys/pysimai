@@ -23,11 +23,10 @@
 import functools
 from pathlib import Path
 
+import ansys.simai.core.errors as err
 import pytest
 import responses
-
 from ansys.simai.core import SimAIClient
-import ansys.simai.core.errors as err
 
 
 def test_client_creation_invalid_path():

@@ -20,14 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from collections import namedtuple
 import json
+from collections import namedtuple
 from threading import Event
 from unittest.mock import Mock
 
 import pytest
 import responses
-
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.post_processings import GlobalCoefficients, VolumeVTU
 from ansys.simai.core.errors import ConnectionError, ProcessingError
