@@ -36,13 +36,16 @@ T = TypeVar("T", bound=PostProcessing)
 
 
 class PPList(List, Generic[T]):
-    """A subclass of :class:`list` for storing post-processings,
-    adding a few shortcut methods.
+    """
+    A subclass of :class:`list` for storing post-processings, adding a few shortcut methods.
 
     As a :class:`list` subclass, PPList support any list operation:
-    its elements can be iterated on and accessed by index."""
+    its elements can be iterated on and accessed by index.
+    """
 
-    def __init__(self, selection: "Selection", post: Callable[["Prediction"], PostProcessing]):
+    def __init__(
+        self, selection: "Selection", post: Callable[["Prediction"], PostProcessing]
+    ):  # noqa D107
         self._selection = selection
         # Even in case of errors, all post-processings will be queued.
         # but if some fail, an exception will be raised.
@@ -59,7 +62,7 @@ class PPList(List, Generic[T]):
         return [pp.data for pp in self]
 
     def wait(self):
-        """Wait for all concerned post-processings to finish"""
+        """Wait for all concerned post-processings to finish."""
         _foreach_despite_errors(lambda pp: pp.wait(), self)
 
 
@@ -72,7 +75,7 @@ class ExportablePPList(PPList, Generic[T]):
 
     def export(self, format: Optional[str] = "json") -> DownloadableResult:
         """
-        Exports the post-processings results in the desired format.
+        Export the post-processings results in the desired format.
 
         Accessing this property will block until the data is ready.
 

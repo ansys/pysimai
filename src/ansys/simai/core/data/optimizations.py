@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from dataclasses import dataclass
 import logging
 from typing import Callable, Dict, List, Optional, Tuple
 
@@ -36,11 +37,9 @@ logger = logging.getLogger(__name__)
 
 
 class Optimization(ComputableDataModel):
-    """
-    Local representation of an optimization definition object.
-    """
+    """Local representation of an optimization definition object."""
 
-    def try_geometry(
+    def _try_geometry(
         self, geometry: Identifiable[Geometry], geometry_parameters: Dict
     ) -> "OptimizationTrialRun":
         return self._client._optimization_trial_run_directory.try_geometry(
@@ -76,7 +75,16 @@ class OptimizationDirectory(Directory[Optimization]):
 
     _data_model = Optimization
 
-    def get(self, optimization_id: str):
+    def get(self, optimization_id: str) -> Optimization:
+        """
+        Get a specific optimization object from the server.
+
+        Args:
+            id: The id of the optimization to get
+
+        Returns:
+            A :py:class:`Optimization`
+        """
         return self._model_from(self._client._api.get_optimization(optimization_id))
 
     def run(
@@ -90,9 +98,9 @@ class OptimizationDirectory(Directory[Optimization]):
         outcome_constraints: List[str] = [],
         show_progress: bool = False,
         workspace: Optional[Identifiable[Workspace]] = None,
-    ):
+    ) -> List[Dict]:
         """
-        Run an optimization process
+        Run an optimization process.
 
         Args:
             generate_geometry_fn: The function that will be called to generate a new geometry
@@ -114,6 +122,10 @@ class OptimizationDirectory(Directory[Optimization]):
             n_iters: Number of iterations of the optimization loop
             show_progress: Whether to print progress on stdout
             workspace: The workspace in which to run the optimization. Defaults to the configured workspace if not specified
+
+        Returns:
+            A list of dictionaries representing the result of each iterations. The list can be shorter
+                than the number of iterations when constraints are specified.
 
         Warning:
             This is a long running process and your computer needs to be powered on to generate the iterations.
@@ -217,7 +229,7 @@ class OptimizationTrialRunDirectory(Directory[OptimizationTrialRun]):
     def get(self, trial_run_id: str):
         return self._model_from(self._client._api.get_optimization_trial_run(trial_run_id))
 
-    def try_geometry(
+    def _try_geometry(
         self,
         optimization: Identifiable[Optimization],
         geometry: Identifiable[Geometry],
