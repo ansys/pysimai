@@ -176,7 +176,7 @@ def test_run_dict_bc(simai_client, geometry_factory):
         status=200,
     )
     geometry = geometry_factory(id="geom-0")
-    simai_client.predictions.run(geometry.id, dict(Vx=10.5))
+    simai_client.predictions.run(geometry.id, {"Vx": 10.5})
 
 
 @responses.activate

@@ -86,7 +86,7 @@ def test_geometries_run_prediction_dict_bc(geometry_factory):
         status=200,
     )
     geometry = geometry_factory(id="geom-0")
-    geometry.run_prediction(dict(Vx=10.5))
+    geometry.run_prediction({"Vx": 10.5})
 
 
 @responses.activate

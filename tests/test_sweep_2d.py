@@ -57,7 +57,7 @@ def geometries_with_two_metadata_and_incomplete_ones(create_mock_geometry):
 
 
 def create_length_width_set(geometries):
-    return set([(g.metadata["length"], g.metadata["width"]) for g in geometries])
+    return {(g.metadata["length"], g.metadata["width"]) for g in geometries}
 
 
 def test_sweep_2_dimensions_center(geometry_directory, geometries_with_two_metadata):

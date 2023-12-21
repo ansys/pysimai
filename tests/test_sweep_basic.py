@@ -76,7 +76,7 @@ def test_sweep_one_dimension_gives_two_neighbors(geometry_directory, geometries_
             geometries=geometries_with_one_metadata,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {4, 6}
+        assert {g.metadata["length"] for g in swept} == {4, 6}
 
 
 def test_sweep_one_dimension_with_include_center_gives_three_results(
@@ -96,7 +96,7 @@ def test_sweep_one_dimension_with_include_center_gives_three_results(
             include_center=True,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {4, 5, 6}
+        assert {g.metadata["length"] for g in swept} == {4, 5, 6}
 
 
 def test_sweep_one_dimension_along_explicit_variable(
@@ -116,7 +116,7 @@ def test_sweep_one_dimension_along_explicit_variable(
             geometries=geometries_with_one_metadata,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {4, 6}
+        assert {g.metadata["length"] for g in swept} == {4, 6}
 
         swept = geometry_directory.sweep(
             candidate_geometry=candidate,
@@ -124,7 +124,7 @@ def test_sweep_one_dimension_along_explicit_variable(
             geometries=geometries_with_one_metadata,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {4, 6}
+        assert {g.metadata["length"] for g in swept} == {4, 6}
 
 
 def test_sweep_one_dimension_with_order(geometry_directory, geometries_with_one_metadata):
@@ -141,7 +141,7 @@ def test_sweep_one_dimension_with_order(geometry_directory, geometries_with_one_
             order=2,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {3, 4, 6, 7}
+        assert {g.metadata["length"] for g in swept} == {3, 4, 6, 7}
 
     candidate = geometries_with_one_metadata[1]
     for include_diagonals in [False, True]:
@@ -151,7 +151,7 @@ def test_sweep_one_dimension_with_order(geometry_directory, geometries_with_one_
             order=3,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {0, 2, 3, 4}
+        assert {g.metadata["length"] for g in swept} == {0, 2, 3, 4}
 
     candidate = geometries_with_one_metadata[0]
     for include_diagonals in [False, True]:
@@ -161,7 +161,7 @@ def test_sweep_one_dimension_with_order(geometry_directory, geometries_with_one_
             order=3,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {1, 2, 3}
+        assert {g.metadata["length"] for g in swept} == {1, 2, 3}
 
 
 def test_sweep_one_dimension_with_order_and_include_center(
@@ -181,7 +181,7 @@ def test_sweep_one_dimension_with_order_and_include_center(
             include_center=True,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {3, 4, 5, 6, 7}
+        assert {g.metadata["length"] for g in swept} == {3, 4, 5, 6, 7}
 
     candidate = geometries_with_one_metadata[1]
     for include_diagonals in [False, True]:
@@ -192,7 +192,7 @@ def test_sweep_one_dimension_with_order_and_include_center(
             include_center=True,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {0, 1, 2, 3, 4}
+        assert {g.metadata["length"] for g in swept} == {0, 1, 2, 3, 4}
 
     candidate = geometries_with_one_metadata[0]
     for include_diagonals in [False, True]:
@@ -203,7 +203,7 @@ def test_sweep_one_dimension_with_order_and_include_center(
             include_center=True,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {0, 1, 2, 3}
+        assert {g.metadata["length"] for g in swept} == {0, 1, 2, 3}
 
 
 def test_sweep_one_dimension_at_min_gives_one_neighbor(
@@ -258,7 +258,7 @@ def test_sweep_all_columns_text_metadata_ignored(
             geometries=geometries_with_one_usable_metadata,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {0, 2}
+        assert {g.metadata["length"] for g in swept} == {0, 2}
 
         swept = geometry_directory.sweep(
             candidate_geometry=candidate,
@@ -266,7 +266,7 @@ def test_sweep_all_columns_text_metadata_ignored(
             include_center=True,
             include_diagonals=include_diagonals,
         )
-        assert set([g.metadata["length"] for g in swept]) == {0, 1, 2}
+        assert {g.metadata["length"] for g in swept} == {0, 1, 2}
 
 
 def test_sweep_unknown_metadata_column_raises(

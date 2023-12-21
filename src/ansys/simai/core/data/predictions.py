@@ -188,10 +188,10 @@ class PredictionDirectory(Directory[Prediction]):
                 prediction_info = simai.predictions.info
                 pprint(prediction_info)
         """
-        return dict(
-            boundary_conditions=self.boundary_conditions,
-            physical_quantities=self.physical_quantities,
-        )
+        return {
+            "boundary_conditions": self.boundary_conditions,
+            "physical_quantities": self.physical_quantities,
+        }
 
     def list(self, workspace_id: Optional[str] = None) -> List[Prediction]:
         """

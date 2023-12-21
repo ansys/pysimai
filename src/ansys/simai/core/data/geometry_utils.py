@@ -102,7 +102,7 @@ def _sweep(
 
     # if include_diagonal, we collect boundaries
     if include_diagonals:
-        boundaries: Dict[str, Tuple[float, float]] = dict()
+        boundaries: Dict[str, Tuple[float, float]] = {}
 
     # Go through each variable to find neighbors for those
     for checked_variable in swept_metadata:

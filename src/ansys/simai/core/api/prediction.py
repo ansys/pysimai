@@ -59,7 +59,7 @@ class PredictionClientMixin(ApiClientMixin):
         """
         return self._delete(
             f"predictions/{prediction_id}",
-            params=dict(confirm=True),
+            params={"confirm": True},
             return_json=False,
         )
 

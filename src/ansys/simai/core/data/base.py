@@ -56,7 +56,7 @@ class DataModel:
     ):
         # Override id_key to configure the field to return with :py:meth:`Model.id`.
         self.id_key = "id"
-        self.fields = fields or dict()
+        self.fields = fields or {}
         self._directory = directory
         self._client = client
         if (
@@ -259,7 +259,7 @@ class Directory(ABC, Generic[DataModelType]):
         # (meaning e.g. WeakValueDictionary is not appropriate),
         # as he will expect simai.wait() to work on any object, even those
         # with no explicit reference.
-        self._registry: Dict[str, DataModel] = dict()
+        self._registry: Dict[str, DataModel] = {}
 
     @abstractmethod
     def get(self, id: str) -> DataModel:

@@ -39,16 +39,16 @@ from ansys.simai.core.data.types import (
 def test_build_boundary_conditions(mocker):
     is_bc = mocker.patch("ansys.simai.core.data.types.is_boundary_conditions")
     is_bc.return_value = True
-    assert build_boundary_conditions(dict(Vx=10.1)) == {"Vx": 10.1}
-    assert build_boundary_conditions(dict(Vx=10, Vy=2)) == {"Vx": 10, "Vy": 2}
-    assert build_boundary_conditions(dict(Vx=10), Vy=2) == {"Vx": 10, "Vy": 2}
+    assert build_boundary_conditions({"Vx": 10.1}) == {"Vx": 10.1}
+    assert build_boundary_conditions({"Vx": 10, "Vy": 2}) == {"Vx": 10, "Vy": 2}
+    assert build_boundary_conditions({"Vx": 10}, Vy=2) == {"Vx": 10, "Vy": 2}
     assert build_boundary_conditions(Vx=10, Vy=2) == {"Vx": 10, "Vy": 2}
     assert build_boundary_conditions() == {}
     assert build_boundary_conditions(boundary_conditions={}) == {}
 
     is_bc.return_value = False
     with pytest.raises(ValueError):
-        build_boundary_conditions(dict(Vx=10))
+        build_boundary_conditions({"Vx": 10})
 
 
 def test_basic_range():
@@ -119,29 +119,29 @@ def test_max_only_range():
 
 
 def test_boundary_condition_identity():
-    assert is_boundary_conditions(dict(Vx=10))
-    assert is_boundary_conditions(dict(Vx=10, Vy=0, Vz=0))
-    assert not is_boundary_conditions(dict(Vx="beep"))
-    assert not is_boundary_conditions(dict(Vx=10, Vy="boop"))
+    assert is_boundary_conditions({"Vx": 10})
+    assert is_boundary_conditions({"Vx": 10, "Vy": 0, "Vz": 0})
+    assert not is_boundary_conditions({"Vx": "beep"})
+    assert not is_boundary_conditions({"Vx": 10, "Vy": "boop"})
     assert not is_boundary_conditions([0])
     assert not is_boundary_conditions((0))
 
 
 def test_boundary_condition_equality():
-    assert are_boundary_conditions_equal(dict(Vx=10), dict(Vx=10))
-    assert are_boundary_conditions_equal(dict(Vx=10, Vy=0), dict(Vx=10, Vy=0))
-    assert are_boundary_conditions_equal(dict(Vy=0, Vx=10), dict(Vx=10, Vy=0))
-    assert are_boundary_conditions_equal(dict(Vx=10**-7), dict(Vx=0))
-    assert not are_boundary_conditions_equal(dict(Vx=10**-7), dict(Vx=0), tolerance=10**-8)
+    assert are_boundary_conditions_equal({"Vx": 10}, {"Vx": 10})
+    assert are_boundary_conditions_equal({"Vx": 10, "Vy": 0}, {"Vx": 10, "Vy": 0})
+    assert are_boundary_conditions_equal({"Vy": 0, "Vx": 10}, {"Vx": 10, "Vy": 0})
+    assert are_boundary_conditions_equal({"Vx": 10**-7}, {"Vx": 0})
+    assert not are_boundary_conditions_equal({"Vx": 10**-7}, {"Vx": 0}, tolerance=10**-8)
 
 
 def test_boundary_condition_equality_wrong_parameters():
     with pytest.raises(TypeError):
-        are_boundary_conditions_equal(dict(Vx=10), "toto")
+        are_boundary_conditions_equal({"Vx": 10}, "toto")
     with pytest.raises(TypeError):
-        are_boundary_conditions_equal("buz", dict(Vx=10))
+        are_boundary_conditions_equal("buz", {"Vx": 10})
     with pytest.raises(ValueError):
-        are_boundary_conditions_equal(dict(Vx=10), dict(Vx=10), tolerance=-5)
+        are_boundary_conditions_equal({"Vx": 10}, {"Vx": 10}, tolerance=-5)
 
 
 def test_unpack_named_file(mocker):
