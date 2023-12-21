@@ -20,20 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+from typing import TYPE_CHECKING, cast
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
+if TYPE_CHECKING:
+    from typing import Any, Callable, ParamSpec, TypeVar
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa
+    P = ParamSpec("P")
+    T = TypeVar("T")
+
+
+def steal_kwargs_type(
+    original_fn: "Callable[P, Any]",
+) -> "Callable[[Callable], Callable[P, T]]":
+    """Returns casted original function, with the kwargs type stolen from original_fn"""
+
+    def return_func(func: "Callable[..., T]") -> "Callable[P, T]":
+        return cast("Callable[P, T]", func)
+
+    return return_func

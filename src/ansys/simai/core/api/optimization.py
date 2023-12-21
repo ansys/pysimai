@@ -20,20 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+from typing import Dict
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
+from ansys.simai.core.api.mixin import ApiClientMixin
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa
+
+class OptimizationClientMixin(ApiClientMixin):
+    def define_optimization(self, workspace_id: str, optimization_parameters: Dict):
+        return self._post(f"workspaces/{workspace_id}/optimizations", json=optimization_parameters)
+
+    def run_optimization_trial(
+        self, optimization_id: str, geometry_id: str, geometry_parameters: Dict
+    ):
+        return self._post(
+            f"optimizations/{optimization_id}/trial-runs/{geometry_id}",
+            json=geometry_parameters,
+        )
+
+    def get_optimization(self, optimization_id: str):
+        return self._get(f"optimizations/{optimization_id}")
+
+    def get_optimization_trial_run(self, trial_run_id: str):
+        return self._get(f"optimizations/trial-runs/{trial_run_id}")

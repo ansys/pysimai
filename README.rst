@@ -31,7 +31,7 @@ Pysimai simai
    :alt: Black
 
 
-A Python wrapper for Ansys simai simai
+A Python wrapper for Ansys SimAI
 
 
 How to install
@@ -53,12 +53,12 @@ Then, you can simply execute:
 
 .. code:: bash
 
-    python -m pip install ansys-pysimai-core
+    python -m pip install ansys-simai-core
 
 For developers
 ^^^^^^^^^^^^^^
 
-Installing Pysimai simai in developer mode allows
+Installing PySimAI in developer mode allows
 you to modify the source and enhance it.
 
 Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will
@@ -70,47 +70,25 @@ need to follow these steps:
 
       git clone https://github.com/ansys/pysimai
 
-#. Create a fresh-clean Python environment and activate it:
+#. `Install PDM <https://pdm-project.org/latest/#recommended-installation-method>`_
+
+#. Use PDM to create a virtual env with the dependencies and activate it
 
    .. code:: bash
 
-      # Create a virtual environment
-      python -m venv .venv
-
-      # Activate it in a POSIX system
-      source .venv/bin/activate
-
-      # Activate it in Windows CMD environment
-      .venv\Scripts\activate.bat
-
-      # Activate it in Windows Powershell
-      .venv\Scripts\Activate.ps1
-
-#. Make sure you have the latest required build system and doc, testing, and CI tools:
-
-   .. code:: bash
-
-      python -m pip install -U pip flit tox
-      python -m pip install -r requirements/requirements_build.txt
-      python -m pip install -r requirements/requirements_doc.txt
-      python -m pip install -r requirements/requirements_tests.txt
+      pdm install
+      eval $(pdm venv activate)
 
 
-#. Install the project in editable mode:
-
-    .. code:: bash
-
-      python -m pip install --editable ansys-pysimai-core
-
-    #. Finally, verify your development installation by running:
+#. Finally, verify your development installation by running:
 
    .. code:: bash
 
       tox
 
 
-How to testing
---------------
+How to test
+-----------
 
 This project takes advantage of `tox`_. This tool allows to automate common
 development tasks (similar to Makefile) but it is oriented towards Python
@@ -153,30 +131,28 @@ Documentation
 -------------
 
 For building documentation, you can either run the usual rules provided in the
-`Sphinx`_ Makefile, such us:
+`Sphinx`_ Makefile, such as:
 
 .. code:: bash
 
-    make -C doc/ html && your_browser_name doc/html/index.html
+    make -C doc/ html && open doc/html/index.html
 
 However, the recommended way of checking documentation integrity is using:
 
 .. code:: bash
 
-    tox -e doc && your_browser_name .tox/doc_out/index.html
+    tox -e doc && open .tox/doc_out/index.html
 
 
 Distributing
 ------------
 
-If you would like to create either source or wheel files, start by installing
-the building requirements and then executing the build module:
+PDM commands can help you build or publish the package
 
 .. code:: bash
 
-    python -m pip install -r requirements/requirements_build.txt
-    python -m build
-    python -m twine check dist/*
+    pdm build
+    pdm publish
 
 
 .. LINKS AND REFERENCES
