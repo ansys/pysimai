@@ -78,7 +78,6 @@ def test_selection_post_processing_global_coefficients(test_selection):
     assert len(post_processings) == 2
     for pp in post_processings:
         assert isinstance(pp, GlobalCoefficients)
-    # data = selection_post_processings.data
 
 
 @responses.activate

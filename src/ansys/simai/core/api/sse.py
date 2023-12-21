@@ -103,7 +103,6 @@ class SSEMixin(ApiClientMixin):
         try:
             if not event.data:
                 # often a message has an empty data: ignore it
-                # logger.debug("Ignoring message with empty data")
                 return
             data = json.loads(event.data)
             logger.debug(f"received {data}")

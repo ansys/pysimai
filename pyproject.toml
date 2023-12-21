@@ -86,7 +86,7 @@ select = [
   # "DJ", # flake8-django
   # "DTZ", # flake8-datetimez
   "E", # pycodestyle errors
-  # "ERA", # eradicate
+  "ERA", # eradicate
   # "EXE", # flake8-executable
   "F", # pyflakes
   # "G", # flake8-logging-format
