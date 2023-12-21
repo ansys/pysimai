@@ -19,21 +19,3 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from importlib.metadata import version
-import sys
-
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
-
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa

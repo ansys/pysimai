@@ -20,20 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+import os
+from pathlib import Path
+import platform
+import time
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
+import pytest
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
+from ansys.simai.core.utils.files import get_cache_dir
+
+
+@pytest.mark.skipif(
+    platform.system() != "Linux",
+    reason="This test uses XDG_CACHE_HOME to avoid touching the host system",
 )
-import ansys.simai.core.errors  # noqa
+def test_get_cache_dir_linux(tmpdir, monkeypatch):
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmpdir))
+    cache_dir = get_cache_dir()
+    assert cache_dir.absolute() == (Path(tmpdir).absolute() / "ansys")
+    old_file = cache_dir / "old"
+    new_file = cache_dir / "new"
+    new_file.touch()
+    old_file.touch()
+    now = time.time()
+    a_year_ago = now - 30000000
+    os.utime(old_file, times=(now, a_year_ago))
+    cache_dir = get_cache_dir()
+    assert new_file.is_file()
+    assert not old_file.is_file()

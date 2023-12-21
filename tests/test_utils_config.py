@@ -20,20 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+from pathlib import Path
+import platform
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
+import pytest
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa
+import ansys.simai.core.errors as err
+from ansys.simai.core.utils.config_file import _scan_defaults_config_paths, get_config
+
+
+@pytest.mark.skipif(platform.system() == "Windows", reason="XDG_CONFIG_HOME is for unix systems")
+def test_xdg_config_home_is_respected(monkeypatch, tmpdir):
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmpdir))
+    config_file_path = Path(tmpdir) / "ansys_simai.conf"
+    config_file_path.touch()
+    assert _scan_defaults_config_paths() == config_file_path
+
+
+def test_get_config_invalid_path():
+    with pytest.raises(err.ConfigurationNotFoundError):
+        get_config(path="/")
+
+
+def test_get_config_invalid_profile(tmpdir):
+    path_config = Path(tmpdir) / "config"
+    with open(path_config, "w+") as f:
+        f.write("[default]\n")
+        f.flush()
+        with pytest.raises(err.InvalidConfigurationError):
+            get_config(profile="kaboom", path=path_config)

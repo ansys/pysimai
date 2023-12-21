@@ -20,20 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+import logging
+from typing import BinaryIO, Optional, Union
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
+from ansys.simai.core.api.mixin import ApiClientMixin
+from ansys.simai.core.data.types import File
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa
+logger = logging.getLogger(__name__)
+
+
+class DesignOfExperimentsMixin(ApiClientMixin):
+    """
+    Client for the design of experiments ("/design-of-experiments/") part of the API.
+    """
+
+    def download_design_of_experiments(
+        self,
+        file: Optional[File],
+        format: str,
+        workspace_id: str,
+    ) -> Union[None, BinaryIO]:
+        """
+        Downloads the design of experiments into the file at the given path.
+
+        Args:
+            file: A binary file-object or the path of the file to put the content into.
+
+        Return:
+            None if a file is provided, a BytesIO with the design of experiments's content otherwise
+        """
+        logger.debug(f"Attempting to download design of experiments")
+        return self.download_file(
+            f"design-of-experiments/export?format={format}&workspace={workspace_id}",
+            file,
+        )

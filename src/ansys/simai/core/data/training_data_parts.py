@@ -20,20 +20,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+from ansys.simai.core.data.base import DataModel, Directory, UploadableResourceMixin
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa
+class TrainingDataPart(UploadableResourceMixin, DataModel):
+    """
+    Local representation of a training data part object.
+    """
+
+    def __repr__(self) -> str:
+        return f"<TrainingDataPart: {self.id}, {self.name}>"
+
+    @property
+    def name(self) -> str:
+        """The name of the file."""
+        return self.fields["name"]
+
+    @property
+    def size(self) -> int:
+        """The size of the file, in bytes."""
+        return self.fields["size"]
+
+
+class TrainingDataPartDirectory(Directory[TrainingDataPart]):
+    """
+    Collection of methods related to training data parts.
+
+    Accessed through ``client.training_data_parts``
+    """
+
+    _data_model = TrainingDataPart
+
+    def get(self, id: str) -> TrainingDataPart:
+        return self._model_from(self._client._api.get_training_data_part(id))

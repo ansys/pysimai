@@ -20,20 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+import getpass
+from typing import Any, Dict, Optional
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa
+def prompt_for_input(name: str, hide_input: Optional[bool] = False):
+    return input(f"{name}:") if not hide_input else getpass.getpass(f"{name}:")
+
+
+def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Any]] = {}, **kwargs):
+    bc = boundary_conditions if boundary_conditions else {}
+    bc.update(**kwargs)
+    if not bc:
+        raise ValueError("No boundary condition was specified")
+    return bc

@@ -1,0 +1,168 @@
+# Copyright (C) 2023 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from typing import TYPE_CHECKING
+import warnings
+
+from ansys.simai.core.data.lists import ExportablePPList, PPList
+from ansys.simai.core.data.post_processings import (
+    GlobalCoefficients,
+    Slice,
+    SurfaceEvol,
+    SurfaceVTP,
+    VolumeVTU,
+)
+
+if TYPE_CHECKING:
+    from ansys.simai.core.data.selections import Selection
+
+
+class SelectionPostProcessingsMethods:
+    """
+    Class acting as namespace inside :py:class:`~ansys.simai.core.data.selections.Selection` objects,
+    allowing to access or run post-processings on whole selections.
+    """
+
+    def __init__(self, selection: "Selection"):
+        self._selection = selection
+
+    def global_coefficients(self) -> ExportablePPList[GlobalCoefficients]:
+        """
+        Compute or get the global coefficients of the selected predictions.
+
+        This is a non-blocking method. It will return a
+        :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
+        objects without waiting. Those PostProcessing objects may not have
+        data right away if computation is still in progress. Data will be filled
+        asynchronously once computation is finished.
+        State of computation can be waited upon with the wait() method.
+
+        Computation will be launched only on first call of this method.
+        Subsequent calls will not relaunch it.
+
+        Returns:
+            A :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
+            objects.
+        """
+        return ExportablePPList(
+            selection=self._selection, post=lambda pred: pred.post.global_coefficients()
+        )
+
+    def surface_evol(self, axis: str, delta: float) -> ExportablePPList[SurfaceEvol]:
+        """
+        Compute or get the SurfaceEvol of the predictions,
+            for specific parameters
+
+        This is a non-blocking method. It will return a
+        :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`
+        objects without waiting. Those PostProcessing objects may not have
+        data right away if computation is still in progress. Data will be filled
+        asynchronously once computation is finished.
+        State of computation can be waited upon with the wait() method.
+
+        Computation will be launched only on first call of this method
+        with a specific set of parameters.
+        Subsequent calls with the same parameters will not relaunch it.
+
+        Args:
+            axis: For which axis the SurfaceEvol should be computed
+            delta: Increment of the abscissa in meters
+
+        Returns:
+            A :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`
+            objects.
+        """
+        return ExportablePPList(
+            selection=self._selection,
+            post=lambda pred: pred.post.surface_evol(axis, delta),
+        )
+
+    def slice(self, axis: str, coordinate: float) -> PPList[Slice]:
+        """
+        Compute or get a slice from each prediction in the selection.
+
+        This is a non-blocking method. It will return a
+        :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.Slice`
+        objects without waiting. Those PostProcessing objects may not have
+        data right away if computation is still in progress. Data will be filled
+        asynchronously once computation is finished.
+        State of computation can be waited upon with the wait() method.
+
+        Computation will be launched only on first call of this method
+        with a specific set of parameters.
+        Subsequent calls with the same parameters will not relaunch it.
+
+        The slices will be in the NPZ format.
+
+        Args:
+            axis: The axis to slice
+            coordinate: Coordinate along the given axis to slice at
+
+        Returns:
+            A :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.Slice`
+            objects.
+        """
+        return PPList(
+            selection=self._selection,
+            post=lambda pred: pred.post.slice(axis=axis, coordinate=coordinate),
+        )
+
+    def volume_vtu(self) -> PPList[VolumeVTU]:
+        """
+        Compute or get the result of each prediction's volume in the VTU format.
+
+        This is a non-blocking method. It will return a
+        :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.VolumeVTU`
+        objects without waiting. Those PostProcessing objects may not have
+        data right away if computation is still in progress. Data will be filled
+        asynchronously once computation is finished.
+        State of computation can be waited upon with the wait() method.
+
+        Computation will be launched only on first call of this method.
+        Subsequent calls will not relaunch it.
+
+        Returns:
+            A :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.VolumeVTU`
+            objects.
+        """
+        return PPList(selection=self._selection, post=lambda pred: pred.post.volume_vtu())
+
+    def surface_vtp(self) -> PPList[SurfaceVTP]:
+        """
+        Compute or get the result of each prediction's surface in the VTP format.
+
+        This is a non-blocking method. It will return a
+        :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP`
+        objects without waiting. Those PostProcessing objects may not have
+        data right away if computation is still in progress. Data will be filled
+        asynchronously once computation is finished.
+        State of computation can be waited upon with the wait() method.
+
+
+        Computation will be launched only on first call of this method.
+        Subsequent calls will not relaunch it.
+
+        Returns:
+            A :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP`
+            objects.
+        """
+        return PPList(selection=self._selection, post=lambda pred: pred.post.surface_vtp())

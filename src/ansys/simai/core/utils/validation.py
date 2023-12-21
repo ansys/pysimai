@@ -20,20 +20,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+from typing import Any, Callable, List, TypeVar, Union
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
+T = TypeVar("T")
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa
+
+def _list_elements_pass_predicate(items_list: List[T], predicate: Callable[[Any], bool]) -> bool:
+    return isinstance(items_list, List) and all(predicate(item) for item in items_list)
+
+
+def _enforce_as_list_passing_predicate(
+    parameter: Union[T, List[T]], predicate: Callable[[Any], bool], error_message: str
+) -> List[T]:
+    """
+    Makes sure the passed parameter either is a single element passing predicate,
+    or is a list of elements all passing predicate.
+    In both case return a list.
+    If other cases, raises a TypeError with error_message.
+
+    Useful for validating a type of parameter, i.e. either accept a Geometry
+    or a list of Geometries.
+    """
+    if predicate(parameter):
+        return [parameter]
+    if _list_elements_pass_predicate(parameter, predicate):
+        return parameter
+    raise TypeError(error_message)

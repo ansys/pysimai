@@ -20,20 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from importlib.metadata import version
-import sys
+from ansys.simai.core.api.design_of_experiments import DesignOfExperimentsMixin
+from ansys.simai.core.api.geometry import GeometryClientMixin
+from ansys.simai.core.api.optimization import OptimizationClientMixin
+from ansys.simai.core.api.post_processing import PostProcessingClientMixin
+from ansys.simai.core.api.prediction import PredictionClientMixin
+from ansys.simai.core.api.project import ProjectClientMixin
+from ansys.simai.core.api.sse import SSEMixin
+from ansys.simai.core.api.training_data import TrainingDataClientMixin
+from ansys.simai.core.api.training_data_part import TrainingDataPartClientMixin
+from ansys.simai.core.api.workspace import WorkspaceClientMixin
 
-try:
-    __version__ = version("ansys-simai-core")
-except:
-    __version__ = "n/a"
 
-from ansys.simai.core.client import SimAIClient, from_config  # noqa
-from ansys.simai.core.data.post_processings import (  # noqa
-    GlobalCoefficients,
-    Slice,
-    SurfaceEvol,
-    SurfaceVTP,
-    VolumeVTU,
-)
-import ansys.simai.core.errors  # noqa
+class ApiClient(
+    DesignOfExperimentsMixin,
+    GeometryClientMixin,
+    OptimizationClientMixin,
+    PostProcessingClientMixin,
+    ProjectClientMixin,
+    PredictionClientMixin,
+    SSEMixin,
+    TrainingDataClientMixin,
+    TrainingDataPartClientMixin,
+    WorkspaceClientMixin,
+):
+    """
+    Low-level client that handles direct communication with the server.
+    """
