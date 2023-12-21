@@ -20,18 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from inspect import cleandoc
 import logging
 import os
-from pathlib import Path
 import platform
+from inspect import cleandoc
+from pathlib import Path
 from typing import Any, Dict, Optional
 
-from pydantic.v1.utils import deep_update
 import tomli
-
 from ansys.simai.core.data.types import Path as PathType
 from ansys.simai.core.errors import ConfigurationNotFoundError, InvalidConfigurationError
+from pydantic.v1.utils import deep_update
 
 logger = logging.getLogger(__name__)
 

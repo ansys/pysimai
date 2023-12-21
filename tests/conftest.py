@@ -23,7 +23,6 @@
 import random
 
 import pytest
-
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.geometries import Geometry, GeometryDirectory

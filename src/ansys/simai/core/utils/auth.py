@@ -20,23 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from datetime import datetime, timedelta
 import json
 import logging
 import threading
 import time
+import webbrowser
+from datetime import datetime, timedelta
 from typing import Optional
 from urllib.parse import urljoin
-import webbrowser
 
-from pydantic import BaseModel, ValidationError
 import requests
-from requests.auth import AuthBase
-
 from ansys.simai.core.errors import ConnectionError
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
 from ansys.simai.core.utils.files import get_cache_dir
 from ansys.simai.core.utils.requests import handle_response
+from pydantic import BaseModel, ValidationError
+from requests.auth import AuthBase
 
 logger = logging.getLogger(__name__)
 

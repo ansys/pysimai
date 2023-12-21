@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, Callable, Dict, Generic, List, Optional, TypeVar, Union
 import warnings
+from typing import TYPE_CHECKING, Callable, Dict, Generic, List, Optional, TypeVar, Union
 
 from ansys.simai.core.data.downloads import DownloadableResult
 from ansys.simai.core.data.post_processings import PostProcessing

@@ -25,10 +25,9 @@ import logging
 from pathlib import Path
 from typing import BinaryIO, Callable, Optional, Union
 
-from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
-
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.utils.files import file_path_to_obj_file
+from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
 logger = logging.getLogger(__name__)
 

@@ -22,7 +22,6 @@
 
 import pytest
 import responses
-
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.errors import ApiClientError, NotFoundError
 

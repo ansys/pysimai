@@ -22,7 +22,6 @@
 
 import pytest
 import responses
-
 from ansys.simai.core.data.post_processings import (
     GlobalCoefficients,
     Slice,

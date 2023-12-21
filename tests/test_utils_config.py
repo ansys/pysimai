@@ -20,12 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pathlib import Path
 import platform
-
-import pytest
+from pathlib import Path
 
 import ansys.simai.core.errors as err
+import pytest
 from ansys.simai.core.utils.config_file import _scan_defaults_config_paths, get_config
 
 

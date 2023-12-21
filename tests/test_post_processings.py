@@ -22,9 +22,8 @@
 
 import json
 
-import responses
-
 import ansys.simai.core
+import responses
 from ansys.simai.core.data.predictions import Prediction
 
 

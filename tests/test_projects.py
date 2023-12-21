@@ -22,7 +22,6 @@
 
 
 import responses
-
 from ansys.simai.core.data.projects import Project
 from ansys.simai.core.data.training_data import TrainingData
 
