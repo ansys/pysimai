@@ -25,8 +25,6 @@ import json
 import pytest
 import responses
 
-from ansys.simai.core.data.geometries import Geometry
-from ansys.simai.core.data.predictions import Prediction
 from ansys.simai.core.data.selections import Selection
 from ansys.simai.core.errors import MultipleErrors
 

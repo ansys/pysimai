@@ -22,7 +22,6 @@
 
 import math
 
-import pytest
 
 from ansys.simai.core.utils.numerical import (
     convert_axis_and_coordinate_to_plane_eq_coeffs,

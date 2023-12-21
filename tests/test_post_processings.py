@@ -37,7 +37,7 @@ def test_post_processing_prediction_attribute(post_processing_factory):
     post_processing = post_processing_factory(type="GlobalCoefficients", prediction_id="java")
     responses.add(
         responses.GET,
-        f"https://test.test/predictions/java",
+        "https://test.test/predictions/java",
         json={"id": "java", "state": "processing"},
         status=200,
     )
@@ -55,7 +55,7 @@ def test_post_processing_call_prediction_attribute_twice(post_processing_factory
     post_processing = post_processing_factory(type="GlobalCoefficients", prediction_id="sumatra")
     responses.add(
         responses.GET,
-        f"https://test.test/predictions/sumatra",
+        "https://test.test/predictions/sumatra",
         json={"id": "sumatra", "state": "successful"},
         status=200,
     )
@@ -80,7 +80,7 @@ def test_post_processing_call_prediction_attribute_already_registered(
     )
     responses.add(
         responses.GET,
-        f"https://test.test/predictions/registered_prediction",
+        "https://test.test/predictions/registered_prediction",
         json={"id": "registered_prediction", "state": "successful"},
         status=200,
     )
@@ -226,7 +226,7 @@ def test_post_processing_list(simai_client):
     """
     responses.add(
         responses.GET,
-        f"https://test.test/post-processings/",
+        "https://test.test/post-processings/",
         match=[
             responses.matchers.query_param_matcher({"workspace": simai_client.current_workspace.id})
         ],
@@ -235,7 +235,7 @@ def test_post_processing_list(simai_client):
     )
     responses.add(
         responses.GET,
-        f"https://test.test/post-processings/",
+        "https://test.test/post-processings/",
         match=[
             responses.matchers.query_param_matcher(
                 {"workspace": simai_client.current_workspace.id, "page": "2"}
@@ -246,7 +246,7 @@ def test_post_processing_list(simai_client):
     )
     responses.add(
         responses.GET,
-        f"https://test.test/post-processings/",
+        "https://test.test/post-processings/",
         match=[
             responses.matchers.query_param_matcher(
                 {"workspace": simai_client.current_workspace.id, "page": "3"}

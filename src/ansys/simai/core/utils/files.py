@@ -22,7 +22,7 @@
 
 import logging
 import os
-from pathlib import Path
+import pathlib
 import platform
 import time
 from typing import IO, TYPE_CHECKING, Any
@@ -33,13 +33,13 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.types import Path
 
 
-def _expand_user_path(file_path: "Path") -> Path:
+def _expand_user_path(file_path: "Path") -> pathlib.Path:
     """
     Converts str inputs to Path and expands user.
 
     This method allows to support paths starting with ~ on linux
     """
-    return Path(str(file_path)).expanduser()
+    return pathlib.Path(str(file_path)).expanduser()
 
 
 def file_path_to_obj_file(file_path: "Path", mode: str) -> IO[Any]:
@@ -50,20 +50,20 @@ def file_path_to_obj_file(file_path: "Path", mode: str) -> IO[Any]:
     return open(file_path, mode=mode)
 
 
-def get_cache_dir() -> Path:
+def get_cache_dir() -> pathlib.Path:
     system = platform.system()
     if system == "Windows":
-        cache_dir = Path(os.getenv("APPDATA", "~")) / "Ansys/cache"
+        cache_dir = pathlib.Path(os.getenv("APPDATA", "~")) / "Ansys/cache"
     elif system == "Linux":
-        cache_dir = Path(os.getenv("XDG_CACHE_HOME", "~/.cache")) / "ansys"
+        cache_dir = pathlib.Path(os.getenv("XDG_CACHE_HOME", "~/.cache")) / "ansys"
     elif system == "Darwin":
-        cache_dir = Path("~/Library/Caches/Ansys")
+        cache_dir = pathlib.Path("~/Library/Caches/Ansys")
     else:
         raise RuntimeError(f"Unknown OS: {system}")
     cache_dir = cache_dir.expanduser()
     cache_dir.mkdir(exist_ok=True, parents=True)
     a_week_ago = time.time() - 7 * 86400
-    for cache_entry in Path(cache_dir).glob("*"):
+    for cache_entry in pathlib.Path(cache_dir).glob("*"):
         if cache_entry.is_file():
             itemTime = cache_entry.stat().st_mtime
             if itemTime < a_week_ago:

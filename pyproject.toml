@@ -71,11 +71,15 @@ line_length = 100
 default_section = "THIRDPARTY"
 src_paths = ["doc", "src", "tests"]
 
+[tool.ruff]
+line-length = 100
+
 [tool.coverage.run]
 source = ["ansys.simai.core"]
 
 [tool.coverage.report]
 show_missing = true
+
 
 [build-system]
 requires = ["flit_core>=3.2,<4"]

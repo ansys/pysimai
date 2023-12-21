@@ -22,7 +22,6 @@
 
 import itertools
 
-import pytest
 
 from ansys.simai.core.utils.grouping import _ToleranceGroup, _ToleranceGrouper
 from ansys.simai.core.utils.numerical import is_equal_with_tolerance

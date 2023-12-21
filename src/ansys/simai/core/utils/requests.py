@@ -22,7 +22,6 @@
 
 from json.decoder import JSONDecodeError
 import logging
-from typing import Callable
 
 import requests
 
@@ -46,7 +45,7 @@ def handle_http_errors(response: requests.Response) -> None:
     logger.debug("Checking for HTTP errors.")
     try:
         response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
+    except requests.exceptions.HTTPError:
         try:
             json_response = response.json()
         except (ValueError, JSONDecodeError):

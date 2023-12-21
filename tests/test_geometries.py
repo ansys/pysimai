@@ -69,7 +69,7 @@ def test_geometries_filter(simai_client):
 def test_geometries_run_prediction(geometry_factory):
     responses.add(
         responses.POST,
-        f"https://test.test/geometries/geom-0/predictions",
+        "https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
         status=200,
     )
@@ -81,7 +81,7 @@ def test_geometries_run_prediction(geometry_factory):
 def test_geometries_run_prediction_dict_bc(geometry_factory):
     responses.add(
         responses.POST,
-        f"https://test.test/geometries/geom-0/predictions",
+        "https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
         status=200,
     )
@@ -93,7 +93,7 @@ def test_geometries_run_prediction_dict_bc(geometry_factory):
 def test_geometries_run_prediction_no_bc(geometry_factory):
     responses.add(
         responses.POST,
-        f"https://test.test/geometries/geom-0/predictions",
+        "https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
         status=200,
     )

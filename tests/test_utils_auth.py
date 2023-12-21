@@ -22,9 +22,7 @@
 
 import json
 import time
-import uuid
 
-import jwt
 import pytest
 import requests
 import responses
@@ -279,14 +277,14 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed():
             requests.Session(),
         )
         request = requests.Request("GET", "https://simai.ansys.com/v2/models", auth=auth).prepare()
-        assert request.headers.get("Authorization") == f"Bearer check"
+        assert request.headers.get("Authorization") == "Bearer check"
         assert request.headers.get("X-Org") == "13_monkeys"
 
         time.sleep(2)
 
         request = requests.Request("GET", "https://simai.ansys.com/v2/models", auth=auth).prepare()
 
-        assert request.headers.get("Authorization") == f"Bearer check 1 2"
+        assert request.headers.get("Authorization") == "Bearer check 1 2"
         assert request.headers.get("X-Org") == "13_monkeys"
 
 
@@ -353,18 +351,6 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
 
 @responses.activate
 def test_requests_outside_user_api_are_not_authentified():
-    org_id = str(uuid.uuid4())
-    access_token = jwt.encode(
-        {
-            "iss": "https://api.simai.ansys.com/auth/realms/simai",
-            "iat": 1618927433,
-            "exp": 1650463433,
-            "aud": "www.example.com",
-            "sub": "12ff143a-2d5e-4cab-999f-6d7409af3e61",
-            "organizations": {org_id: {"name": "Justice", "roles": []}},
-        },
-        "secret",
-    )
     with responses.RequestsMock(assert_all_requests_are_fired=True) as rsps:
         # Authentication request
         keycloak_response_json = DEFAULT_TOKENS.copy()
@@ -385,5 +371,5 @@ def test_requests_outside_user_api_are_not_authentified():
             requests.Session(),
         )
         request = requests.Request("GET", "https://amazonaws.com/bloc-party", auth=auth).prepare()
-        assert request.headers.get("Authorization") == None
-        assert request.headers.get("X-Org") == None
+        assert request.headers.get("Authorization") is None
+        assert request.headers.get("X-Org") is None

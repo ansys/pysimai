@@ -76,7 +76,7 @@ class SSEMixin(ApiClientMixin):
 
         try:
             self.sse_client = ReconnectingSSERequestsClient(sse_connection_factory)
-        except Exception as e:
+        except Exception:
             raise ConnectionError("Impossible to connect to events endpoint.")
         logger.debug("SSEMixin is connected to SSE endpoint.")
         logger.debug("Starting listener thread")
@@ -93,8 +93,8 @@ class SSEMixin(ApiClientMixin):
                 if self._stop_sse_threads:
                     break
                 self._handle_sse_event(event)
-        except Exception as e:
-            logger.critical(f"Unhandled exception in SSE Thread: ", exc_info=True)
+        except Exception:
+            logger.critical("Unhandled exception in SSE Thread: ", exc_info=True)
             # if object has been garbage collected, ignore exceptions
             if not self._stop_sse_threads:
                 os._exit(1)
@@ -108,7 +108,7 @@ class SSEMixin(ApiClientMixin):
             data = json.loads(event.data)
             logger.debug(f"received {data}")
 
-            if not "type" in data:
+            if "type" not in data:
                 raise ValueError("No type for SSE Event")
             msg_type = data["type"]
             if msg_type == "session":

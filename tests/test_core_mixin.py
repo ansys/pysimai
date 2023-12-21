@@ -116,7 +116,7 @@ def test_4XX_5XX_responses_raise_api_client_error_with_json(api_client, json, me
     WHEN ApiClient gets a 4XX or 5XX response without details in json
     THEN a ApiClientError is raised with the code and message from the json or fallback
     """
-    responses.add(responses.GET, f"https://test.test/errors", json=json, status=400)
+    responses.add(responses.GET, "https://test.test/errors", json=json, status=400)
 
     with pytest.raises(ApiClientError) as exc_info:
         api_client._get("errors")

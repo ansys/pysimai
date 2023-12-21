@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
-import warnings
 
 from ansys.simai.core.data.lists import ExportablePPList, PPList
 from ansys.simai.core.data.post_processings import (

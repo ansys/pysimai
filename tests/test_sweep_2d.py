@@ -49,10 +49,10 @@ def geometries_with_two_metadata_and_incomplete_ones(create_mock_geometry):
         for j in range(7):
             geometries.append(create_mock_geometry(id=f"l-{i}-w-{j}", length=i, width=j / 10))
     # create a double of 2-2
-    geometries.append(create_mock_geometry(id=f"l-2-w-2-bis", length=2, width=0.2))
+    geometries.append(create_mock_geometry(id="l-2-w-2-bis", length=2, width=0.2))
     # add incomplete geometries
-    geometries.append(create_mock_geometry(id=f"l-3", length=3))
-    geometries.append(create_mock_geometry(id=f"w-5", width=0.5))
+    geometries.append(create_mock_geometry(id="l-3", length=3))
+    geometries.append(create_mock_geometry(id="w-5", width=0.5))
     yield geometries
 
 
@@ -314,7 +314,7 @@ def test_sweep_2_dimensions_ignoring_length(geometry_directory, geometries_with_
             length_widths = create_length_width_set(swept)
             expected_results = set()
             for w in [0.2, 0.3, 0.4] if include_center else [0.2, 0.4]:
-                for l in range(7):
+                for l in range(7):  # noqa E741
                     expected_results.add((l, w))
             assert length_widths == expected_results
 

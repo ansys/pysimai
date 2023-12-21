@@ -31,7 +31,7 @@ from ansys.simai.core.data.training_data import TrainingData
 def test_training_data_list(simai_client):
     responses.add(
         responses.GET,
-        f"https://test.test/training_data",
+        "https://test.test/training_data",
         match=[responses.matchers.query_param_matcher({})],
         headers={
             "X-Pagination": json.dumps({"total_pages": 2}),
@@ -42,7 +42,7 @@ def test_training_data_list(simai_client):
     )
     responses.add(
         responses.GET,
-        f"http://test.test/training_data",
+        "http://test.test/training_data",
         match=[responses.matchers.query_param_matcher({"last_id": "one"})],
         json=[{"id": "two"}],
         status=200,
@@ -67,7 +67,7 @@ def test_training_data_add_to_project(simai_client, training_data_factory, proje
 
 
 @responses.activate
-def test_training_data_add_to_project(simai_client, training_data_factory, project_factory):
+def test_training_data_remove_from_project(simai_client, training_data_factory, project_factory):
     td: TrainingData = training_data_factory(id="08080")
     project = project_factory(id="09090")
     responses.add(

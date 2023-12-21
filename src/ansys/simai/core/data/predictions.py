@@ -127,13 +127,13 @@ class Prediction(ComputableDataModel):
         are not waited upon.
         """
         # wait for own creation Event
-        logger.debug(f"prediction: waiting for own loading")
+        logger.debug("prediction: waiting for own loading")
         super().wait()
         if self.has_failed:
             return
         # Wait for its post-processings if any
         if self.post._local_post_processings:
-            logger.debug(f"prediction: waiting for post-processings loading")
+            logger.debug("prediction: waiting for post-processings loading")
             for post_processing in self.post._local_post_processings:
                 post_processing.wait()
 

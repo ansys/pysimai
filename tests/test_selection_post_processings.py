@@ -23,7 +23,6 @@
 import pytest
 import responses
 
-from ansys.simai.core.data.downloads import DownloadableResult
 from ansys.simai.core.data.post_processings import (
     GlobalCoefficients,
     Slice,
@@ -47,11 +46,11 @@ def test_selection(
     bc = {"Vx": 10}
     geometries = [
         geometry_factory(
-            id=f"geom1",
+            id="geom1",
             predictions=[prediction_factory(id="pred1", boundary_conditions=bc)],
         ),
         geometry_factory(
-            id=f"geom2",
+            id="geom2",
             predictions=[prediction_factory(id="pred2", boundary_conditions=bc)],
         ),
     ]

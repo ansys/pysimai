@@ -21,8 +21,7 @@
 # SOFTWARE.
 
 from io import BytesIO
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from ansys.simai.core.data.types import File
 

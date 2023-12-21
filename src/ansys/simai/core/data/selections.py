@@ -33,7 +33,6 @@ from ansys.simai.core.data.types import (
 from ansys.simai.core.errors import _foreach_despite_errors
 from ansys.simai.core.utils.numerical import (
     DEFAULT_COMPARISON_EPSILON,
-    is_equal_with_tolerance,
     validate_tolerance_parameter,
 )
 from ansys.simai.core.utils.validation import _enforce_as_list_passing_predicate
@@ -206,7 +205,7 @@ class Selection:
         _predictions_by_geometry_id: Dict[str, List[Prediction]] = {}
         for point in self.points:
             geometry = point.geometry
-            if not geometry.id in _predictions_by_geometry_id:
+            if geometry.id not in _predictions_by_geometry_id:
                 _predictions_by_geometry_id[geometry.id] = geometry.get_predictions()
             predictions = _predictions_by_geometry_id[geometry.id]
             try:

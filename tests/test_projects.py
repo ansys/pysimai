@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json
 
 import responses
 
@@ -34,12 +33,12 @@ def test_project_rename(simai_client):
 
     responses.add(
         responses.PATCH,
-        f"https://test.test/projects/0011",
+        "https://test.test/projects/0011",
         status=204,
     )
     responses.add(
         responses.GET,
-        f"https://test.test/projects/0011",
+        "https://test.test/projects/0011",
         json={"id": "0011", "name": "fifi"},
         status=200,
     )
@@ -54,7 +53,7 @@ def test_project_list_training_data(simai_client):
 
     responses.add(
         responses.GET,
-        f"https://test.test/projects/0011/data",
+        "https://test.test/projects/0011/data",
         match=[responses.matchers.query_param_matcher({})],
         headers={"Link": '<https://test.test/projects/0011/data?last_id=first>; rel="next"'},
         json=[{"id": "first"}],
@@ -63,7 +62,7 @@ def test_project_list_training_data(simai_client):
 
     responses.add(
         responses.GET,
-        f"https://test.test/projects/0011/data",
+        "https://test.test/projects/0011/data",
         match=[responses.matchers.query_param_matcher({"last_id": "first"})],
         json=[{"id": "second"}],
         status=200,

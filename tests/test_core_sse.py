@@ -54,7 +54,7 @@ def test_api_client_connects_to_sse_if_flag():
         )
         for sse_disabled in [True, False]:
             should_connect = not sse_disabled
-            api_client = ApiClient(
+            ApiClient(
                 ClientConfig(
                     organization="toto",
                     url="https://test.test",
@@ -84,7 +84,7 @@ def test_api_client_sse_endpoint_unreachable():
         status=404,
     )
     with pytest.raises(ConnectionError):
-        api_client = ApiClient(
+        ApiClient(
             ClientConfig(
                 organization="toto",
                 url="https://test.test",

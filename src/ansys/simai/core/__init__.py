@@ -21,11 +21,10 @@
 # SOFTWARE.
 
 from importlib.metadata import version
-import sys
 
 try:
     __version__ = version("ansys-simai-core")
-except:
+except Exception:
     __version__ = "n/a"
 
 from ansys.simai.core.client import SimAIClient, from_config  # noqa

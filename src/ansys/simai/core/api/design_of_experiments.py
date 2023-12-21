@@ -49,7 +49,7 @@ class DesignOfExperimentsMixin(ApiClientMixin):
         Return:
             None if a file is provided, a BytesIO with the design of experiments's content otherwise
         """
-        logger.debug(f"Attempting to download design of experiments")
+        logger.debug("Attempting to download design of experiments")
         return self.download_file(
             f"design-of-experiments/export?format={format}&workspace={workspace_id}",
             file,
