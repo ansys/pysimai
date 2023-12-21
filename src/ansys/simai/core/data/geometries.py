@@ -126,7 +126,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         self._client._api.delete_geometry(self.id)
 
     def run_prediction(
-        self, boundary_conditions: Optional[BoundaryConditions] = {}, **kwargs
+        self, boundary_conditions: Optional[BoundaryConditions] = None, **kwargs
     ) -> "Prediction":
         """
         Run a prediction on the geometry, or returns the existing prediction

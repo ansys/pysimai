@@ -142,7 +142,7 @@ class _AuthTokens(BaseModel):
                 cache_file=self.cache_file,
             )
         except requests.exceptions.ConnectionError as e:
-            raise ConnectionError(e)
+            raise ConnectionError(e) from None
 
 
 def _get_cached_or_request_device_auth(

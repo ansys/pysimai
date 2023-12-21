@@ -219,4 +219,4 @@ def test_selection_post_processing_error(test_selection):
         test_selection.post.volume_vtu()
 
     assert len(responses.calls) == 2
-    test_selection.predictions[1].post.volume_vtu().id == "vtu03"
+    assert test_selection.predictions[1].post.volume_vtu().id == "vtu03"

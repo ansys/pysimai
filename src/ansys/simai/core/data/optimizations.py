@@ -92,9 +92,9 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry_parameters: Dict[str, Tuple[float, float]],
         boundary_conditions: Dict[str, float],
         n_iters: int,
-        minimize: List[str] = [],
-        maximize: List[str] = [],
-        outcome_constraints: List[str] = [],
+        minimize: Optional[List[str]] = None,
+        maximize: Optional[List[str]] = None,
+        outcome_constraints: Optional[List[str]] = None,
         show_progress: bool = False,
         workspace: Optional[Identifiable[Workspace]] = None,
     ) -> List[Dict]:
@@ -158,25 +158,25 @@ class OptimizationDirectory(Directory[Optimization]):
 
             print(results)
         """
-        with tqdm(total=n_iters, disable=not show_progress) as progress_bar:
-            progress_bar.set_description("Creating optimization definition")
-            workspace_id = get_id_from_identifiable(
-                workspace, False, self._client._current_workspace
-            )
-            if len(minimize) + len(maximize) < 1:
-                raise InvalidArguments("No global coefficient to optimize")
-            objective = {}
+        workspace_id = get_id_from_identifiable(workspace, False, self._client._current_workspace)
+        if not minimize and not maximize:
+            raise InvalidArguments("No global coefficient to optimize")
+        objective = {}
+        if minimize:
             for global_coefficient in minimize:
                 objective[global_coefficient] = {"minimize": True}
+        if maximize:
             for global_coefficient in maximize:
                 objective[global_coefficient] = {"minimize": False}
-            optimization_parameters = {
-                "boundary_conditions": boundary_conditions,
-                "geometry_parameters": geometry_parameters,
-                "n_iters": n_iters,
-                "objective": objective,
-                "outcome_constraints": outcome_constraints,
-            }
+        optimization_parameters = {
+            "boundary_conditions": boundary_conditions,
+            "geometry_parameters": geometry_parameters,
+            "n_iters": n_iters,
+            "objective": objective,
+            "outcome_constraints": outcome_constraints or [],
+        }
+        with tqdm(total=n_iters, disable=not show_progress) as progress_bar:
+            progress_bar.set_description("Creating optimization definition")
             optimization = self._model_from(
                 self._client._api.define_optimization(workspace_id, optimization_parameters)
             )

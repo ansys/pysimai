@@ -239,7 +239,7 @@ class PredictionDirectory(Directory[Prediction]):
     def run(
         self,
         geometry_id: str,
-        boundary_conditions: Optional[BoundaryConditions] = {},
+        boundary_conditions: Optional[BoundaryConditions] = None,
         **kwargs,
     ) -> Prediction:
         """

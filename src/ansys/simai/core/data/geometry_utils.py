@@ -132,7 +132,8 @@ def _sweep(
         # also that candidate geometry is at the center of its bucket,
         # we need this custom comparator
         groupby_bucketizer = _ToleranceGrouper(
-            key_func=lambda g: g.metadata[checked_variable],
+            # FIXME: fix the B023 issue
+            key_func=lambda g: g.metadata[checked_variable],  # noqa B023
             tolerance=tolerance,
             forced_central_value=candidate_value,
         )

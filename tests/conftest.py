@@ -137,10 +137,12 @@ def prediction_factory(simai_client) -> Prediction:
 def geometry_factory(simai_client) -> Geometry:
     """Returns a function to create a :py:class:`Geometry`."""
 
-    def _factory(predictions=[], **kwargs) -> Geometry:
+    def _factory(predictions=None, **kwargs) -> Geometry:
         kwargs.setdefault("id", str(random.random()))
         kwargs.setdefault("name", kwargs["id"])
         kwargs.setdefault("state", "successful")
+        if not predictions:
+            predictions = []
         kwargs["predictions"] = [s.id for s in predictions]
 
         geometry = simai_client._geometry_directory._model_from(kwargs)
@@ -188,9 +190,9 @@ def geometry_directory():
 def create_mock_geometry():
     """Creates a lightweight geometry, not tracked by simai_client"""
 
-    def _factory(id, predictions=[], **kwargs):
+    def _factory(id, predictions=None, **kwargs):
         geometry = Geometry(None, None, {"id": id, "name": str(id), "metadata": kwargs})
-        geometry.get_predictions = lambda: predictions
+        geometry.get_predictions = lambda: predictions or []
         return geometry
 
     return _factory

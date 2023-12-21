@@ -690,7 +690,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         self,
         post_processing_type: Union[str, Type[PostProcessing]],
         prediction_id: str,
-        parameters: Optional[Dict[str, Any]] = {},
+        parameters: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> PostProcessing:
         """
