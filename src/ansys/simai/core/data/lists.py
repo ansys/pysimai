@@ -43,9 +43,7 @@ class PPList(List, Generic[T]):
     its elements can be iterated on and accessed by index.
     """
 
-    def __init__(
-        self, selection: "Selection", post: Callable[["Prediction"], PostProcessing]
-    ):  # noqa D107
+    def __init__(self, selection: "Selection", post: Callable[["Prediction"], PostProcessing]):  # noqa D107
         self._selection = selection
         # Even in case of errors, all post-processings will be queued.
         # but if some fail, an exception will be raised.
@@ -90,7 +88,7 @@ class ExportablePPList(PPList, Generic[T]):
             to download the exported data into a file
             or access it in memory.
         """
-        if not format in ["json", "csv.zip", "xlsx", "csv"]:
+        if format not in ["json", "csv.zip", "xlsx", "csv"]:
             raise InvalidArguments(
                 f"Export format must be among json, csv.zip, xlsx (passed {format})."
             )

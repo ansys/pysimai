@@ -76,7 +76,7 @@ def _sweep(
         # Make sure all passed variables exist in geometry metadata,
         # and that the data is numerical
         for variable in swept_metadata:
-            if not variable in candidate_geometry.metadata:
+            if variable not in candidate_geometry.metadata:
                 raise ValueError(f"Metadata {variable} not found in candidate geometry")
             if not is_number(candidate_geometry.metadata[variable]):
                 raise ValueError(f"Metadata {variable} is not numerical")
@@ -88,7 +88,7 @@ def _sweep(
             if is_number(candidate_geometry.metadata[name])
         ]
         if len(swept_metadata) == 0:
-            raise ValueError(f"No numerical metadata column found in candidate geometry")
+            raise ValueError("No numerical metadata column found in candidate geometry")
 
     if fixed_metadata is None:
         fixed_metadata = []
@@ -230,7 +230,7 @@ def _are_geometries_metadata_equal(
             and the other non-numerical data.
     """
     for variable in compared_variables:
-        if not variable in left_geometry.metadata or not variable in right_geometry.metadata:
+        if variable not in left_geometry.metadata or variable not in right_geometry.metadata:
             return False
         left_val: float = left_geometry.metadata.get(variable)  # type: ignore
         right_val: float = right_geometry.metadata.get(variable)  # type: ignore

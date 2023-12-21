@@ -27,11 +27,9 @@ import logging
 import numbers
 import sys
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
-import warnings
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.downloads import DownloadableResult
-from ansys.simai.core.data.types import File
 from ansys.simai.core.errors import InvalidArguments, InvalidServerStateError
 from ansys.simai.core.utils.numerical import convert_axis_and_coordinate_to_plane_eq_coeffs
 
@@ -583,7 +581,7 @@ class PredictionPostProcessings:
         post_processing = self._client._post_processing_directory._model_from(
             data=api_response, pp_class=pp_class, prediction=self.prediction
         )
-        if not pp_class in self._post_processings:
+        if pp_class not in self._post_processings:
             self._post_processings[pp_class] = {}
         self._post_processings[pp_class][params_frozen] = post_processing
         for location, warning_message in post_processing.fields.get("warnings", {}).items():

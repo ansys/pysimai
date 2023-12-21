@@ -94,7 +94,7 @@ def test_prediction_geometry_attribute(prediction_factory):
     prediction = prediction_factory(geometry_id="mexico")
     responses.add(
         responses.GET,
-        f"https://test.test/geometries/mexico",
+        "https://test.test/geometries/mexico",
         json={"id": "mexico", "state": "successful"},
         status=200,
     )
@@ -112,7 +112,7 @@ def test_prediction_call_geometry_attribute_twice(prediction_factory):
     prediction = prediction_factory(geometry_id="cuba")
     responses.add(
         responses.GET,
-        f"https://test.test/geometries/cuba",
+        "https://test.test/geometries/cuba",
         json={"id": "cuba", "state": "successful"},
         status=200,
     )
@@ -135,7 +135,7 @@ def test_prediction_call_geometry_attribute_already_registered(
     prediction = prediction_factory(geometry_id="registered_geometry")
     responses.add(
         responses.GET,
-        f"https://test.test/geometries/registered_geometry",
+        "https://test.test/geometries/registered_geometry",
         json={"id": "registered_geometry", "state": "successful"},
         status=200,
     )
@@ -148,13 +148,13 @@ def test_prediction_call_geometry_attribute_already_registered(
 def test_run(simai_client, geometry_factory):
     responses.add(
         responses.GET,
-        f"https://test.test/geometries/geom-0",
+        "https://test.test/geometries/geom-0",
         json={"id": "geom-0"},
         status=200,
     )
     responses.add(
         responses.POST,
-        f"https://test.test/geometries/geom-0/predictions",
+        "https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
         status=200,
     )
@@ -166,13 +166,13 @@ def test_run(simai_client, geometry_factory):
 def test_run_dict_bc(simai_client, geometry_factory):
     responses.add(
         responses.GET,
-        f"https://test.test/geometries/geom-0",
+        "https://test.test/geometries/geom-0",
         json={"id": "geom-0"},
         status=200,
     )
     responses.add(
         responses.POST,
-        f"https://test.test/geometries/geom-0/predictions",
+        "https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
         status=200,
     )
@@ -184,13 +184,13 @@ def test_run_dict_bc(simai_client, geometry_factory):
 def test_run_no_bc(simai_client, geometry_factory):
     responses.add(
         responses.GET,
-        f"https://test.test/geometries/geom-0",
+        "https://test.test/geometries/geom-0",
         json={"id": "geom-0"},
         status=200,
     )
     responses.add(
         responses.POST,
-        f"https://test.test/geometries/geom-0/predictions",
+        "https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
         status=200,
     )

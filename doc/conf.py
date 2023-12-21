@@ -13,10 +13,8 @@ from datetime import datetime
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
 
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
-import tomli
 
 from ansys.simai.core import __version__
 

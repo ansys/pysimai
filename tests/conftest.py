@@ -86,7 +86,7 @@ def post_processing_factory(simai_client) -> PostProcessing:
 
     def _factory(prediction=None, **kwargs) -> PostProcessing:
         kwargs.setdefault("id", str(random.random()))
-        if prediction and not "prediction_id" in kwargs:
+        if prediction and "prediction_id" not in kwargs:
             kwargs["prediction_id"] = prediction.id
         kwargs.setdefault("state", "successful")
         return simai_client._post_processing_directory._model_from(kwargs, prediction=prediction)
@@ -99,14 +99,14 @@ def prediction_factory(simai_client) -> Prediction:
     """Returns a function to create a :py:class:`Prediction`."""
 
     def _factory(post_processings=None, geometry=None, **kwargs) -> Prediction:
-        if not "id" in kwargs:
+        if "id" not in kwargs:
             if "boundary_conditions" in kwargs:
                 kwargs["id"] = "pred-" + "-".join(
                     str(s) for s in kwargs["boundary_conditions"].values()
                 )
             else:
                 kwargs["id"] = str(random.random())
-        if geometry and not "geometry_id" in kwargs:
+        if geometry and "geometry_id" not in kwargs:
             kwargs["geometry_id"] = geometry.id
         kwargs.setdefault("boundary_conditions", {"Vx": 10.01, "Vy": 0.0009})
         kwargs.setdefault("state", "successful")
@@ -125,7 +125,7 @@ def prediction_factory(simai_client) -> Prediction:
                 params = pp.fields.get("location", {})
                 params_frozen = frozenset(params.items())
                 pp_type = PostProcessingDirectory._data_model_for_type_name(pp._api_name())
-                if not pp_type in pred_pp._post_processings:
+                if pp_type not in pred_pp._post_processings:
                     pred_pp._post_processings[pp_type] = {}
                 pred_pp._post_processings[pp_type][params_frozen] = pp
         return prediction

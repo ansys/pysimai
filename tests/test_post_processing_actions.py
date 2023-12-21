@@ -40,7 +40,7 @@ def test_post_processing_delete(simai_client, post_processing_factory):
         id="uninteresting-coeffs", type="GlobalCoefficients"
     )
     global_coefficients.delete()
-    assert not ("uninteresting-coeffs" in simai_client._post_processing_directory._registry)
+    assert "uninteresting-coeffs" not in simai_client._post_processing_directory._registry
 
 
 @responses.activate

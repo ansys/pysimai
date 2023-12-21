@@ -22,7 +22,6 @@
 
 import pytest
 
-from ansys.simai.core import SimAIClient
 from ansys.simai.core.data.types import Range
 
 

@@ -178,19 +178,19 @@ def test_post_processing_surface_evol_with_wrong_parameters(prediction_factory):
     """
     pred = prediction_factory()
     with pytest.raises(TypeError):
-        surface_evol = pred.post.surface_evol()
+        pred.post.surface_evol()
     with pytest.raises(TypeError):
-        surface_evol = pred.post.surface_evol(axis="x")
+        pred.post.surface_evol(axis="x")
     with pytest.raises(TypeError):
-        surface_evol = pred.post.surface_evol(delta=5)
+        pred.post.surface_evol(delta=5)
     with pytest.raises(TypeError):
-        surface_evol = pred.post.surface_evol(axis="y", delta=-10)
+        pred.post.surface_evol(axis="y", delta=-10)
     with pytest.raises(TypeError):
-        surface_evol = pred.post.surface_evol(axis="y", delta="10")
+        pred.post.surface_evol(axis="y", delta="10")
     with pytest.raises(TypeError):
-        surface_evol = pred.post.surface_evol(axis="b", delta=10)
+        pred.post.surface_evol(axis="b", delta=10)
     with pytest.raises(TypeError):
-        surface_evol = pred.post.surface_evol(plane=[1, 2, 3, 4])
+        pred.post.surface_evol(plane=[1, 2, 3, 4])
 
 
 @responses.activate
@@ -281,7 +281,7 @@ def test_post_processing_request_failure_raises_exception(prediction_factory):
         status=400,
     )
     with pytest.raises(ApiClientError):
-        surface_evol = pred.post.surface_evol(axis="x", delta=45)
+        pred.post.surface_evol(axis="x", delta=45)
 
 
 @responses.activate

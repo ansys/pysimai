@@ -52,7 +52,7 @@ def test_client_version_auto_warn(caplog, mocker):
     )
     responses.add(
         responses.GET,
-        f"https://test.test/info/ansys.simai.core/version",
+        "https://test.test/info/ansys.simai.core/version",
         json={"version": "1.1.1"},
         status=200,
     )
@@ -78,7 +78,7 @@ def test_client_version_auto_error(caplog, mocker):
     )
     responses.add(
         responses.GET,
-        f"https://test.test/info/ansys.simai.core/version",
+        "https://test.test/info/ansys.simai.core/version",
         json={"version": "1.9.0"},
         status=200,
     )
