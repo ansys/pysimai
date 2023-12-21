@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 class ApiClientMixin:
     """The core on which all the mixins and the ApiClient are built."""
 
-    def __init__(self, *args, config: ClientConfig):
+    def __init__(self, *args, config: ClientConfig):  # noqa D107
         self._session = requests.Session()
 
         retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
@@ -71,26 +71,26 @@ class ApiClientMixin:
         self._session.headers.update({"User-Agent": user_agent})
 
     def _get(self, url, *args, **kwargs) -> APIResponse:
-        """_request with method set to GET"""
+        """_request with method set to GET."""
         return self._request("GET", url, *args, **kwargs)
 
     def _put(self, url, *args, **kwargs) -> APIResponse:
-        """_request with method set to PUT"""
+        """_request with method set to PUT."""
         return self._request("PUT", url, *args, **kwargs)
 
     def _post(self, url, *args, **kwargs) -> APIResponse:
-        """_request with method set to POST"""
+        """_request with method set to POST."""
         return self._request("POST", url, *args, **kwargs)
 
     def _delete(self, url, *args, **kwargs) -> APIResponse:
-        """_request with method set to DELETE"""
+        """_request with method set to DELETE."""
         return self._request("DELETE", url, *args, **kwargs)
 
     def _patch(self, url, *args, **kwargs) -> APIResponse:
-        """_request with method set to PATCH"""
+        """_request with method set to PATCH."""
         return self._request("PATCH", url, *args, **kwargs)
 
-    def build_full_url_for_endpoint(self, url) -> str:
+    def build_full_url_for_endpoint(self, url) -> str:  # noqa D102
         return urljoin(str(self._url_prefix), url, allow_fragments=True)
 
     def _request(
@@ -102,7 +102,7 @@ class ApiClientMixin:
         **kwargs,
     ) -> APIResponse:
         """
-        Wrapper around :py:meth:`requests.Session.request`
+        Wrap around :py:meth:`requests.Session.request`.
 
         By default this method expects a json response. If you call an endpoint that does
         not return a json, specify return_json=False
@@ -134,7 +134,7 @@ class ApiClientMixin:
         request_method: str = "GET",
     ) -> Union[None, BinaryIO]:
         """
-        Download a file from the given URL into the given file or a :class:`BytesIO`
+        Download a file from the given URL into the given file or a :class:`BytesIO`.
 
         Args:
             download_url: url to GET the file
