@@ -123,7 +123,7 @@ class ApiClientMixin:
                 return_json=return_json,
             )
         except requests.exceptions.ConnectionError as e:
-            raise ConnectionError(e)
+            raise ConnectionError(e) from None
 
     def download_file(
         self,
@@ -176,7 +176,7 @@ class ApiClientMixin:
             if close_file is True:
                 output_file.close()
                 os.remove(output_file)
-            raise ConnectionError(e)
+            raise ConnectionError(e) from None
 
         logger.info("Download complete.")
         if close_file is True:

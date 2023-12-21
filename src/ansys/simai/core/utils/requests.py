@@ -67,14 +67,14 @@ def handle_http_errors(response: requests.Response) -> None:
             )
 
             if response.status_code == 404:
-                raise NotFoundError(f"{message}", response)
+                raise NotFoundError(f"{message}", response) from None
             else:
                 raise ApiClientError(
                     f"{response.status_code} {message}",
                     response,
-                )
+                ) from None
         else:
-            raise ApiClientError(f"{response.status_code}: {response.reason}", response)
+            raise ApiClientError(f"{response.status_code}: {response.reason}", response) from None
 
 
 def handle_response(response: requests.Response, return_json: bool = True) -> APIResponse:
@@ -97,6 +97,8 @@ def handle_response(response: requests.Response, return_json: bool = True) -> AP
             return response.json()
         except (ValueError, JSONDecodeError):
             logger.debug("Failed to read json response.")
-            raise ApiClientError("Expected a JSON response but did not receive one.", response)
+            raise ApiClientError(
+                "Expected a JSON response but did not receive one.", response
+            ) from None
     else:
         return response

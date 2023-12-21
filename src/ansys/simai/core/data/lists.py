@@ -96,6 +96,7 @@ class ExportablePPList(PPList, Generic[T]):
             warnings.warn(
                 "csv format will be deprecated, use csv.zip instead",
                 PendingDeprecationWarning,
+                stacklevel=1,
             )
         if len(self) < 1:
             raise InvalidArguments("Selection contains no exportable post-processing.")

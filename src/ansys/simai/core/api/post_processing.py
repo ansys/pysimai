@@ -106,7 +106,7 @@ class PostProcessingClientMixin(ApiClientMixin):
         self,
         prediction_id: str,
         pp_type: Optional[str],
-        filters: Dict[str, Any] = {},
+        filters: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Get all the post-processings belonging to the given prediction.
@@ -114,7 +114,7 @@ class PostProcessingClientMixin(ApiClientMixin):
         Args:
             prediction_id: the id of the target prediction
             pp_type: Specify a type of post-processing to return, returns all of them if empty
-            filters: the filters to apply to the query
+            filters: the filters to apply to the query, if any
         """
         endpoint = f"predictions/{prediction_id}/post-processings/"
         if pp_type:

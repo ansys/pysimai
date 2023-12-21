@@ -76,8 +76,8 @@ class SSEMixin(ApiClientMixin):
 
         try:
             self.sse_client = ReconnectingSSERequestsClient(sse_connection_factory)
-        except Exception:
-            raise ConnectionError("Impossible to connect to events endpoint.")
+        except Exception as e:
+            raise ConnectionError("Impossible to connect to events endpoint.") from e
         logger.debug("SSEMixin is connected to SSE endpoint.")
         logger.debug("Starting listener thread")
         self.listener_thread = threading.Thread(target=self._sse_thread_loop, daemon=True)

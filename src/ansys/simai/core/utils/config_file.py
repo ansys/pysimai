@@ -96,7 +96,7 @@ def get_config(
         try:
             all_config = tomli.load(f)
         except tomli.TOMLDecodeError as e:
-            raise InvalidConfigurationError(f"Invalid configuration: {e}")
+            raise InvalidConfigurationError(f"Invalid configuration: {e}") from None
     config = all_config.get(profile, None)
     if config is None:
         raise InvalidConfigurationError(

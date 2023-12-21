@@ -81,7 +81,7 @@ Identifiable = Union[DataModelType, str]
 """Either a Model or the string id of an object of the same type"""
 
 
-def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = {}, **kwargs):
+def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = None, **kwargs):
     bc = boundary_conditions if boundary_conditions else {}
     bc.update(**kwargs)
     if bc is None:
@@ -214,7 +214,7 @@ def unpack_named_file(
         obj_name, file_ext = filename.rsplit(".", 1)
         assert file_ext
     except (ValueError, AssertionError):
-        raise AttributeError(f"Could not determine file extension for {named_file}")
+        raise AttributeError(f"Could not determine file extension for {named_file}") from None
 
     # Open the file if needed
     close_file = False
