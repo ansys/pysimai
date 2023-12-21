@@ -54,15 +54,15 @@ def test_selection_content(four_geometries_test_set):
     THEN the selection contains all geometry—boundary-condition combinations
     """
     speeds = [20.2, 20.4, 20.6]
-    boundary_conditions = [dict(Vx=v) for v in speeds]
+    boundary_conditions = [{"Vx": v} for v in speeds]
     selection = Selection(four_geometries_test_set, boundary_conditions)
     # 4 geometries * 3 boundary conditions
     points = selection.as_list()
     assert len(points) == 12
 
-    received_xbow_speed_combinations = set(
-        [(p.geometry.metadata["xbow"], p.boundary_conditions["Vx"]) for p in points]
-    )
+    received_xbow_speed_combinations = {
+        (p.geometry.metadata["xbow"], p.boundary_conditions["Vx"]) for p in points
+    }
     expected_combinations = set()
     for speed in speeds:
         for xbow in [21, 23, 25, 27]:
@@ -75,7 +75,7 @@ def test_selection_get_predictions(four_geometries_test_set):
     WHEN accessing the selection's predictions
     THEN predictions existing for the geometry­—boundary-condition couple are returned
     """
-    boundary_conditions = [dict(Vx=v) for v in [20.2, 20.4, 20.6]]
+    boundary_conditions = [{"Vx": v} for v in [20.2, 20.4, 20.6]]
     selection = Selection(four_geometries_test_set, boundary_conditions)
 
     predictions = selection.get_predictions()
@@ -108,7 +108,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
 
     # Select 3 speeds
     interesting_speeds_x = {4.5, 5.5, 6.5}
-    boundary_conditions = [dict(Vx=v) for v in interesting_speeds_x]
+    boundary_conditions = [{"Vx": v} for v in interesting_speeds_x]
 
     selection = Selection(geometries, boundary_conditions)
 
@@ -176,13 +176,11 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
     for geom in geometries:
         for speed_x in interesting_speeds_x:
             expected_combinations.add((geom.id, speed_x))
-    received_combinations = set(
-        [
-            (p.geometry.id, p.boundary_conditions["Vx"])
-            for p in selection.points_with_prediction()
-            if p is not None
-        ]
-    )
+    received_combinations = {
+        (p.geometry.id, p.boundary_conditions["Vx"])
+        for p in selection.points_with_prediction()
+        if p is not None
+    }
     assert expected_combinations == received_combinations
 
     assert len(selection.get_runnable_predictions()) == 0

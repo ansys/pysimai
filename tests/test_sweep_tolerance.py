@@ -69,7 +69,7 @@ def test_sweep_tolerance_default(geometry_directory, geometries_with_epsilon_val
         geometries=geometries_with_epsilon_values,
         include_center=False,
     )
-    assert set([g.metadata["length"] for g in swept]) == {2.9999, 3.0001}
+    assert {g.metadata["length"] for g in swept} == {2.9999, 3.0001}
 
     swept = geometry_directory.sweep(
         candidate_geometry=candidate,
@@ -77,7 +77,7 @@ def test_sweep_tolerance_default(geometry_directory, geometries_with_epsilon_val
         order=3,
         include_center=False,
     )
-    assert set([g.metadata["length"] for g in swept]) == {
+    assert {g.metadata["length"] for g in swept} == {
         2.01,
         2.99,
         2.9999,
@@ -101,7 +101,7 @@ def test_sweep_tolerance_negligible(geometry_directory, geometries_with_epsilon_
         include_center=False,
         tolerance=10**-5,
     )
-    assert set([g.metadata["length"] for g in swept]) == {
+    assert {g.metadata["length"] for g in swept} == {
         2.01,
         2.99,
         2.9999,
@@ -128,7 +128,7 @@ def test_sweep_default_tolerance_10_minus_3(geometry_directory, geometries_with_
     )
     # with tolerance 10**-3, 2.9999 is equal to 3, so the 2 neighbors are those:
     expected_without_center = {2.99, 3.01}
-    assert set([g.metadata["length"] for g in swept]) == expected_without_center
+    assert {g.metadata["length"] for g in swept} == expected_without_center
 
     swept = geometry_directory.sweep(
         candidate_geometry=candidate,
@@ -137,7 +137,7 @@ def test_sweep_default_tolerance_10_minus_3(geometry_directory, geometries_with_
         tolerance=tolerance,
     )
     expected_with_center = expected_without_center.union({2.9999, 3, 3.0001})
-    assert set([g.metadata["length"] for g in swept]) == expected_with_center
+    assert {g.metadata["length"] for g in swept} == expected_with_center
 
 
 def test_sweep_default_tolerance_10_minus_3_order_3(
@@ -172,7 +172,7 @@ def test_sweep_default_tolerance_10_minus_3_order_3(
         4,
         4.0001,
     }
-    assert set([g.metadata["length"] for g in swept]) == expected_without_center
+    assert {g.metadata["length"] for g in swept} == expected_without_center
 
     swept = geometry_directory.sweep(
         candidate_geometry=candidate,
@@ -182,4 +182,4 @@ def test_sweep_default_tolerance_10_minus_3_order_3(
         tolerance=tolerance,
     )
     expected_with_center = expected_without_center.union({2.9999, 3, 3.0001})
-    assert set([g.metadata["length"] for g in swept]) == expected_with_center
+    assert {g.metadata["length"] for g in swept} == expected_with_center

@@ -86,7 +86,7 @@ def get_config(
     config_path = path or _scan_defaults_config_paths()
     if config_path is None:
         if ignore_missing:
-            return dict()
+            return {}
         raise ConfigurationNotFoundError
     config_path = Path(config_path).expanduser()
     if not os.path.isfile(config_path):
