@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 import json
-from collections import namedtuple
 from threading import Event
+from typing import NamedTuple
 from unittest.mock import Mock
 
 import pytest
@@ -126,7 +126,7 @@ def test_wait_non_blocking_for_non_loading_items(simai_client):
     assert global_coefficients.wait() is True
 
 
-create_sse_event = namedtuple("SSEEvent", ["data"])
+create_sse_event = NamedTuple("SSEEvent", [("data", dict)])
 
 
 def test_sse_event_prediction_success(sse_mixin, prediction_factory):
