@@ -8,16 +8,15 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: '3.10'
-  DOCUMENTATION_CNAME: 'simai.docs.pyansys.com'
-  LIBRARY_NAME: 'ansys-simai-core'
+  MAIN_PYTHON_VERSION: "3.10"
+  DOCUMENTATION_CNAME: "simai.docs.pyansys.com"
+  LIBRARY_NAME: "ansys-simai-core"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-
   code-style:
     name: "Code style"
     runs-on: ubuntu-latest
@@ -42,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.10']
+        python-version: ["3.10"]
     steps:
       - uses: ansys/actions/build-wheelhouse@v5
         with:
@@ -56,8 +55,8 @@ jobs:
     needs: [smoke-tests]
     strategy:
       matrix:
-       os: [ubuntu-latest, windows-latest]
-       python-version: ['3.10']
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10"]
       fail-fast: false
     steps:
       - uses: ansys/actions/tests-pytest@v5
@@ -84,26 +83,24 @@ jobs:
           library-name: ${{ env.LIBRARY_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-  #doc-deploy-dev:
-  #  name: "Deploy development documentation"
-  #  runs-on: ubuntu-latest
-  #  needs: [build-library]
-  #  if: github.event_name == 'push' && !contains(github.ref, 'refs/tags')
-  #  steps:
-  #    - uses: ansys/actions/doc-deploy-dev@v4
-  #      with:
-  #        cname: ${{ env.DOCUMENTATION_CNAME }}
-  #        token: ${{ secrets.GITHUB_TOKEN }}
-#
-  #doc-deploy-stable:
-  #  name: "Deploy stable documentation"
-  #  runs-on: ubuntu-latest
-  #  needs: [build-library]
-  #  if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-  #  steps:
-  #    - uses: ansys/actions/doc-deploy-stable@v4
-  #      with:
-  #        cname: ${{ env.DOCUMENTATION_CNAME }}
-  #        token: ${{ secrets.GITHUB_TOKEN }}
+  doc-deploy-dev:
+    name: "Deploy development documentation"
+    runs-on: ubuntu-latest
+    needs: [build-library]
+    if: github.event_name == 'push' && !contains(github.ref, 'refs/tags')
+    steps:
+      - uses: ansys/actions/doc-deploy-dev@v4
+        with:
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-
+  doc-deploy-stable:
+    name: "Deploy stable documentation"
+    runs-on: ubuntu-latest
+    needs: [build-library]
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    steps:
+      - uses: ansys/actions/doc-deploy-stable@v4
+        with:
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
