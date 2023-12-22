@@ -116,8 +116,8 @@ def test_prediction_call_geometry_attribute_twice(prediction_factory):
         status=200,
     )
 
-    prediction.geometry  # noqa B018
-    prediction.geometry  # noqa B018
+    prediction.geometry  # noqa: B018
+    prediction.geometry  # noqa: B018
 
     assert len(responses.calls) == 1
 
@@ -139,7 +139,7 @@ def test_prediction_call_geometry_attribute_already_registered(
         status=200,
     )
 
-    prediction.geometry  # noqa B018
+    prediction.geometry  # noqa: B018
     assert len(responses.calls) == 0
 
 

@@ -78,7 +78,7 @@ def test_404_response_raises_not_found_error(api_client):
         (400, "Bad Request"),
         (401, "Unauthorized"),
         (403, "Forbidden"),
-        # (404, "Not Found"), # raises NotFoundError instead # noqa ERA001
+        # (404, "Not Found"), # raises NotFoundError instead # noqa: ERA001
         (405, "Method Not Allowed"),
         (500, "Internal Server Error"),
         (501, "Not Implemented"),

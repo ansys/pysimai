@@ -43,7 +43,7 @@ class PPList(List, Generic[T]):
     its elements can be iterated on and accessed by index.
     """
 
-    def __init__(self, selection: "Selection", post: Callable[["Prediction"], PostProcessing]):  # noqa D107
+    def __init__(self, selection: "Selection", post: Callable[["Prediction"], PostProcessing]):  # noqa: D107
         self._selection = selection
         # Even in case of errors, all post-processings will be queued.
         # but if some fail, an exception will be raised.
