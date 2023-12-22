@@ -59,7 +59,7 @@ def _scan_defaults_config_paths() -> Optional[Path]:
             "/etc/ansys/simai.conf",
         ]
         for path in conf_paths:
-            path = Path(path).expanduser()
+            path = Path(path).expanduser()  # noqa: PLW2901
             if path.is_file():
                 logger.debug(f"Found a configuration file at {path}")
                 return path

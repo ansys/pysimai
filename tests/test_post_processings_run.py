@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import json
+import math
 
 import pytest
 import responses
@@ -245,7 +246,7 @@ def test_post_processing_slice_parameters_values(prediction_factory):
     )
     slice = pred.post.slice(axis="x", coordinate=4)
     assert isinstance(slice, Slice)
-    slice = pred.post.slice(axis="z", coordinate=3.14159)
+    slice = pred.post.slice(axis="z", coordinate=math.pi)
     assert isinstance(slice, Slice)
 
 

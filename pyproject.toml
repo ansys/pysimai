@@ -78,42 +78,63 @@ src_paths = ["doc", "src", "tests"]
 line-length = 100
 select = [
   # "A", # flake8-builtins
+  # "ANN", # flake8-annotations
+  # "ARG", # flake8-unused-arguments
+  "ASYNC", # flake8-async
   "B", # flake8-bugbear
   # "BLE", # flake8-blind-except
   "C4", # flake8-comprehensions
   # "C90", # mccabe
+  "CPY", # flake8-copyright
   # "D", # pydocstyle # TODO: Deal with it
   # "DJ", # flake8-django
   # "DTZ", # flake8-datetimez
   "E", # pycodestyle errors
+  # "EM", # flake8-errmsg
   "ERA", # eradicate
   "EXE", # flake8-executable
   "F", # pyflakes
+  # "FA", # flake8-future-annotations
+  # "FBT", # flake8-boolean-trap
+  # "FIX", # flake8-fixme
+  "FLY", # flying
+  "FURB", # refurb
   # "G", # flake8-logging-format
   "I", # isort
   "ICN", # flake8-import-conventions
   "ISC", # flake8-implicit-str-concat
+  "INP", # flake8-no-pep420
+  "LOG", # flake8-logging
   # "N", # pep8-naming
+  # "PD", # pandas-vet
   "PIE", # flake8-pie
   "PLC", # pylint - convention
   "PLE", # pylint - error
+  # "PLR", # pylint - refactor
   "PLW", # pylint - warning
+  # "PT", # flake8-pytest-style
   # "PTH", # flake8-use-pathlib
+  "PYI", # flake8-pyi
   "Q", # flake8-quotes
   # "RET", # flake8-return
+  "RSE", # flake8-raise
   # "RUF", # Ruff-specific rules
   "S", # flake8-bandit
   "SIM", # flake8-simplify
+  # "SLF", # flake8-self
+  "SLOT", # flake8-slot
   "T10", # flake8-debugger
   "T20", # flake8-print
   "TCH", # flake8-type-checking
+  # "TD", # flake8-todos
   "TID", # flake8-tidy-imports
+  # "TRIO", # flake8-trio
+  # "TRY", # tryceratops
   # "UP", # pyupgrade
   "W", # pycodestyle - warning
   "YTT", # flake8-2020
 ]
 ignore = [
-  # "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
   "D100", # pydocstyle - missing docstring in public module
   "D101", # pydocstyle - missing docstring in public class
   "D102", # pydocstyle - missing docstring in public method
@@ -126,7 +147,6 @@ ignore = [
   "D205", # pydocstyle - 1 blank line required between summary line and description
   "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
   "E501", # pycodestyle line too long, handled by formatting
-  "PLW2901", # pylint - for loop variable overwritten by assignment target
   "ISC001", # Ruff formatter incompatible
   "S101", # flake8-bandit - use of assert
 ]
