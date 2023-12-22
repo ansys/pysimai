@@ -21,9 +21,12 @@
 # SOFTWARE.
 
 import json
+from typing import TYPE_CHECKING
 
 import responses
-from ansys.simai.core.data.training_data import TrainingData
+
+if TYPE_CHECKING:
+    from ansys.simai.core.data.training_data import TrainingData
 
 
 @responses.activate

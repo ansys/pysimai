@@ -151,7 +151,7 @@ class ApiClientMixin:
         if file is None:
             output_file = BytesIO()
             close_file = False
-        elif isinstance(file, Path) or isinstance(file, str):
+        elif isinstance(file, (Path, str)):
             output_file = file_path_to_obj_file(file, "wb")
             close_file = True
         else:

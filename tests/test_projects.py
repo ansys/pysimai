@@ -20,10 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import TYPE_CHECKING
 
 import responses
-from ansys.simai.core.data.projects import Project
 from ansys.simai.core.data.training_data import TrainingData
+
+if TYPE_CHECKING:
+    from ansys.simai.core.data.projects import Project
 
 
 @responses.activate

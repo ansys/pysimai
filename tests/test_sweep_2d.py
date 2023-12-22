@@ -86,10 +86,7 @@ def test_sweep_2_dimensions_center(geometry_directory, geometries_with_two_metad
                 include_diagonals=include_diagonals,
             )
             length_widths = create_length_width_set(swept)
-            if include_diagonals:
-                expected_neighbors = all_neighbors
-            else:
-                expected_neighbors = direct_neighbors
+            expected_neighbors = all_neighbors if include_diagonals else direct_neighbors
             if include_center:
                 expected_neighbors.add((2, 0.3))
             assert length_widths == expected_neighbors

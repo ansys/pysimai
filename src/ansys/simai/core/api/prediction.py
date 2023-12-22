@@ -98,7 +98,7 @@ class PredictionClientMixin(ApiClientMixin):
             with_solution = False
             close_file = False
         else:
-            if isinstance(solution, Path) or isinstance(solution, str):
+            if isinstance(solution, (Path, str)):
                 solution_file = file_path_to_obj_file(solution, "rb")
                 close_file = True
             elif isinstance(solution, (io.RawIOBase, io.BufferedIOBase)):

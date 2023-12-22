@@ -103,7 +103,7 @@ class _AuthTokens(BaseModel):
         auth_codes = handle_response(
             session.post(device_auth_url, data={"client_id": "sdk", "scope": "openid"})
         )
-        print(
+        print(  # noqa: T201
             f"Please go to {auth_codes['verification_uri']} and enter the code {auth_codes['user_code']}"
         )
         webbrowser.open(auth_codes["verification_uri_complete"])
