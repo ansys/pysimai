@@ -239,7 +239,6 @@ class Slice(PostProcessing):
         """
         self.wait()
         results = self._get_results(cache=False)
-        print(self.fields)
         return DownloadableResult(
             results["data"]["resources"][self.parameters.get("output_format", "png")],
             self._client,

@@ -82,7 +82,7 @@ select = [
   # "BLE", # flake8-blind-except
   "C4", # flake8-comprehensions
   # "C90", # mccabe
-  # "D", # pydocstyle
+  # "D", # pydocstyle # TODO: Deal with it
   # "DJ", # flake8-django
   # "DTZ", # flake8-datetimez
   "E", # pycodestyle errors
@@ -103,14 +103,14 @@ select = [
   # "RET", # flake8-return
   # "RUF", # Ruff-specific rules
   "S", # flake8-bandit
-  # "SIM", # flake8-simplify
-  # "T10", # flake8-debugger
-  # "T20", # flake8-print
-  # "TCH", # flake8-type-checking
-  # "TID", # flake8-tidy-imports
+  "SIM", # flake8-simplify
+  "T10", # flake8-debugger
+  "T20", # flake8-print
+  "TCH", # flake8-type-checking
+  "TID", # flake8-tidy-imports
   # "UP", # pyupgrade
-  # "W", # pycodestyle - warning
-  # "YTT", # flake8-2020
+  "W", # pycodestyle - warning
+  "YTT", # flake8-2020
 ]
 ignore = [
   # "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
@@ -130,6 +130,7 @@ ignore = [
   "ISC001", # Ruff formatter incompatible
   "S101", # flake8-bandit - use of assert
 ]
+target-version = "py39"
 
 [tool.ruff.pydocstyle]
 convention = "google"

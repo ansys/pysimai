@@ -47,7 +47,7 @@ def file_path_to_obj_file(file_path: "Path", mode: str) -> IO[Any]:
     file_path = _expand_user_path(file_path)
     file_path.parent.mkdir(parents=True, exist_ok=True)
     logger.debug(f"Opening file {file_path}")
-    return open(file_path, mode=mode)
+    return open(file_path, mode=mode)  # noqa: SIM115
 
 
 def get_cache_dir() -> pathlib.Path:

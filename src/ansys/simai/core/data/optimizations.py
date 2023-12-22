@@ -54,7 +54,6 @@ class OptimizationTrialRun(ComputableDataModel):
     """
 
 
-
 class OptimizationDirectory(Directory[Optimization]):
     """
     Collection of methods related to optimizations.

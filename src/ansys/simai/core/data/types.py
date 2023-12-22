@@ -110,7 +110,7 @@ def are_boundary_conditions_equal(
     validate_tolerance_parameter(tolerance)
     if left.keys() != right.keys():
         return False
-    for key in left.keys():
+    for key in left.keys():  # noqa: SIM118
         if not is_equal_with_tolerance(left[key], right[key], tolerance=tolerance):
             return False
     return True

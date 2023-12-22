@@ -23,10 +23,13 @@
 import logging
 from abc import ABC, abstractmethod
 from threading import Event
-from typing import Dict, Generic, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Dict, Generic, Optional, Type, TypeVar
 
-import ansys.simai.core.client
 from ansys.simai.core.errors import ProcessingError
+
+if TYPE_CHECKING:
+    import ansys.simai.core.client
+
 
 logger = logging.getLogger(__name__)
 
@@ -300,9 +303,8 @@ class Directory(ABC, Generic[DataModelType]):
             mainly after a deletion.
         """
         item = self._registry.pop(item_id, None)
-        if item is not None:
-            if isinstance(item, ComputableDataModel):
-                item._set_is_over()
+        if isinstance(item, ComputableDataModel):
+            item._set_is_over()
 
     def _handle_sse_event(self, data):
         item_id: str = data["target"]["id"]
