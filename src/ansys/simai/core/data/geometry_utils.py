@@ -133,7 +133,7 @@ def _sweep(
         # we need this custom comparator
         groupby_bucketizer = _ToleranceGrouper(
             # FIXME: fix the B023 issue
-            key_func=lambda g: g.metadata[checked_variable],  # noqa B023
+            key_func=lambda g: g.metadata[checked_variable],  # noqa: B023
             tolerance=tolerance,
             forced_central_value=candidate_value,
         )

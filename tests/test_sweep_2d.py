@@ -314,7 +314,7 @@ def test_sweep_2_dimensions_ignoring_length(geometry_directory, geometries_with_
             length_widths = create_length_width_set(swept)
             expected_results = set()
             for w in [0.2, 0.3, 0.4] if include_center else [0.2, 0.4]:
-                for l in range(7):  # noqa E741
+                for l in range(7):  # noqa: E741
                     expected_results.add((l, w))
             assert length_widths == expected_results
 

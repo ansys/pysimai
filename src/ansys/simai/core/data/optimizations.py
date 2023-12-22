@@ -53,7 +53,6 @@ class OptimizationTrialRun(ComputableDataModel):
     Each trial run tests a geometry and returns new parameters for the next geometry to try.
     """
 
-    pass
 
 
 class OptimizationDirectory(Directory[Optimization]):

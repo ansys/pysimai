@@ -62,7 +62,7 @@ def test_sweep_tolerance_default(geometry_directory, geometries_with_epsilon_val
     THEN every value in the metadata represent a step
       (every increasing order gives 1 more geometry).
     """
-    candidate = [g for g in geometries_with_epsilon_values if g.metadata["length"] == 3][0]
+    candidate = next(g for g in geometries_with_epsilon_values if g.metadata["length"] == 3)
     assert candidate.metadata["length"] == 3
     swept = geometry_directory.sweep(
         candidate_geometry=candidate,
@@ -93,7 +93,7 @@ def test_sweep_tolerance_negligible(geometry_directory, geometries_with_epsilon_
     THEN every value in the metadata represent a step
         (every increasing order gives 1 more geometry).
     """
-    candidate = [g for g in geometries_with_epsilon_values if g.metadata["length"] == 3][0]
+    candidate = next(g for g in geometries_with_epsilon_values if g.metadata["length"] == 3)
     swept = geometry_directory.sweep(
         candidate_geometry=candidate,
         geometries=geometries_with_epsilon_values,
@@ -118,7 +118,7 @@ def test_sweep_default_tolerance_10_minus_3(geometry_directory, geometries_with_
     """
 
     tolerance = 10**-3
-    candidate = [g for g in geometries_with_epsilon_values if g.metadata["length"] == 3][0]
+    candidate = next(g for g in geometries_with_epsilon_values if g.metadata["length"] == 3)
     assert candidate.metadata["length"] == 3
     swept = geometry_directory.sweep(
         candidate_geometry=candidate,
@@ -148,7 +148,7 @@ def test_sweep_default_tolerance_10_minus_3_order_3(
     THEN those values are grouped together when concerning sweep order (depth)
     """
     tolerance = 10**-3
-    candidate = [g for g in geometries_with_epsilon_values if g.metadata["length"] == 3][0]
+    candidate = next(g for g in geometries_with_epsilon_values if g.metadata["length"] == 3)
     assert candidate.metadata["length"] == 3
     swept = geometry_directory.sweep(
         candidate_geometry=candidate,

@@ -59,8 +59,8 @@ def test_post_processing_call_prediction_attribute_twice(post_processing_factory
         status=200,
     )
 
-    post_processing.prediction  # noqa B018
-    post_processing.prediction  # noqa B018
+    post_processing.prediction  # noqa: B018
+    post_processing.prediction  # noqa: B018
 
     assert len(responses.calls) == 1
 
@@ -84,7 +84,7 @@ def test_post_processing_call_prediction_attribute_already_registered(
         status=200,
     )
 
-    post_processing.prediction  # noqa B018
+    post_processing.prediction  # noqa: B018
 
     assert len(responses.calls) == 0
 

@@ -103,7 +103,6 @@ class PostProcessing(ComputableDataModel, ABC):
         or if the data is binary it will be a :class:`DownloadableResult` which provides
         helpers to download the data into a file or into memory.
         """
-        pass
 
     @classmethod
     def _api_name(cls) -> str:
@@ -599,15 +598,15 @@ class PostProcessingDirectory(Directory[PostProcessing]):
     def _model_from(
         self,
         data: dict,
-        pp_class: Type[PostProcessing] = None,
+        pp_class: Optional[Type[PostProcessing]] = None,
         prediction: "Prediction" = None,
     ) -> PostProcessing:
         if pp_class is not None:
             constructor = pp_class
         else:
             constructor = self._data_model_for_type_name(data["type"])
-            if not constructor:
-                raise ValueError(f"""Received unknown post-processing type {data['type']}.""")
+        if not constructor:
+            raise ValueError(f"""Received unknown post-processing type {data['type']}.""")
         post_processing = super()._model_from(data, data_model=constructor)
         post_processing._prediction = prediction
         return post_processing

@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 class ApiClientMixin:
     """The core on which all the mixins and the ApiClient are built."""
 
-    def __init__(self, *args, config: ClientConfig):  # noqa D107
+    def __init__(self, *args, config: ClientConfig):  # noqa: D107
         self._session = requests.Session()
 
         retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
@@ -89,7 +89,7 @@ class ApiClientMixin:
         """_request with method set to PATCH."""
         return self._request("PATCH", url, *args, **kwargs)
 
-    def build_full_url_for_endpoint(self, url) -> str:  # noqa D102
+    def build_full_url_for_endpoint(self, url) -> str:  # noqa: D102
         return urljoin(str(self._url_prefix), url, allow_fragments=True)
 
     def _request(
