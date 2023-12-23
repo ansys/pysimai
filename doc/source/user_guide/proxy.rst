@@ -31,7 +31,7 @@ but the proxy is not trusted by your computer (your web browser uses a
 
 To fix this:
 
-1. Extract the certificate(s) used by your company-configured browser on ``https://simai.ansys.com``
+1. Extract the certificates used by your company-configured browser on ``https://simai.ansys.com``
 2. Set the ``REQUESTS_CA_BUNDLE`` environment variable:
 
   .. code:: python

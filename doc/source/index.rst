@@ -18,7 +18,7 @@ With it you can manage and access your data on the platform from within Python a
 What is PySimAI ?
 =================
 
-PySimAI is part of the `PyAnsys <https://docs.pyansys.com>`_ ecosystem that let's you use SimAI within a Python environment of your choice in cunjonction with other PyAnsys libraries and external Python libraries.
+PySimAI is part of the `PyAnsys <https://docs.pyansys.com>`_ ecosystem that let's you use SimAI within a Python environment of your choice in conjunction with other PyAnsys libraries and external Python libraries.
 
 Install
 =======
@@ -91,7 +91,7 @@ Run or get a post-processing through the :attr:`~ansys.simai.core.data.predictio
 
 You can learn more about the available post-processings :ref:`here<post_processings>`.
 
-You're all set! You can now look into more advanced concepts like :ref:`configuring your SDK<configuration>`,
+You're all set: you can now look into more advanced concepts like :ref:`configuring your SDK<configuration>`,
 :ref:`data exploration<data_exploration>` or :ref:`best practices<best_practices>`.
 If you want to explore the functions and methods available to you in the SDK,
 you can head over to the :ref:`API reference<api_reference>` section.
