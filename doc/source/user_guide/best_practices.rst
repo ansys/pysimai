@@ -13,7 +13,7 @@ This behavior makes it possible to request multiple computations to be ran on th
 SimAI platform without waiting for any of the data to be available.
 
 To wait for an object to be fully available, you can call the ``wait()`` method on the object
-(e.g. :meth:`Prediction.wait()<ansys.simai.core.data.predictions.Prediction.wait>`) or you can call the global
+(for example :meth:`Prediction.wait()<ansys.simai.core.data.predictions.Prediction.wait>`) or you can call the global
 :meth:`SimAIClient.wait()<ansys.simai.core.client.SimAIClient.wait>` method to wait for all requests to be complete.
 Alternatively you can try to access the object's data in which case the SDK will automatically wait for the data to be ready if needed.
 
