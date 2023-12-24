@@ -33,10 +33,10 @@ dependencies = [
 ]
 
 [project.module]
-name = "ansys.simai.core.api"
+name = "ansys.simai.core"
 
 [tool.flit.module]
-name = "ansys.simai.core.api"
+name = "ansys.simai.core"
 
 [tool.pdm.dev-dependencies]
 test = [
