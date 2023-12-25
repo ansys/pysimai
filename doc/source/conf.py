@@ -43,7 +43,7 @@ from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_bl
 # -- Project information -----------------------------------------------------
 
 project = "ansys-simai-core"
-author = "ANSYS Inc."
+author = "ANSYS, Inc."
 release = version = __version__
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 cname = os.getenv("DOCUMENTATION_CNAME", "simai.docs.pyansys.com")
@@ -73,8 +73,9 @@ todo_include_todos = False
 
 # Autodoc settings
 autodoc_typehints = "both"
+autodoc_typehints_description_target = "documented"
 autodoc_member_order = "groupwise"
-autoclass_content = "class"
+autoclass_content = "both"
 
 # Napoleon settings
 napoleon_google_docstring = True
@@ -96,13 +97,15 @@ nitpick_ignore_regex = {
     (r"py:obj", "ansys.simai.core.data.base.DataModelType"),
     (r"py:class", "_io.BytesIO"),
     (r"py:class", "pydantic_core._pydantic_core.Url"),
-    # FIXME: This shouldn't be ignored but it's not clear why it's failing to find it in some cases
-    (r"py:class", "Directory"),
 }
+
+source_suffix = ".rst"
+master_doc = "index"
 
 # -- Options for HTML output -------------------------------------------------
 
 html_theme = "ansys_sphinx_theme"
+html_short_title = html_title = "simai"
 html_logo = pyansys_logo_black
 html_favicon = ansys_favicon
 html_static_path = ["_static"]
@@ -122,8 +125,9 @@ html_theme_options = {
     ],
     "switcher": {
         "json_url": f"https://{cname}/versions.json",
-        "version_match": get_version_match(version),
+        "version_match": get_version_match(__version__),
     },
+    "check_switcher": False,
     # TODO
     # "use_meilisearch": {
     #     "api_key": os.getenv("MEILISEARCH_PUBLIC_API_KEY", ""),
