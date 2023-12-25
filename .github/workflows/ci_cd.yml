@@ -61,12 +61,19 @@ jobs:
     steps:
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v3
-      - uses: actions/checkout@v3
-      - name: Generate test requirements
-        run: mkdir requirements && pdm export -G test --no-default -o requirements/requirements_tests.txt
-      - uses: ansys/actions/tests-pytest@v5
-        with:
-          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pdm install --dev
+      - name: run tests
+        run: pdm test
+      # TODO: Can't use current version of ansys/actions/tests-pytest
+      # Possibly because it checksout and overwrites the repo, removing requirements file
+      # previously created so we use pytest directly
+      # - name: Generate test requirements
+      #   run: mkdir requirements && pdm export -G test --no-default -o requirements/requirements_tests.txt
+      # - uses: ansys/actions/tests-pytest@v5
+      #   with:
+      #     pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
 
   doc-build:
     name: "Build documentation"
@@ -75,7 +82,7 @@ jobs:
     steps:
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v3
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Generate doc requirements
         run: pdm export -G doc --no-default -o doc_requirements.txt
       - uses: ansys/actions/doc-build@v5

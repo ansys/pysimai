@@ -56,6 +56,7 @@ doc = [
 
 [tool.pdm.scripts]
 lint = "pre-commit run --all-files"
+test = "pytest --cov=ansys --cov-report=term --cov-report=html:./cov/html tests -vv"
 
 [project.urls]
 Bugs = "https://github.com/ansys/pysimai/issues"
