@@ -68,17 +68,14 @@ class ModelManifest:
 
     @property
     def post_processings(self) -> List[Dict[str, Any]]:
-        """
-        Information on the post-processings available for that model
+        """Information on the post-processings available for that model
         and the accepted parameters when relevant.
         """
         return self._raw["available-post-processings"]
 
 
 class Workspace(DataModel):
-    """
-    Local representation of a workspace object.
-    """
+    """Local representation of a workspace object."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -94,8 +91,7 @@ class Workspace(DataModel):
 
     @property
     def model(self) -> ModelManifest:
-        """
-        Returns a :class:`~ansys.simai.core.data.workspaces.ModelManifest` containing
+        """Returns a :class:`~ansys.simai.core.data.workspaces.ModelManifest` containing
         information about the model associated to the workspace.
         """
         if self._model_manifest is None:
@@ -115,8 +111,7 @@ class Workspace(DataModel):
     def download_model_evaluation_report(
         self, file: Optional[File] = None
     ) -> Union[None, BinaryIO]:
-        """
-        Download the model evaluation report PDF for this workspace
+        """Download the model evaluation report PDF for this workspace
 
         Args:
             file: A binary file-object or the path of the file to put the content into.
@@ -128,8 +123,7 @@ class Workspace(DataModel):
 
 
 class WorkspaceDirectory(Directory[Workspace]):
-    """
-    Collection of methods related to workspaces.
+    """Collection of methods related to workspaces.
 
     Accessed through ``client._workspaces``.
 
@@ -149,8 +143,7 @@ class WorkspaceDirectory(Directory[Workspace]):
         return [self._model_from(workspace) for workspace in self._client._api.workspaces()]
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None) -> Workspace:
-        """
-        Get a specific workspace object from the server.
+        """Get a specific workspace object from the server.
 
         Args:
             id: The id of the workspace to get
@@ -170,8 +163,7 @@ class WorkspaceDirectory(Directory[Workspace]):
         raise ValueError("Either the name or the id must be specified.")
 
     def create(self, name: str, model_id: str) -> Workspace:
-        """
-        Creates a new workspace.
+        """Creates a new workspace.
 
         Args:
             name: The name to give to the new workspace
@@ -180,8 +172,7 @@ class WorkspaceDirectory(Directory[Workspace]):
         return self._model_from(self._client._api.create_workspace(name, model_id))
 
     def delete(self, workspace_id) -> None:
-        """
-        Deletes a workspace.
+        """Deletes a workspace.
 
         Args:
             workspace_id: the id of the workspace to delete

@@ -25,8 +25,7 @@ import pytest
 
 @pytest.fixture()
 def geometries_with_one_metadata(create_mock_geometry):
-    """
-    A list of geometries with:
+    """A list of geometries with:
     - 1 numerical metadata (length), range 0 to 9
     Used to test basic sweep on 1 dimension.
     """
@@ -38,8 +37,7 @@ def geometries_with_one_metadata(create_mock_geometry):
 
 @pytest.fixture()
 def geometries_with_one_usable_metadata(create_mock_geometry):
-    """
-    A list of geometries with:
+    """A list of geometries with:
     - 1 numerical metadata (length), range 0 to 9,
     - 1 string metadata (type)
     Used to test conditions when string metadata is included or ignored
@@ -52,8 +50,7 @@ def geometries_with_one_usable_metadata(create_mock_geometry):
 
 @pytest.fixture()
 def geometries_with_no_usable_metadata(create_mock_geometry):
-    """
-    A list of geometries with no numerical metadata (only a string one)
+    """A list of geometries with no numerical metadata (only a string one)
     Used to test failure case
     """
     geometries = []
@@ -63,8 +60,7 @@ def geometries_with_no_usable_metadata(create_mock_geometry):
 
 
 def test_sweep_one_dimension_gives_two_neighbors(geometry_directory, geometries_with_one_metadata):
-    """
-    WHEN Running a sweep in the middle of a single dimension
+    """WHEN Running a sweep in the middle of a single dimension
     THEN two neighbors are returned
     ALSO include_diagonals has no effect with 1 metadata
     """
@@ -82,8 +78,7 @@ def test_sweep_one_dimension_gives_two_neighbors(geometry_directory, geometries_
 def test_sweep_one_dimension_with_include_center_gives_three_results(
     geometry_directory, geometries_with_one_metadata
 ):
-    """
-    WHEN Running a sweep in the middle of a single dimension with include_center
+    """WHEN Running a sweep in the middle of a single dimension with include_center
     THEN three neighbors are returned
     ALSO include_diagonals has no effect with 1 metadata
     """
@@ -102,8 +97,7 @@ def test_sweep_one_dimension_with_include_center_gives_three_results(
 def test_sweep_one_dimension_along_explicit_variable(
     geometry_directory, geometries_with_one_metadata
 ):
-    """
-    WHEN Running a sweep along explicit variable
+    """WHEN Running a sweep along explicit variable
     THEN two neighbors are returned
     ALSO include_diagonals has no effect with 1 metadata
     """
@@ -128,8 +122,7 @@ def test_sweep_one_dimension_along_explicit_variable(
 
 
 def test_sweep_one_dimension_with_order(geometry_directory, geometries_with_one_metadata):
-    """
-    WHEN Running a sweep in the middle of a single dimension with an order parameter
+    """WHEN Running a sweep in the middle of a single dimension with an order parameter
     THEN 2 * order neighbors are returned if possible
     ALSO include_diagonals has no effect with 1 metadata
     """
@@ -167,8 +160,7 @@ def test_sweep_one_dimension_with_order(geometry_directory, geometries_with_one_
 def test_sweep_one_dimension_with_order_and_include_center(
     geometry_directory, geometries_with_one_metadata
 ):
-    """
-    WHEN Running a sweep in the middle of a single dimension with order and include_center
+    """WHEN Running a sweep in the middle of a single dimension with order and include_center
     THEN 2 * order + 1 neighbors are returned when possible
     ALSO include_diagonals has no effect with 1 metadata
     """
@@ -209,8 +201,7 @@ def test_sweep_one_dimension_with_order_and_include_center(
 def test_sweep_one_dimension_at_min_gives_one_neighbor(
     geometry_directory, geometries_with_one_metadata
 ):
-    """
-    WHEN Running a sweep at the min border of a single dimension
+    """WHEN Running a sweep at the min border of a single dimension
     THEN only one neighbor is returned
     """
     candidate = geometries_with_one_metadata[0]
@@ -228,8 +219,7 @@ def test_sweep_one_dimension_at_min_gives_one_neighbor(
 def test_sweep_one_dimension_at_max_gives_one_neighbor(
     geometry_directory, geometries_with_one_metadata
 ):
-    """
-    WHEN Running a sweep at the max border of a single dimension
+    """WHEN Running a sweep at the max border of a single dimension
     THEN only one neighbor is returned
     """
     candidate = geometries_with_one_metadata[9]
@@ -247,8 +237,7 @@ def test_sweep_one_dimension_at_max_gives_one_neighbor(
 def test_sweep_all_columns_text_metadata_ignored(
     geometry_directory, geometries_with_one_usable_metadata
 ):
-    """
-    WHEN Running a sweep without specifying columns
+    """WHEN Running a sweep without specifying columns
     THEN textual metadata is ignored, and sweep only uses numerical metadata
     """
     candidate = geometries_with_one_usable_metadata[1]
@@ -272,8 +261,7 @@ def test_sweep_all_columns_text_metadata_ignored(
 def test_sweep_unknown_metadata_column_raises(
     geometry_directory, geometries_with_one_usable_metadata
 ):
-    """
-    WHEN Running a sweep with specifying an unknown metadata column
+    """WHEN Running a sweep with specifying an unknown metadata column
     THEN a ValueError is raised
     """
     candidate = geometries_with_one_usable_metadata[4]
@@ -295,8 +283,7 @@ def test_sweep_unknown_metadata_column_raises(
 
 
 def test_sweep_with_text_metadata_fails(geometry_directory, geometries_with_one_usable_metadata):
-    """
-    WHEN Running a sweep using a text metadata
+    """WHEN Running a sweep using a text metadata
     THEN a ValueError is raised
     """
     candidate = geometries_with_one_usable_metadata[4]
@@ -318,8 +305,7 @@ def test_sweep_with_text_metadata_fails(geometry_directory, geometries_with_one_
 
 
 def test_sweep_with_no_metadata_fails(geometry_directory, geometries_with_no_usable_metadata):
-    """
-    WHEN Running a sweep using no metadata column
+    """WHEN Running a sweep using no metadata column
     THEN a ValueError is raised
     """
     candidate = geometries_with_no_usable_metadata[4]
@@ -340,8 +326,7 @@ def test_sweep_with_no_metadata_fails(geometry_directory, geometries_with_no_usa
 
 
 def test_sweep_incorrect_metadata_argument(geometry_directory, geometries_with_one_metadata):
-    """
-    WHEN Running a sweep passing a metadata argument neither List[str] nor str,
+    """WHEN Running a sweep passing a metadata argument neither List[str] nor str,
     THEN a TypeError is raised
     """
     candidate = geometries_with_one_metadata[4]
@@ -363,8 +348,7 @@ def test_sweep_incorrect_metadata_argument(geometry_directory, geometries_with_o
 
 
 def test_sweep_incorrect_order_argument(geometry_directory, geometries_with_one_metadata):
-    """
-    WHEN Running a sweep passing an order argument not int
+    """WHEN Running a sweep passing an order argument not int
     THEN a TypeError is raised
     WHEN Running a sweep passing an order argument int < 1
     THEN a ValueError is raised
@@ -412,8 +396,7 @@ def test_sweep_incorrect_order_argument(geometry_directory, geometries_with_one_
 
 
 def test_sweep_incorrect_tolerance_argument(geometry_directory, geometries_with_one_metadata):
-    """
-    WHEN Running a tolerance passing an order argument not number
+    """WHEN Running a tolerance passing an order argument not number
     THEN a TypeError is raised
     WHEN Running a sweep passing an tolerance argument < 0
     THEN a ValueError is raised

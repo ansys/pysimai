@@ -25,8 +25,7 @@ import pytest
 
 @pytest.fixture()
 def geometries_with_two_metadata(create_mock_geometry):
-    """
-    A list of geometries with 2 numerical metadata:
+    """A list of geometries with 2 numerical metadata:
     - 1 int metadata (length), range 0 to 6
     - 1 float metadata (width), range 0.0 to 0.6
     """
@@ -39,8 +38,7 @@ def geometries_with_two_metadata(create_mock_geometry):
 
 @pytest.fixture()
 def geometries_with_two_metadata_and_incomplete_ones(create_mock_geometry):
-    """
-    A list of geometries with 2 numerical metadata:
+    """A list of geometries with 2 numerical metadata:
     - 1 int metadata (length), range 0 to 6
     - 1 float metadata (width), range 0.0 to 0.6
     """
@@ -61,8 +59,7 @@ def create_length_width_set(geometries):
 
 
 def test_sweep_2_dimensions_center(geometry_directory, geometries_with_two_metadata):
-    """
-    WHEN running a sweep around a (2, 0.3) geometry,
+    """WHEN running a sweep around a (2, 0.3) geometry,
     THEN 4 geometries are returned: (1, 0.3), (3, 0.3), (2, 0.2), (2, 0.4)
     IF including diagonals,
     THEN 4 additional corner geometries are returned: (1, 0.2), (1, 0.4), (3, 0.2), (3, 0.4)
@@ -93,8 +90,7 @@ def test_sweep_2_dimensions_center(geometry_directory, geometries_with_two_metad
 
 
 def test_sweep_2_dimensions_center_order_2(geometry_directory, geometries_with_two_metadata):
-    """
-    WHEN running a sweep around a (2, 0.3) geometry with order 2
+    """WHEN running a sweep around a (2, 0.3) geometry with order 2
     THEN 8 geometries are returned:
         (0, 0.3), (1, 0.3), (3, 0.3), (4, 0.3),
         (2, 0.1), (2, 0.2), (2, 0.4), (2, 0.5)
@@ -134,8 +130,7 @@ def test_sweep_2_dimensions_center_order_2(geometry_directory, geometries_with_t
 def test_sweep_2_dimensions_center_order_2_with_diagonals(
     geometry_directory, geometries_with_two_metadata
 ):
-    """
-    WHEN running a sweep around a (2, 0.3) geometry with order 2 including diagonals
+    """WHEN running a sweep around a (2, 0.3) geometry with order 2 including diagonals
     THEN all those geometries are returned:
         (0, 0.1), (1, 0.1), (2, 0.1), (3, 0.1), (4, 0.1)
         (0, 0.2), (1, 0.2), (2, 0.2), (3, 0.2), (4, 0.2)
@@ -193,8 +188,7 @@ def test_sweep_2_dimensions_center_order_2_with_diagonals(
 
 
 def test_sweep_2_dimensions_min_corner(geometry_directory, geometries_with_two_metadata):
-    """
-    WHEN running a sweep around a "min corner" (0, 0.0) geometry,
+    """WHEN running a sweep around a "min corner" (0, 0.0) geometry,
     THEN 2 geometries are returned: (1, 0) and (0, 0.1)
     IF including center
     THEN the candidate is included
@@ -223,8 +217,7 @@ def test_sweep_2_dimensions_min_corner(geometry_directory, geometries_with_two_m
 
 
 def test_sweep_2_dimensions_max_corner(geometry_directory, geometries_with_two_metadata):
-    """
-    WHEN running a sweep around a "max corner" (6, 0.6) geometry,
+    """WHEN running a sweep around a "max corner" (6, 0.6) geometry,
     THEN 2 geometries are returned: (5, 0.6) and (6, 0.5)
     IF including center
     THEN the candidate is included
@@ -254,8 +247,7 @@ def test_sweep_2_dimensions_max_corner(geometry_directory, geometries_with_two_m
 
 
 def test_sweep_2_dimensions_length_border(geometry_directory, geometries_with_two_metadata):
-    """
-    WHEN running a sweep around a "border" (0, 0.3) geometry,
+    """WHEN running a sweep around a "border" (0, 0.3) geometry,
     THEN 3 geometries are returned: (1, 0.3), (0, 0.2), (0, 0.4)
     """
     candidate = geometries_with_two_metadata[3]
@@ -270,8 +262,7 @@ def test_sweep_2_dimensions_length_border(geometry_directory, geometries_with_tw
 
 
 def test_sweep_2_dimensions_width_border(geometry_directory, geometries_with_two_metadata):
-    """
-    WHEN running a sweep around a "border" (4, 0.6) geometry,
+    """WHEN running a sweep around a "border" (4, 0.6) geometry,
     THEN 3 geometries are returned: (3, 0.6), (5, 0.6), (4, 0.5)
     """
     candidate = geometries_with_two_metadata[34]
@@ -285,8 +276,7 @@ def test_sweep_2_dimensions_width_border(geometry_directory, geometries_with_two
 
 
 def test_sweep_2_dimensions_ignoring_length(geometry_directory, geometries_with_two_metadata):
-    """
-    WHEN running a sweep around a (3, 0.3) geometry along the second (width) metadata,
+    """WHEN running a sweep around a (3, 0.3) geometry along the second (width) metadata,
     THEN 14 geometries are returned:
     - all 7 geometries with width=0.2 (whatever length), and
     - all 7 geometries with width=0.4 (whatever length).
@@ -317,8 +307,7 @@ def test_sweep_2_dimensions_ignoring_length(geometry_directory, geometries_with_
 
 
 def test_sweep_2_dimensions_fixing_length(geometry_directory, geometries_with_two_metadata):
-    """
-    WHEN running a sweep around a (3, 0.3) geometry along the second (width) metadata,
+    """WHEN running a sweep around a (3, 0.3) geometry along the second (width) metadata,
       and fixing the length metadata
     THEN 2 geometries are returned:
     - geometry with width=0.2 and length=3, and
@@ -350,8 +339,7 @@ def test_sweep_2_dimensions_fixing_length(geometry_directory, geometries_with_tw
 def test_sweep_2_dimensions_center_big_order_including_diagonals(
     geometry_directory, geometries_with_two_metadata
 ):
-    """
-    WHEN running a sweep around a (2, 0.3) geometry with very large order and including diagonals
+    """WHEN running a sweep around a (2, 0.3) geometry with very large order and including diagonals
     THEN all geometries are returned, candidate only if include_center
     """
 

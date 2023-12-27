@@ -41,8 +41,7 @@ logger = logging.getLogger(__name__)
 
 
 class _AuthTokens(BaseModel):
-    """
-    Class that represents the OIDC tokens we receive from the auth server.
+    """Class that represents the OIDC tokens we receive from the auth server.
     It can fetch and refresh these tokens.
     It will cache the tokens to disk automatically.
     """
@@ -195,8 +194,7 @@ class Authenticator(AuthBase):
         self._schedule_auth_refresh()
 
     def __call__(self, request: requests.Request) -> requests.Request:
-        """
-        Called to prepare the requests.
+        """Called to prepare the requests.
 
         Args:
             request: the request to authenticate

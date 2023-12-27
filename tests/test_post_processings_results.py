@@ -36,8 +36,7 @@ from ansys.simai.core.data.post_processings import (
 
 @responses.activate
 def test_post_processing_result_global_coefficients(simai_client):
-    """
-    WHEN Running a GlobalCoefficients post-processing on a prediction and calling its .data field,
+    """WHEN Running a GlobalCoefficients post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a dictionary containing the GlobalCoefficients data
     ALSO multiple accesses to .data don't call the endpoint multiple times
@@ -94,8 +93,7 @@ def test_post_processing_result_global_coefficients(simai_client):
 
 @responses.activate
 def test_post_processing_result_surface_evol(simai_client):
-    """
-    WHEN Running a SurfaceEvol post-processing on a prediction and calling its .data field,
+    """WHEN Running a SurfaceEvol post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a dictionary containing the expected data
     ALSO multiple accesses to .data don't call the endpoint multiple times
@@ -188,8 +186,7 @@ def test_post_processing_result_surface_evol(simai_client):
 
 @responses.activate
 def test_post_processing_result_slice(simai_client):
-    """
-    WHEN Running a Slice post-processing on a prediction and calling its .data field,
+    """WHEN Running a Slice post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a DownloadableResult object,
         that we can call a .binary_io method on,
@@ -242,8 +239,7 @@ def test_post_processing_result_slice(simai_client):
 
 @responses.activate
 def test_post_processing_result_volume_vtu(simai_client):
-    """
-    WHEN Running a VolumeVTU post-processing on a prediction and calling its .data field,
+    """WHEN Running a VolumeVTU post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a DownloadableResult object
         we can call a .binary_io method on
@@ -293,8 +289,7 @@ def test_post_processing_result_volume_vtu(simai_client):
 
 @responses.activate
 def test_post_processing_result_surface_vtp(simai_client):
-    """
-    WHEN Running a SurfaceVTP post-processing on a prediction and calling its .data field,
+    """WHEN Running a SurfaceVTP post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a DownloadableResult object
         we can call a .binary_io method on

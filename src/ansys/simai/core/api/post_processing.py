@@ -36,8 +36,7 @@ class PostProcessingClientMixin(ApiClientMixin):
         post_processing_type: str,
         params: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """
-        Run a post-processing on the given prediction.
+        """Run a post-processing on the given prediction.
 
         If the result of the requested post-processing already exists it will not be rerun.
 
@@ -55,8 +54,7 @@ class PostProcessingClientMixin(ApiClientMixin):
         )
 
     def get_post_processing_result(self, post_processing_id: str) -> Dict[str, Any]:
-        """
-        Get the result of a post-processing.
+        """Get the result of a post-processing.
 
         Args:
             post_processing_id: id of the post-processing
@@ -67,8 +65,7 @@ class PostProcessingClientMixin(ApiClientMixin):
         return self._get(f"post-processings/{post_processing_id}")
 
     def delete_post_processing(self, post_processing_id: str):
-        """
-        Delete the post-processing.
+        """Delete the post-processing.
 
         Args:
             post_processing_id: id of the post-processing to delete
@@ -84,8 +81,7 @@ class PostProcessingClientMixin(ApiClientMixin):
     def get_post_processings_in_workspace(
         self, workspace_id: str, pp_type: Optional[str]
     ) -> List[Dict[str, Any]]:
-        """
-        Get all the post-processings in the given workspace.
+        """Get all the post-processings in the given workspace.
 
         Args:
             workspace_id: the id of the target workspace
@@ -108,8 +104,7 @@ class PostProcessingClientMixin(ApiClientMixin):
         pp_type: Optional[str],
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
-        """
-        Get all the post-processings belonging to the given prediction.
+        """Get all the post-processings belonging to the given prediction.
 
         Args:
             prediction_id: the id of the target prediction

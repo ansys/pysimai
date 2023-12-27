@@ -25,8 +25,7 @@ from ansys.simai.core.data.geometries import Geometry
 
 
 def test_prediction_failure(simai_client):
-    """
-    WHEN creating a Prediction in an error state and with an "error" field
+    """WHEN creating a Prediction in an error state and with an "error" field
     THEN prediction.has_failed is true and failure_reason describes the error
     """
     prediction = simai_client._prediction_directory._model_from(
@@ -44,8 +43,7 @@ def test_prediction_failure(simai_client):
 
 @responses.activate
 def test_prediction_delete(simai_client):
-    """
-    WHEN deleting a Prediction
+    """WHEN deleting a Prediction
     THEN a DELETE query on predictions/id endpoint is called
     ALSO the prediction doesn't exist anymore in its Directory's registry
     """
@@ -68,8 +66,7 @@ def test_prediction_delete(simai_client):
 
 @responses.activate
 def test_prediction_wait_deleted(simai_client):
-    """
-    WHEN deleting a Prediction that is not done
+    """WHEN deleting a Prediction that is not done
     THEN prediction.wait() immediately returns
     """
     pred_id = "uninteresting-prediction-002"
@@ -86,8 +83,7 @@ def test_prediction_wait_deleted(simai_client):
 
 @responses.activate
 def test_prediction_geometry_attribute(prediction_factory):
-    """
-    WHEN accessing a Prediction's geometry attribute
+    """WHEN accessing a Prediction's geometry attribute
     THEN the geometry object is returned
     """
     prediction = prediction_factory(geometry_id="mexico")
@@ -104,8 +100,7 @@ def test_prediction_geometry_attribute(prediction_factory):
 
 @responses.activate
 def test_prediction_call_geometry_attribute_twice(prediction_factory):
-    """
-    WHEN accessing twice the geometry attribute of a Prediction
+    """WHEN accessing twice the geometry attribute of a Prediction
     THEN the endpoint is called only once
     """
     prediction = prediction_factory(geometry_id="cuba")
@@ -126,8 +121,7 @@ def test_prediction_call_geometry_attribute_twice(prediction_factory):
 def test_prediction_call_geometry_attribute_already_registered(
     geometry_factory, prediction_factory
 ):
-    """
-    WHEN accessing the geometry attribute of a prediction when the geometry exists locally
+    """WHEN accessing the geometry attribute of a prediction when the geometry exists locally
     THEN no query is ran
     """
     geometry_factory(id="registered_geometry")  # Registering geometry

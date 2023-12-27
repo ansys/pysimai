@@ -24,9 +24,7 @@ from ansys.simai.core.data.base import DataModel, Directory, UploadableResourceM
 
 
 class TrainingDataPart(UploadableResourceMixin, DataModel):
-    """
-    Local representation of a training data part object.
-    """
+    """Local representation of a training data part object."""
 
     def __repr__(self) -> str:
         return f"<TrainingDataPart: {self.id}, {self.name}>"
@@ -43,8 +41,7 @@ class TrainingDataPart(UploadableResourceMixin, DataModel):
 
 
 class TrainingDataPartDirectory(Directory[TrainingDataPart]):
-    """
-    Collection of methods related to training data parts.
+    """Collection of methods related to training data parts.
 
     Accessed through ``client.training_data_parts``
     """

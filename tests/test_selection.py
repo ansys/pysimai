@@ -30,9 +30,7 @@ from ansys.simai.core.errors import MultipleErrors
 
 @pytest.fixture()
 def four_geometries_test_set(geometry_factory, prediction_factory):
-    """
-    A list of 4 geometries with xbow in [21, 23, 25, 27]
-    """
+    """A list of 4 geometries with xbow in [21, 23, 25, 27]"""
     geometries = []
     for i in [21, 23, 25, 27]:
         if i == 21:
@@ -49,8 +47,7 @@ def four_geometries_test_set(geometry_factory, prediction_factory):
 
 
 def test_selection_content(four_geometries_test_set):
-    """
-    WHEN creating a Selection from a list of geometries and boundary conditions
+    """WHEN creating a Selection from a list of geometries and boundary conditions
     THEN the selection contains all geometry—boundary-condition combinations
     """
     speeds = [20.2, 20.4, 20.6]
@@ -71,8 +68,7 @@ def test_selection_content(four_geometries_test_set):
 
 
 def test_selection_get_predictions(four_geometries_test_set):
-    """
-    WHEN accessing the selection's predictions
+    """WHEN accessing the selection's predictions
     THEN predictions existing for the geometry­—boundary-condition couple are returned
     """
     boundary_conditions = [{"Vx": v} for v in [20.2, 20.4, 20.6]]
@@ -91,8 +87,7 @@ def test_selection_get_predictions(four_geometries_test_set):
 
 @responses.activate
 def test_selection_run_predictions(geometry_factory, prediction_factory):
-    """
-    WHEN calling run_prediction() on a selection
+    """WHEN calling run_prediction() on a selection
     THEN a POST request is launched for each not-existing prediction
     AND after the call, selection.predictions contains values for
         all combinations of geometries and boundary condition
@@ -187,8 +182,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
 
 
 def test_selection_tolerance(geometry_factory, prediction_factory):
-    """
-    WHEN creating a selection with the default tolerance
+    """WHEN creating a selection with the default tolerance
     THEN an prediction with a boundary condition differing from less than
         10**-6 is included in the selection
     """
@@ -210,8 +204,7 @@ def test_selection_tolerance(geometry_factory, prediction_factory):
 
 @responses.activate
 def test_selection_run_prediction_error(geometry_factory):
-    """
-    WHEN calling run_predictions, and some calls return an error
+    """WHEN calling run_predictions, and some calls return an error
     THEN all the predictions are ran nevertheless
     AND at the end a MultipleErrors is raised
     """
@@ -268,8 +261,7 @@ def test_selection_run_prediction_error(geometry_factory):
 
 
 def test_selection_parameters(four_geometries_test_set):
-    """
-    WHEN creating a Selection
+    """WHEN creating a Selection
     IF I don't pass a Geometry or list thereof, and a BoundaryCondition or list thereof
     THEN a TypeError is raised
     """

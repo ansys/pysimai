@@ -102,8 +102,7 @@ from ansys.simai.core.utils.configuration import ClientConfig
     ],
 )
 def test_get_authentication_configuration(inputs, password, config, expected_output, mocker):
-    """
-    GIVEN A list of prompt inputs, a configuration and an expected output
+    """GIVEN A list of prompt inputs, a configuration and an expected output
     WHEN getting authentication info for the config
     THEN the expected output is returned
     """

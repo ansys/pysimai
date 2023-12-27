@@ -31,8 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def handle_http_errors(response: requests.Response) -> None:
-    """
-    Raises an error if the response status_code is an error.
+    """Raises an error if the response status_code is an error.
 
     Args:
         response: The response to check for errors
@@ -77,8 +76,7 @@ def handle_http_errors(response: requests.Response) -> None:
 
 
 def handle_response(response: requests.Response, return_json: bool = True) -> APIResponse:
-    """
-    Handles http errors and returns the relevant data from the response
+    """Handles http errors and returns the relevant data from the response
 
     Args:
         response: The response to handle

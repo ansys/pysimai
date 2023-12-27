@@ -29,8 +29,7 @@ class TrainingDataPartClientMixin(ApiClientMixin):
     def create_training_data_part(
         self, training_data_id: str, name: str, extension: str
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """
-        Creates a new part under the given training data, without uploading the data
+        """Creates a new part under the given training data, without uploading the data
 
         Args:
             training_data_id: The parent TrainingData

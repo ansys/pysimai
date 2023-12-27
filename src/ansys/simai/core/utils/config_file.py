@@ -36,8 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 def _scan_defaults_config_paths() -> Optional[Path]:
-    """
-    Look for a configuration files in the default locations.
+    """Look for a configuration files in the default locations.
 
     Returns:
         The path of the first configuration file from the list that exists
@@ -75,8 +74,7 @@ def get_config(
     ignore_missing=False,
     **kwargs,
 ) -> Dict[Any, Any]:
-    """
-    Get configuration, validates it and returns it as a flat dict.
+    """Get configuration, validates it and returns it as a flat dict.
 
     Args:
         path: Where to find the config file. If None, looks in default locations.

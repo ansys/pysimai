@@ -46,8 +46,7 @@ class Optimization(ComputableDataModel):
 
 
 class OptimizationTrialRun(ComputableDataModel):
-    """
-    Local representation of an optimization trial run object.
+    """Local representation of an optimization trial run object.
 
     The optimization trial run is an iteration of the optimization process.
     Each trial run tests a geometry and returns new parameters for the next geometry to try.
@@ -55,8 +54,7 @@ class OptimizationTrialRun(ComputableDataModel):
 
 
 class OptimizationDirectory(Directory[Optimization]):
-    """
-    Collection of methods related to optimizations.
+    """Collection of methods related to optimizations.
 
     Accessed through ``client.optimizations``.
 
@@ -72,8 +70,7 @@ class OptimizationDirectory(Directory[Optimization]):
     _data_model = Optimization
 
     def get(self, optimization_id: str) -> Optimization:
-        """
-        Get a specific optimization object from the server.
+        """Get a specific optimization object from the server.
 
         Args:
             id: The id of the optimization to get
@@ -95,8 +92,7 @@ class OptimizationDirectory(Directory[Optimization]):
         show_progress: bool = False,
         workspace: Optional[Identifiable[Workspace]] = None,
     ) -> List[Dict]:
-        """
-        Run an optimization process.
+        """Run an optimization process.
 
         Args:
             generate_geometry_fn: The function that will be called to generate a new geometry

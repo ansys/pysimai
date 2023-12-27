@@ -25,8 +25,7 @@ import pytest
 
 @pytest.fixture()
 def geometries_with_epsilon_values(create_mock_geometry):
-    """
-    A list of geometries with a numerical metadata, with values separated
+    """A list of geometries with a numerical metadata, with values separated
     by steps of 10**-2 and 10**-4, so tolerance can be tested.
     """
     geometries = []
@@ -57,8 +56,7 @@ def geometries_with_epsilon_values(create_mock_geometry):
 
 
 def test_sweep_tolerance_default(geometry_directory, geometries_with_epsilon_values):
-    """
-    WHEN Running a sweep with a default tolerance, smaller than the epsilon in metadata values
+    """WHEN Running a sweep with a default tolerance, smaller than the epsilon in metadata values
     THEN every value in the metadata represent a step
       (every increasing order gives 1 more geometry).
     """
@@ -88,8 +86,7 @@ def test_sweep_tolerance_default(geometry_directory, geometries_with_epsilon_val
 
 
 def test_sweep_tolerance_negligible(geometry_directory, geometries_with_epsilon_values):
-    """
-    WHEN Running a sweep with a tolerance 10**-5 smaller than the epsilon in values (10**-4)
+    """WHEN Running a sweep with a tolerance 10**-5 smaller than the epsilon in values (10**-4)
     THEN every value in the metadata represent a step
         (every increasing order gives 1 more geometry).
     """
@@ -112,8 +109,7 @@ def test_sweep_tolerance_negligible(geometry_directory, geometries_with_epsilon_
 
 
 def test_sweep_default_tolerance_10_minus_3(geometry_directory, geometries_with_epsilon_values):
-    """
-    WHEN Running a sweep with tolerance greater than some diffs in values
+    """WHEN Running a sweep with tolerance greater than some diffs in values
     THEN those values are counted together when concerning sweep order (depth)
     """
 
@@ -143,8 +139,7 @@ def test_sweep_default_tolerance_10_minus_3(geometry_directory, geometries_with_
 def test_sweep_default_tolerance_10_minus_3_order_3(
     geometry_directory, geometries_with_epsilon_values
 ):
-    """
-    WHEN Running a sweep with tolerance greater than some diffs in values
+    """WHEN Running a sweep with tolerance greater than some diffs in values
     THEN those values are grouped together when concerning sweep order (depth)
     """
     tolerance = 10**-3

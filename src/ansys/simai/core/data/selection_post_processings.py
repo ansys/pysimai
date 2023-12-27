@@ -36,8 +36,7 @@ if TYPE_CHECKING:
 
 
 class SelectionPostProcessingsMethods:
-    """
-    Class acting as namespace inside :py:class:`~ansys.simai.core.data.selections.Selection` objects,
+    """Class acting as namespace inside :py:class:`~ansys.simai.core.data.selections.Selection` objects,
     allowing to access or run post-processings on whole selections.
     """
 
@@ -45,8 +44,7 @@ class SelectionPostProcessingsMethods:
         self._selection = selection
 
     def global_coefficients(self) -> ExportablePPList[GlobalCoefficients]:
-        """
-        Compute or get the global coefficients of the selected predictions.
+        """Compute or get the global coefficients of the selected predictions.
 
         This is a non-blocking method. It will return a
         :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
@@ -67,8 +65,7 @@ class SelectionPostProcessingsMethods:
         )
 
     def surface_evol(self, axis: str, delta: float) -> ExportablePPList[SurfaceEvol]:
-        """
-        Compute or get the SurfaceEvol of the predictions,
+        """Compute or get the SurfaceEvol of the predictions,
             for specific parameters
 
         This is a non-blocking method. It will return a
@@ -96,8 +93,7 @@ class SelectionPostProcessingsMethods:
         )
 
     def slice(self, axis: str, coordinate: float) -> PPList[Slice]:
-        """
-        Compute or get a slice from each prediction in the selection.
+        """Compute or get a slice from each prediction in the selection.
 
         This is a non-blocking method. It will return a
         :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.Slice`
@@ -126,8 +122,7 @@ class SelectionPostProcessingsMethods:
         )
 
     def volume_vtu(self) -> PPList[VolumeVTU]:
-        """
-        Compute or get the result of each prediction's volume in the VTU format.
+        """Compute or get the result of each prediction's volume in the VTU format.
 
         This is a non-blocking method. It will return a
         :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.VolumeVTU`
@@ -146,8 +141,7 @@ class SelectionPostProcessingsMethods:
         return PPList(selection=self._selection, post=lambda pred: pred.post.volume_vtu())
 
     def surface_vtp(self) -> PPList[SurfaceVTP]:
-        """
-        Compute or get the result of each prediction's surface in the VTP format.
+        """Compute or get the result of each prediction's surface in the VTP format.
 
         This is a non-blocking method. It will return a
         :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP`

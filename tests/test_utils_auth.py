@@ -92,8 +92,7 @@ def test_request_auth_tokens_direct_grant():
 
 @responses.activate
 def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir):
-    """
-    WHEN A device auth flow is requested
+    """WHEN A device auth flow is requested
     AND a (bad) refresh token is cached
     THEN SDK tries to use the cached refresh token
     AND requests a device auth flow if the token is invalid

@@ -32,8 +32,7 @@ def _list_elements_pass_predicate(items_list: List[T], predicate: Callable[[Any]
 def _enforce_as_list_passing_predicate(
     parameter: Union[T, List[T]], predicate: Callable[[Any], bool], error_message: str
 ) -> List[T]:
-    """
-    Makes sure the passed parameter either is a single element passing predicate,
+    """Makes sure the passed parameter either is a single element passing predicate,
     or is a list of elements all passing predicate.
     In both case return a list.
     If other cases, raises a TypeError with error_message.

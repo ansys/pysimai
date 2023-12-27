@@ -26,8 +26,7 @@ from ansys.simai.core.data.types import Range
 
 @pytest.fixture
 def geometries_with_two_metadata():
-    """
-    A list of geometries with 2 numerical metadata:
+    """A list of geometries with 2 numerical metadata:
     - length: 10 values ranging from 0.0 to 90.0
     - width: 10 values ranging from 0 to 9
     """
@@ -51,8 +50,7 @@ def extra_client(simai_client, geometries_with_two_metadata):
 
 
 def test_no_filter(extra_client):
-    """
-    WHEN getting geometries with no Range filter
+    """WHEN getting geometries with no Range filter
     THEN all geometries are returned
     """
     geometries = extra_client.geometries.list()
@@ -63,8 +61,7 @@ def test_no_filter(extra_client):
 
 
 def test_filtering_range_simple(extra_client):
-    """
-    WHEN getting geometries with filtering with a Range
+    """WHEN getting geometries with filtering with a Range
     THEN geometries with metadata >= min and < max are returned
     """
     geometries = extra_client.geometries.list(filters={"length": Range(27, 45)})
@@ -74,8 +71,7 @@ def test_filtering_range_simple(extra_client):
 
 
 def test_filtering_range_bounds_inclusion(extra_client):
-    """
-    WHEN filtering geometries with a Range
+    """WHEN filtering geometries with a Range
     THEN both bounds are included in results
     """
     geometries = extra_client.geometries.list(filters={"length": Range(30, 40)})
@@ -85,8 +81,7 @@ def test_filtering_range_bounds_inclusion(extra_client):
 
 
 def test_filtering_same_min_max(extra_client):
-    """
-    WHEN filtering with a Range whose bounds are equal
+    """WHEN filtering with a Range whose bounds are equal
     THEN only geometries matching bounds are returned
     """
     geometries = extra_client.geometries.list(filters={"length": Range(20, 20)})
@@ -97,8 +92,7 @@ def test_filtering_same_min_max(extra_client):
 
 
 def test_filtering_two_metadata(extra_client):
-    """
-    WHEN filtering with Range objects on two metadata
+    """WHEN filtering with Range objects on two metadata
     THEN geometries whose metadata each matching its Range are returned
     """
     geometries = extra_client.geometries.list(
@@ -111,8 +105,7 @@ def test_filtering_two_metadata(extra_client):
 
 
 def test_filtering_with_only_lower_bound(extra_client):
-    """
-    WHEN filtering with a Range having only a lower bound
+    """WHEN filtering with a Range having only a lower bound
     THEN geometries whose metadata >= this bound are returned
     """
     geometries = extra_client.geometries.list(filters={"length": Range(min=80)})
@@ -122,8 +115,7 @@ def test_filtering_with_only_lower_bound(extra_client):
 
 
 def test_filtering_with_only_upper_bound(extra_client):
-    """
-    WHEN filtering with a Range having only a upper bound
+    """WHEN filtering with a Range having only a upper bound
     THEN geometries whose metadata <= this bound are returned
     """
     geometries = extra_client.geometries.list(filters={"length": Range(max=40)})
@@ -133,8 +125,7 @@ def test_filtering_with_only_upper_bound(extra_client):
 
 
 def test_filtering_tolerance_upper(extra_client):
-    """
-    WHEN filtering with Ranges with a tolerance
+    """WHEN filtering with Ranges with a tolerance
     THEN values just above the min bound are included
     AND values just above to the max bound are included
     """
@@ -148,8 +139,7 @@ def test_filtering_tolerance_upper(extra_client):
 
 
 def test_filtering_default_tolerance_upper(extra_client):
-    """
-    WHEN filtering with Ranges without passing a tolerance
+    """WHEN filtering with Ranges without passing a tolerance
     THEN tolerance of 10**-6 is used
     AND values just above the min bound are included
     AND values just above to the max bound are included
@@ -162,8 +152,7 @@ def test_filtering_default_tolerance_upper(extra_client):
 
 
 def test_filtering_above_tolerance(extra_client):
-    """
-    WHEN filtering with Ranges using default 10**-6 tolerance
+    """WHEN filtering with Ranges using default 10**-6 tolerance
     THEN values differing more than tolerance are considered different
     """
     epsilon = 5 * 10**-5
@@ -174,8 +163,7 @@ def test_filtering_above_tolerance(extra_client):
 
 
 def test_filtering_tolerance_lower(extra_client):
-    """
-    WHEN filtering with Ranges with a given tolerance
+    """WHEN filtering with Ranges with a given tolerance
     THEN values just below the min bound are included
     AND values just below the max bound are included
     """
@@ -189,8 +177,7 @@ def test_filtering_tolerance_lower(extra_client):
 
 
 def test_filtering_default_tolerance_lower(extra_client):
-    """
-    WHEN filtering with Ranges without passing a tolerance
+    """WHEN filtering with Ranges without passing a tolerance
     THEN tolerance of 10**-6 is used
     AND values just below the min bound are included
     AND values just below the max bound are included

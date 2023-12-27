@@ -58,9 +58,7 @@ def _upload_training_data_part(id, named_part, client, **kwargs):
 
 
 class TrainingData(ComputableDataModel):
-    """
-    Local representation of a TrainingData object
-    """
+    """Local representation of a TrainingData object"""
 
     def __repr__(self) -> str:
         return f"<TrainingData: {self.id}, {self.name}>"
@@ -82,8 +80,7 @@ class TrainingData(ComputableDataModel):
     # FIXME: impossible to pass the "project" during a property access
     @property
     def subset(self, project: Optional[Identifiable["Project"]] = None) -> Optional[str]:
-        """
-        Indicates which subset this training data belongs to, in relation to the given project
+        """Indicates which subset this training data belongs to, in relation to the given project
 
         Args:
             project: The `Project` object to check for
@@ -105,8 +102,7 @@ class TrainingData(ComputableDataModel):
         return self.fields["extracted_metadata"]
 
     def compute(self) -> None:
-        """
-        Requests to compute or recompute the training data
+        """Requests to compute or recompute the training data
 
         Training data should be computed once all its parts have been fully uploaded
 
@@ -119,8 +115,7 @@ class TrainingData(ComputableDataModel):
         self._client._api.delete_training_data(self.id)
 
     def upload_part(self, file: NamedFile, **kwargs) -> "TrainingDataPart":
-        """
-        Adds a part to a training data.
+        """Adds a part to a training data.
 
         Args:
             file: A :obj:`~ansys.simai.core.data.types.NamedFile` to upload.
@@ -133,8 +128,7 @@ class TrainingData(ComputableDataModel):
     def upload_folder(
         self, folder_path: Path, compute: bool = True, **kwargs
     ) -> List["TrainingDataPart"]:
-        """
-        Uploads all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`
+        """Uploads all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`
 
         Automatically requests computation of the training data
         once the upload is complete unless specified otherwise
@@ -146,8 +140,7 @@ class TrainingData(ComputableDataModel):
         return self._directory.upload_folder(self.id, folder_path, compute, **kwargs)
 
     def add_to_project(self, project: Identifiable["Project"]):
-        """
-        Adds the training data into a :class:`~ansys.simai.core.data.projects.Project`.
+        """Adds the training data into a :class:`~ansys.simai.core.data.projects.Project`.
 
         Args:
             project: The `Project` object into which the data is to be added or it's id
@@ -156,8 +149,7 @@ class TrainingData(ComputableDataModel):
         self._client._api.add_training_data_to_project(self.id, project_id)
 
     def remove_from_project(self, project: Identifiable["Project"]):
-        """
-        Removes the training data from a :class:`~ansys.simai.core.data.projects.Project`.
+        """Removes the training data from a :class:`~ansys.simai.core.data.projects.Project`.
 
         Args:
             project: The `Project` object from which the data is to be removed.
@@ -171,8 +163,7 @@ class TrainingData(ComputableDataModel):
 
 
 class TrainingDataDirectory(Directory[TrainingData]):
-    """
-    Collection of methods related to training data.
+    """Collection of methods related to training data.
 
     Accessed through ``client.training_data``.
 
@@ -188,8 +179,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
     _data_model = TrainingData
 
     def list(self) -> List[TrainingData]:
-        """
-        Lists :class:`TrainingData` from the server.
+        """Lists :class:`TrainingData` from the server.
 
         Returns:
             The list of all TrainingData records on the server.
@@ -200,14 +190,11 @@ class TrainingDataDirectory(Directory[TrainingData]):
         ]
 
     def get(self, id) -> TrainingData:
-        """
-        Gets a specific :class:`TrainingData` from the server.
-        """
+        """Gets a specific :class:`TrainingData` from the server."""
         return self._model_from(self._client._api.get_training_data(id))
 
     def delete(self, id: str) -> None:
-        """
-        Deletes a TrainingData and it's associated parts from the server.
+        """Deletes a TrainingData and it's associated parts from the server.
 
         Args:
             id: The id of the training data to delete
@@ -215,8 +202,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
         return self._client._api.delete_training_data(id)
 
     def create(self, name: str, project: Optional[Identifiable["Project"]] = None) -> TrainingData:
-        """
-        Creates a new :class:`TrainingData` object.
+        """Creates a new :class:`TrainingData` object.
 
         Args:
             name: The name given to the new TrainingData.
@@ -229,8 +215,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
         return self._model_from(self._client._api.create_training_data(name, project_id))
 
     def upload_part(self, id: str, file: NamedFile, **kwargs) -> "TrainingDataPart":
-        """
-        Adds a part to a training data.
+        """Adds a part to a training data.
 
         Args:
             id: The id of the TrainingData that will contain the part
@@ -244,8 +229,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
     def upload_folder(
         self, id: str, folder_path: Path, compute: bool = True, **kwargs
     ) -> List["TrainingDataPart"]:
-        """
-        Uploads all the files contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`
+        """Uploads all the files contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`
 
         Automatically requests computation of the training data
         once the upload is complete unless specified otherwise

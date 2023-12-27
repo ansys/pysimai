@@ -31,8 +31,7 @@ from ansys.simai.core.errors import ApiClientError
 
 @responses.activate
 def test_post_processing_async_status(prediction_factory):
-    """
-    WHEN Running a post-processing on a prediction
+    """WHEN Running a post-processing on a prediction
     THEN a PostProcessing object is returned, in status loading and not failed
     """
     pred = prediction_factory()
@@ -53,8 +52,7 @@ def test_post_processing_async_status(prediction_factory):
 
 @responses.activate
 def test_post_processing_global_coefficients(prediction_factory):
-    """
-    WHEN Running a GlobalCoefficients post-processing on a prediction
+    """WHEN Running a GlobalCoefficients post-processing on a prediction
     THEN a POST request is made on the post-processings/GlobalCoefficients endpoint
     ALSO subsequent calls do not generate calls to the endpoint
     """
@@ -77,8 +75,7 @@ def test_post_processing_global_coefficients(prediction_factory):
 
 @responses.activate
 def test_post_processing_vtu(prediction_factory):
-    """
-    WHEN Running a VTU  post-processing on a prediction
+    """WHEN Running a VTU  post-processing on a prediction
     THEN a POST request is made on the post-processings/VolumeVTU endpoint
     ALSO subsequent calls do not generate calls to the endpoint
     """
@@ -100,8 +97,7 @@ def test_post_processing_vtu(prediction_factory):
 
 @responses.activate
 def test_post_processing_surface_evol(prediction_factory):
-    """
-    WHEN Running a SurfaceEvol post-processing on a prediction
+    """WHEN Running a SurfaceEvol post-processing on a prediction
     THEN a POST request is made on the post-processings/SurfaceEvol endpoint
     AND on subsequent access, the endpoint is not called
     """
@@ -143,8 +139,7 @@ def test_post_processing_surface_evol(prediction_factory):
 
 @responses.activate
 def test_post_processing_surface_evol_parameters_values(prediction_factory):
-    """
-    WHEN Running a SurfaceEvol post-processing with good parameters,
+    """WHEN Running a SurfaceEvol post-processing with good parameters,
     THEN a POST request is made on the post-processings/SurfaceEvol endpoint
     AND a PostProcessing object is returned
     """
@@ -172,8 +167,7 @@ def test_post_processing_surface_evol_parameters_values(prediction_factory):
 
 @responses.activate
 def test_post_processing_surface_evol_with_wrong_parameters(prediction_factory):
-    """
-    WHEN Running a SurfaceEvol PP with missing or wrong parameters,
+    """WHEN Running a SurfaceEvol PP with missing or wrong parameters,
     THEN a TypeError exception is raised
     """
     pred = prediction_factory()
@@ -195,8 +189,7 @@ def test_post_processing_surface_evol_with_wrong_parameters(prediction_factory):
 
 @responses.activate
 def test_post_processing_slice(prediction_factory):
-    """
-    WHEN Running a Slice post-processing on a prediction
+    """WHEN Running a Slice post-processing on a prediction
     THEN a POST request is made on the post-processings/Slice endpoint
     AND on subsequent access, the endpoint is not called
     """
@@ -231,8 +224,7 @@ def test_post_processing_slice(prediction_factory):
 
 @responses.activate
 def test_post_processing_slice_parameters_values(prediction_factory):
-    """
-    WHEN Running a Slice post-processing with good parameters,
+    """WHEN Running a Slice post-processing with good parameters,
     THEN a POST request is made on the post-processings/Slice endpoint
     AND a PostProcessing object is returned
     """
@@ -252,8 +244,7 @@ def test_post_processing_slice_parameters_values(prediction_factory):
 
 @responses.activate
 def test_post_processing_slice_with_wrong_parameters(prediction_factory):
-    """
-    WHEN Running a Slice PP with missing or wrong parameters,
+    """WHEN Running a Slice PP with missing or wrong parameters,
     THEN a ValueError or TypeError exception is raised
     """
     pred = prediction_factory()
@@ -267,8 +258,7 @@ def test_post_processing_slice_with_wrong_parameters(prediction_factory):
 
 @responses.activate
 def test_post_processing_request_failure_raises_exception(prediction_factory):
-    """
-    WHEN Running a post-processing
+    """WHEN Running a post-processing
     IF back-end replies with an error status code
     THEN a ApiClientError is raised
     """
@@ -286,8 +276,7 @@ def test_post_processing_request_failure_raises_exception(prediction_factory):
 
 @responses.activate
 def test_post_processing_reload(simai_client):
-    """
-    WHEN Reloading a post-processing
+    """WHEN Reloading a post-processing
     THEN a query is made to the post processing endpoint
     """
     pp_json = {"id": "88x88x", "type": "GlobalCoefficients"}
@@ -304,8 +293,7 @@ def test_post_processing_reload(simai_client):
 
 @responses.activate
 def test_post_processing_get(simai_client):
-    """
-    WHEN Calling get() on post-processing directory
+    """WHEN Calling get() on post-processing directory
     THEN a post-processing object of corresponding type is returned
     """
     responses.add(
@@ -346,8 +334,7 @@ def test_post_processing_get(simai_client):
 
 @responses.activate
 def test_post_processing_get_unknown_type(simai_client):
-    """
-    WHEN Calling get() on post-processing directory
+    """WHEN Calling get() on post-processing directory
     IF an unknown type is received from the server
     THEN a ValueError is raised
     """

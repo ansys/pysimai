@@ -44,6 +44,4 @@ class ApiClient(
     TrainingDataPartClientMixin,
     WorkspaceClientMixin,
 ):
-    """
-    Low-level client that handles direct communication with the server.
-    """
+    """Low-level client that handles direct communication with the server."""

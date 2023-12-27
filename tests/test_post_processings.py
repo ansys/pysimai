@@ -29,8 +29,7 @@ from ansys.simai.core.data.predictions import Prediction
 
 @responses.activate
 def test_post_processing_prediction_attribute(post_processing_factory):
-    """
-    WHEN accessing the prediction attribute of a PostProcessing
+    """WHEN accessing the prediction attribute of a PostProcessing
     THEN the prediction is returned
     """
     post_processing = post_processing_factory(type="GlobalCoefficients", prediction_id="java")
@@ -47,8 +46,7 @@ def test_post_processing_prediction_attribute(post_processing_factory):
 
 @responses.activate
 def test_post_processing_call_prediction_attribute_twice(post_processing_factory):
-    """
-    WHEN accessing the prediction attribute of a PostProcessing twice
+    """WHEN accessing the prediction attribute of a PostProcessing twice
     THEN the endpoint is called only once
     """
     post_processing = post_processing_factory(type="GlobalCoefficients", prediction_id="sumatra")
@@ -69,8 +67,7 @@ def test_post_processing_call_prediction_attribute_twice(post_processing_factory
 def test_post_processing_call_prediction_attribute_already_registered(
     prediction_factory, post_processing_factory
 ):
-    """
-    WHEN accessing the prediction attribute of a PostProcessing when the geometry exists locally
+    """WHEN accessing the prediction attribute of a PostProcessing when the geometry exists locally
     THEN no query is ran
     """
     prediction_factory(id="registered_prediction")
@@ -93,8 +90,7 @@ def test_post_processing_call_prediction_attribute_already_registered(
 def test_post_processing_ran_from_prediction_already_has_a_prediction(
     prediction_factory, post_processing_factory
 ):
-    """
-    WHEN Running a post-treatment on a prediction
+    """WHEN Running a post-treatment on a prediction
     THEN the prediction attribute is available without calling the /predictions/id endpoint
     """
     pred = prediction_factory(post_processings=[post_processing_factory(type="GlobalCoefficients")])
@@ -112,8 +108,7 @@ def test_post_processing_ran_from_prediction_already_has_a_prediction(
 
 @responses.activate
 def test_post_processing_dont_run_exists_locally(prediction_factory, post_processing_factory):
-    """
-    WHEN Running a post-processing with run=False and it already exists locally
+    """WHEN Running a post-processing with run=False and it already exists locally
     THEN The local post-processing is returned and the API not called
     """
     pred = prediction_factory(post_processings=[post_processing_factory(type="GlobalCoefficients")])
@@ -125,8 +120,7 @@ def test_post_processing_dont_run_exists_locally(prediction_factory, post_proces
 
 @responses.activate
 def test_post_processing_dont_run_does_not_exist_locally_no_params(prediction_factory):
-    """
-    WHEN Running a parameter-less post-processing with run=False and it does not exist locally
+    """WHEN Running a parameter-less post-processing with run=False and it does not exist locally
     THEN The local post-processing is returned and the API get endpoint is called
     """
     pred = prediction_factory()
@@ -145,8 +139,7 @@ def test_post_processing_dont_run_does_not_exist_locally_no_params(prediction_fa
 def test_post_processing_dont_run_does_not_exist_locally_with_params(
     prediction_factory,
 ):
-    """
-    WHEN Running a post-processing with parameters and run=False and it does not exist locally
+    """WHEN Running a post-processing with parameters and run=False and it does not exist locally
     THEN The local post-processing is returned and the API get endpoint is called
     """
     pred = prediction_factory()
@@ -176,8 +169,7 @@ def test_post_processing_dont_run_does_not_exist_locally_with_params(
 def test_post_processing_dont_run_does_not_exist_locally_or_remotely(
     prediction_factory,
 ):
-    """
-    WHEN Running a post-processing with run=False and it does not exist locally or on the server
+    """WHEN Running a post-processing with run=False and it does not exist locally or on the server
     THEN None is returned and the API get endpoint is called
     """
     pred = prediction_factory()
@@ -193,8 +185,7 @@ def test_post_processing_dont_run_does_not_exist_locally_or_remotely(
 
 @responses.activate
 def test_post_processing_run_from_directory(simai_client, prediction_factory):
-    """
-    WHEN I run a post-processing from the directory
+    """WHEN I run a post-processing from the directory
     THEN The created post-processing is returned
     """
     pred = prediction_factory()
@@ -219,8 +210,7 @@ def test_post_processing_run_from_directory(simai_client, prediction_factory):
 
 @responses.activate
 def test_post_processing_list(simai_client):
-    """
-    WHEN simai.post_processings.list is called
+    """WHEN simai.post_processings.list is called
     THEN it returns a list of all post-processings for the workspace
     """
     responses.add(

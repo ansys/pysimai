@@ -28,19 +28,14 @@ from ansys.simai.core.data.types import File
 
 
 class WorkspaceClientMixin(ApiClientMixin):
-    """
-    Client for the Workspace ("/workspaces") part of the API.
-    """
+    """Client for the Workspace ("/workspaces") part of the API."""
 
     def workspaces(self):
-        """
-        List all workspaces
-        """
+        """List all workspaces"""
         return self._get("workspaces/")
 
     def get_workspace(self, workspace_id: str) -> Dict[str, Any]:
-        """
-        Gets information on a single workspace.
+        """Gets information on a single workspace.
 
         Args:
             workspace_id: The id of the workspace to get
@@ -55,8 +50,7 @@ class WorkspaceClientMixin(ApiClientMixin):
         return self._get(f"workspaces/{workspace_id}")
 
     def get_workspace_by_name(self, name: str):
-        """
-        Get information on a single workspace, by name instead of id
+        """Get information on a single workspace, by name instead of id
 
         Args:
             name: The name of the workspace to get
@@ -64,8 +58,7 @@ class WorkspaceClientMixin(ApiClientMixin):
         return self._get(f"workspaces/name/{quote(name)}")
 
     def get_workspace_model_manifest(self, workspace_id):
-        """
-        Get the public part of the manifest for the given workspace.
+        """Get the public part of the manifest for the given workspace.
 
         Args:
             workspace_id: The id of the workspace whose's manifest to get
@@ -77,8 +70,7 @@ class WorkspaceClientMixin(ApiClientMixin):
         return self._get(f"workspaces/{workspace_id}/model/manifest/public")
 
     def create_workspace(self, name: str, model_id: str, **kwargs):
-        """
-        Creates a new workspace.
+        """Creates a new workspace.
 
         Args:
             name: The name to give to the new workspace
@@ -90,8 +82,7 @@ class WorkspaceClientMixin(ApiClientMixin):
         return self._post("workspaces/", json={"name": name, "model": model_id, **kwargs})
 
     def delete_workspace(self, workspace_id: str):
-        """
-        Deletes workspace.
+        """Deletes workspace.
 
         Args:
             workspace_id: The id of the workspace to delete.
