@@ -32,8 +32,7 @@ def is_number(value: Any):
 
 
 def is_smaller_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """
-    Strict smaller than (<) comparison,
+    """Strict smaller than (<) comparison,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
     than the tolerance, a is considered equal, thus not smaller
@@ -44,8 +43,7 @@ def is_smaller_with_tolerance(a: float, b: float, tolerance: Optional[float] = N
 
 
 def is_bigger_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """
-    Strict bigger than (>) comparison,
+    """Strict bigger than (>) comparison,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
     than the tolerance, b is considered equal, thus not bigger
@@ -56,8 +54,7 @@ def is_bigger_with_tolerance(a: float, b: float, tolerance: Optional[float] = No
 
 
 def is_smaller_or_equal_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """
-    Smaller or equal to (<=) comparison,
+    """Smaller or equal to (<=) comparison,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
     than the tolerance, b is considered equal
@@ -66,8 +63,7 @@ def is_smaller_or_equal_with_tolerance(a: float, b: float, tolerance: Optional[f
 
 
 def is_bigger_or_equal_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """
-    Bigger or equal to (>=) comparison,
+    """Bigger or equal to (>=) comparison,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
     than the tolerance, b is considered equal
@@ -76,8 +72,7 @@ def is_bigger_or_equal_with_tolerance(a: float, b: float, tolerance: Optional[fl
 
 
 def is_equal_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """
-    Compare the equality of two numbers,
+    """Compare the equality of two numbers,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
     than the tolerance, they are considered equal

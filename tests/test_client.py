@@ -41,8 +41,7 @@ def test_client_creation_invalid_config():
 
 @responses.activate
 def test_client_version_auto_warn(caplog, mocker):
-    """
-    WHEN the SDK version is slightly outdated compared to what the API responds
+    """WHEN the SDK version is slightly outdated compared to what the API responds
     THEN a warning is printed
     """
     mocker.patch(
@@ -67,8 +66,7 @@ def test_client_version_auto_warn(caplog, mocker):
 
 @responses.activate
 def test_client_version_auto_error(caplog, mocker):
-    """
-    WHEN the SDK version is grossly outdated compared to what the API responds
+    """WHEN the SDK version is grossly outdated compared to what the API responds
     THEN an exception is raised
     """
     mocker.patch(

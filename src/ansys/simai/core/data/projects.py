@@ -38,15 +38,12 @@ class Project(DataModel):
 
     @property
     def name(self) -> str:
-        """
-        The name of project.
-        """
+        """The name of project."""
         return self.fields["name"]
 
     @name.setter
     def name(self, new_name: str):
-        """
-        Rename the project
+        """Rename the project
 
         Args:
             new_name: the new name to give to the project
@@ -81,8 +78,7 @@ class Project(DataModel):
 
 
 class ProjectDirectory(Directory[Project]):
-    """
-    Collection of methods related to projects
+    """Collection of methods related to projects
 
     Accessed through ``client.projects``
 
@@ -106,8 +102,7 @@ class ProjectDirectory(Directory[Project]):
         return self._model_from(self._client._api.create_project(name=name))
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None):
-        """
-        Gets a project by name or id.
+        """Gets a project by name or id.
 
         Only one of id or name should be specified
 
@@ -125,8 +120,7 @@ class ProjectDirectory(Directory[Project]):
             raise InvalidArguments("Either name or id argument should be specified")
 
     def delete(self, id: str) -> None:
-        """
-        Deletes a project
+        """Deletes a project
 
         Args:
             id: The id of the project to delete

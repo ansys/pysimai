@@ -32,9 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class Prediction(ComputableDataModel):
-    """
-    Local representation of a prediction object.
-    """
+    """Local representation of a prediction object."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -43,8 +41,7 @@ class Prediction(ComputableDataModel):
 
     @property
     def geometry_id(self) -> str:
-        """
-        The id of the parent geometry.
+        """The id of the parent geometry.
 
         See Also:
             - :attr:`geometry`: Get the parent geometry
@@ -53,8 +50,7 @@ class Prediction(ComputableDataModel):
 
     @property
     def geometry(self) -> Geometry:
-        """
-        The parent geometry.
+        """The parent geometry.
 
         It will be queried if not already known by the current SDK session.
 
@@ -75,8 +71,7 @@ class Prediction(ComputableDataModel):
 
     @property
     def post(self) -> PredictionPostProcessings:
-        """
-        Namespace containing methods to post-process the result of a prediction.
+        """Namespace containing methods to post-process the result of a prediction.
 
         See :py:class:`~ansys.simai.core.data.post_processings.PredictionPostProcessings` for more information
         """
@@ -84,8 +79,7 @@ class Prediction(ComputableDataModel):
 
     @property
     def confidence_score(self) -> str:
-        """
-        The confidence score. Either *high* or *low*.
+        """The confidence score. Either *high* or *low*.
 
         This method will block until the confidence score is computed.
         """
@@ -98,8 +92,7 @@ class Prediction(ComputableDataModel):
         self._unregister()
 
     def feedback(self, **kwargs):
-        """
-        Give us your feedback on a prediction to help us improve.
+        """Give us your feedback on a prediction to help us improve.
 
         This method enables you to give a rating (from 0 to 4) and a comment on a
         prediction.
@@ -115,8 +108,7 @@ class Prediction(ComputableDataModel):
         self._client._api.send_prediction_feedback(self.id, **kwargs)
 
     def _wait_all(self):
-        """
-        Wait until both this prediction, and any post-processing launched on it
+        """Wait until both this prediction, and any post-processing launched on it
         have finished processing.
 
         Blocking method, which once called, blocks until both the prediction,
@@ -147,8 +139,7 @@ class Prediction(ComputableDataModel):
 
 
 class PredictionDirectory(Directory[Prediction]):
-    """
-    Collection of methods related to model predictions
+    """Collection of methods related to model predictions
 
     Accessed through ``client.prediction``.
 
@@ -175,8 +166,7 @@ class PredictionDirectory(Directory[Prediction]):
 
     @property
     def info(self):
-        """
-        Information on the predictions inputs and outputs.
+        """Information on the predictions inputs and outputs.
 
         Example:
             .. code-block:: python
@@ -194,8 +184,7 @@ class PredictionDirectory(Directory[Prediction]):
         }
 
     def list(self, workspace_id: Optional[str] = None) -> List[Prediction]:
-        """
-        List all predictions on the server that belong to the currently set workspace or the specified one.
+        """List all predictions on the server that belong to the currently set workspace or the specified one.
 
         Args:
             workspace_id: The id of the workspace for which to list the predictions,
@@ -209,8 +198,7 @@ class PredictionDirectory(Directory[Prediction]):
         ]
 
     def get(self, id: str) -> Prediction:
-        """
-        Get a specific prediction object from the server.
+        """Get a specific prediction object from the server.
 
         Args:
             id: The id of the prediction to get
@@ -224,8 +212,7 @@ class PredictionDirectory(Directory[Prediction]):
         return self._model_from(self._client._api.get_prediction(id))
 
     def delete(self, prediction_id: str) -> None:
-        """
-        Delete a specific prediction from the server.
+        """Delete a specific prediction from the server.
 
         Args:
             prediction_id: The id of the prediction to delete
@@ -242,8 +229,7 @@ class PredictionDirectory(Directory[Prediction]):
         boundary_conditions: Optional[BoundaryConditions] = None,
         **kwargs,
     ) -> Prediction:
-        """
-        Run a SimAI prediction on the given geometry with the given boundary conditions.
+        """Run a SimAI prediction on the given geometry with the given boundary conditions.
 
         Boundary conditions can be passed as a dictionary or as kwargs.
 
@@ -282,8 +268,7 @@ class PredictionDirectory(Directory[Prediction]):
         return prediction
 
     def feedback(self, prediction_id: str, **kwargs) -> None:
-        """
-        Give us your feedback on a prediction to help us improve.
+        """Give us your feedback on a prediction to help us improve.
 
         This method enables you to give a rating (from 0 to 4) and a comment on a
         prediction.

@@ -36,8 +36,7 @@ T = TypeVar("T", bound=PostProcessing)
 
 
 class PPList(List, Generic[T]):
-    """
-    A subclass of :class:`list` for storing post-processings, adding a few shortcut methods.
+    """A subclass of :class:`list` for storing post-processings, adding a few shortcut methods.
 
     As a :class:`list` subclass, PPList support any list operation:
     its elements can be iterated on and accessed by index.
@@ -72,8 +71,7 @@ class ExportablePPList(PPList, Generic[T]):
     """
 
     def export(self, format: Optional[str] = "json") -> DownloadableResult:
-        """
-        Export the post-processings results in the desired format.
+        """Export the post-processings results in the desired format.
 
         Accessing this property will block until the data is ready.
 

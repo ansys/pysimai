@@ -117,8 +117,7 @@ def are_boundary_conditions_equal(
 
 
 class Range:
-    """
-    Describes a numerical range, used for filtering geometries.
+    """Describes a numerical range, used for filtering geometries.
 
     Range objects describe a numerical range between a minimal and
     a maximal boundary. Both are optional, thus if no maximal boundary
@@ -164,9 +163,7 @@ class Range:
 
 
 class _HollowRange(Range):
-    """
-    _HollowRange is a Range which excludes a value in its center.
-    """
+    """_HollowRange is a Range which excludes a value in its center."""
 
     def __init__(
         self,

@@ -38,9 +38,7 @@ SSE_ENDPOINT = "sessions/events"
 
 
 class SSEMixin(ApiClientMixin):
-    """
-    Client for the server-sent-events ("/sessions/events").
-    """
+    """Client for the server-sent-events ("/sessions/events")."""
 
     def __init__(self, config: ClientConfig, simai_client=None):
         super().__init__(config=config)

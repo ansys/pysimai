@@ -26,8 +26,7 @@ import requests
 
 
 class SimAIError(Exception):
-    """
-    Base exception for all errors of the SimAI SDK.
+    """Base exception for all errors of the SimAI SDK.
 
     To catch any expected error that it might throw, use this exception.
     """
@@ -95,8 +94,7 @@ def _map_despite_errors(
     function: Callable[[T], Any],
     iterable: Iterable[T],
 ):
-    """
-    Like map(), applies the function for each item in iterable and return the result.
+    """Like map(), applies the function for each item in iterable and return the result.
     On exception, it will continue with next items,
     and at the end raise either the exception or a MultipleError.
     """
@@ -119,8 +117,7 @@ def _foreach_despite_errors(
     procedure: Callable[[T], None],
     iterable: Iterable[T],
 ):
-    """
-    Applies the procedure for each item in iterable.
+    """Applies the procedure for each item in iterable.
     On exception, it will continue with next items,
     and at the end raise either the exception or a MultipleError.
     """

@@ -100,8 +100,7 @@ class ApiClientMixin:
         return_json: bool = True,
         **kwargs,
     ) -> APIResponse:
-        """
-        Wrap around :py:meth:`requests.Session.request`.
+        """Wrap around :py:meth:`requests.Session.request`.
 
         By default this method expects a json response. If you call an endpoint that does
         not return a json, specify return_json=False
@@ -132,8 +131,7 @@ class ApiClientMixin:
         request_json_body: Optional[Dict[str, Any]] = None,
         request_method: str = "GET",
     ) -> Union[None, BinaryIO]:
-        """
-        Download a file from the given URL into the given file or a :class:`BytesIO`.
+        """Download a file from the given URL into the given file or a :class:`BytesIO`.
 
         Args:
             download_url: url to GET the file
@@ -213,8 +211,7 @@ class ApiClientMixin:
         part_size: int = int(100e6),
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> List[Dict[str, Any]]:
-        """
-        Upload parts using the given endpoints to get presigned PUT urls
+        """Upload parts using the given endpoints to get presigned PUT urls
 
         Returns:
             The list of parts, with their id and their etag

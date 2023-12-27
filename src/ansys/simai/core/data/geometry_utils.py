@@ -219,8 +219,7 @@ def _are_geometries_metadata_equal(
     compared_variables: List[str],
     tolerance: Optional[float] = None,
 ) -> bool:
-    """
-    Test if all compared metadata are equal between two geometries.
+    """Test if all compared metadata are equal between two geometries.
     If a metadata is absent, consider the comparison as false.
 
     Returns:

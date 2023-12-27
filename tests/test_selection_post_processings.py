@@ -39,9 +39,7 @@ def test_selection(
     geometry_factory,
     prediction_factory,
 ):
-    """
-    A test selection containing 2 geometries and one speed
-    """
+    """A test selection containing 2 geometries and one speed"""
     bc = {"Vx": 10}
     geometries = [
         geometry_factory(
@@ -58,8 +56,7 @@ def test_selection(
 
 @responses.activate
 def test_selection_post_processing_global_coefficients(test_selection):
-    """
-    WHEN I call post.post.global_coefficients() on a selection
+    """WHEN I call post.post.global_coefficients() on a selection
     THEN the /GlobalCoefficients endpoint is called for each prediction in the selection
     AND I get a list of GlobalCoefficients objects in return
     """
@@ -82,8 +79,7 @@ def test_selection_post_processing_global_coefficients(test_selection):
 
 @responses.activate
 def test_selection_post_processing_surface_evol(test_selection):
-    """
-    WHEN I call post.post.surface_evol() on a selection
+    """WHEN I call post.post.surface_evol() on a selection
     THEN the /SurfaceEvol endpoint is called for each prediction in the selection
     AND I get a list of SurfaceEvol objects in return
     """
@@ -105,8 +101,7 @@ def test_selection_post_processing_surface_evol(test_selection):
 
 @responses.activate
 def test_selection_post_processing_slice(test_selection):
-    """
-    WHEN I call post.post.slice() on a selection
+    """WHEN I call post.post.slice() on a selection
     THEN the /Slice endpoint is called for each prediction in the selection
     AND I get a list of Slice objects in return
     """
@@ -133,8 +128,7 @@ def test_selection_post_processing_slice(test_selection):
 
 @responses.activate
 def test_selection_post_processing_volume_vtu(test_selection):
-    """
-    WHEN I call post.post.volume_vtu() on a selection
+    """WHEN I call post.post.volume_vtu() on a selection
     THEN the /VolumeVTU endpoint is called for each prediction in the selection
     AND I get a list of PostProcessingVTUExport objects in return
     """
@@ -161,8 +155,7 @@ def test_selection_post_processing_volume_vtu(test_selection):
 
 @responses.activate
 def test_selection_post_processing_surface_vtp(test_selection):
-    """
-    WHEN I call post.post.surface_vtp() on a selection
+    """WHEN I call post.post.surface_vtp() on a selection
     THEN the /SurfaceVTP endpoint is called for each prediction in the selection
     AND I get a list of PostProcessingVTUExport objects in return
     """
@@ -189,8 +182,7 @@ def test_selection_post_processing_surface_vtp(test_selection):
 
 @responses.activate
 def test_selection_post_processing_error(test_selection):
-    """
-    WHEN I call post.post.volume_vtu() on a selection
+    """WHEN I call post.post.volume_vtu() on a selection
     AND the first VTU fails
     THEN the second VTU is still executed
     AND a ApiClientError is raised

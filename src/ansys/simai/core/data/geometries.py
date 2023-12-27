@@ -43,37 +43,28 @@ logger = logging.getLogger(__name__)
 
 
 class Geometry(UploadableResourceMixin, ComputableDataModel):
-    """
-    Local representation of a geometry object.
-    """
+    """Local representation of a geometry object."""
 
     def __repr__(self) -> str:
         return f"<Geometry: {self.id}, {self.name}>"
 
     @property
     def name(self) -> str:
-        """
-        The name of the geometry.
-        """
+        """The name of the geometry."""
         return self.fields["name"]
 
     @property
     def metadata(self) -> Dict[str, Any]:
-        """
-        User-given key-value associated to the geometry
-        """
+        """User-given key-value associated to the geometry"""
         return self.fields["metadata"]
 
     @property
     def creation_time(self) -> str:
-        """
-        Time when the geometry was created, in an UTC ISO8601 format string
-        """
+        """Time when the geometry was created, in an UTC ISO8601 format string"""
         return self.fields["creation_time"]
 
     def rename(self, name: str) -> None:
-        """
-        Change the name of a geometry
+        """Change the name of a geometry
 
         Args:
             name: the new name to give to the geometry
@@ -88,8 +79,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         self.reload()
 
     def update_metadata(self, metadata: Dict[str, Union[str, Number, bool]]):
-        """
-        Change the metadata of a geometry
+        """Change the metadata of a geometry
 
         - New keys-values will be added.
         - Existing keys-values will be overwritten.
@@ -115,8 +105,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         self.reload()
 
     def delete(self) -> None:
-        """
-        Delete the geometry and its data from the server.
+        """Delete the geometry and its data from the server.
         All the objects associated to this geometry (predictions and post-processings)
         are also deleted.
 
@@ -128,8 +117,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
     def run_prediction(
         self, boundary_conditions: Optional[BoundaryConditions] = None, **kwargs
     ) -> "Prediction":
-        """
-        Run a prediction on the geometry, or returns the existing prediction
+        """Run a prediction on the geometry, or returns the existing prediction
         if one exists with those boundary conditions.
 
         This is a non-blocking method. The prediction object will be returned.
@@ -174,8 +162,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         return [self._client.predictions._model_from(pred_data) for pred_data in predictions_data]
 
     def download(self, file: Optional[File] = None, **kwargs) -> Union[None, BinaryIO]:
-        """
-        Downloads the geometry into the provided file, or in memory if no file is provided.
+        """Downloads the geometry into the provided file, or in memory if no file is provided.
 
         Args:
             file: A optional binary file-object or the path of the file to put the
@@ -196,8 +183,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         include_diagonals: Optional[bool] = None,
         tolerance: Optional[float] = None,
     ) -> List["Geometry"]:
-        """
-        Returns geometries whose metadata are closest to the candidate geometry.
+        """Returns geometries whose metadata are closest to the candidate geometry.
 
         Sweep returns geometries which have the values closest to the candidate
         geometry, for each considered metadata variable. For instance, if
@@ -280,8 +266,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
 
 class GeometryDirectory(Directory[Geometry]):
-    """
-    Collection of methods related to geometries.
+    """Collection of methods related to geometries.
 
     Accessed through ``client.geometries``.
 
@@ -301,8 +286,7 @@ class GeometryDirectory(Directory[Geometry]):
         workspace_id: Optional[str] = None,
         filters: Optional[Dict[str, Union[str, float, Range]]] = None,
     ) -> List[Geometry]:
-        """
-        List geometries from the server that belong to the currently set workspace or the specified one
+        """List geometries from the server that belong to the currently set workspace or the specified one
 
         Args:
             workspace_id: Id of the workspace to list geometries for. Necessary if no workspace is set for the client.
@@ -341,8 +325,7 @@ class GeometryDirectory(Directory[Geometry]):
         ]
 
     def filter(self, **kwargs: Dict[str, Union[str, float, Range]]) -> List[Geometry]:
-        """
-        Filter geometries from the server that belong to the currently set workspace.
+        """Filter geometries from the server that belong to the currently set workspace.
 
         Args:
             kwargs: Filters to apply. Only the elements with matching key-values in
@@ -365,8 +348,7 @@ class GeometryDirectory(Directory[Geometry]):
         id: Optional[str] = None,
         workspace_id: Optional[str] = None,
     ) -> Geometry:
-        """
-        Get a specific geometry object from the server, by name or by id.
+        """Get a specific geometry object from the server, by name or by id.
 
 
         Args:
@@ -410,8 +392,7 @@ class GeometryDirectory(Directory[Geometry]):
         raise ValueError("Either the name or the id must be specified.")
 
     def delete(self, geometry_id: str) -> None:
-        """
-        Delete a specific geometry and its data from the server.
+        """Delete a specific geometry and its data from the server.
         All the objects associated to this geometry (predictions and post-processings)
         are also deleted.
 
@@ -433,8 +414,7 @@ class GeometryDirectory(Directory[Geometry]):
         workspace_id: Optional[str] = None,
         **kwargs,
     ) -> Geometry:
-        """
-        Upload a geometry to SimAI's platform.
+        """Upload a geometry to SimAI's platform.
 
         Args:
             file: A binary file-object or the path of the file to open.
@@ -471,8 +451,7 @@ class GeometryDirectory(Directory[Geometry]):
         file: Optional[File] = None,
         **kwargs,
     ) -> Union[None, BinaryIO]:
-        """
-        Downloads the geometry with the given id into the file at the given path.
+        """Downloads the geometry with the given id into the file at the given path.
 
         Args:
             geometry_id: The id of the geometry to download
@@ -498,8 +477,7 @@ class GeometryDirectory(Directory[Geometry]):
         include_diagonals: Optional[bool] = None,
         tolerance: Optional[float] = None,
     ) -> List["Geometry"]:
-        """
-        Returns geometries whose metadata are closest to the candidate geometry.
+        """Returns geometries whose metadata are closest to the candidate geometry.
 
         See :func:`Geometry.sweep` for complete description and usage
 

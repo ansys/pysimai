@@ -29,8 +29,7 @@ if TYPE_CHECKING:
 
 
 class DesignOfExperimentsCollection:
-    """
-    Collection of methods related to the whole Design of Experiments.
+    """Collection of methods related to the whole Design of Experiments.
     Accessed through ``client.design_of_experiments``.
     """
 
@@ -38,8 +37,7 @@ class DesignOfExperimentsCollection:
         self._client = client
 
     def download(self, file: Union[str, Path], format: str = "xlsx") -> None:
-        """
-        Downloads the design of experiments data to the specified file or path.
+        """Downloads the design of experiments data to the specified file or path.
 
         Args:
             file: the path of the file to put the content into
@@ -58,8 +56,7 @@ class DesignOfExperimentsCollection:
         )
 
     def in_memory(self, format: Optional[str] = "csv") -> io.BytesIO:
-        """
-        Loads the design of experiments data in memory.
+        """Loads the design of experiments data in memory.
 
         Args:
             file: the path of the file to put the content into

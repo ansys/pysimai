@@ -70,8 +70,7 @@ class _ToleranceGroup:
 
 
 class _ToleranceGrouper:
-    """
-    _ToleranceGrouper is a grouping class, destined to be used by
+    """_ToleranceGrouper is a grouping class, destined to be used by
         itertools.groupby, to create groups of
         approximately equal value (according to tolerance).
 

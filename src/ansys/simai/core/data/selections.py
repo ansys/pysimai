@@ -39,8 +39,7 @@ from ansys.simai.core.utils.validation import _enforce_as_list_passing_predicate
 
 
 class Point:
-    """
-    A Point object, where a Prediction can be run.
+    """A Point object, where a Prediction can be run.
     A Point is at the intersection of a :class:`~ansys.simai.core.data.geometries.Geometry` and :class:`~ansys.simai.core.data.types.BoundaryConditions`.
     """
 
@@ -51,31 +50,24 @@ class Point:
 
     @property
     def geometry(self) -> Geometry:
-        """
-        Returns the :class:`~ansys.simai.core.data.geometries.Geometry` object for this :class:`Point`.
-        """
+        """Returns the :class:`~ansys.simai.core.data.geometries.Geometry` object for this :class:`Point`."""
         return self._geometry
 
     @property
     def boundary_conditions(self) -> BoundaryConditions:
-        """
-        Returns the :class:`~ansys.simai.core.data.types.BoundaryConditions` for this :class:`Point`.
-        """
+        """Returns the :class:`~ansys.simai.core.data.types.BoundaryConditions` for this :class:`Point`."""
         return self._boundary_conditions
 
     @property
     def prediction(self) -> Union[Prediction, None]:
-        """
-        Returns the :class:`~ansys.simai.core.data.predictions.Prediction`
+        """Returns the :class:`~ansys.simai.core.data.predictions.Prediction`
         corresponding to this Point,
         or None if no prediction has yet been ran.
         """
         return self._prediction
 
     def run_prediction(self, boundary_conditions: BoundaryConditions):
-        """
-        Runs the prediction on this Geometry for this boundary condition.
-        """
+        """Runs the prediction on this Geometry for this boundary condition."""
         self._prediction = self._geometry.run_prediction(boundary_conditions=boundary_conditions)
 
     def __repr__(self):
@@ -85,8 +77,7 @@ class Point:
 
 
 class Selection:
-    """
-    A Selection object, which is a collection of :class:`Points <Point>`.
+    """A Selection object, which is a collection of :class:`Points <Point>`.
 
     Selections are built from a list of :class:`Geometries <ansys.simai.core.data.geometries.Geometry>`
     and a list of :class:`~ansys.simai.core.data.types.BoundaryConditions`.
@@ -136,9 +127,7 @@ class Selection:
         self.reload()
 
     def as_list(self) -> List[Point]:
-        """
-        Returns a list of all the :class:`Points <Point>` composing this Selection.
-        """
+        """Returns a list of all the :class:`Points <Point>` composing this Selection."""
         return self._points
 
     @property
@@ -147,9 +136,7 @@ class Selection:
 
     @property
     def predictions(self) -> List[Prediction]:
-        """
-        Returns a list of all the existing :class:`Predictions <ansys.simai.core.data.predictions.Prediction>` in this selection.
-        """
+        """Returns a list of all the existing :class:`Predictions <ansys.simai.core.data.predictions.Prediction>` in this selection."""
         return self.get_predictions()
 
     @property
@@ -170,24 +157,20 @@ class Selection:
         return [point.prediction for point in self.as_list() if point.prediction is not None]
 
     def get_runnable_predictions(self) -> List[Point]:
-        """
-        Return a list of :class:`Points <Point>` in this selection
+        """Return a list of :class:`Points <Point>` in this selection
         for which predictions haven't been ran yet.
         """
         return [point for point in self.as_list() if point.prediction is None]
 
     def run_predictions(self) -> None:
-        """
-        Run all the missing predictions in this selection.
-        """
+        """Run all the missing predictions in this selection."""
         _foreach_despite_errors(
             lambda point: point.run_prediction(boundary_conditions=point.boundary_conditions),
             self.get_runnable_predictions(),
         )
 
     def wait(self) -> None:
-        """
-        Wait for all the ongoing operations (predictions, post-processings)
+        """Wait for all the ongoing operations (predictions, post-processings)
         in this selection to finish.
 
         Raises:
@@ -197,8 +180,7 @@ class Selection:
         _foreach_despite_errors(lambda prediction: prediction._wait_all(), self.get_predictions())
 
     def reload(self) -> None:
-        """
-        Refreshes the predictions in this selection.
+        """Refreshes the predictions in this selection.
         Loads any prediction ran from another session,
         or removes possible deleted predictions.
         """
@@ -225,8 +207,7 @@ class Selection:
 
     @property
     def post(self) -> SelectionPostProcessingsMethods:
-        """
-        Namespace containing methods to access and run post-processings
+        """Namespace containing methods to access and run post-processings
         for predictions in this selection.
 
         See :py:class:`~ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods`

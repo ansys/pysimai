@@ -34,8 +34,7 @@ from ansys.simai.core.utils.configuration import ClientConfig
 
 
 def test_api_client_connects_to_sse_if_flag():
-    """
-    WHEN ApiClient is created
+    """WHEN ApiClient is created
     THEN it connects to the SSE URL if and only if the no_sse_connection is not False
     """
     did_connect_to_sse_url = Event()
@@ -72,8 +71,7 @@ def test_api_client_connects_to_sse_if_flag():
 
 @responses.activate
 def test_api_client_sse_endpoint_unreachable():
-    """
-    WHEN ApiClient is created, if SSE endpoint is not reachable
+    """WHEN ApiClient is created, if SSE endpoint is not reachable
     THEN a ConnectionError is raised
     """
     responses.add(
@@ -94,8 +92,7 @@ def test_api_client_sse_endpoint_unreachable():
 
 @responses.activate
 def test_wait_non_blocking_for_non_loading_items(simai_client):
-    """
-    WHEN Creating Mesh, prediction, post-processing objects that are finished
+    """WHEN Creating Mesh, prediction, post-processing objects that are finished
     THEN wait can be called and are not blocking
     """
     responses.add(
@@ -130,8 +127,7 @@ create_sse_event = NamedTuple("SSEEvent", [("data", dict)])
 
 
 def test_sse_event_prediction_success(sse_mixin, prediction_factory):
-    """
-    WHEN SSEMixin receives a SSE message updating a prediction to success
+    """WHEN SSEMixin receives a SSE message updating a prediction to success
     THEN the appropriate prediction is updated and changes state to successful
     """
     pred = prediction_factory(state="processing")
@@ -150,8 +146,7 @@ def test_sse_event_prediction_success(sse_mixin, prediction_factory):
 
 
 def test_sse_event_update_prediction_failure(sse_mixin, prediction_factory):
-    """
-    WHEN SSEMixin receives a SSE message updating a prediction as failed
+    """WHEN SSEMixin receives a SSE message updating a prediction as failed
     THEN the appropriate prediction object is set to failed and failure_reason field is as expected
     """
     pred = prediction_factory(state="processing")
@@ -173,8 +168,7 @@ def test_sse_event_update_prediction_failure(sse_mixin, prediction_factory):
 
 @responses.activate
 def test_wait_timeout_false(simai_client):
-    """
-    WHEN wait timed out
+    """WHEN wait timed out
     THEN the return value reflects that to the user (is False)
     """
     responses.add(
@@ -192,8 +186,7 @@ def test_wait_timeout_false(simai_client):
 
 
 def test_global_wait(simai_client):
-    """
-    WHEN simai_client's wait() method is called,
+    """WHEN simai_client's wait() method is called,
     THEN the wait() method is called once for each registered object.
     """
     pred1 = simai_client._prediction_directory._model_from(
@@ -225,8 +218,7 @@ def test_global_wait(simai_client):
 
 
 def test_prediction_data_update(simai_client, prediction_factory):
-    """
-    WHEN simai_client's wait() method is called,
+    """WHEN simai_client's wait() method is called,
     THEN the wait() method is called once for each registered object.
     """
     pred = prediction_factory(state="processing")

@@ -44,8 +44,7 @@ def selection_factory(simai_client) -> Selection:
 
 @responses.activate
 def test_post_processing_export_global_coefficients(simai_client):
-    """
-    WHEN I call export() on a GlobalCoefficients post-processing
+    """WHEN I call export() on a GlobalCoefficients post-processing
     THEN I get a DownloadableResult object allowing me to download the content.
     """
 
@@ -74,8 +73,7 @@ def test_post_processing_export_global_coefficients(simai_client):
 
 @responses.activate
 def test_post_processing_export_surface_evol_excel(simai_client):
-    """
-    WHEN I call export() on a SurfaceEvol post-processing
+    """WHEN I call export() on a SurfaceEvol post-processing
     THEN I get a DownloadableResult object allowing me to download the content.
     """
 
@@ -106,8 +104,7 @@ def test_post_processing_export_surface_evol_excel(simai_client):
 def test_post_processing_selection_export(
     selection_factory, prediction_factory, post_processing_factory
 ):
-    """
-    WHEN I call export() on a selection.post.global_coefficients()
+    """WHEN I call export() on a selection.post.global_coefficients()
     THEN the post-processing/export is called with the ids of expected post-processings
     ALSO I get a DownloadableResult in return
     """

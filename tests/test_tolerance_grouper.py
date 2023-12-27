@@ -27,8 +27,7 @@ from ansys.simai.core.utils.numerical import is_equal_with_tolerance
 
 
 def test_tolerance_grouper_basic():
-    """
-    WHEN using _ToleranceGrouper with a basic list and default or negligible tolerance,
+    """WHEN using _ToleranceGrouper with a basic list and default or negligible tolerance,
     THEN each group contain distinct elements in the data list
     ALSO, forced_central_value has no effect.
     """
@@ -55,8 +54,7 @@ def test_tolerance_grouper_basic():
 
 
 def test_tolerance_grouper_tolerance():
-    """
-    WHEN using tolerance grouper with tolerance
+    """WHEN using tolerance grouper with tolerance
     THEN groups of values that can all be grouped around a central value
     (approx. equal to this central value) are grouped together
     """
@@ -90,8 +88,7 @@ def test_tolerance_grouper_tolerance():
 
 
 def test_tolerance_grouper_tolerance_with_forced_central_value():
-    """
-    WHEN using tolerance grouper with forced central value
+    """WHEN using tolerance grouper with forced central value
     THEN those forced value must not be further than epsilon
         from their own bucket boundaries
     """

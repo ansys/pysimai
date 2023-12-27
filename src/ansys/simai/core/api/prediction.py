@@ -33,17 +33,14 @@ logger = logging.getLogger(__name__)
 
 
 class PredictionClientMixin(ApiClientMixin):
-    """
-    Client for the Prediction ("/predictions") part of the API.
-    """
+    """Client for the Prediction ("/predictions") part of the API."""
 
     def predictions(self, workspace_id: str):
         """Get list of all predictions."""
         return self._get("predictions/", params={"workspace": workspace_id})
 
     def get_prediction(self, prediction_id: str):
-        """
-        Get information on a single prediction.
+        """Get information on a single prediction.
 
         Args:
             prediction_id: The id of the prediction to get
@@ -51,8 +48,7 @@ class PredictionClientMixin(ApiClientMixin):
         return self._get(f"predictions/{prediction_id}")
 
     def delete_prediction(self, prediction_id: str):
-        """
-        Delete a single prediction.
+        """Delete a single prediction.
 
         Args:
             prediction_id: The id of the prediction to delete
@@ -64,8 +60,7 @@ class PredictionClientMixin(ApiClientMixin):
         )
 
     def run_prediction(self, geometry_id: str, **kwargs):
-        """
-        Run a prediction on the given geometry
+        """Run a prediction on the given geometry
 
         Args:
             geometry_id: The id of the target geometry
@@ -84,15 +79,14 @@ class PredictionClientMixin(ApiClientMixin):
         solution: Optional[Union[BinaryIO, str, Path]] = None,
         monitor_callback: Optional[Callable[[int], None]] = None,
     ):
-        """
-        Args:
-            prediction_id: Id of the target prediction
-            rating: A rating from 0 to 4
-            comment: Additional comment
-            solution: The client
-                solution to the prediction
-            monitor_callback: Function or method that will be passed
-                a :py:class:`~requests_toolbelt.multipart.encoder.MultipartEncoderMonitor`
+        """Args:
+        prediction_id: Id of the target prediction
+        rating: A rating from 0 to 4
+        comment: Additional comment
+        solution: The client
+            solution to the prediction
+        monitor_callback: Function or method that will be passed
+            a :py:class:`~requests_toolbelt.multipart.encoder.MultipartEncoderMonitor`
         """
         if solution is None:
             with_solution = False

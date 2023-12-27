@@ -28,8 +28,7 @@ import responses
 
 @responses.activate
 def test_design_of_experiments_export_csv(simai_client):
-    """
-    WHEN Calling simai_client.design_of_experiments.in_memory with Format.CSV
+    """WHEN Calling simai_client.design_of_experiments.in_memory with Format.CSV
     THEN a call is made to design-of-experiments/export?format=csv
     ALSO the returned content is loaded in a BytesIO object
     """
@@ -48,8 +47,7 @@ def test_design_of_experiments_export_csv(simai_client):
 
 @responses.activate
 def test_design_of_experiments_export_excel(simai_client):
-    """
-    WHEN Calling design_of_experiments.download with Format.Excel
+    """WHEN Calling design_of_experiments.download with Format.Excel
     THEN a call is made to /design-of-experiments/export?format=xlsx
     ALSO the returned content is written into the provided file
     """

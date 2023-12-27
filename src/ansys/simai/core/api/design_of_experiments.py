@@ -30,9 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class DesignOfExperimentsMixin(ApiClientMixin):
-    """
-    Client for the design of experiments ("/design-of-experiments/") part of the API.
-    """
+    """Client for the design of experiments ("/design-of-experiments/") part of the API."""
 
     def download_design_of_experiments(
         self,
@@ -40,8 +38,7 @@ class DesignOfExperimentsMixin(ApiClientMixin):
         format: str,
         workspace_id: str,
     ) -> Union[None, BinaryIO]:
-        """
-        Downloads the design of experiments into the file at the given path.
+        """Downloads the design of experiments into the file at the given path.
 
         Args:
             file: A binary file-object or the path of the file to put the content into.

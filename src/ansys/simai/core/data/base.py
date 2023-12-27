@@ -46,9 +46,7 @@ PENDING_STATES = [
 
 
 class DataModel:
-    """
-    A base class representing a single object of a particular type on the server.
-    """
+    """A base class representing a single object of a particular type on the server."""
 
     def __init__(
         self,
@@ -88,9 +86,7 @@ class DataModel:
         self._fields = new_fields
 
     def reload(self) -> None:
-        """
-        Refresh the object with its representation from the server.
-        """
+        """Refresh the object with its representation from the server."""
         updated_data = self._directory.get(id=self.id)
         self.fields = updated_data._fields
 
@@ -100,9 +96,7 @@ class DataModel:
 
 
 class ComputableDataModel(DataModel):
-    """
-    Base class for all computable models whose creation eventually succeeds or fails.
-    """
+    """Base class for all computable models whose creation eventually succeeds or fails."""
 
     def __init__(
         self,
@@ -140,8 +134,7 @@ class ComputableDataModel(DataModel):
 
     @property
     def is_pending(self):
-        """
-        Boolean indicating the object is still in creation.
+        """Boolean indicating the object is still in creation.
         Becomes False once it is either successful or has failed.
 
         See Also:
@@ -157,8 +150,7 @@ class ComputableDataModel(DataModel):
 
     @property
     def has_failed(self):
-        """
-        Boolean indicating if the creation of the object failed.
+        """Boolean indicating if the creation of the object failed.
 
         See Also:
             - :attr:`~failure_reason`
@@ -170,8 +162,7 @@ class ComputableDataModel(DataModel):
 
     @property
     def is_ready(self):
-        """
-        Boolean indicating if the object is finished creating without error.
+        """Boolean indicating if the object is finished creating without error.
 
         See Also:
             - :meth:`~wait`
@@ -182,8 +173,7 @@ class ComputableDataModel(DataModel):
 
     @property
     def failure_reason(self):
-        """
-        Optional message that can detail the causes of the failure
+        """Optional message that can detail the causes of the failure
         of the creation of the object.
 
         See Also:
@@ -197,16 +187,14 @@ class ComputableDataModel(DataModel):
         return f"{self._classname} id {self.id} failed {reason_str}"
 
     def _set_is_over(self):
-        """
-        Sets the object as idle, that is without loading,
+        """Sets the object as idle, that is without loading,
         (either because loading finished or failed),
         meaning a wait() will return immediately.
         """
         self._is_over.set()
 
     def wait(self, timeout: Optional[float] = None) -> bool:
-        """
-        Wait for all jobs concerning the object to either finish
+        """Wait for all jobs concerning the object to either finish
         or fail.
 
         Args:
@@ -291,16 +279,14 @@ class Directory(ABC, Generic[DataModelType]):
         return item
 
     def _unregister_item(self, item: DataModel):
-        """
-        Removes the item from the internal registry,
-            mainly after a deletion.
+        """Removes the item from the internal registry,
+        mainly after a deletion.
         """
         self._unregister_item_with_id(item.id)
 
     def _unregister_item_with_id(self, item_id: str):
-        """
-        Removes the item from the internal registry,
-            mainly after a deletion.
+        """Removes the item from the internal registry,
+        mainly after a deletion.
         """
         item = self._registry.pop(item_id, None)
         if isinstance(item, ComputableDataModel):

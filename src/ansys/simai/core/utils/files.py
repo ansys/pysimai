@@ -34,8 +34,7 @@ if TYPE_CHECKING:
 
 
 def _expand_user_path(file_path: "Path") -> pathlib.Path:
-    """
-    Converts str inputs to Path and expands user.
+    """Converts str inputs to Path and expands user.
 
     This method allows to support paths starting with ~ on linux
     """

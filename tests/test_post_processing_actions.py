@@ -25,8 +25,7 @@ import responses
 
 @responses.activate
 def test_post_processing_delete(simai_client, post_processing_factory):
-    """
-    WHEN Calling delete() on a post-processing
+    """WHEN Calling delete() on a post-processing
     THEN the /delete endpoint is called
     ALSO the post-processing is not anymore registered in the Directory
     """
@@ -45,8 +44,7 @@ def test_post_processing_delete(simai_client, post_processing_factory):
 
 @responses.activate
 def test_post_processing_global_coefficients_delete(prediction_factory):
-    """
-    WHEN deleting a GlobalCoefficients post-processing from a prediction
+    """WHEN deleting a GlobalCoefficients post-processing from a prediction
     THEN there is a call to the DELETE endpoint
     ALSO a new call to pred.post.global_coefficients() re-runs the post-processing
     """
@@ -88,8 +86,7 @@ def test_post_processing_global_coefficients_delete(prediction_factory):
 
 @responses.activate
 def test_post_processing_surface_evol_delete(prediction_factory):
-    """
-    WHEN deleting a SurfaceEvol post-processing from a prediction
+    """WHEN deleting a SurfaceEvol post-processing from a prediction
     THEN there is a call to the DELETE endpoint
     ALSO a new call to pred.post.surface_evol() re-runs the post-processing
     """

@@ -27,8 +27,7 @@ from ansys.simai.core.errors import ApiClientError, NotFoundError
 
 
 def test_construct_default_url():
-    """
-    WHEN No URL is passed to SimAIClient
+    """WHEN No URL is passed to SimAIClient
     THEN A default one is used
     """
     client = SimAIClient(
@@ -42,8 +41,7 @@ def test_construct_default_url():
 
 @responses.activate
 def test_404_response_raises_not_found_error(api_client):
-    """
-    WHEN ApiClient gets a 404 response
+    """WHEN ApiClient gets a 404 response
     THEN a NotFoundError is raised
     """
     responses.add(
@@ -86,8 +84,7 @@ def test_404_response_raises_not_found_error(api_client):
     ],
 )
 def test_4XX_5XX_responses_raise_api_client_error_no_json(api_client, code, reason):
-    """
-    WHEN ApiClient gets a 4XX or 5XX response without details in json
+    """WHEN ApiClient gets a 4XX or 5XX response without details in json
     THEN a ApiClientError is raised with the code and reason
     """
     responses.add(responses.GET, f"https://test.test/{code}", status=code)
@@ -111,8 +108,7 @@ def test_4XX_5XX_responses_raise_api_client_error_no_json(api_client, code, reas
     ],
 )
 def test_4XX_5XX_responses_raise_api_client_error_with_json(api_client, json, message):
-    """
-    WHEN ApiClient gets a 4XX or 5XX response without details in json
+    """WHEN ApiClient gets a 4XX or 5XX response without details in json
     THEN a ApiClientError is raised with the code and message from the json or fallback
     """
     responses.add(responses.GET, "https://test.test/errors", json=json, status=400)
@@ -123,8 +119,7 @@ def test_4XX_5XX_responses_raise_api_client_error_with_json(api_client, json, me
 
 
 def test_use_system_proxies(mocker):
-    """
-    WHEN ApiClient is initialized on a system with default proxies
+    """WHEN ApiClient is initialized on a system with default proxies
     THEN the system proxies are used
     """
     mocker.patch(
@@ -141,8 +136,7 @@ def test_use_system_proxies(mocker):
 
 
 def test_use_user_provided_proxies(mocker):
-    """
-    WHEN ApiClient is initialized with a specific https_proxy
+    """WHEN ApiClient is initialized with a specific https_proxy
     THEN the specific proxy is used (system proxies are ignored), the url is normalized
     """
     mocker.patch(
