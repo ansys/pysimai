@@ -9,6 +9,11 @@ repos:
       # Run the formatter.
       - id: ruff-format
 
+  - repo: https://github.com/asottile/blacken-docs
+    rev: 1.16.0
+    hooks:
+      - id: blacken-docs
+
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.4
     hooks:
