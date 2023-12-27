@@ -50,7 +50,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
   tests:
-    name: "Tests"
+    name: "Test using Python ${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
     needs: [smoke-tests]
     strategy:
