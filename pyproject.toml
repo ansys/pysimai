@@ -1,3 +1,7 @@
+[build-system]
+requires = ["flit_core>=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
 [project]
 name = "ansys-simai-core"
 version = "0.0.1"
@@ -162,6 +166,3 @@ source = ["ansys.simai.core"]
 [tool.coverage.report]
 show_missing = true
 
-[build-system]
-requires = ["flit_core>=3.2,<4"]
-build-backend = "flit_core.buildapi"
