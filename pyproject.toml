@@ -7,7 +7,10 @@ name = "ansys-simai-core"
 version = "0.0.1"
 description = "A python wrapper for Ansys SimAI"
 authors = [
-    {name = "ANSYS, Inc.", email = "pyansys.maintainers@ansys.com"}
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
+]
+maintainers = [
+    {name = "PyAnsys developers", email = "pyansys.maintainers@ansys.com"},
 ]
 license = {file = "LICENSE"}
 readme = "README.rst"
