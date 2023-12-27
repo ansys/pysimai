@@ -1,3 +1,4 @@
+# Using PDM with flit backend
 [build-system]
 requires = ["flit_core>=3.2,<4"]
 build-backend = "flit_core.buildapi"
@@ -58,7 +59,13 @@ test = [
 doc = [
     "sphinx>=7.2.0",
     "autodoc-pydantic>=2.0.0",
-    "ansys-sphinx-theme>=0.12.5"
+    "ansys-sphinx-theme>=0.12.5",
+    "blacken-docs>=1.16.0"
+]
+linting = [
+    "ruff",
+    "blacken-docs",
+    "pre-commit"
 ]
 
 [tool.pdm.scripts]
