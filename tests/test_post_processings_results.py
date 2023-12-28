@@ -24,6 +24,7 @@ import json
 from io import BytesIO
 
 import responses
+
 from ansys.simai.core.data.post_processings import (
     DownloadableResult,
     GlobalCoefficients,

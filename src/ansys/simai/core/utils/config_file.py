@@ -28,9 +28,10 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import tomli
+from pydantic.v1.utils import deep_update
+
 from ansys.simai.core.data.types import Path as PathType
 from ansys.simai.core.errors import ConfigurationNotFoundError, InvalidConfigurationError
-from pydantic.v1.utils import deep_update
 
 logger = logging.getLogger(__name__)
 

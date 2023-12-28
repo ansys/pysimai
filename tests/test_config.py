@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import pytest
+
 from ansys.simai.core.utils.configuration import ClientConfig
 
 

@@ -23,8 +23,9 @@
 import platform
 from pathlib import Path
 
-import ansys.simai.core.errors as err
 import pytest
+
+import ansys.simai.core.errors as err
 from ansys.simai.core.utils.config_file import _scan_defaults_config_paths, get_config
 
 

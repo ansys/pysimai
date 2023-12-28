@@ -24,6 +24,7 @@ import logging
 from json.decoder import JSONDecodeError
 
 import requests
+
 from ansys.simai.core.data.types import APIResponse
 from ansys.simai.core.errors import ApiClientError, NotFoundError
 

@@ -29,6 +29,9 @@ from urllib.parse import urljoin
 from urllib.request import getproxies
 
 import requests
+from requests.adapters import HTTPAdapter, Retry
+from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
+
 from ansys.simai.core import __version__
 from ansys.simai.core.data.types import APIResponse, File, MonitorCallback
 from ansys.simai.core.errors import ConnectionError
@@ -36,8 +39,6 @@ from ansys.simai.core.utils.auth import Authenticator
 from ansys.simai.core.utils.configuration import ClientConfig
 from ansys.simai.core.utils.files import file_path_to_obj_file
 from ansys.simai.core.utils.requests import handle_response
-from requests.adapters import HTTPAdapter, Retry
-from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
 logger = logging.getLogger(__name__)
 

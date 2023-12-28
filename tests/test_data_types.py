@@ -24,6 +24,7 @@ import pathlib
 from io import BytesIO
 
 import pytest
+
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.types import (
     Range,

@@ -28,6 +28,8 @@ import time
 import pytest
 import requests
 import responses
+from responses.matchers import urlencoded_params_matcher
+
 from ansys.simai.core.errors import SimAIError
 from ansys.simai.core.utils.auth import (
     Authenticator,
@@ -35,7 +37,6 @@ from ansys.simai.core.utils.auth import (
     _get_cached_or_request_device_auth,
 )
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
-from responses.matchers import urlencoded_params_matcher
 
 DEFAULT_TOKENS = {
     "access_token": "check",
