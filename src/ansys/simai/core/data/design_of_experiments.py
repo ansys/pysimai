@@ -30,6 +30,7 @@ if TYPE_CHECKING:
 
 class DesignOfExperimentsCollection:
     """Collection of methods related to the whole Design of Experiments.
+
     Accessed through ``client.design_of_experiments``.
     """
 

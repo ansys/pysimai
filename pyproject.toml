@@ -91,7 +91,7 @@ select = [
   "C4", # flake8-comprehensions
   # "C90", # mccabe
   "CPY", # flake8-copyright
-  # "D", # pydocstyle # TODO: Deal with it
+  "D", # pydocstyle
   # "DJ", # flake8-django
   # "DTZ", # flake8-datetimez
   "E", # pycodestyle errors

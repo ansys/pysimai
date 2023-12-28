@@ -146,10 +146,11 @@ class WorkspaceDirectory(Directory[Workspace]):
         """Get a specific workspace object from the server.
 
         Args:
-            id: The id of the workspace to get
+            id: The id of the workspace to get, incompatible with `name`
+            name: The name of the workspace to get, incompatible with `id`
 
         Returns:
-            The created workspace
+            The workspace
 
         Raises:
             NotFoundError: No geometry with the given id exists

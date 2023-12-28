@@ -109,7 +109,7 @@ class PostProcessing(ComputableDataModel, ABC):
         """Internal method to retrieve the results of this post-processing.
 
         Args:
-            cache
+            cache:
                 True by default to save results to cache
                 False for download links which expire,
                 thus must be queried just before download.
@@ -671,6 +671,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
             prediction_id: The id of the prediction for which to run the post-processing.
             post_processing_type: The type of post-processing to run, as a string or as the class itself
             parameters: The parameters to apply to the post-processing, if needed. Alternatively, parameters can be passed as kwargs.
+            **kwargs: Unpacked parameters for the post-processing
 
         Examples:
             .. code-block:: python

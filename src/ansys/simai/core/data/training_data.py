@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.types import (
     Identifiable,
+    MonitorCallback,
     NamedFile,
     Path,
     get_id_from_identifiable,
@@ -39,7 +40,7 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.training_data_parts import TrainingDataPart
 
 
-def _upload_training_data_part(id, named_part, client, **kwargs):
+def _upload_training_data_part(id, named_part, client, monitor_callback):
     with unpack_named_file(named_part) as (file, name, extension):
         (training_data_part_fields, upload_id) = client._api.create_training_data_part(
             id, name, extension
@@ -48,10 +49,7 @@ def _upload_training_data_part(id, named_part, client, **kwargs):
             training_data_part_fields, is_upload_complete=False
         )
         parts = client._api.upload_parts(
-            f"training_data_parts/{training_data_part.id}/part",
-            file,
-            upload_id,
-            **kwargs,
+            f"training_data_parts/{training_data_part.id}/part", file, upload_id, monitor_callback
         )
         client._api.complete_training_data_part_upload(training_data_part.id, upload_id, parts)
     return training_data_part
@@ -114,19 +112,26 @@ class TrainingData(ComputableDataModel):
         """Deletes the training data on the server."""
         self._client._api.delete_training_data(self.id)
 
-    def upload_part(self, file: NamedFile, **kwargs) -> "TrainingDataPart":
+    def upload_part(
+        self, file: NamedFile, monitor_callback: Optional[MonitorCallback] = None
+    ) -> "TrainingDataPart":
         """Adds a part to a training data.
 
         Args:
             file: A :obj:`~ansys.simai.core.data.types.NamedFile` to upload.
+            monitor_callback: An optional callback to monitor the progress of the download.
+                See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
 
         Returns:
             The created :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart`
         """
-        return _upload_training_data_part(self.id, file, self._client, **kwargs)
+        return _upload_training_data_part(self.id, file, self._client, monitor_callback)
 
     def upload_folder(
-        self, folder_path: Path, compute: bool = True, **kwargs
+        self,
+        folder_path: Path,
+        compute: bool = True,
+        monitor_callback: Optional[MonitorCallback] = None,
     ) -> List["TrainingDataPart"]:
         """Uploads all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`
 
@@ -136,8 +141,13 @@ class TrainingData(ComputableDataModel):
         Args:
             folder_path: Path to the folder which contains the files to upload
             compute: Whether to compute the training data after upload, defaults to True
+            monitor_callback: An optional callback to monitor the progress of the download.
+                See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
+
+        Returns:
+            The list of created training data parts
         """
-        return self._directory.upload_folder(self.id, folder_path, compute, **kwargs)
+        return self._directory.upload_folder(self.id, folder_path, compute, monitor_callback)
 
     def add_to_project(self, project: Identifiable["Project"]):
         """Adds the training data into a :class:`~ansys.simai.core.data.projects.Project`.
@@ -214,20 +224,24 @@ class TrainingDataDirectory(Directory[TrainingData]):
         project_id = get_id_from_identifiable(project, required=False)
         return self._model_from(self._client._api.create_training_data(name, project_id))
 
-    def upload_part(self, id: str, file: NamedFile, **kwargs) -> "TrainingDataPart":
+    def upload_part(
+        self, id: str, file: NamedFile, monitor_callback: Optional[MonitorCallback] = None
+    ) -> "TrainingDataPart":
         """Adds a part to a training data.
 
         Args:
             id: The id of the TrainingData that will contain the part
             file: A :obj:`~ansys.simai.core.data.types.NamedFile` to upload
+            monitor_callback: An optional callback to monitor the progress of the download.
+                See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
 
         Returns:
             The created :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart`
         """
-        return _upload_training_data_part(id, file, self._client, **kwargs)
+        return _upload_training_data_part(id, file, self._client, monitor_callback)
 
     def upload_folder(
-        self, id: str, folder_path: Path, compute: bool = True, **kwargs
+        self, id: str, folder_path: Path, compute: bool = True
     ) -> List["TrainingDataPart"]:
         """Uploads all the files contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`
 
@@ -246,7 +260,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
         files = (obj for obj in path_content if obj.is_file())
         uploaded_parts = []
         for file in files:
-            uploaded_parts.append(_upload_training_data_part(id, file, self._client, **kwargs))
+            uploaded_parts.append(_upload_training_data_part(id, file, self._client, None))
         if compute:
             self._client._api.compute_training_data(id)
         return uploaded_parts

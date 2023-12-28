@@ -91,7 +91,7 @@ class Prediction(ComputableDataModel):
         self._client._api.delete_prediction(self.id)
         self._unregister()
 
-    def feedback(self, **kwargs):
+    def feedback(self, **kwargs):  # noqa: D417
         """Give us your feedback on a prediction to help us improve.
 
         This method enables you to give a rating (from 0 to 4) and a comment on a
@@ -223,7 +223,7 @@ class PredictionDirectory(Directory[Prediction]):
         self._client._api.delete_prediction(prediction_id)
         self._unregister_item_with_id(prediction_id)
 
-    def run(
+    def run(  # noqa: D417
         self,
         geometry_id: str,
         boundary_conditions: Optional[BoundaryConditions] = None,
@@ -267,7 +267,7 @@ class PredictionDirectory(Directory[Prediction]):
             logger.warning(f"{location}: {warning_message}")
         return prediction
 
-    def feedback(self, prediction_id: str, **kwargs) -> None:
+    def feedback(self, prediction_id: str, **kwargs) -> None:  # noqa: D417
         """Give us your feedback on a prediction to help us improve.
 
         This method enables you to give a rating (from 0 to 4) and a comment on a

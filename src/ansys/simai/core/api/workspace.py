@@ -75,6 +75,7 @@ class WorkspaceClientMixin(ApiClientMixin):
         Args:
             name: The name to give to the new workspace
             model_id: id of the model that the workspace will use
+            **kwargs: Additional arguments for the workspace creation
 
         Returns:
             The new workspace's json representation.
