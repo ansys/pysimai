@@ -27,6 +27,8 @@ from contextlib import contextmanager
 from numbers import Number
 from typing import Any, BinaryIO, Callable, Dict, Generator, List, Optional, Tuple, Union
 
+from requests import Response
+
 from ansys.simai.core.data.base import DataModel, DataModelType, Directory
 from ansys.simai.core.errors import InvalidArguments
 from ansys.simai.core.utils.files import file_path_to_obj_file
@@ -37,7 +39,6 @@ from ansys.simai.core.utils.numerical import (
     is_smaller_or_equal_with_tolerance,
     validate_tolerance_parameter,
 )
-from requests import Response
 
 BoundaryConditions = Dict[str, Number]
 """

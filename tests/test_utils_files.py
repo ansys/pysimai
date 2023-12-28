@@ -26,6 +26,7 @@ import time
 from pathlib import Path
 
 import pytest
+
 from ansys.simai.core.utils.files import get_cache_dir
 
 

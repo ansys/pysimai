@@ -24,6 +24,7 @@ import json
 
 import pytest
 import responses
+
 from ansys.simai.core.data.downloads import DownloadableResult
 from ansys.simai.core.data.post_processings import GlobalCoefficients
 from ansys.simai.core.data.selection_post_processings import ExportablePPList

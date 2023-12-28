@@ -160,6 +160,9 @@ target-version = "py39"
 [tool.ruff.pydocstyle]
 convention = "google"
 
+[tool.ruff.lint.isort]
+known-first-party = ["ansys.simai.core"]
+
 [tool.coverage.run]
 source = ["ansys.simai.core"]
 

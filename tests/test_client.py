@@ -23,9 +23,10 @@
 import functools
 from pathlib import Path
 
-import ansys.simai.core.errors as err
 import pytest
 import responses
+
+import ansys.simai.core.errors as err
 from ansys.simai.core import SimAIClient
 
 

@@ -23,6 +23,8 @@
 import logging
 from typing import List, Optional
 
+from semver.version import Version
+
 from ansys.simai.core import __version__
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.design_of_experiments import DesignOfExperimentsCollection
@@ -45,7 +47,6 @@ from ansys.simai.core.errors import (
 from ansys.simai.core.utils.config_file import get_config
 from ansys.simai.core.utils.configuration import ClientConfig
 from ansys.simai.core.utils.typing import steal_kwargs_type
-from semver.version import Version
 
 logger = logging.getLogger(__name__)
 

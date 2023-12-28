@@ -25,6 +25,7 @@ import math
 
 import pytest
 import responses
+
 from ansys.simai.core.data.post_processings import GlobalCoefficients, Slice, SurfaceEvol, VolumeVTU
 from ansys.simai.core.errors import ApiClientError
 

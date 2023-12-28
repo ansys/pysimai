@@ -25,8 +25,9 @@ import logging
 from typing import Optional
 from urllib.parse import urlparse, urlunparse
 
-from ansys.simai.core.utils.misc import prompt_for_input
 from pydantic import AnyHttpUrl, BaseModel, Field, HttpUrl, root_validator, validator
+
+from ansys.simai.core.utils.misc import prompt_for_input
 
 logger = logging.getLogger(__name__)
 

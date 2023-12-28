@@ -22,9 +22,10 @@
 
 import pytest
 import requests
+from requests.models import Response
+
 from ansys.simai.core.errors import ApiClientError, SimAIError
 from ansys.simai.core.utils.requests import handle_http_errors, handle_response
-from requests.models import Response
 
 
 def test_handle_http_errors(mocker):
