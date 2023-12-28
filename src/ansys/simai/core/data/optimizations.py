@@ -74,7 +74,7 @@ class OptimizationDirectory(Directory[Optimization]):
         """Get a specific optimization object from the server.
 
         Args:
-            id: The id of the optimization to get
+            optimization_id: The id of the optimization to get
 
         Returns:
             A :py:class:`Optimization`
@@ -96,7 +96,7 @@ class OptimizationDirectory(Directory[Optimization]):
         """Run an optimization process.
 
         Args:
-            generate_geometry_fn: The function that will be called to generate a new geometry
+            geometry_generation_fn: The function that will be called to generate a new geometry
                 with the generated parameters.
                 Should return a :obj:`~ansys.simai.core.data.types.NamedFile`
             geometry_parameters: Specifies the name of the geometry parameters and their bounds or possible values (choices)

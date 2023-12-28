@@ -24,7 +24,7 @@ import logging
 import os
 from io import BytesIO
 from pathlib import Path
-from typing import Any, BinaryIO, Callable, Dict, List, Optional, Union
+from typing import Any, BinaryIO, Dict, List, Optional, Union
 from urllib.parse import urljoin
 from urllib.request import getproxies
 
@@ -95,7 +95,7 @@ class ApiClientMixin:
 
     def _request(
         self,
-        method,
+        method: str,
         url,
         *args,
         return_json: bool = True,
@@ -107,8 +107,12 @@ class ApiClientMixin:
         not return a json, specify return_json=False
 
         Args:
+            method: The HTTP verb of the request
+            url: The url of the request
+            *args: Additional args for the request
             return_json: Whether the expected response is a json. If yes returns
                 directly the json, otherwise the Response is returned
+            **kwargs: Additional kwargs for request
 
         Returns:
             The json dict of the response if :py:args:`return_json` is True. The raw
@@ -137,9 +141,10 @@ class ApiClientMixin:
         Args:
             download_url: url to GET the file
             file: Optional binary file or path onto which to put the downloaded file
-            monitor_callback: Tuple of two functions or methods used to monitor the download.
-                The first one will be passed the total size of the file to download.
-                The second one will be passed the bytes_read delta.
+            monitor_callback: An optional callback to monitor the progress of the download.
+                See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
+            request_json_body: Optional JSON to include in the request
+            request_method: The HTTP verb
 
         Raises:
             ConnectionError: If an error occurred during the download
@@ -150,7 +155,7 @@ class ApiClientMixin:
         if file is None:
             output_file = BytesIO()
             close_file = False
-        elif isinstance(file, (Path, str)):
+        elif isinstance(file, (Path, os.PathLike, str)):
             output_file = file_path_to_obj_file(file, "wb")
             close_file = True
         else:
@@ -162,13 +167,13 @@ class ApiClientMixin:
             request_kwargs.update({"json": request_json_body})
         response = self._request(request_method, download_url, **request_kwargs)
         if monitor_callback is not None:
-            monitor_callback[0](int(response.headers.get("Content-Length", 0)))
+            monitor_callback(int(response.headers.get("Content-Length", 0)))
         logger.info("Starting download.")
         try:
             for chunk in response.iter_content(chunk_size=1024):
                 bytes_read_delta = output_file.write(chunk)
                 if monitor_callback is not None:
-                    monitor_callback[1](bytes_read_delta)
+                    monitor_callback(bytes_read_delta)
         except requests.exceptions.ConnectionError as e:
             logger.debug("Error {e} happened during download stream.")
             if close_file is True:
@@ -188,7 +193,7 @@ class ApiClientMixin:
         self,
         file: BinaryIO,
         presigned_post: Dict[str, Any],
-        monitor_callback: Optional[Callable[[int], None]] = None,
+        monitor_callback: Optional[MonitorCallback] = None,
     ):
         upload_form = presigned_post["fields"]
         filename = getattr(file, "name", "")
@@ -196,7 +201,17 @@ class ApiClientMixin:
         multipart = MultipartEncoder(upload_form)
 
         if monitor_callback is not None:
-            multipart = MultipartEncoderMonitor(multipart, monitor_callback)
+            # Wrap the monitor callback so that it receives only the bytes read
+            # instead of the full MultipartEncoderMonitor object
+            def wrap_monitor_callback(monitor_callback):
+                # FIXME: This ain't gonna work chief
+                def wrapped_monitor_callback(monitor):
+                    update = monitor_callback(monitor)
+                    return update.bytes_read
+
+                return wrapped_monitor_callback
+
+            multipart = MultipartEncoderMonitor(multipart, wrap_monitor_callback(monitor_callback))
         self._post(
             presigned_post["url"],
             data=multipart,

@@ -254,7 +254,7 @@ class SimAIClient:
         path: Optional[Path] = None,
         **kwargs,
     ) -> "SimAIClient":
-        """Initialize an `SimAIClient` by reading a configuration file.
+        """Initialize a `SimAIClient` by reading a configuration file.
 
         You can provide the path of the config to load. If no path is given it will look
         at default locations.
@@ -267,6 +267,7 @@ class SimAIClient:
             profile: The profile to load from the configuration, the `default` profile
                 will be loaded if not provided
             path: The path at which the configuration is located.
+            **kwargs: Additional arguments to pass to the `SimAiClient`
 
         Returns:
             A configured client.

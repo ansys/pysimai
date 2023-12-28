@@ -75,7 +75,16 @@ Example:
 
 APIResponse = Union[Response, Dict[str, Any], List[Dict[str, Any]]]
 
-MonitorCallback = Union[Tuple[Callable[[int], None], Callable[[int], None]], Callable[[int], None]]
+MonitorCallback = Callable[[int], None]
+"""A callback used to monitor the download or upload of a file.
+
+For downloads:
+It will be called one time with the total size of the download.
+Subsequent calls will pass the amount bytes read this iteration.
+
+For uploads:
+The callback will receive the amount of bytes written each iteration.
+"""
 
 Identifiable = Union[DataModelType, str]
 """Either a Model or the string id of an object of the same type"""

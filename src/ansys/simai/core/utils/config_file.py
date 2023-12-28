@@ -81,6 +81,7 @@ def get_config(
         path: Where to find the config file. If None, looks in default locations.
         profile: The profile to load. If not specified, looks for `[default]`
         ignore_missing: don't raise exception if no path to a config file was found
+        **kwargs: Overrides to apply to the configuration
     """
     config_path = path or _scan_defaults_config_paths()
     if config_path is None:

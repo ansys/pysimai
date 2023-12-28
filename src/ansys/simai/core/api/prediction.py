@@ -60,13 +60,13 @@ class PredictionClientMixin(ApiClientMixin):
             return_json=False,
         )
 
-    def run_prediction(self, geometry_id: str, **kwargs):
+    def run_prediction(self, geometry_id: str, **kwargs):  # noqa: D417
         """Run a prediction on the given geometry
 
         Args:
             geometry_id: The id of the target geometry
 
-        Keyword Args:
+        Keyword Arguments:
             boundary_conditions dict: The contrainsts of the problem in dictionary form.
             tolerance float: The delta under which two boundary condition components are considered equal, default is 10**-6
         """

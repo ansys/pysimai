@@ -42,6 +42,8 @@ class DesignOfExperimentsMixin(ApiClientMixin):
 
         Args:
             file: A binary file-object or the path of the file to put the content into.
+            format: the format to download, ``xlsx`` or ``csv``
+            workspace_id: id of the workspace for which to download the DoE
 
         Return:
             None if a file is provided, a BytesIO with the design of experiments's content otherwise

@@ -22,12 +22,11 @@
 
 import json
 import logging
-from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 from urllib.parse import quote
 
 from ansys.simai.core.api.mixin import ApiClientMixin
-from ansys.simai.core.data.types import MonitorCallback
+from ansys.simai.core.data.types import File, MonitorCallback
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +130,7 @@ class GeometryClientMixin(ApiClientMixin):
     def download_geometry(
         self,
         geometry_id: str,
-        file: Optional[Union[BinaryIO, str, Path]] = None,
+        file: Optional[File] = None,
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> Union[None, BinaryIO]:
         """Downloads the input geometry into the file at the given path.

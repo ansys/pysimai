@@ -29,6 +29,7 @@ from ansys.simai.core.data.geometry_utils import _geometry_matches_range_constra
 from ansys.simai.core.data.types import (
     BoundaryConditions,
     File,
+    MonitorCallback,
     NamedFile,
     Range,
     build_boundary_conditions,
@@ -130,8 +131,9 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         ``simai.current_workspace.model.boundary_conditions`` or ``simai.predictions.boundary_conditions``
         where ``ex`` is your `~ansys.simai.core.client.SimAIClient` object.
 
-        Keyword Args:
+        Args:
             boundary_conditions: The boundary conditions to apply, as a dictionary
+            **kwargs: Boundary conditions can also be passed as kwargs
 
         Returns:
             The created prediction object
@@ -161,17 +163,21 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         predictions_data = self._client._api.get_geometry_predictions(self.id)
         return [self._client.predictions._model_from(pred_data) for pred_data in predictions_data]
 
-    def download(self, file: Optional[File] = None, **kwargs) -> Union[None, BinaryIO]:
+    def download(
+        self, file: Optional[File] = None, monitor_callback: Optional[MonitorCallback] = None
+    ) -> Union[None, BinaryIO]:
         """Downloads the geometry into the provided file, or in memory if no file is provided.
 
         Args:
-            file: A optional binary file-object or the path of the file to put the
+            file: An optional binary file-object or the path of the file to put the
                 content into.
+            monitor_callback: An optional callback to monitor the progress of the download.
+                See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
 
         Returns:
             None if a file is provided, a :class:`~io.BytesIO` with the geometry's content otherwise.
         """
-        return self._client._api.download_geometry(self.id, file, **kwargs)
+        return self._client._api.download_geometry(self.id, file, monitor_callback)
 
     def sweep(
         self,
@@ -407,12 +413,12 @@ class GeometryDirectory(Directory[Geometry]):
         """
         self._client._api.delete_geometry(geometry_id)
 
-    def upload(
+    def upload(  # noqa: D417
         self,
         file: NamedFile,
         metadata: Optional[Dict[str, Any]] = None,
         workspace_id: Optional[str] = None,
-        **kwargs,
+        monitor_callback: Optional[MonitorCallback] = None,
     ) -> Geometry:
         """Upload a geometry to SimAI's platform.
 
@@ -423,6 +429,9 @@ class GeometryDirectory(Directory[Geometry]):
                 Lists and nested objects are not supported.
             workspace_id: Id of the workspace in which the geometry will be uploaded,
                 only necessary if no workspace is set for the client.
+            monitor_callback: An optional callback to monitor the progress of the download.
+                See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
+
 
         Returns:
             The created :py:class:`Geometry` object
@@ -440,7 +449,10 @@ class GeometryDirectory(Directory[Geometry]):
             )
             geometry = self._model_from(geometry_fields, is_upload_complete=False)
             parts = self._client._api.upload_parts(
-                f"geometries/{geometry.id}/part", readable_file, upload_id, **kwargs
+                f"geometries/{geometry.id}/part",
+                readable_file,
+                upload_id,
+                monitor_callback=monitor_callback,
             )
             self._client._api.complete_geometry_upload(geometry.id, upload_id, parts)
         return geometry
@@ -449,7 +461,7 @@ class GeometryDirectory(Directory[Geometry]):
         self,
         geometry_id: str,
         file: Optional[File] = None,
-        **kwargs,
+        monitor_callback: Optional[MonitorCallback] = None,
     ) -> Union[None, BinaryIO]:
         """Downloads the geometry with the given id into the file at the given path.
 
@@ -457,6 +469,8 @@ class GeometryDirectory(Directory[Geometry]):
             geometry_id: The id of the geometry to download
             file: An optional binary file-object or the path of the file to put the
                 content into
+            monitor_callback: An optional callback to monitor the progress of the download.
+                See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
 
         Returns:
             None if a file is provided, a :class:`~io.BytesIO` with the geometry's content otherwise
@@ -464,7 +478,7 @@ class GeometryDirectory(Directory[Geometry]):
         See Also:
             :func:`Geometry.download`
         """
-        return self._client._api.download_geometry(geometry_id, file, **kwargs)
+        return self._client._api.download_geometry(geometry_id, file, monitor_callback)
 
     def sweep(
         self,
