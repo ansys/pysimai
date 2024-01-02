@@ -160,3 +160,6 @@ cython_debug/
 
 # pdm
 .pdm-python
+
+# vscode
+.vscode/
