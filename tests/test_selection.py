@@ -55,7 +55,7 @@ def test_selection_content(four_geometries_test_set):
     boundary_conditions = [{"Vx": v} for v in speeds]
     selection = Selection(four_geometries_test_set, boundary_conditions)
     # 4 geometries * 3 boundary conditions
-    points = selection.as_list()
+    points = selection.points
     assert len(points) == 12
 
     received_xbow_speed_combinations = {
@@ -79,7 +79,7 @@ def test_selection_get_predictions(four_geometries_test_set):
     assert len(predictions) == 1
     assert predictions[0].id == "pred20.2"
 
-    points_with_prediction = [p for p in selection.as_list() if p.prediction is not None]
+    points_with_prediction = [p for p in selection.points if p.prediction is not None]
     assert len(points_with_prediction) == 1
     point = points_with_prediction[0]
     assert point.geometry.id == "xbow-21"
@@ -109,7 +109,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
     selection = Selection(geometries, boundary_conditions)
 
     # Selection contains 6 points (2 geom * 2 BC)
-    assert len(selection.as_list()) == 6
+    assert len(selection.points) == 6
     # Selection contains only 1 prediction (geom 0001 - speed 4.5)
     assert len(selection.predictions) == 1
     assert selection.predictions[0].boundary_conditions["Vx"] == 4.5
@@ -165,7 +165,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
     selection.run_predictions()
 
     # Now selection contains 6 predictions, for both geometries and all expected speeds
-    assert len(selection.as_list()) == 6
+    assert len(selection.points) == 6
     assert len(selection.predictions) == 6
 
     expected_combinations = set()
@@ -174,7 +174,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
             expected_combinations.add((geom.id, speed_x))
     received_combinations = {
         (p.geometry.id, p.boundary_conditions["Vx"])
-        for p in selection.points_with_prediction()
+        for p in selection.points_with_prediction
         if p is not None
     }
     assert expected_combinations == received_combinations

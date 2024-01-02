@@ -156,7 +156,8 @@ class Range:
         self.max = max
         self.tolerance = tolerance
 
-    def match_value(self, value: float):
+    def match_value(self, value: float) -> bool:
+        """Checks whether the given value belongs to the :class:`Range`."""
         if not is_number(value):
             return False
         # if min, value >= min

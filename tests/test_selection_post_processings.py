@@ -61,7 +61,7 @@ def test_selection_post_processing_global_coefficients(test_selection):
     THEN the /GlobalCoefficients endpoint is called for each prediction in the selection
     AND I get a list of GlobalCoefficients objects in return
     """
-    assert len(test_selection.as_list()) == 2
+    assert len(test_selection.points) == 2
 
     for num in [1, 2]:
         responses.add(
@@ -84,7 +84,7 @@ def test_selection_post_processing_surface_evol(test_selection):
     THEN the /SurfaceEvol endpoint is called for each prediction in the selection
     AND I get a list of SurfaceEvol objects in return
     """
-    assert len(test_selection.as_list()) == 2
+    assert len(test_selection.points) == 2
 
     for num in [1, 2]:
         responses.add(
@@ -106,7 +106,7 @@ def test_selection_post_processing_slice(test_selection):
     THEN the /Slice endpoint is called for each prediction in the selection
     AND I get a list of Slice objects in return
     """
-    assert len(test_selection.as_list()) == 2
+    assert len(test_selection.points) == 2
 
     responses.add(
         responses.POST,
@@ -133,7 +133,7 @@ def test_selection_post_processing_volume_vtu(test_selection):
     THEN the /VolumeVTU endpoint is called for each prediction in the selection
     AND I get a list of PostProcessingVTUExport objects in return
     """
-    assert len(test_selection.as_list()) == 2
+    assert len(test_selection.points) == 2
 
     responses.add(
         responses.POST,
@@ -160,7 +160,7 @@ def test_selection_post_processing_surface_vtp(test_selection):
     THEN the /SurfaceVTP endpoint is called for each prediction in the selection
     AND I get a list of PostProcessingVTUExport objects in return
     """
-    assert len(test_selection.as_list()) == 2
+    assert len(test_selection.points) == 2
 
     responses.add(
         responses.POST,
@@ -189,7 +189,7 @@ def test_selection_post_processing_error(test_selection):
     AND a ApiClientError is raised
     AND the working VTU has still been created
     """
-    assert len(test_selection.as_list()) == 2
+    assert len(test_selection.points) == 2
 
     responses.add(
         responses.POST,

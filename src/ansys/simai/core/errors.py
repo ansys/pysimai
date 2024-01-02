@@ -39,7 +39,7 @@ class ApiClientError(SimAIError, requests.exceptions.HTTPError):
         super(ApiClientError, self).__init__(message, response=response)
 
     @property
-    def status_code(self):
+    def status_code(self):  # noqa: D102
         if self.response is not None:
             return self.response.status_code
 

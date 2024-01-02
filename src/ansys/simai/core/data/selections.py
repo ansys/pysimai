@@ -40,6 +40,7 @@ from ansys.simai.core.utils.validation import _enforce_as_list_passing_predicate
 
 class Point:
     """A Point object, where a Prediction can be run.
+
     A Point is at the intersection of a :class:`~ansys.simai.core.data.geometries.Geometry` and :class:`~ansys.simai.core.data.types.BoundaryConditions`.
     """
 
@@ -61,8 +62,7 @@ class Point:
     @property
     def prediction(self) -> Union[Prediction, None]:
         """Returns the :class:`~ansys.simai.core.data.predictions.Prediction`
-        corresponding to this Point,
-        or None if no prediction has yet been ran.
+        corresponding to this Point, or None if no prediction has yet been ran.
         """
         return self._prediction
 
@@ -126,12 +126,9 @@ class Selection:
         self._post_processings = SelectionPostProcessingsMethods(self)
         self.reload()
 
-    def as_list(self) -> List[Point]:
-        """Returns a list of all the :class:`Points <Point>` composing this Selection."""
-        return self._points
-
     @property
     def points(self) -> List[Point]:
+        """Returns a list of all the :class:`Points <Point>` composing this Selection."""
         return self._points
 
     @property
@@ -141,26 +138,32 @@ class Selection:
 
     @property
     def geometries(self) -> List[Geometry]:
+        """Returns a list of all the existing :class:`Geometries <ansys.simai.core.data.geometries.Geometry>` in this selection."""
         return self._geometries
 
     @property
     def boundary_conditions(self) -> List[BoundaryConditions]:
+        """Returns a list of all the existing :class:`BoundaryConditions <ansys.simai.core.data.types.BoundaryConditions>` in this selection."""
         return self._boundary_conditions
 
+    @property
     def points_with_prediction(self) -> List[Optional[Point]]:
-        return [(point if point.prediction else None) for point in self.as_list()]
+        """Returns a list of all the points :class:`Points <Point>` in this selection for which a prediction exists."""
+        return [(point if point.prediction else None) for point in self.points]
 
+    @property
     def points_without_prediction(self) -> List[Optional[Point]]:
-        return [(point if point.prediction is None else None) for point in self.as_list()]
+        """Returns a list of all the points :class:`Points <Point>` in this selection for which no prediction exists."""
+        return [(point if point.prediction is None else None) for point in self.points]
 
-    def get_predictions(self) -> List[Prediction]:
-        return [point.prediction for point in self.as_list() if point.prediction is not None]
+    def get_predictions(self) -> List[Prediction]:  # noqa D102
+        return [point.prediction for point in self.points if point.prediction is not None]
 
     def get_runnable_predictions(self) -> List[Point]:
         """Return a list of :class:`Points <Point>` in this selection
         for which predictions haven't been ran yet.
         """
-        return [point for point in self.as_list() if point.prediction is None]
+        return [point for point in self.points if point.prediction is None]
 
     def run_predictions(self) -> None:
         """Run all the missing predictions in this selection."""
