@@ -56,16 +56,16 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
     @property
     def metadata(self) -> Dict[str, Any]:
-        """User-given key-value associated to the geometry"""
+        """User-given key-value associated to the geometry."""
         return self.fields["metadata"]
 
     @property
     def creation_time(self) -> str:
-        """Time when the geometry was created, in an UTC ISO8601 format string"""
+        """Time when the geometry was created, in an UTC ISO8601 format string."""
         return self.fields["creation_time"]
 
     def rename(self, name: str) -> None:
-        """Change the name of a geometry
+        """Change the name of a geometry.
 
         Args:
             name: the new name to give to the geometry
@@ -80,7 +80,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         self.reload()
 
     def update_metadata(self, metadata: Dict[str, Union[str, Number, bool]]):
-        """Change the metadata of a geometry
+        """Change the metadata of a geometry.
 
         - New keys-values will be added.
         - Existing keys-values will be overwritten.
@@ -107,6 +107,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
     def delete(self) -> None:
         """Delete the geometry and its data from the server.
+
         All the objects associated to this geometry (predictions and post-processings)
         are also deleted.
 
@@ -118,8 +119,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
     def run_prediction(
         self, boundary_conditions: Optional[BoundaryConditions] = None, **kwargs
     ) -> "Prediction":
-        """Run a prediction on the geometry, or returns the existing prediction
-        if one exists with those boundary conditions.
+        """Run a new prediction or return existing prediction.
 
         This is a non-blocking method. The prediction object will be returned.
         This prediction may be incomplete if its computation is not finished,
@@ -292,7 +292,7 @@ class GeometryDirectory(Directory[Geometry]):
         workspace_id: Optional[str] = None,
         filters: Optional[Dict[str, Union[str, float, Range]]] = None,
     ) -> List[Geometry]:
-        """List geometries from the server that belong to the currently set workspace or the specified one
+        """List geometries from the server that belong to the currently set workspace or the specified one.
 
         Args:
             workspace_id: Id of the workspace to list geometries for. Necessary if no workspace is set for the client.

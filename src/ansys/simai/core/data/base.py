@@ -212,7 +212,7 @@ class ComputableDataModel(DataModel):
         self._directory._unregister_item(self)
 
     def _handle_job_sse_event(self, data):
-        """Update object with the information and state received through the SSE"""
+        """Update object with the information and state received through the SSE."""
         logger.debug(f"Handling SSE job event for {self._classname} id {self.id}")
         self.fields = data["record"]
         state: str = data["record"]["state"]
@@ -314,7 +314,7 @@ class Directory(ABC, Generic[DataModelType]):
 
 
 class UploadableResourceMixin:
-    """Class used to expand DataModel with support for resource type message from SSE"""
+    """Class used to expand DataModel with support for resource type message from SSE."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

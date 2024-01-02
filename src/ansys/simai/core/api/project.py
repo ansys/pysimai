@@ -40,7 +40,7 @@ class ProjectClientMixin(ApiClientMixin):
         return self._post("projects", json=kwargs)
 
     def update_project(self, project_id: str, name: str):
-        """Update a project name
+        """Update a project name.
 
         Args:
             project_id: The id of the project to update

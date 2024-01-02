@@ -51,7 +51,7 @@ class GeometryClientMixin(ApiClientMixin):
         return self._get(f"geometries/{geometry_id}")
 
     def get_geometry_by_name(self, name: str, workspace_id: str):
-        """Get information on a single geometry, by name instead of id
+        """Get information on a single geometry, by name instead of id.
 
         Args:
             name: The name of the geometry to get
@@ -61,6 +61,7 @@ class GeometryClientMixin(ApiClientMixin):
 
     def delete_geometry(self, geometry_id: str):
         """Delete a single geometry.
+
         All objects associated to that geometry are also deleted.
 
         Args:
@@ -79,7 +80,7 @@ class GeometryClientMixin(ApiClientMixin):
         name: Optional[str] = None,
         metadata: Optional[dict] = None,
     ):
-        """Update a geometry information
+        """Update a geometry information.
 
         Args:
             geometry_id: The id of the geometry to update
@@ -100,7 +101,7 @@ class GeometryClientMixin(ApiClientMixin):
         extension: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ):
-        """Create a new geometry, without pushing the data
+        """Create a new geometry, without pushing the data.
 
         Args:
             workspace_id: The id of the workspace the geometry should belong to.

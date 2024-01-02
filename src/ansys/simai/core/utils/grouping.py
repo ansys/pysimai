@@ -28,8 +28,9 @@ from ansys.simai.core.utils.numerical import is_equal_with_tolerance
 class _ToleranceGroup:
     """_ToleranceGroup is a group of approximately equal values,
     as returned by itertools.groupby when using _ToleranceGrouper.
+
     Note that with the way itertools.groupby works,
-    accessing center should be done only after accessing (iterating) the bucket's elements
+    accessing center should be done only after accessing (iterating) the bucket's elements.
     """
 
     def __init__(

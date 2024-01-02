@@ -217,7 +217,7 @@ class Authenticator(AuthBase):
         return request
 
     def _refresh_auth(self):
-        """Refresh the authentication"""
+        """Refresh the authentication."""
         self._authentication = self._authentication.refresh(self._session, self._token_url)
         self._schedule_auth_refresh()
 

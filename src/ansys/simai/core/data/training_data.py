@@ -56,7 +56,7 @@ def _upload_training_data_part(id, named_part, client, monitor_callback):
 
 
 class TrainingData(ComputableDataModel):
-    """Local representation of a TrainingData object"""
+    """Local representation of a TrainingData object."""
 
     def __repr__(self) -> str:
         return f"<TrainingData: {self.id}, {self.name}>"
@@ -68,7 +68,7 @@ class TrainingData(ComputableDataModel):
 
     @property
     def parts(self) -> List["TrainingDataPart"]:
-        """Lists the :class:`parts<ansys.simai.core.data.training_data_parts.TrainingDataPart>` in that TrainingData"""
+        """Lists the :class:`parts<ansys.simai.core.data.training_data_parts.TrainingDataPart>` in that TrainingData."""
         return [
             self._client.training_data_parts._model_from(training_data_part)
             for training_data_part in self.fields["parts"]
@@ -78,7 +78,7 @@ class TrainingData(ComputableDataModel):
     # FIXME: impossible to pass the "project" during a property access
     @property
     def subset(self, project: Optional[Identifiable["Project"]] = None) -> Optional[str]:
-        """Indicates which subset this training data belongs to, in relation to the given project
+        """Indicates which subset this training data belongs to, in relation to the given project.
 
         Args:
             project: The `Project` object to check for
@@ -100,7 +100,7 @@ class TrainingData(ComputableDataModel):
         return self.fields["extracted_metadata"]
 
     def compute(self) -> None:
-        """Requests to compute or recompute the training data
+        """Requests to compute or recompute the training data.
 
         Training data should be computed once all its parts have been fully uploaded
 
@@ -133,10 +133,10 @@ class TrainingData(ComputableDataModel):
         compute: bool = True,
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> List["TrainingDataPart"]:
-        """Uploads all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`
+        """Uploads all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`.
 
         Automatically requests computation of the training data
-        once the upload is complete unless specified otherwise
+        once the upload is complete unless specified otherwise.
 
         Args:
             folder_path: Path to the folder which contains the files to upload
@@ -243,7 +243,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
     def upload_folder(
         self, id: str, folder_path: Path, compute: bool = True
     ) -> List["TrainingDataPart"]:
-        """Uploads all the files contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`
+        """Uploads all the files contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`.
 
         Automatically requests computation of the training data
         once the upload is complete unless specified otherwise

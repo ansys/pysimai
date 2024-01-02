@@ -139,7 +139,7 @@ class Prediction(ComputableDataModel):
 
 
 class PredictionDirectory(Directory[Prediction]):
-    """Collection of methods related to model predictions
+    """Collection of methods related to model predictions.
 
     Accessed through ``client.prediction``.
 

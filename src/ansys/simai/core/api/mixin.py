@@ -227,7 +227,7 @@ class ApiClientMixin:
         part_size: int = int(100e6),
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> List[Dict[str, Any]]:
-        """Upload parts using the given endpoints to get presigned PUT urls
+        """Upload parts using the given endpoints to get presigned PUT urls.
 
         Returns:
             The list of parts, with their id and their etag

@@ -73,7 +73,7 @@ class InvalidArguments(SimAIError, ValueError):
 
 
 class InvalidClientStateError(SimAIError):
-    """The client's state is invalid"""
+    """The client's state is invalid."""
 
 
 class InvalidServerStateError(SimAIError):
@@ -81,7 +81,7 @@ class InvalidServerStateError(SimAIError):
 
 
 class MultipleErrors(SimAIError):
-    """Multiple errors occurred"""
+    """Multiple errors occurred."""
 
     def __init__(self, exceptions: List[SimAIError]):
         self.exceptions = exceptions
