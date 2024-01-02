@@ -150,12 +150,14 @@ ignore = [
   "D107", # pydocstyle - missing docstring in __init__
   "D202", # pydocstyle - no blank lines allowed after function docstring
   "D205", # pydocstyle - 1 blank line required between summary line and description
-  "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
   "E501", # pycodestyle line too long, handled by formatting
   "ISC001", # Ruff formatter incompatible
   "S101", # flake8-bandit - use of assert
 ]
 target-version = "py39"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
 
 [tool.ruff.pydocstyle]
 convention = "google"

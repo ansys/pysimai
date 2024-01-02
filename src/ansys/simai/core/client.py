@@ -187,6 +187,7 @@ class SimAIClient:
     @property
     def geometries(self):
         """Representation of all geometries on the server.
+
         More details in the :doc:`geometries documentation <geometries>`.
         """
         return self._geometry_directory
@@ -194,20 +195,23 @@ class SimAIClient:
     @property
     def optimizations(self):
         """Representation of all optimizations on the server.
+
         More details in the :doc:`optimization documentation <optimizations>`.
         """
         return self._optimization_directory
 
     @property
     def training_data(self):
-        """Representation of all training data on the server
+        """Representation of all training data on the server.
+
         More details in the :doc:`training data documentation<training_data>`.
         """
         return self._training_data_directory
 
     @property
     def training_data_parts(self):
-        """Representation of all training data parts on the server
+        """Representation of all training data parts on the server.
+
         More details in the :doc:`training data parts documentation<training_data_parts>`.
         """
         return self._training_data_part_directory
@@ -215,6 +219,7 @@ class SimAIClient:
     @property
     def predictions(self):
         """Representation of all predictions on the server.
+
         More details in the :doc:`predictions documentation <predictions>`.
         """
         return self._prediction_directory
@@ -222,6 +227,7 @@ class SimAIClient:
     @property
     def post_processings(self):
         """Representation of all post-processings on the server.
+
         More details in the :doc:`post-processings documentation <post_processings>`
         """
         return self._post_processing_directory
@@ -229,13 +235,15 @@ class SimAIClient:
     @property
     def projects(self):
         """Representation of all projects on the server.
+
         More details in the :doc:`projects documentations <projects>`
         """
         return self._project_directory
 
     @property
     def design_of_experiments(self):
-        """Methods allowing to export design of experiments
+        """Methods allowing to export design of experiments.
+
         More details in the :doc:`design of experiments documentation <design_of_experiments>`
         """
         return self._doe_collection
@@ -243,6 +251,7 @@ class SimAIClient:
     @property
     def workspaces(self):
         """Representation of all workspaces on the server.
+
         More details in the :doc:`workspaces documentation <workspaces>`.
         """
         return self._workspace_directory

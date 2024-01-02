@@ -42,7 +42,7 @@ def _expand_user_path(file_path: "Path") -> pathlib.Path:
 
 
 def file_path_to_obj_file(file_path: "Path", mode: str) -> IO[Any]:
-    """Takes a file path and returns a file-object opened in the given mode"""
+    """Takes a file path and returns a file-object opened in the given mode."""
     file_path = _expand_user_path(file_path)
     file_path.parent.mkdir(parents=True, exist_ok=True)
     logger.debug(f"Opening file {file_path}")

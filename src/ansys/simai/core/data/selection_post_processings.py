@@ -65,8 +65,7 @@ class SelectionPostProcessingsMethods:
         )
 
     def surface_evol(self, axis: str, delta: float) -> ExportablePPList[SurfaceEvol]:
-        """Compute or get the SurfaceEvol of the predictions,
-            for specific parameters
+        """Compute or get the SurfaceEvol of the predictions, for specific parameters.
 
         This is a non-blocking method. It will return a
         :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`

@@ -31,7 +31,7 @@ class WorkspaceClientMixin(ApiClientMixin):
     """Client for the Workspace ("/workspaces") part of the API."""
 
     def workspaces(self):
-        """List all workspaces"""
+        """List all workspaces."""
         return self._get("workspaces/")
 
     def get_workspace(self, workspace_id: str) -> Dict[str, Any]:
@@ -50,7 +50,7 @@ class WorkspaceClientMixin(ApiClientMixin):
         return self._get(f"workspaces/{workspace_id}")
 
     def get_workspace_by_name(self, name: str):
-        """Get information on a single workspace, by name instead of id
+        """Get information on a single workspace, by name instead of id.
 
         Args:
             name: The name of the workspace to get

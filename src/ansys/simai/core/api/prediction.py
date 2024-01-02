@@ -61,7 +61,7 @@ class PredictionClientMixin(ApiClientMixin):
         )
 
     def run_prediction(self, geometry_id: str, **kwargs):  # noqa: D417
-        """Run a prediction on the given geometry
+        """Run a prediction on the given geometry.
 
         Args:
             geometry_id: The id of the target geometry
@@ -80,14 +80,16 @@ class PredictionClientMixin(ApiClientMixin):
         solution: Optional[Union[BinaryIO, str, Path]] = None,
         monitor_callback: Optional[Callable[[int], None]] = None,
     ):
-        """Args:
-        prediction_id: Id of the target prediction
-        rating: A rating from 0 to 4
-        comment: Additional comment
-        solution: The client
-            solution to the prediction
-        monitor_callback: Function or method that will be passed
-            a :py:class:`~requests_toolbelt.multipart.encoder.MultipartEncoderMonitor`
+        """Send feedback on your prediction.
+
+        Args:
+            prediction_id: Id of the target prediction
+            rating: A rating from 0 to 4
+            comment: Additional comment
+            solution: The client
+                solution to the prediction
+            monitor_callback: Function or method that will be passed
+                a :py:class:`~requests_toolbelt.multipart.encoder.MultipartEncoderMonitor`
         """
         if solution is None:
             with_solution = False

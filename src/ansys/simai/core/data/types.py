@@ -199,7 +199,7 @@ class _HollowRange(Range):
 def unpack_named_file(
     named_file: NamedFile,
 ) -> Generator[Tuple[BinaryIO, str, str], None, None]:
-    """Unpack a NamedFile by providing a readable file, its name and an extension"""
+    """Unpack a NamedFile by providing a readable file, its name and an extension."""
     if (
         isinstance(named_file, Tuple)
         and len(named_file) == 2

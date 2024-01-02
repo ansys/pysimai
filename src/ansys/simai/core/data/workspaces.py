@@ -111,7 +111,7 @@ class Workspace(DataModel):
     def download_model_evaluation_report(
         self, file: Optional[File] = None
     ) -> Union[None, BinaryIO]:
-        """Download the model evaluation report PDF for this workspace
+        """Download the model evaluation report PDF for this workspace.
 
         Args:
             file: A binary file-object or the path of the file to put the content into.

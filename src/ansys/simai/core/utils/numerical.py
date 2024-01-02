@@ -35,7 +35,7 @@ def is_smaller_with_tolerance(a: float, b: float, tolerance: Optional[float] = N
     """Strict smaller than (<) comparison,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
-    than the tolerance, a is considered equal, thus not smaller
+    than the tolerance, a is considered equal, thus not smaller.
     """
     if tolerance is None:
         tolerance = DEFAULT_COMPARISON_EPSILON
@@ -46,7 +46,7 @@ def is_bigger_with_tolerance(a: float, b: float, tolerance: Optional[float] = No
     """Strict bigger than (>) comparison,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
-    than the tolerance, b is considered equal, thus not bigger
+    than the tolerance, b is considered equal, thus not bigger.
     """
     if tolerance is None:
         tolerance = DEFAULT_COMPARISON_EPSILON
@@ -57,7 +57,7 @@ def is_smaller_or_equal_with_tolerance(a: float, b: float, tolerance: Optional[f
     """Smaller or equal to (<=) comparison,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
-    than the tolerance, b is considered equal
+    than the tolerance, b is considered equal.
     """
     return not is_bigger_with_tolerance(a, b, tolerance)
 
@@ -66,7 +66,7 @@ def is_bigger_or_equal_with_tolerance(a: float, b: float, tolerance: Optional[fl
     """Bigger or equal to (>=) comparison,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
-    than the tolerance, b is considered equal
+    than the tolerance, b is considered equal.
     """
     return not is_smaller_with_tolerance(a, b, tolerance)
 
@@ -75,7 +75,7 @@ def is_equal_with_tolerance(a: float, b: float, tolerance: Optional[float] = Non
     """Compare the equality of two numbers,
     with a tolerance (default .000001);
     meaning if the diff between the two numbers is inferior
-    than the tolerance, they are considered equal
+    than the tolerance, they are considered equal.
     """
     if tolerance is None:
         tolerance = DEFAULT_COMPARISON_EPSILON

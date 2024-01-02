@@ -43,7 +43,7 @@ class Project(DataModel):
 
     @name.setter
     def name(self, new_name: str):
-        """Rename the project
+        """Rename the project.
 
         Args:
             new_name: the new name to give to the project
@@ -61,6 +61,10 @@ class Project(DataModel):
 
     @property
     def sample(self) -> Optional["TrainingData"]:
+        """The sample of the project.
+
+        The sample determines what variable and settings are available during model configuration.
+        """
         raw_sample = self.fields["sample"]
         if raw_sample is None:
             return None
@@ -73,12 +77,12 @@ class Project(DataModel):
         self.reload()
 
     def delete(self) -> None:
-        """Deletes the project"""
+        """Deletes the project."""
         self._client._api.delete_project(self.id)
 
 
 class ProjectDirectory(Directory[Project]):
-    """Collection of methods related to projects
+    """Collection of methods related to projects.
 
     Accessed through ``client.projects``
 
@@ -94,11 +98,11 @@ class ProjectDirectory(Directory[Project]):
     _data_model = Project
 
     def list(self) -> List[Project]:
-        """Lists all the projects available on the server"""
+        """Lists all the projects available on the server."""
         return [self._model_from(data) for data in self._client._api.projects()]
 
     def create(self, name: str) -> Project:
-        """Creates a new project"""
+        """Creates a new project."""
         return self._model_from(self._client._api.create_project(name=name))
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None):
@@ -120,7 +124,7 @@ class ProjectDirectory(Directory[Project]):
             raise InvalidArguments("Either name or id argument should be specified")
 
     def delete(self, id: str) -> None:
-        """Deletes a project
+        """Deletes a project.
 
         Args:
             id: The id of the project to delete

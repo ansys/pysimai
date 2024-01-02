@@ -309,7 +309,7 @@ class PredictionPostProcessings:
         return self._get_or_run(GlobalCoefficients, {}, run)
 
     def surface_evol(self, axis: str, delta: float, run: bool = True) -> Optional[SurfaceEvol]:
-        """Compute or get the SurfaceEvol for specific parameters
+        """Compute or get the SurfaceEvol for specific parameters.
 
         This is a non-blocking method. It will return the SurfaceEvol
         object without waiting. This object may not have data right away
@@ -341,7 +341,7 @@ class PredictionPostProcessings:
     def slice(
         self, axis: str, coordinate: float, format: str = "png", run: bool = True
     ) -> Optional[Slice]:
-        """Compute or get a Slice for specific plane parameters
+        """Compute or get a Slice for specific plane parameters.
 
         This is a non-blocking method. It will return the Slice
         object without waiting. This object may not have data right away
@@ -512,7 +512,13 @@ class PredictionPostProcessings:
     def _get_or_run(
         self, pp_class: Type[PostProcessing], params: Dict[str, Any], run: bool
     ) -> Optional["PostProcessing"]:
-        """Nonblocking method. Runs (if not already ran/running) the post-processing of given type,
+        """Get existing post-processing or run new one if it doesn't exist yet.
+
+        Args:
+            pp_class: Type of post processing
+            params: The params of the post-processing
+            run: if false, only gets existing post-processing
+        Nonblocking method. Runs (if not already ran/running) the post-processing of given type,
         with given parameters or gets it if the run arg is False.
         If already existing, will return the existing PostProcessing
         """
