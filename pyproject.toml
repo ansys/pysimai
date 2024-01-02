@@ -142,7 +142,6 @@ select = [
 ignore = [
   "D100", # pydocstyle - missing docstring in public module
   "D101", # pydocstyle - missing docstring in public class
-  "D102", # pydocstyle - missing docstring in public method
   "D103", # pydocstyle - missing docstring in public function
   "D104", # pydocstyle - missing docstring in public package
   "D105", # pydocstyle - missing docstring in magic method
@@ -158,6 +157,7 @@ target-version = "py39"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D"]
+"src/ansys/simai/core/{api,utils}/*" = ["D102"]
 
 [tool.ruff.pydocstyle]
 convention = "google"

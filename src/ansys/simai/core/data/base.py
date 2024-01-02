@@ -253,7 +253,7 @@ class Directory(ABC, Generic[DataModelType]):
         self._registry: Dict[str, DataModel] = {}
 
     @abstractmethod
-    def get(self, id: str) -> DataModel:
+    def get(self, id: str) -> DataModel:  # noqa: D102
         pass
 
     def _model_from(

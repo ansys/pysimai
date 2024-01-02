@@ -220,6 +220,7 @@ class OptimizationTrialRunDirectory(Directory[OptimizationTrialRun]):
     _data_model = OptimizationTrialRun
 
     def get(self, trial_run_id: str):
+        """Get a specific trial run object from the server."""
         return self._model_from(self._client._api.get_optimization_trial_run(trial_run_id))
 
     def _try_geometry(

@@ -49,4 +49,5 @@ class TrainingDataPartDirectory(Directory[TrainingDataPart]):
     _data_model = TrainingDataPart
 
     def get(self, id: str) -> TrainingDataPart:
+        """Get a :class:`TrainingDataPart` object from the server."""
         return self._model_from(self._client._api.get_training_data_part(id))

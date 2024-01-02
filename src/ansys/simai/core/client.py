@@ -131,12 +131,12 @@ class SimAIClient:
         except NotFoundError:
             raise InvalidConfigurationError(
                 f"""Configured workspace {name} does not exist on the server.
-{self.available_workspaces_string}"""
+{self._available_workspaces_string}"""
             ) from None
         self._current_workspace = workspace
 
     @property
-    def available_workspaces_string(self):
+    def _available_workspaces_string(self):
         available_workspaces = [workspace.name for workspace in self.workspaces.list()]
         return f"Available workspaces are: {available_workspaces}."
 
@@ -171,16 +171,12 @@ class SimAIClient:
         except NotFoundError:
             raise InvalidConfigurationError(
                 f"""Configured project {name} does not exist on the server.
-{self.available_projects_string}"""
+{self._available_projects_string}"""
             ) from None
         self._current_project = project
 
     @property
-    def is_current_project_set(self) -> bool:
-        return self._current_project is not None
-
-    @property
-    def available_projects_string(self):
+    def _available_projects_string(self):
         available_projects = [project.name for project in self.projects.list()]
         return f"Available projects are: {available_projects}."
 
