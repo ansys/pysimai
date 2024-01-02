@@ -114,7 +114,7 @@ html_context = {
     "github_user": "ansys",
     "github_repo": "pysimai",
     "github_version": "main",
-    "doc_path": "docs",
+    "doc_path": "doc",
 }
 html_theme_options = {
     "github_url": "https://github.com/ansys/pysimai",
