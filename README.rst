@@ -41,7 +41,7 @@ At least two installation modes are provided: user and developer.
 For users
 ^^^^^^^^^
 
-In order to install Pysimai simai, make sure you
+In order to install PySimAI, make sure you
 have the latest version of `pip`_. To do so, run:
 
 .. code:: bash
