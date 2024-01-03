@@ -45,7 +45,7 @@ The :class:`~ansys.simai.core.client.SimAIClient` is the core of the SDK, all op
 
    from ansys.simai.core import SimAIClient
 
-   simai = PySimAIClient()
+   simai = SimAIClient()
 
 You will be prompted for your credentials.
 Alternative ways to authenticate are described in the :ref:`configuration section<configuration>`.
