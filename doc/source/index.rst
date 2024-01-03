@@ -43,7 +43,7 @@ The :class:`~ansys.simai.core.client.SimAIClient` is the core of the SDK, all op
 
 .. code-block:: python
 
-   from ansys.simai.core import SimAIClient
+   from ansys.simai.core.client import SimAIClient
 
    simai = SimAIClient()
 
