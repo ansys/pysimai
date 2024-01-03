@@ -12,7 +12,7 @@ PySimAI documentation
 
 Release v\ |version| (:ref:`Changelog <changelog>`)
 
-The PySimAI library is a python library for the Ansys SimAI API.
+The PySimAI library is a Python library for the Ansys SimAI API.
 With it you can manage and access your data on the platform from within Python applications and scripts.
 
 What is PySimAI ?
@@ -32,7 +32,7 @@ Install the SDK with the following command:
 
 .. code-block:: bash
 
-   pip install pysimai --upgrade
+   pip install ansys-simai-core --upgrade
 
 This same command can be used every time you want to update the PySimAI library.
 
@@ -43,9 +43,9 @@ The :class:`~ansys.simai.core.client.SimAIClient` is the core of the SDK, all op
 
 .. code-block:: python
 
-   import pysimai
+   from ansys.simai.core import SimAIClient
 
-   simai = pysimai.PySimAIClient()
+   simai = PySimAIClient()
 
 You will be prompted for your credentials.
 Alternative ways to authenticate are described in the :ref:`configuration section<configuration>`.
