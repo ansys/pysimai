@@ -2,7 +2,6 @@
 (?i)simai
 [Aa]synchronicity
 csv
-Design of Experiments
 DOE
 https_proxy
 [Nn]amespace
