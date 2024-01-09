@@ -44,10 +44,10 @@ class PostProcessing(ComputableDataModel, ABC):
     """Local representation of a PostProcessing object.
 
     This is an abstract class. Depending on the postprocessing, a different implementation
-    is returned. For more information, see :ref:`available post-processings`.
+    is returned. For more information, see :ref:`available_pp`.
     """
 
-    # NOTE for developers: New post-processings must be added to the root __init__.py file
+    # NOTE for developers: New postprocessings must be added to the root ``__init__.py`` file.
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,12 +57,12 @@ class PostProcessing(ComputableDataModel, ABC):
 
     @property
     def parameters(self) -> Optional[Dict[str, Any]]:
-        """The parameters with which this post-processing was ran."""
+        """Parameters used to run the postprocessing."""
         return self.fields["location"]
 
     @property
     def prediction_id(self) -> str:
-        """The parent prediction's id.
+        """Parent prediction's ID.
 
         See Also:
             - :attr:`prediction`: Get the parent prediction
@@ -711,7 +711,8 @@ class PostProcessingDirectory(Directory[PostProcessing]):
             raise InvalidArguments(
                 cleandoc(
                     f""""{post_processing_type}" is not a valid post-processing type.
-                    You can find the available post-processings by accessing the .post_processings.info attribute of your SimAIClient
+                    You can find the available postprocessings by accessing the
+                    ``.post_processings.info`` attribute of your SimAI client.
                     """
                 )
             )

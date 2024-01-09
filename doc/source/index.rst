@@ -100,7 +100,7 @@ For more information, see :ref:`post_processings`.
 
 You're all set. You can now learn about more advanced concepts, such as starting a
 :class:`~ansys.simai.core.client.SimAIClient` instance from a
-:ref:`configuration file<configuration>`, :ref:`exploring your data<data_exploration>`,
+:ref:`configuration file<configuration>`, :ref:`exploring your data<data_exploration>```,
 and :ref:`best practices<best_practices>`.
 
 To explore the functions and methods available to you, see :ref:`api_reference`.
