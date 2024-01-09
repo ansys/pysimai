@@ -8,9 +8,7 @@ Where to start
 --------------
 
 You start by creating a :class:`~ansys.simai.core.client.SimAIClient`
-instance. As indicated in :ref:`getting_started`, you are prompted for any missing parameters.
-
-You configure this instance by passing the required parameters on client creation:
+instance:
 
 .. code-block:: python
 
@@ -18,15 +16,19 @@ You configure this instance by passing the required parameters on client creatio
 
     simai = ansys.simai.core.SimAIClient(organization="my-company")
 
-Once you understand how this works, you can look into using a
-:ref:`configuration file<config_file>` to start a client instance.
 
+As demonstrated in the preceding example, you configure the instance by
+passing the required parameters on client creation. You are prompted
+for any missing parameters.
 
-Available options
------------------
+Once you understand how creating an instance works, you can look into using a
+:ref:`configuration file<config_file>` for creating a client instance.
 
-All configuration variables for :class:`~ansys.simai.core.client.SimAIClient`
-are documented in the following class:
+Configuration options
+---------------------
+
+Descriptions follow of all configuration options for the :class:`~ansys.simai.core.client.SimAIClient`
+class:
 
 .. autopydantic_model:: ClientConfig
   :model-show-config-summary: False
@@ -38,11 +40,10 @@ are documented in the following class:
 Credentials
 +++++++++++
 
-To use SimAI API, your :class:`~ansys.simai.core.client.SimAIClient`
+To use the SimAI API, your :class:`~ansys.simai.core.client.SimAIClient`
 instance must be authenticated. By default, you are prompted to log in
-via your web browser.
-
-However, you can pass your credentials as parameters on client creation:
+via your web browser. However, you can pass your credentials as parameters
+on client creation:
 
 .. code-block:: python
 
@@ -56,6 +57,11 @@ However, you can pass your credentials as parameters on client creation:
         },
     )
 
+Credential options
+------------------
+
+Descriptions follow of all credential options for the :class:`~ansys.simai.core.client.SimAIClient`
+class:
 .. autopydantic_model:: Credentials
   :model-show-config-summary: False
   :model-show-validator-summary: False

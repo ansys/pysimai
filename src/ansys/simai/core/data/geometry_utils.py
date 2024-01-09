@@ -52,9 +52,9 @@ def _sweep(
     if order is None:
         order = 1
     if not isinstance(order, int):
-        raise TypeError(f"The order argument must be a positive integer (passed {order})")
+        raise TypeError(f"The 'order' argument must be a positive integer (passed {order}).")
     if order < 1:
-        raise ValueError(f"The order argument must be a positive integer (passed {order})")
+        raise ValueError(f"The 'order' argument must be a positive integer (passed {order}).")
     if tolerance is None:
         tolerance = DEFAULT_COMPARISON_EPSILON
     validate_tolerance_parameter(tolerance)
@@ -68,12 +68,12 @@ def _sweep(
         swept_metadata = _enforce_as_list_passing_predicate(
             swept_metadata,
             lambda s: isinstance(s, str),
-            """The swept_metadata argument must be a geometry metadata name
-            or a list of metadata names
+            """The 'swept_metadata' argument must be a geometry metadata name
+            or a list of metadata names.
             """,
         )
 
-        # Make sure all passed variables exist in geometry metadata,
+        # Make sure all passed variables exist in geometry metadata
         # and that the data is numerical
         for variable in swept_metadata:
             if variable not in candidate_geometry.metadata:
@@ -100,7 +100,7 @@ def _sweep(
     # via multiple variables
     neighboring_geometries: Set["Geometry"] = set()
 
-    # if include_diagonal, we collect boundaries
+    # if include_diagonal, collect boundaries
     if include_diagonals:
         boundaries: Dict[str, Tuple[float, float]] = {}
 
@@ -142,11 +142,11 @@ def _sweep(
         # 3. Now keep only as many smaller and bigger buckets as `order`.
         # Keep the central values if include_center is True.
 
-        # Smaller neighbors will selected by a deque of max size=`order`:
+        # Smaller neighbors are selected by a deque of max size=`order`:
         # we push in it all the smaller values; the deque
-        # will keep only as many as we want (nb=`order`)
+        # keeps only as many as we want (nb=`order`)
         smaller_groups = collections.deque([], order)
-        # Bigger_geometries are collected in a list, by counting directly
+        # Bigger_geometries are collected in a list by counting directly
         equal_and_bigger_groups = []
         found_bigger_buckets = 0
         for bucket, geometry_group in buckets:
@@ -178,7 +178,7 @@ def _sweep(
             boundaries[checked_variable] = (min_boundary, max_boundary)
     if include_diagonals:
         # build the list of ranges matching all boundaries.
-        # selected geometries will need to match all those ranges.
+        # selected geometries must match all those ranges.
         all_ranges: Dict[str, Range] = {}
         for variable, (min_boundary, max_boundary) in boundaries.items():
             # If not include_center, we want the geometries
@@ -220,14 +220,15 @@ def _are_geometries_metadata_equal(
     tolerance: Optional[float] = None,
 ) -> bool:
     """Test if all compared metadata are equal between two geometries.
+
     If a metadata is absent, consider the comparison as false.
 
     Returns:
-        True if metadata are equal for considered columns
+        ``True`` if the metadata are equal for considered columns.
 
     Raises:
-        ValueError: if one considered column contains numerical
-            and the other non-numerical data.
+        ValueError: If one considered column contains numerical
+            data and the other column contains non-numerical data.
     """
     for variable in compared_variables:
         if variable not in left_geometry.metadata or variable not in right_geometry.metadata:
@@ -235,7 +236,7 @@ def _are_geometries_metadata_equal(
         left_val: float = left_geometry.metadata.get(variable)  # type: ignore
         right_val: float = right_geometry.metadata.get(variable)  # type: ignore
         if is_number(left_val) != is_number(right_val):
-            raise ValueError("Mixed numerical and non-numerical values in metadata {variable}")
+            raise ValueError("Mixed numerical and non-numerical values in metadata {variable}.")
         if is_number(left_val):
             if not is_equal_with_tolerance(left_val, right_val, tolerance=tolerance):
                 return False
@@ -260,7 +261,7 @@ def _geometry_matches_range_constraints(
             raise TypeError(
                 """
                 Range constraint can only be used
-                on numerical metadata"""
+                on numerical metadata."""
             )
         if not range.match_value(value):
             return False

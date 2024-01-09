@@ -43,8 +43,8 @@ class ProjectClientMixin(ApiClientMixin):
         """Update a project name.
 
         Args:
-            project_id: The id of the project to update
-            name: The new name to give to the project
+            project_id: ID of the project.
+            name: New name to give to the project.
         """
         request_json = {}
         request_json["name"] = name

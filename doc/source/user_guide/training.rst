@@ -5,18 +5,18 @@ Training
 
 .. note::
 
-   The training section is still experimental and subject to API changes.
+   Training is still experimental and subject to API changes.
 
 Before you can use the solver, you must train the SimAI solution on your prediction
 data. First, you upload your prediction data into a global pool of
 :class:`training data<ansys.simai.core.data.training_data.TrainingData>` instances
 and then assign this data to different :class:`Projects<ansys.simai.core.data.projects.Project>`
-instances, which you configure how to train your model.
+instances, which you configure for training your model.
 
 Train on prediction data
 ========================
 
-#. Start a :class:`~ansys.simai.core.client.SimAIClient` instance::
+#. Create a :class:`~ansys.simai.core.client.SimAIClient` instance::
 
      import ansys.simai.core
 
@@ -24,8 +24,8 @@ Train on prediction data
 
    You are prompted for your credentials.
 
-  If desired, you can start an instance using a configuration file. For more
-  information, see :ref:`configuration`.
+   If desired, you can create an instance using a configuration file. For more
+   information, see :ref:`configuration`.
 
 #. Upload your prediction data by creating a
    :class:`training data<ansys.simai.core.data.training_data.TrainingData>` instance
@@ -48,5 +48,5 @@ train a model.
 Learn more
 ==========
 
-Fr more information on the actions available to you, see :ref:`training_data`,
+For more information on the actions available to you, see :ref:`training_data`,
 :ref:`training_data_parts`, and :ref:`projects`.

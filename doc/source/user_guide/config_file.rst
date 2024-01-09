@@ -18,30 +18,28 @@ If no ``path`` is given, the :class:`~ansys.simai.core.client.SimAIClient`
 instance looks at default locations. These locations differ according to
 your operating system:
 
-* Linux/MacOS:
+**Linux/MacOS**
 
-  For UNIX systems the default locations are, in order :
+For UNIX systems the default locations are, in order :
 
-  * ``$XDG_CONFIG_HOME/ansys_simai.conf``
-  * ``$XDG_CONFIG_HOME/ansys/simai.conf``
-  * ``~/.ansys_simai.conf``
-  * ``~/.ansys/simai.conf``
-  * ``/etc/ansys_simai.conf``
-  * ``/etc/ansys/simai.conf``
+* ``$XDG_CONFIG_HOME/ansys_simai.conf``
+* ``$XDG_CONFIG_HOME/ansys/simai.conf``
+* ``~/.ansys_simai.conf``
+* ``~/.ansys/simai.conf``
+* ``/etc/ansys_simai.conf``
+* ``/etc/ansys/simai.conf``
 
-  .. note ::
+.. note ::
 
-    The first one found is used.
+   The first one found is used. ``$XDG_CONFIG_HOME`` defaults to ``~/.config``.
 
-    ``$XDG_CONFIG_HOME`` defaults to ``~/.config``.
+**For Windows XP**
 
-* For Windows XP:
+* ``C:\Documents and Settings\<user>\Local Settings\Application Data\Ansys\simai.conf``
 
-  * ``C:\Documents and Settings\<user>\Local Settings\Application Data\Ansys\simai.conf``
+**For Windows 7 to 11**
 
-* For Windows 7 to 11:
-
-  * ``C:\Users\<user>\AppData\Roaming\Ansys\simai.conf``
+* ``C:\Users\<user>\AppData\Roaming\Ansys\simai.conf``
 
 Optionally, you can specify the path yourself:
 
@@ -52,9 +50,9 @@ Optionally, you can specify the path yourself:
 Content
 -------
 
-The configuration file is written in `TOML <https://toml.io/>`_.
-Any parameter used to configure the :class:`~ansys.simai.core.client.SimAIClient`
-instance can be passed from the configuration file.
+You write the configuration file in `TOML <https://toml.io/>`_.
+From this file, you can pass any parameter used to configure
+the :class:`~ansys.simai.core.client.SimAIClient` instance.
 
 
 Example
@@ -74,7 +72,7 @@ Example
 Proxy
 """""
 
-If your network is situated behind a proxy, then you must add its address
+If your network is situated behind a proxy, you must add its address
 in a ``https_proxy`` key in the ```[default]``` block:
 
 .. code-block:: TOML

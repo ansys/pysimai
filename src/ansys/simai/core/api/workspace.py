@@ -28,32 +28,32 @@ from ansys.simai.core.data.types import File
 
 
 class WorkspaceClientMixin(ApiClientMixin):
-    """Client for the Workspace ("/workspaces") part of the API."""
+    """Provides the client for the Workspace ("/workspaces") part of the API."""
 
     def workspaces(self):
         """List all workspaces."""
         return self._get("workspaces/")
 
     def get_workspace(self, workspace_id: str) -> Dict[str, Any]:
-        """Gets information on a single workspace.
+        """Get information on a single workspace.
 
         Args:
-            workspace_id: The id of the workspace to get
+            workspace_id: ID of the workspace.
 
         Returns:
-            The workspace json representation.
+            JSON representation of the workspace.
 
         Raises:
-            ansys.simai.core.errors.NotFoundError: If no workspace with that id exists.
-            ansys.simai.core.errors.ApiClientError: On other HTTP errors
+            ansys.simai.core.errors.NotFoundError: If no workspace with that ID exists.
+            ansys.simai.core.errors.ApiClientError: On other HTTP errors.
         """
         return self._get(f"workspaces/{workspace_id}")
 
     def get_workspace_by_name(self, name: str):
-        """Get information on a single workspace, by name instead of id.
+        """Get information on a single workspace by name instead of ID.
 
         Args:
-            name: The name of the workspace to get
+            name: Name of the workspace.
         """
         return self._get(f"workspaces/name/{quote(name)}")
 
@@ -61,36 +61,36 @@ class WorkspaceClientMixin(ApiClientMixin):
         """Get the public part of the manifest for the given workspace.
 
         Args:
-            workspace_id: The id of the workspace whose's manifest to get
+            workspace_id: ID of the workspace.
 
         Raises:
-            ansys.simai.core.errors.NotFoundError: If no workspace with that id exists.
-            ansys.simai.core.errors.ApiClientError: On other HTTP errors
+            ansys.simai.core.errors.NotFoundError: If no workspace with that ID exists.
+            ansys.simai.core.errors.ApiClientError: On other HTTP errors.
         """
         return self._get(f"workspaces/{workspace_id}/model/manifest/public")
 
     def create_workspace(self, name: str, model_id: str, **kwargs):
-        """Creates a new workspace.
+        """Create a workspace.
 
         Args:
-            name: The name to give to the new workspace
-            model_id: id of the model that the workspace will use
-            **kwargs: Additional arguments for the workspace creation
+            name: Name to give to the new workspace.
+            model_id: ID of the model that the workspace is to use.
+            **kwargs: Additional arguments for the workspace creation.
 
         Returns:
-            The new workspace's json representation.
+            JSON representation of the new workspace.
         """
         return self._post("workspaces/", json={"name": name, "model": model_id, **kwargs})
 
     def delete_workspace(self, workspace_id: str):
-        """Deletes workspace.
+        """Delete a workspace.
 
         Args:
-            workspace_id: The id of the workspace to delete.
+            workspace_id: ID of the workspace.
 
         Raises:
-            ansys.simai.core.errors.NotFoundError: If no workspace with that id exists.
-            ansys.simai.core.errors.ApiClientError: On other HTTP errors
+            ansys.simai.core.errors.NotFoundError: If no workspace with that ID exists.
+            ansys.simai.core.errors.ApiClientError: On other HTTP errors.
         """
         return self._delete(f"workspaces/{workspace_id}")
 

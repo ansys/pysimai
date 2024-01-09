@@ -1,11 +1,11 @@
 .. _design_of_experiments:
 
-Design of Experiments
+Design of experiments
 =====================
 
 .. py:module:: ansys.simai.core.data.design_of_experiments
 
-This collection contain methods for exporting your Design of Experiments (DOEs)
+This module contains methods for exporting design of experiments (DOEs)
 in different formats.
 
 .. autoclass:: DesignOfExperimentsCollection()

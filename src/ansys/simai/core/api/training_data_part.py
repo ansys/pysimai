@@ -29,15 +29,16 @@ class TrainingDataPartClientMixin(ApiClientMixin):
     def create_training_data_part(
         self, training_data_id: str, name: str, extension: str
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """Creates a new part under the given training data, without uploading the data.
+        """Create a part under the given training data without uploading the data.
 
         Args:
-            training_data_id: The parent TrainingData
-            name: The name of the part to create
-            extension: The extension of the file/part
+            training_data_id: ID of the parent training data.
+            name: Name of the part to create.
+            extension: Extension of the file or part.
 
         Returns:
-            A tuple containing the TrainingDataPart object and the upload id to use for further requests.
+            Tuple containing the ``TrainingDataPart`` object and the upload ID
+            to use for further requests.
         """
         post_data = {"name": name, "file_extension": extension}
         response = self._post(f"training_data/{training_data_id}/parts/", json=post_data)

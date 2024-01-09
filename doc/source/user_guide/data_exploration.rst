@@ -3,7 +3,7 @@
 Data exploration
 ================
 
-The SimAI client provides utilities to help you run a large amount of predictions and
+The SimAI client provides utilities to help you run a large number of predictions and
 postprocessings, explore your data, and gather insights from it.
 
 Selections
@@ -45,7 +45,7 @@ different strategies:
 - The :meth:`GeometryDirectory.list<ansys.simai.core.data.geometries.GeometryDirectory.list>`
   method, which is described in :ref:`filtering_geometries`.
 
-For more information, see :ref:`selections` in the API reference documentation.
+For more information on selection methods, see :ref:`selections`.
 
 .. _sweeping:
 
@@ -54,8 +54,8 @@ Sweeping
 
 The :meth:`geometry.sweep<ansys.simai.core.data.geometries.Geometry.sweep>` method allows you
 to explore the surroundings of a given geometry, which can help with local optimization or
-gradient descent. This method finds geometries that have metadata closest to the candidate
-geometry (only for numerical metadata).
+gradient descent. This method, only for numerical metadata, finds geometries that have
+metadata closest to the candidate geometry.
 
 .. code-block:: python
 

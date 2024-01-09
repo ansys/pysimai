@@ -26,14 +26,14 @@ import requests
 
 
 class SimAIError(Exception):
-    """Base exception for all errors of the SimAI SDK.
+    """Provides the base exception for all errors of the SimAI client.
 
-    To catch any expected error that it might throw, use this exception.
+    To catch any expected error that the client might throw, use this exception.
     """
 
 
 class ApiClientError(SimAIError, requests.exceptions.HTTPError):
-    """HTTP Error from the SimAi API."""
+    """HTTP error from the SimAI API."""
 
     def __init__(self, message: str, response=None):
         super(ApiClientError, self).__init__(message, response=response)
@@ -45,7 +45,7 @@ class ApiClientError(SimAIError, requests.exceptions.HTTPError):
 
 
 class NotFoundError(ApiClientError):
-    """The required resource was found on the server."""
+    """Required resource was not found on the server."""
 
 
 class ConnectionError(SimAIError, requests.exceptions.ConnectionError):
@@ -53,19 +53,19 @@ class ConnectionError(SimAIError, requests.exceptions.ConnectionError):
 
 
 class ConfigurationError(SimAIError):
-    """The SDK could not be configured properly."""
+    """Client could not be configured properly."""
 
 
 class ConfigurationNotFoundError(ConfigurationError):
-    """The configuration file does not exist."""
+    """Configuration file does not exist."""
 
 
 class InvalidConfigurationError(ConfigurationError, ValueError):
-    """The given configuration is not valid."""
+    """Given configuration is not valid."""
 
 
 class ProcessingError(SimAIError):
-    """The data could not be processed."""
+    """Data could not be processed."""
 
 
 class InvalidArguments(SimAIError, ValueError):
@@ -73,11 +73,11 @@ class InvalidArguments(SimAIError, ValueError):
 
 
 class InvalidClientStateError(SimAIError):
-    """The client's state is invalid."""
+    """Client's state is invalid."""
 
 
 class InvalidServerStateError(SimAIError):
-    """The server's state is invalid."""
+    """Server's state is invalid."""
 
 
 class MultipleErrors(SimAIError):
@@ -94,9 +94,10 @@ def _map_despite_errors(
     function: Callable[[T], Any],
     iterable: Iterable[T],
 ):
-    """Like map(), applies the function for each item in iterable and return the result.
-    On exception, it will continue with next items,
-    and at the end raise either the exception or a MultipleError.
+    """Like the map() method, this method applies the function for
+    each item in the iterable and returns the result. On an exception,
+    it continue with the next items. At the end, it raises either the
+    exception or the ``MultipleError`` exception.
     """
     results: List[T] = []
     errors: List[SimAIError] = []
@@ -117,9 +118,10 @@ def _foreach_despite_errors(
     procedure: Callable[[T], None],
     iterable: Iterable[T],
 ):
-    """Applies the procedure for each item in iterable.
-    On exception, it will continue with next items,
-    and at the end raise either the exception or a MultipleError.
+    """This method applies the procedure for each item in the
+    iterable. On an exception, it continues with the next items.
+    At the end, it raises either the exception or the ``MultipleError``
+    exception.
     """
     errors = []
     for item in iterable:

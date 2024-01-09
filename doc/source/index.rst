@@ -82,7 +82,7 @@ The :class:`PredictionPostProcessing<ansys.simai.core.data.post_processings.Pred
 class provides for postprocessing and analzing your prediction data.
 
 You use the :attr:`~ansys.simai.core.data.predictions.Prediction.post`
-attribute of the prediction to run  the postprocessing and get its data:
+attribute of the prediction to run  the postprocessing and access its data:
 
 .. code-block:: python
 

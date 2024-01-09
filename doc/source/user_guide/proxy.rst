@@ -27,9 +27,9 @@ Troubleshooting
 ~~~~~~~~~~~~~~~
 
 If you get an error of the type ``ProxyError([...], SSLCertVerificationError([...]``,
-it is likely that your proxy setup looks like ``|computer|<-https->|proxy|<-https->|internet|``,
+it is likely that your proxy setup looks like ``|computer|<-https->|proxy|<-https->|internet|``.
 Because your web browser uses a special
-`proxy auto-configuration <https://en.wikipedia.org/wiki/Proxy_auto-config>`__) file, the
+`proxy auto-configuration <https://en.wikipedia.org/wiki/Proxy_auto-config>`_ file, the
 proxy is not trusted by your computer.
 
 To fix the issue:
@@ -37,12 +37,12 @@ To fix the issue:
 1. Extract the certificates used by your company-configured browser on ``https://simai.ansys.com``.
 2. Set the ``REQUESTS_CA_BUNDLE`` environment variable:
 
-  .. code:: python
+   .. code:: python
 
-    import os
-    from pathlib import Path
+     import os
+     from pathlib import Path
 
-    os.environ["REQUESTS_CA_BUNDLE"] = Path(
-        "~/Downloads/ansys-simai-chain.pem"
-    ).expanduser()
-    client = ansys.simai.core.from_config()
+     os.environ["REQUESTS_CA_BUNDLE"] = Path(
+         "~/Downloads/ansys-simai-chain.pem"
+     ).expanduser()
+     client = ansys.simai.core.from_config()

@@ -52,9 +52,9 @@ logger = logging.getLogger(__name__)
 
 
 class SimAIClient:
-    """A client to communicate with SimAI API.
+    """Provide the client for communicating with the SimAI API.
 
-    Keyword Args: see :class:`~ansys.simai.core.utils.configuration.ClientConfig`
+    Keyword Args: See the :class:`~ansys.simai.core.utils.configuration.ClientConfig` class.
 
     Example:
         .. code-block:: python
@@ -94,11 +94,11 @@ class SimAIClient:
 
     @property
     def current_workspace(self) -> Workspace:
-        """The workspace currently used in the SDK session.
+        """Workspace currently used by the SimAI client.
 
-        Note:
-            It is recommended not set this directly. Instead use the :meth:`set_current_workspace`
-                method which uses the workspace name and also ensures the workspace exists.
+        .. note::
+            You should not set the workspace directly. Instead, use the :meth:`set_current_workspace`
+            method, which uses the workspace name and also ensures that the workspace exists.
         """
         if self._current_workspace is None:
             raise InvalidClientStateError("Current workspace is not set.")
@@ -109,10 +109,10 @@ class SimAIClient:
         self._current_workspace = workspace
 
     def set_current_workspace(self, name: str):
-        """Set the current workspace for the SimAIClient.
+        """Set the current workspace for the SimAI client.
 
         Args:
-            name: The name of the workspace the client should switch to.
+            name: Name of the workspace that the client should switch to.
 
         Example:
             .. code-block:: python
@@ -127,7 +127,7 @@ class SimAIClient:
         try:
             # Ensure the workspace exists
             workspace = self.workspaces.get(name=name)
-            logger.info(f"Workspace set to {name}")
+            logger.info(f"Workspace set to {name}.")
         except NotFoundError:
             raise InvalidConfigurationError(
                 f"""Configured workspace {name} does not exist on the server.
@@ -142,11 +142,11 @@ class SimAIClient:
 
     @property
     def current_project(self) -> Project:
-        """The project currently used in the SDK session.
+        """Project currently used by the SimAPI client.
 
-        Note:
-            It is recommended not set this directly. Instead use the :meth:`set_current_project`
-                method which uses the project name and also ensures the project exists.
+        .. note::
+            You should not set the project directly. Instead, use the :meth:`set_current_project`
+            method, which uses the project name and also ensures that the project exists.
         """
         if self._current_project is None:
             raise InvalidClientStateError("Current project is not set.")
@@ -157,12 +157,13 @@ class SimAIClient:
         self._current_project = project
 
     def set_current_project(self, name: str):
-        """Sets the current project for the SimAIClient.
+        """Set the current project for the SimAI client.
 
-        Affects how some methods related to projects or associated data will behave.
+        This method affects how some methods related to projects or associated
+        data behave.
 
         Args:
-            name: The name of the project the client should switch to.
+            name: Name of the project that the client should switch to.
         """
         try:
             # Ensure the project exists
@@ -184,7 +185,7 @@ class SimAIClient:
     def geometries(self):
         """Representation of all geometries on the server.
 
-        More details in the :doc:`geometries documentation <geometries>`.
+        For more information, see :doc:`Geometries <geometries>`.
         """
         return self._geometry_directory
 
@@ -192,7 +193,7 @@ class SimAIClient:
     def optimizations(self):
         """Representation of all optimizations on the server.
 
-        More details in the :doc:`optimization documentation <optimizations>`.
+        For more information, see :doc:`Optimization <optimizations>`.
         """
         return self._optimization_directory
 
@@ -200,7 +201,7 @@ class SimAIClient:
     def training_data(self):
         """Representation of all training data on the server.
 
-        More details in the :doc:`training data documentation<training_data>`.
+        For more information, see :doc:`TrainingData<training_data>`.
         """
         return self._training_data_directory
 
@@ -208,7 +209,7 @@ class SimAIClient:
     def training_data_parts(self):
         """Representation of all training data parts on the server.
 
-        More details in the :doc:`training data parts documentation<training_data_parts>`.
+        For more information, see :doc:`TrainingDataParts<training_data_parts>`.
         """
         return self._training_data_part_directory
 
@@ -216,15 +217,15 @@ class SimAIClient:
     def predictions(self):
         """Representation of all predictions on the server.
 
-        More details in the :doc:`predictions documentation <predictions>`.
+        For more information, see :doc:`Predictions <predictions>`.
         """
         return self._prediction_directory
 
     @property
     def post_processings(self):
-        """Representation of all post-processings on the server.
+        """Representation of all postprocessings on the server.
 
-        More details in the :doc:`post-processings documentation <post_processings>`
+        For more information, see :doc:`Postprocessings <post_processings>`.
         """
         return self._post_processing_directory
 
@@ -232,15 +233,15 @@ class SimAIClient:
     def projects(self):
         """Representation of all projects on the server.
 
-        More details in the :doc:`projects documentations <projects>`
+        For more information, see :doc:`Projects <projects>`.
         """
         return self._project_directory
 
     @property
     def design_of_experiments(self):
-        """Methods allowing to export design of experiments.
+        """Methods for exporting design of experiments.
 
-        More details in the :doc:`design of experiments documentation <design_of_experiments>`
+        For more information, see :doc:`Design of Experiments <design_of_experiments>`.
         """
         return self._doe_collection
 
@@ -248,7 +249,7 @@ class SimAIClient:
     def workspaces(self):
         """Representation of all workspaces on the server.
 
-        More details in the :doc:`workspaces documentation <workspaces>`.
+        For more information, see :doc:`Workspaces <workspaces>`.
         """
         return self._workspace_directory
 
@@ -259,28 +260,28 @@ class SimAIClient:
         path: Optional[Path] = None,
         **kwargs,
     ) -> "SimAIClient":
-        """Initialize a `SimAIClient` by reading a configuration file.
+        """Initializes a SimAI client by reading a configuration file.
 
-        You can provide the path of the config to load. If no path is given it will look
-        at default locations.
+        You can provide the path of the configuration file to load. If no path is
+        given, it looks at the default locations.
 
-        For more information on the configuration, see :ref:`Configuration File<config_file>`.
+        For more information, see :ref:`Configuration file<config_file>`.
 
-        ``kwargs`` can be used to override part of the configuration.
+        You can use ``kwargs`` to override part of the configuration.
 
         Args:
-            profile: The profile to load from the configuration, the `default` profile
-                will be loaded if not provided
-            path: The path at which the configuration is located.
-            **kwargs: Additional arguments to pass to the `SimAiClient`
+            profile: Profile to load from the configuration file. The default profile
+                is loaded if a profile is not provided.
+            path: Path for the configuration file.
+            **kwargs: Additional arguments to pass to the SimAI client.
 
         Returns:
-            A configured client.
+            Configured client.
 
         Raises:
             ConfigurationNotFoundError: No configuration file was found at the given location
-                or defaults location if no path was given.
-            InvalidConfigurationError: The configuration is invalid or incomplete.
+                or the default profile if no path was given.
+            InvalidConfigurationError: Configuration is invalid or incomplete.
 
         Example:
             After setting up your :ref:`configuration file.<config_file>`
@@ -291,19 +292,20 @@ class SimAIClient:
 
                 simai = ansys.simai.core_from_config()
 
-        .. note:: The default paths are only supported on Unix systems.
+        .. note::
+            The default paths are only supported on Unix systems.
         """
         return cls(**get_config(path, profile, **kwargs))
 
     def wait(self) -> None:
         """Wait for all the ongoing operations
-        on locally known predictions and post-processings
+        on locally known predictions and postprocessings
         to finish.
 
 
         Raises:
-            :exception:`SimAIError`: if something went wrong on an operation.
-            :exception:`MultipleErrors`: if things when wrong on multiple operations
+            :exception:`SimAIError`: If something went wrong on an operation.
+            :exception:`MultipleErrors`: If things went wrong on multiple operations.
         """
         errors: List[Exception] = []
         for directory in [self.predictions, self.post_processings]:
@@ -330,7 +332,7 @@ class SimAIClient:
             if version_current < version_latest:
                 warn_template = (
                     f"A new version of {client_name} is %s. "
-                    "Please upgrade to get new features and ensure compatibility with the server."
+                    "Upgrade to get new features and ensure compatibility with the server."
                 )
                 if (
                     version_current.major < version_latest.major

@@ -71,14 +71,14 @@ class DataModel:
 
     @property
     def id(self) -> str:
-        """The id of the object on the server."""
+        """ID of the object on the server."""
         # Uses the :py:attr:`id_key` to determine the name of the id.
         # :py:attr:`id_key` defaults to id
         return self._fields[self.id_key]
 
     @property
     def fields(self) -> dict:
-        """A dictionary containing the raw object representation."""
+        """Dictionary containing the raw object representation."""
         return self._fields
 
     @fields.setter
@@ -96,7 +96,7 @@ class DataModel:
 
 
 class ComputableDataModel(DataModel):
-    """Base class for all computable models whose creation eventually succeeds or fails."""
+    """Provides the base class for all computable models whose creation eventually succeeds or fails."""
 
     def __init__(
         self,
@@ -135,7 +135,8 @@ class ComputableDataModel(DataModel):
     @property
     def is_pending(self):
         """Boolean indicating the object is still in creation.
-        Becomes False once it is either successful or has failed.
+        The value becomes ``False`` once object creation is either successful
+        or has failed.
 
         See Also:
             - :meth:`~wait`
@@ -162,7 +163,7 @@ class ComputableDataModel(DataModel):
 
     @property
     def is_ready(self):
-        """Boolean indicating if the object is finished creating without error.
+        """Boolean indicating if the object has finished creating without error.
 
         See Also:
             - :meth:`~wait`
@@ -173,8 +174,8 @@ class ComputableDataModel(DataModel):
 
     @property
     def failure_reason(self):
-        """Optional message that can detail the causes of the failure
-        of the creation of the object.
+        """Optional message giving the causes for why the
+        creation of the object failed.
 
         See Also:
             - :attr:`~has_failed`
@@ -187,9 +188,9 @@ class ComputableDataModel(DataModel):
         return f"{self._classname} id {self.id} failed {reason_str}"
 
     def _set_is_over(self):
-        """Sets the object as idle, that is without loading,
+        """Set the object as idle, that is without loading
         (either because loading finished or failed),
-        meaning a wait() will return immediately.
+        meaning a wait() returns immediately.
         """
         self._is_over.set()
 
@@ -198,10 +199,10 @@ class ComputableDataModel(DataModel):
         or fail.
 
         Args:
-            timeout: maximum amount of time to wait in seconds (defaults to unlimited)
+            timeout: Maximum amount of time in seconds to wat. The default is unlimited.
 
         Returns:
-            True if the computation is over. False if the operation timed out.
+            ``True`` if the computation has finished. ``False`` if the operation timed out.
         """
         is_done = self._is_over.wait(timeout)
         if self.has_failed:
@@ -243,12 +244,12 @@ class Directory(ABC, Generic[DataModelType]):
         self._client = client
 
         # Registry for known objects of this type that have been created
-        # locally. It is used to ensure only 1 instance of a particular class
-        # exists with a given id.
+        # locally. It is used to ensure that only one instance of a particular class
+        # exists with a given ID.
         # Note that this dictionary must retain all models created locally
         # without relying on the user to keep a reference on them
-        # (meaning e.g. WeakValueDictionary is not appropriate),
-        # as he will expect simai.wait() to work on any object, even those
+        # (meaning for example that WeakValueDictionary is not appropriate),
+        # as the use expects simai.wait() to work on any object, even those
         # with no explicit reference.
         self._registry: Dict[str, DataModel] = {}
 
@@ -261,13 +262,13 @@ class Directory(ABC, Generic[DataModelType]):
     ) -> DataModel:
         # _model_from overrides object data (fields),
         # thus it is, and should, only be called with
-        # complete data from the server, i.e. from a GET request.
+        # complete data from the server, such as from a GET request.
         if "id" not in data:
             raise ValueError("Cannot instantiate data object without an id")
         item_id = data["id"]
         if item_id in self._registry:
-            # An instance with this id already exists: update and return it,
-            # so we don't have two objects with different data
+            # An instance with this ID already exists: Update and return it,
+            # so there are not two objects with different data.
             item = self._registry[item_id]
             # update with new data
             item.fields = data
@@ -279,13 +280,13 @@ class Directory(ABC, Generic[DataModelType]):
         return item
 
     def _unregister_item(self, item: DataModel):
-        """Removes the item from the internal registry,
+        """Remove the item from the internal registry,
         mainly after a deletion.
         """
         self._unregister_item_with_id(item.id)
 
     def _unregister_item_with_id(self, item_id: str):
-        """Removes the item from the internal registry,
+        """Remove the item from the internal registry,
         mainly after a deletion.
         """
         item = self._registry.pop(item_id, None)
@@ -307,14 +308,14 @@ class Directory(ABC, Generic[DataModelType]):
         elif data["type"] == "resource" and isinstance(item, UploadableResourceMixin):
             item._handle_resource_sse_event(data)
         else:
-            logger.error("Received a server update that could not be interpreted")
+            logger.error("Received a server update that could not be interpreted.")
 
     def _all_objects(self):
         return self._registry.values()
 
 
 class UploadableResourceMixin:
-    """Class used to expand DataModel with support for resource type message from SSE."""
+    """Provides the class used to expand ``DataModel`` with support for a resource type message from SSE."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -335,4 +336,4 @@ class UploadableResourceMixin:
                 f"Could not complete upload because: {data.get('reason', 'Upload failed')}"
             )
         else:
-            logger.error("Invalid resource state")
+            logger.error("Invalid resource state.")
