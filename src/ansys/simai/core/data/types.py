@@ -248,15 +248,19 @@ def get_id_from_identifiable(
     elif default:
         return get_id_from_identifiable(default, required)
     elif required:
-        raise InvalidArguments(f"Argument {identifiable} is neither a model nor an id string.")
+        raise InvalidArguments(f"Argument {identifiable} is neither a data model nor an id string.")
 
 
 def get_object_from_identifiable(
-    identifiable: Identifiable[DataModelType], directory: Directory
+    identifiable: Optional[Identifiable],
+    directory: Directory,
+    default: Optional[Identifiable] = None,
 ) -> DataModel:
     if isinstance(identifiable, DataModel):
         return identifiable
     elif isinstance(identifiable, str):
         return directory.get(id=identifiable)
+    elif default:
+        return get_object_from_identifiable(default, directory)
     else:
-        raise InvalidArguments(f"Argument {identifiable} is neither a model nor an id string.")
+        raise InvalidArguments(f"Argument {identifiable} is neither a data model nor an id string.")
