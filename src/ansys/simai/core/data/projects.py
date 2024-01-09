@@ -123,10 +123,10 @@ class ProjectDirectory(Directory[Project]):
         else:
             raise InvalidArguments("Either name or id argument should be specified")
 
-    def delete(self, id: str) -> None:
+    def delete(self, project: Identifiable[Project]) -> None:
         """Deletes a project.
 
         Args:
-            id: The id of the project to delete
+            project: The id or :class:`model <Project>` of the project to delete
         """
-        self._client._api.delete_project(id)
+        self._client._api.delete_project(get_id_from_identifiable(project))

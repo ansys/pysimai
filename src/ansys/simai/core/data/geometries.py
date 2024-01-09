@@ -29,12 +29,16 @@ from ansys.simai.core.data.geometry_utils import _geometry_matches_range_constra
 from ansys.simai.core.data.types import (
     BoundaryConditions,
     File,
+    Identifiable,
     MonitorCallback,
     NamedFile,
     Range,
     build_boundary_conditions,
+    get_id_from_identifiable,
+    get_object_from_identifiable,
     unpack_named_file,
 )
+from ansys.simai.core.data.workspaces import Workspace
 from ansys.simai.core.errors import InvalidArguments
 
 if TYPE_CHECKING:
@@ -289,18 +293,20 @@ class GeometryDirectory(Directory[Geometry]):
 
     def list(
         self,
-        workspace_id: Optional[str] = None,
+        workspace: Optional[Identifiable[Workspace]] = None,
         filters: Optional[Dict[str, Union[str, float, Range]]] = None,
     ) -> List[Geometry]:
         """List geometries from the server that belong to the currently set workspace or the specified one.
 
         Args:
-            workspace_id: Id of the workspace to list geometries for. Necessary if no workspace is set for the client.
+            workspace: The id or :class:`model <.workspaces.Workspace>` of the workspace to list geometries for.
+                Necessary if no global workspace is set for the client.
             filters: Optional filters. Only the elements with matching key-values in
                 their metadata will be returned. Each filter can be either:
+
                 - a string
                 - a numerical value (int or float)
-                - a :py:class:`Range`, to filter values matching a given numerical range of values
+                - a :class:`Range`, to filter values matching a given numerical range of values
 
         Returns:
             The list of all or filtered geometries on the server.
@@ -308,8 +314,8 @@ class GeometryDirectory(Directory[Geometry]):
         Raises:
             TypeError: if a Range condition is applied on non-numerical metadata
         """
-        if not workspace_id:
-            workspace_id = self._client.current_workspace.id
+        workspace_id = get_id_from_identifiable(workspace, default=self._client._current_workspace)
+
         # for now we filter ranges locally, so we filter
         # local filters (ranges) from server filters (everything else)
         ranges: Dict[str, Range] = {}
@@ -352,7 +358,7 @@ class GeometryDirectory(Directory[Geometry]):
         self,
         name: Optional[str] = None,
         id: Optional[str] = None,
-        workspace_id: Optional[str] = None,
+        workspace: Optional[Identifiable[Workspace]] = None,
     ) -> Geometry:
         """Get a specific geometry object from the server, by name or by id.
 
@@ -360,14 +366,14 @@ class GeometryDirectory(Directory[Geometry]):
         Args:
             name: The name of the geometry to get, optional.
             id: The id of the geometry to get, optional
-            workspace_id: The id of the workspace containing the geometry. Only necessary if using
-                name and no workspace is set for the client
+            workspace: The id or :class:`model <.workspaces.Workspace>` of the workspace containing the geometry.
+                Necessary when using name and no global workspace is set for the client
 
         Returns:
             A :py:class:`Geometry`
 
         Raises:
-            ValueError: If neither name nor id is given
+            InvalidArguments: If neither name nor id is given
             NotFoundError: No geometry with the given name or id exists
 
         Examples:
@@ -388,22 +394,26 @@ class GeometryDirectory(Directory[Geometry]):
                     geometry = simai.geometries.get(id="abcdef12")
         """
         if name and id:
-            raise ValueError("Name and Id cannot be both specified.")
+            raise InvalidArguments("Name and Id cannot be both specified.")
         if name:
-            if not workspace_id:
-                workspace_id = self._client.current_workspace.id
-            return self._model_from(self._client._api.get_geometry_by_name(name, workspace_id))
+            return self._model_from(
+                self._client._api.get_geometry_by_name(
+                    name,
+                    get_id_from_identifiable(workspace, default=self._client._current_workspace),
+                )
+            )
         if id:
             return self._model_from(self._client._api.get_geometry(id))
-        raise ValueError("Either the name or the id must be specified.")
+        raise InvalidArguments("Either the name or the id must be specified.")
 
-    def delete(self, geometry_id: str) -> None:
+    def delete(self, geometry: Identifiable[Geometry]) -> None:
         """Delete a specific geometry and its data from the server.
+
         All the objects associated to this geometry (predictions and post-processings)
         are also deleted.
 
         Args:
-            geometry_id: The id of the geometry to delete
+            geometry: The id or :class:`model <Geometry>` of the geometry to delete
 
         Raises:
             NotFoundError: No geometry with the given id exists
@@ -411,14 +421,15 @@ class GeometryDirectory(Directory[Geometry]):
         See Also:
             :func:`Geometry.delete`
         """
-        self._client._api.delete_geometry(geometry_id)
+        self._client._api.delete_geometry(get_id_from_identifiable(geometry))
 
     def upload(  # noqa: D417
         self,
         file: NamedFile,
         metadata: Optional[Dict[str, Any]] = None,
-        workspace_id: Optional[str] = None,
+        workspace: Optional[Identifiable[Workspace]] = None,
         monitor_callback: Optional[MonitorCallback] = None,
+        **kwargs,
     ) -> Geometry:
         """Upload a geometry to SimAI's platform.
 
@@ -427,8 +438,8 @@ class GeometryDirectory(Directory[Geometry]):
                 See :class:`~ansys.simai.core.data.types.NamedFile` for more details.
             metadata: Optional metadatas to add to the geometry, simple key-value store.
                 Lists and nested objects are not supported.
-            workspace_id: Id of the workspace in which the geometry will be uploaded,
-                only necessary if no workspace is set for the client.
+            workspace: The id or :class:`model <.workspaces.Workspace>` in which the geometry will be uploaded.
+                Necessary if no workspace is set for the client.
             monitor_callback: An optional callback to monitor the progress of the download.
                 See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
 
@@ -436,8 +447,7 @@ class GeometryDirectory(Directory[Geometry]):
         Returns:
             The created :py:class:`Geometry` object
         """
-        if not workspace_id:
-            workspace_id = self._client.current_workspace.id
+        workspace_id = get_id_from_identifiable(workspace, default=self._client._current_workspace)
         workspace = self._client.workspaces.get(workspace_id)
         with unpack_named_file(file) as (readable_file, name, extension):
             if extension not in workspace.model.geometry["accepted_file_formats"]:
@@ -459,14 +469,14 @@ class GeometryDirectory(Directory[Geometry]):
 
     def download(
         self,
-        geometry_id: str,
+        geometry: Identifiable[Geometry],
         file: Optional[File] = None,
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> Union[None, BinaryIO]:
         """Downloads the geometry with the given id into the file at the given path.
 
         Args:
-            geometry_id: The id of the geometry to download
+            geometry: The id or :class:`model <Geometry>` of the geometry to download
             file: An optional binary file-object or the path of the file to put the
                 content into
             monitor_callback: An optional callback to monitor the progress of the download.
@@ -478,11 +488,13 @@ class GeometryDirectory(Directory[Geometry]):
         See Also:
             :func:`Geometry.download`
         """
-        return self._client._api.download_geometry(geometry_id, file, monitor_callback)
+        return self._client._api.download_geometry(
+            get_id_from_identifiable(geometry), file, monitor_callback
+        )
 
     def sweep(
         self,
-        candidate_geometry: "Geometry",
+        candidate_geometry: Identifiable[Geometry],
         swept_metadata: Optional[Union[str, List[str]]] = None,
         fixed_metadata: Optional[List[str]] = None,
         geometries: Optional[List["Geometry"]] = None,
@@ -507,6 +519,9 @@ class GeometryDirectory(Directory[Geometry]):
         See Also:
             :func:`Geometry.sweep`
         """
+        candidate_geometry = get_object_from_identifiable(
+            candidate_geometry, self._client.geometries
+        )
         return candidate_geometry.sweep(
             swept_metadata=swept_metadata,
             fixed_metadata=fixed_metadata,
