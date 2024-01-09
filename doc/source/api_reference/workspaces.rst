@@ -5,11 +5,11 @@ Workspaces
 
 .. py:module:: ansys.simai.core.data.workspaces
 
-Workspaces are a set of specific geometries, predictions and post-processings.
+Workspaces are a set of specific geometries, predictions, and postprocessings.
 Each workspace uses a specific kernel.
 
-To set which workspace the client is configured for, please refer to
-:meth:`SimAIClient.set_current_workspace() method<ansys.simai.core.client.SimAIClient.set_current_workspace>`
+You use the :meth:`SimAIClient.set_current_workspace() method<ansys.simai.core.client.SimAIClient.set_current_workspace>`
+method to set the workspace that the client is configured for.
 
 Directory
 ---------
@@ -24,8 +24,8 @@ Model
     :members:
     :inherited-members:
 
-ModelManifest
--------------
+Model manifest
+--------------
 
 .. autoclass:: ModelManifest()
     :members:

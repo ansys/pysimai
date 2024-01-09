@@ -1,19 +1,19 @@
 .. _data_exploration:
 
-Data Exploration
+Data exploration
 ================
 
-The SimAI SDK provides utilities to help you run a large amount of predictions and post-processings,
-explore your data and gather insights from it.
+The SimAI client provides utilities to help you run a large amount of predictions and
+postprocessings, explore your data, and gather insights from it.
 
 Selections
 ----------
 
-:class:`Selections<ansys.simai.core.data.selections.Selection>` enable you to manipulate a large number of
-geometries and boundary conditions simultaneously.
-It allows you to easily run many predictions or post-processings in parallel.
+The :class:`Selection<ansys.simai.core.data.selections.Selection>` class enables you to
+manipulate a large number of geometries and boundary conditions simultaneously. It also
+allows you to easily run many predictions or postprocessings in parallel.
 
-A Selection is created by combining a list of geometries with a list of boundary conditions.
+You create a selection by combining a list of geometries with a list of boundary conditions:
 
 .. code-block:: python
 
@@ -37,16 +37,25 @@ A Selection is created by combining a list of geometries with a list of boundary
        for global_coefficients in selection.post.global_coefficients()
    ]
 
-You can dive deeper in the :ref:`selections page<selections>`
+To help build selections, the Sim AI client exposes two methods that are useful for
+different strategies:
+
+- The :meth:`geometry.sweep<ansys.simai.core.data.geometries.Geometry.sweep>` method, which
+  is described in :ref:`sweeping`.
+- The :meth:`GeometryDirectory.list<ansys.simai.core.data.geometries.GeometryDirectory.list>`
+  method, which is described in :ref:`filtering_geometries`.
+
+For more information, see :ref:`selections` in the API reference documentation.
+
+.. _sweeping:
 
 Sweeping
 --------
 
-To help building selections, the SimAIClient exposes two methods that are useful for different strategies:
-The :meth:`geometry.sweep<ansys.simai.core.data.geometries.Geometry.sweep>` method aims to explore the surroundings
-of a given geometry and can help with local optimization or gradient descent.
-It finds geometries which have metadata closest to the candidate geometry
-(only for numerical metadata).
+The :meth:`geometry.sweep<ansys.simai.core.data.geometries.Geometry.sweep>` method allows you
+to explore the surroundings of a given geometry, which can help with local optimization or
+gradient descent. This method finds geometries that have metadata closest to the candidate
+geometry (only for numerical metadata).
 
 .. code-block:: python
 
@@ -56,11 +65,14 @@ It finds geometries which have metadata closest to the candidate geometry
    # with which a selection can be built:
    selection = Selection(neighbour_geometries, [dict(Vx=13.4)])
 
+.. _filtering_geometries:
+
 Filtering geometries
 --------------------
 
-The :meth:`GeometryDirectory.list<ansys.simai.core.data.geometries.GeometryDirectory.list>` method enables to take a
-more brute-force approach, by allowing to select large swaths of geometries with range filters.
+The :meth:`GeometryDirectory.list<ansys.simai.core.data.geometries.GeometryDirectory.list>` method
+allows you to take a more brute-force approach. With this method, you can select large swaths of
+geometries with range filters.
 
 .. code-block:: python
 
@@ -68,4 +80,4 @@ more brute-force approach, by allowing to select large swaths of geometries with
 
    geometries = simai.geometries.list(filters={"SINK": Range(-5.1, -4.8)})
 
-Geometry exploration methods are described in the :ref:`geometries page<geometries>`
+For more information on geometry exploration methods, see :ref:`geometries`.

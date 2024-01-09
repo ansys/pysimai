@@ -1,11 +1,13 @@
 .. _training_data_parts:
 
-Training Data Part
+Training data part
 ==================
 
 .. py:module:: ansys.simai.core.data.training_data_parts
 
-A TrainingDataPart is a singular file, part of a :class:`~ansys.simai.core.data.training_data.TrainingData`.
+A :class:`parts<ansys.simai.core.data.training_data_parts.TrainingDataPart>` instance
+is a singular file that is part of a :class:`~ansys.simai.core.data.training_data.TrainingData`
+instance.
 
 Directory
 ---------

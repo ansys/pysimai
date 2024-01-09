@@ -3,12 +3,13 @@
 Working behind a proxy
 ======================
 
-By default, the SDK will attempt to get your proxy configuration from your system if there is any.
+By default, the SimAI client attempts to get your proxy configuration, if any, from your system.
 
-SDK configuration
-+++++++++++++++++
+SimAI client configuration
+++++++++++++++++++++++++++
 
-You can manually set a proxy for the SDK when creating an :ref:`SimAIClient<simai_client>`, like so :
+You can manually set a proxy when creating the :ref:`SimAIClient<simai_client>`
+instance:
 
 .. code-block:: python
 
@@ -18,20 +19,22 @@ You can manually set a proxy for the SDK when creating an :ref:`SimAIClient<sima
 
 Alternatively, you can store the proxy information in your :ref:`configuration file<config_file>`.
 
-Note that setting this parameter will override the default configuration retrieved from your system.
+.. note::
+   Setting this parameter overrides the default configuration retrieved from your system.
 
 
 Troubleshooting
 ~~~~~~~~~~~~~~~
 
-In case you get an error or the type ``ProxyError([...], SSLCertVerificationError([...]``,
+If you get an error of the type ``ProxyError([...], SSLCertVerificationError([...]``,
 it is likely that your proxy setup looks like ``|computer|<-https->|proxy|<-https->|internet|``,
-but the proxy is not trusted by your computer (your web browser uses a
-`special configuration <https://en.wikipedia.org/wiki/Proxy_auto-config>`__).
+Because your web browser uses a special
+`proxy auto-configuration <https://en.wikipedia.org/wiki/Proxy_auto-config>`__) file, the
+proxy is not trusted by your computer.
 
-To fix this:
+To fix the issue:
 
-1. Extract the certificates used by your company-configured browser on ``https://simai.ansys.com``
+1. Extract the certificates used by your company-configured browser on ``https://simai.ansys.com``.
 2. Set the ``REQUESTS_CA_BUNDLE`` environment variable:
 
   .. code:: python

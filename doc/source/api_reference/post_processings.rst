@@ -1,7 +1,7 @@
 .. _post_processings:
 
-Post-Processings
-================
+Postprocessings
+===============
 
 .. py:module:: ansys.simai.core.data.post_processings
 
@@ -20,7 +20,7 @@ Model
 
 .. _pp_methods:
 
-Nested Prediction Namespace
+Nested prediction namespace
 ---------------------------
 
 .. autoclass:: PredictionPostProcessings()
@@ -28,11 +28,14 @@ Nested Prediction Namespace
 
 .. _available_pp:
 
-Available post-processings
+Available postprocessings
 --------------------------
 
-.. note:: Depending on the capabilities of your model, some of these may not be available in your workspace.
-          You can check which ones are available through the :meth:`~ansys.simai.core.data.post_processings.PostProcessingDirectory.info` method
+.. note::
+    Depending on the capabilities of your model, some of these objects may not
+    be available in your workspace. You can use the
+    :meth:`~ansys.simai.core.data.post_processings.PostProcessingDirectory.info` method
+    to see which ones are available.
 
 .. autoclass:: GlobalCoefficients()
     :members:

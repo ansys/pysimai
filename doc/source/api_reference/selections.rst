@@ -1,21 +1,20 @@
 .. _selections:
 
 Selections
-===========
+==========
 
-Selections Basics
+Selections basics
 -----------------
 .. py:module:: ansys.simai.core.data.selections
 
-The Selection class allows you to run a large number of operations in parallel,
-by manipulating whole collections of SimAI models
+The :class:`Selection<ansys.simai.core.data.selections.Selection>` class allows you
+to run a large number of operations in parallel by manipulating whole collections of SimAI models
 (:class:`Geometries <ansys.simai.core.data.geometries.Geometry>`,
-:class:`Predictions <ansys.simai.core.data.predictions.Prediction>`,
-:py:class:`Post-Processings <ansys.simai.core.data.post_processings.PostProcessing>`).
+:class:`Predictions <ansys.simai.core.data.predictions.Prediction>`, and
+:py:class:`Post-Processings <ansys.simai.core.data.post_processings.PostProcessing>` instances).
 
-A Selection is created by combining a list of
-:class:`Geometries <ansys.simai.core.data.geometries.Geometry>` with a list of
-:class:`~ansys.simai.core.data.types.BoundaryConditions`.
+You create a selection by combining a list of :class:`Geometry <ansys.simai.core.data.geometries.Geometry>`
+instances with a list of :class:`~ansys.simai.core.data.types.BoundaryConditions` instances:
 
 .. code-block:: python
 
@@ -26,12 +25,13 @@ A Selection is created by combining a list of
    selection = Selection(geometries, boundary_conditions)
 
 
-The resulting selection contains all possible combinations between
-the geometries and boundary conditions. Each of those combinations is a
-:class:`~ansys.simai.core.data.selections.Point`, which can be viewed as a potential
-:class:`~ansys.simai.core.data.predictions.Prediction`.
+The resulting selection contains all possible combinations between the geometries and
+boundary conditions. Each of those combinations is a :class:`~ansys.simai.core.data.selections.Point`
+instance, which can be viewed as a potential :class:`~ansys.simai.core.data.predictions.Prediction`
+instance.
 
-At first all predictions may not all exist, they can be run with the :func:`~Selection.run_predictions` method:
+At first, all predictions may not exist. However, you can use the :meth:`~Selection.run_predictions`
+method to run them:
 
 .. code-block:: python
 
@@ -41,10 +41,11 @@ At first all predictions may not all exist, they can be run with the :func:`~Sel
    all_predictions = selection.predictions
 
 
-Selections API Reference
+Selection API reference
 ------------------------
 
-In essence a :class:`~ansys.simai.core.data.selections.Selection` is a collection of :class:`points <ansys.simai.core.data.selections.Point>`.
+In essence, a :class:`~ansys.simai.core.data.selections.Selection` instance is a
+collection of :class:`points <ansys.simai.core.data.selections.Point>` instances.
 
 .. autoclass:: Point()
     :members:
@@ -56,12 +57,13 @@ In essence a :class:`~ansys.simai.core.data.selections.Selection` is a collectio
     :inherited-members:
 
 
-Post-processing Basics
+Postprocessing basics
 ----------------------
 
-The :attr:`~Selection.post` namespace allows you to run and access all post-processings for existing predictions.
-Please see :py:class:`~ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods`
-for available post-processings.
+The :attr:`~Selection.post` namespace allows you to run and access all postprocessings
+for existing predictions. For available postprocessings, see the
+:py:class:`~ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods`
+class.
 
 .. code-block:: python
 
@@ -70,10 +72,11 @@ for available post-processings.
     coeffs.data  # is a list of results of each post-processings.
 
 
-Results for exportable post-processings
+You can use the :meth:`~ansys.simai.core.data.lists.ExportablePPList.export()`
+method to export results for exportable postprocessings
 (:py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
-and :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`)
-can be exported in batch with the :func:`~ansys.simai.core.data.lists.ExportablePPList.export()` method:
+and :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol` instances)
+in batch:
 
 .. code-block:: python
 
@@ -81,8 +84,9 @@ can be exported in batch with the :func:`~ansys.simai.core.data.lists.Exportable
         "/path/to/file.xlsx"
     )
 
-Please note that the ``csv`` export generates a zip archive containing multiple csv files.
-They can be read directly with python by using zipfile:
+Note that the ``csv`` export generates a ZIP file containing multiple CSV files.
+You can read them directly using Python's `zipfile <https://docs.python.org/3/library/zipfile.html>`
+module:
 
 .. code-block:: python
 
@@ -101,7 +105,7 @@ They can be read directly with python by using zipfile:
         df_geom = pd.read_csv(archive.open("Geometries.csv"))
 
 
-Binary post-processings results can be downloaded by looping on the list, for instance:
+You can download binary postprocessings results by looping on the list:
 
 .. code-block:: python
 
@@ -109,7 +113,7 @@ Binary post-processings results can be downloaded by looping on the list, for in
         vtu.data.download(f"/path/to/vtu_{vtu.id}")
 
 
-Post-processing API Reference
+Postprocessing API reference
 -----------------------------
 
 .. py:module:: ansys.simai.core.data.selection_post_processings
