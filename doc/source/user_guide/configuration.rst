@@ -8,7 +8,7 @@ Where to start
 --------------
 
 You start by creating a :class:`~ansys.simai.core.client.SimAIClient`
-instance. As indicated in :ref:`getting started`, you are prompted for any missing parameters.
+instance. As indicated in :ref:`getting_started`, you are prompted for any missing parameters.
 
 You configure this instance by passing the required parameters on client creation:
 

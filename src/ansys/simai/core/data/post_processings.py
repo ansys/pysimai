@@ -43,8 +43,8 @@ logger = logging.getLogger(__name__)
 class PostProcessing(ComputableDataModel, ABC):
     """Local representation of a PostProcessing object.
 
-    This is an abstract class, depending on the post-processing a different implementation
-    will be returned, see `Available post-processings`_.
+    This is an abstract class. Depending on the postprocessing, a different implementation
+    is returned. For more information, see :ref:`available post-processings`.
     """
 
     # NOTE for developers: New post-processings must be added to the root __init__.py file

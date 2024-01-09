@@ -71,7 +71,7 @@ method to load a geometry:
 To learn more about what geometries are and how they should be formatted, see
 :ref:`geometry_format`.
 
-You use the :meth:`run_prediction` method to run a prediction on the geometry:
+You use the :meth:`~Selection.run_predictions` method to run a prediction on the geometry:
 
 .. code-block:: python
 
@@ -100,7 +100,7 @@ For more information, see :ref:`post_processings`.
 
 You're all set. You can now learn about more advanced concepts, such as starting a
 :class:`~ansys.simai.core.client.SimAIClient` instance from a
-:ref:`configuration file<configuration>`, :ref:`exploring your data<data_exploration`,
+:ref:`configuration file<configuration>`, :ref:`exploring your data<data_exploration>`,
 and :ref:`best practices<best_practices>`.
 
 To explore the functions and methods available to you, see :ref:`api_reference`.
