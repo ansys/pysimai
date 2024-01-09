@@ -294,7 +294,7 @@ class GeometryDirectory(Directory[Geometry]):
 
         Args:
             workspace_id: ID of the workspace to list geometries for. This parameter is required
-            if no workspace is set for the client.
+                if no workspace is set for the client.
             filters: Optional filters. Only the elements with matching key-values in
                 their metadata are returned. Each filter can one of the following data types:
 
@@ -364,7 +364,7 @@ class GeometryDirectory(Directory[Geometry]):
             name: Name of the geometry to get, optional.
             id: ID of the geometry to get, optional
             workspace_id: ID of the workspace containing the geometry. This
-            parameter is only necessary if a name is given and
+                parameter is only necessary if a name is given and
                 no workspace is set for the client.
 
         Returns:

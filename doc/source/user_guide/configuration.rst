@@ -62,6 +62,7 @@ Credential options
 
 Descriptions follow of all credential options for the :class:`~ansys.simai.core.client.SimAIClient`
 class:
+
 .. autopydantic_model:: Credentials
   :model-show-config-summary: False
   :model-show-validator-summary: False

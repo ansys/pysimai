@@ -363,7 +363,7 @@ class PredictionPostProcessings:
             axis: Axis to slice.
             coordinate: Coordinate along the given axis to slice at.
             format: Format of the output. The default is ``'png'``. Options
-            are ``'png'`` and ``'vtp'``.
+                are ``'png'`` and ``'vtp'``.
             run: Boolean indicating whether to compute or get the postprocessing.
                 The default is ``True``. If ``False``, the postprocessing is not
                 computed, and ``None`` is returned if it does not exist yet.

@@ -58,14 +58,14 @@ class Credentials(BaseModel, extra="forbid"):
 class ClientConfig(BaseModel, extra="allow"):
     url: HttpUrl = Field(
         default="https://api.simai.ansys.com/v2/",
-        description="The URL to the SimAi API.",
+        description="URL to the SimAi API.",
     )
-    "The URL to the SimAI API."
+    "URL to the SimAI API."
     organization: str = Field(
         default_factory=prompt_for_input_factory("organization"),
-        description="The name of the organization(/company) the user belongs to.",
+        description="Name of the organization(/company) that the user belongs to.",
     )
-    "The name of the organization(/company) the user belongs to."
+    "Name of the organization(/company) that the user belongs to."
     credentials: Optional[Credentials] = Field(
         default=None,
         description="Authenticate via username/password instead of device authorization code.",
@@ -74,15 +74,15 @@ class ClientConfig(BaseModel, extra="allow"):
     workspace: Optional[str] = Field(
         default=None, description="The name of the workspace to use by default."
     )
-    "The name of the workspace to use by default."
+    "Name of the workspace to use by default."
     project: Optional[str] = Field(
         default=None, description="The name of the project to use by default."
     )
-    "The name of the project to use by default."
+    "Name of the project to use by default."
     https_proxy: Optional[AnyHttpUrl] = Field(
         default=None, description="The URL of the https proxy to use."
     )
-    "The URL of the https proxy to use."
+    "URL of the HTPPS proxy to use."
     skip_version_check: bool = Field(default=False, description="Skip checking for updates.")
     "Skip checking for updates."
     no_sse_connection: bool = Field(
