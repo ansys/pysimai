@@ -24,8 +24,8 @@ Model
     :members:
     :inherited-members:
 
-Model manifest
---------------
+ModelManifest
+-------------
 
 .. autoclass:: ModelManifest()
     :members:

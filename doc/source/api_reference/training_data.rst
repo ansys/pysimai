@@ -1,7 +1,7 @@
 .. _training_data:
 
-Training data
-=============
+TrainingData
+============
 
 .. py:module:: ansys.simai.core.data.training_data
 

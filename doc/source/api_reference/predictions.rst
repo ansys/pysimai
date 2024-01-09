@@ -18,13 +18,6 @@ The arguments to the :py:meth:`predictions.run()<PredictionDirectory.run>` depen
     velocity = 10.0
     prediction = geometry.run_prediction(Vx=velocity)
 
-.. warning::
-    To better describe different physical constraints, the SimAI client has been
-    updated to describe boundary conditions with a dictionary, replacing the previous
-    tuple of three numbers. Make sure that you update your existing scripts, for example
-    from ``(3.4, 0, 0)`` to ``dict(Vx=3.4)``. You no longer need to put ``Vy=0`` and ``Vz=0``
-    if your project has not been trained on those velocities. In method calls, you can
-    directly pass boundary conditions as arguments: ``run_prediction(Vx=3.4)``.
 
 Directory
 ---------

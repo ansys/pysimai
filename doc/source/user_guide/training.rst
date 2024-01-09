@@ -22,8 +22,7 @@ Train on prediction data
 
      simai = ansys.simai.core.SimAIClient()
 
-   You are prompted for your credentials and for the name of the workspace
-   that you want to use.
+   You are prompted for your credentials.
 
   If desired, you can start an instance using a configuration file. For more
   information, see :ref:`configuration`.
