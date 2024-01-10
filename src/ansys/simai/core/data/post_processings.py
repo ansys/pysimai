@@ -641,9 +641,9 @@ class PostProcessingDirectory(Directory[PostProcessing]):
 
         Args:
             post_processing_type: Type of postprocessing to list.
-            prediction_id: ID or :class:`model <.predictions.Prediction>` of a prediction.
-            If a value is specified, only postprocessings associated with this prediction
-            are returned.
+            prediction: ID or :class:`model <.predictions.Prediction>` of a prediction.
+                If a value is specified, only postprocessings associated with this prediction
+                are returned.
 
         Raises:
             NotFoundError: Postprocessing type and/or the prediction ID are incorrect.
@@ -687,8 +687,8 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         Args:
             post_processing_type: Type of postprocessing to run, as a string
                 or as the class itself.
-            prediction: ID or :class:`model <.predictions.Prediction>` of the prediction 
-            to run the postprocessing for.
+            prediction: ID or :class:`model <.predictions.Prediction>` of the prediction
+                to run the postprocessing for.
             parameters: Parameters to apply to the postprocessing, if needed.
                 Alternatively, parameters can be passed as kwargs.
             **kwargs: Unpacked parameters for the postprocessing.

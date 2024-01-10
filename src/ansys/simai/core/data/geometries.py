@@ -478,7 +478,7 @@ class GeometryDirectory(Directory[Geometry]):
         """Download the geometry with the given ID into the file at the given path.
 
         Args:
-            geometry_id: ID or :class:`model <Geometry>` of the geometry.
+            geometry: ID or :class:`model <Geometry>` of the geometry.
             file: Optional binary file-object or the path of the file to put the
                 content into.
             monitor_callback: Optional callback for monitoring the progress of the download.
