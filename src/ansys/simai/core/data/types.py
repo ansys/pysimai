@@ -57,8 +57,8 @@ Either a binary file-object (:obj:`typing.BinaryIO`) or a :obj:`Path`.
 
 NamedFile = Union[Path, Tuple[File, str]]
 """
-A named file is either a `FilePath`, from which a name can be inferred, or a tuple with a `File` and a name.
-To be valid the name needs to contain an extension.
+A named file is either a ``FilePath``, from which a name can be inferred, or a tuple with a file and a name.
+To be valid, the name needs to contain an extension.
 
 Example:
     .. code-block:: python
@@ -76,27 +76,27 @@ Example:
 APIResponse = Union[Response, Dict[str, Any], List[Dict[str, Any]]]
 
 MonitorCallback = Callable[[int], None]
-"""A callback used to monitor the download or upload of a file.
+"""Callback used to monitor the download or upload of a file.
 
 For downloads:
-It will be called one time with the total size of the download.
-Subsequent calls will pass the amount bytes read this iteration.
+The callback is called one time with the total size of the download.
+Subsequent calls are passed the number of bytes read in this iteration.
 
 For uploads:
-The callback will receive the amount of bytes written each iteration.
+The callback receives the number of bytes written each iteration.
 """
 
 Identifiable = Union[DataModelType, str]
-"""Either a Model or the string id of an object of the same type"""
+"""Either a model or the string ID of an object of the same type."""
 
 
 def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = None, **kwargs):
     bc = boundary_conditions if boundary_conditions else {}
     bc.update(**kwargs)
     if bc is None:
-        raise ValueError("No boundary condition was specified")
+        raise ValueError("No boundary condition was specified.")
     if not is_boundary_conditions(bc):
-        raise ValueError("Boundary conditions needs to be a dictionary with numbers as values")
+        raise ValueError("Boundary conditions must be in a dictionary with numbers as values.")
     return bc
 
 
@@ -127,23 +127,23 @@ def are_boundary_conditions_equal(
 
 
 class Range:
-    """Describes a numerical range, used for filtering geometries.
+    """Describes a numerical range used for filtering geometries.
 
-    Range objects describe a numerical range between a minimal and
-    a maximal boundary. Both are optional, thus if no maximal boundary
-    is passed, the range describes values >= the min boundary.
-    Not that ranges are inclusive, thus both min and max boundaries
-    will match if equal to the passed value
-    (as opposed for instance to python's range() method).
+    Range objects describe a numerical range between a minimum and
+    a maximum boundary. Both are optional. Thus, if no maximum boundary
+    is passed, the range describes values greater than or equal to the
+    minimum boundary. Note that ranges are inclusive. Thus, both minimum
+    and maximum boundaries match if they are equal to the passed value
+    (as opposed to Python's ``range()`` method).
 
-    Ranges can be used as a filter in
+    Ranges can be used as a filter in the
     :func:`geometries.list<ansys.simai.core.data.geometries.GeometryDirectory.list>` method.
 
     Args:
-        min: the minimal boundary
-        max: the maximal boundary
-        tolerance: a tolerance delta; two values whose difference is smaller
-            than tolerance are considered as equal.
+        min: Minimum boundary.
+        max: Maximum boundary.
+        tolerance: Tolerance delta. Two values whose difference is smaller
+            than the tolerance are considered as equal.
     """
 
     def __init__(
@@ -157,7 +157,7 @@ class Range:
         self.tolerance = tolerance
 
     def match_value(self, value: float) -> bool:
-        """Checks whether the given value belongs to the :class:`Range`."""
+        """Determine whether the given value belongs to the :class:`Range` class."""
         if not is_number(value):
             return False
         # if min, value >= min
@@ -174,7 +174,7 @@ class Range:
 
 
 class _HollowRange(Range):
-    """_HollowRange is a Range which excludes a value in its center."""
+    """_HollowRange is a range that excludes a value in its center."""
 
     def __init__(
         self,
@@ -200,7 +200,7 @@ class _HollowRange(Range):
 def unpack_named_file(
     named_file: NamedFile,
 ) -> Generator[Tuple[BinaryIO, str, str], None, None]:
-    """Unpack a NamedFile by providing a readable file, its name and an extension."""
+    """Unpack a named file by providing a readable file, its name, and an extension."""
     if (
         isinstance(named_file, Tuple)
         and len(named_file) == 2
@@ -214,14 +214,14 @@ def unpack_named_file(
         file = named_file
         filename = pathlib.Path(named_file).name
     else:
-        raise InvalidArguments("Did not receive a valid NamedFile type")
+        raise InvalidArguments("Did not receive a valid named file type.")
 
     # Parse name and extension
     try:
         obj_name, file_ext = filename.rsplit(".", 1)
         assert file_ext
     except (ValueError, AssertionError):
-        raise AttributeError(f"Could not determine file extension for {named_file}") from None
+        raise AttributeError(f"Could not determine file extension for {named_file}.") from None
 
     # Open the file if needed
     close_file = False
@@ -248,7 +248,7 @@ def get_id_from_identifiable(
     elif default:
         return get_id_from_identifiable(default, required)
     elif required:
-        raise InvalidArguments(f"Argument {identifiable} is neither a data model nor an id string.")
+        raise InvalidArguments(f"Argument {identifiable} is neither a data model nor an ID string.")
 
 
 def get_object_from_identifiable(
@@ -263,4 +263,4 @@ def get_object_from_identifiable(
     elif default:
         return get_object_from_identifiable(default, directory)
     else:
-        raise InvalidArguments(f"Argument {identifiable} is neither a data model nor an id string.")
+        raise InvalidArguments(f"Argument {identifiable} is neither a data model nor an ID string.")

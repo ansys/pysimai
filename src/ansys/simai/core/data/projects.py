@@ -31,14 +31,14 @@ if TYPE_CHECKING:
 
 
 class Project(DataModel):
-    """Local representation of a Project object."""
+    """Provides the local representation of a  project object."""
 
     def __repr__(self) -> str:
         return f"<Project: {self.id}, {self.name}>"
 
     @property
     def name(self) -> str:
-        """The name of project."""
+        """Name of project."""
         return self.fields["name"]
 
     @name.setter
@@ -46,14 +46,14 @@ class Project(DataModel):
         """Rename the project.
 
         Args:
-            new_name: the new name to give to the project
+            new_name: New name to give to the project.
         """
         self._client._api.update_project(self.id, name=new_name)
         self.reload()
 
     @property
     def data(self) -> List["TrainingData"]:
-        """Lists all the :class:`~ansys.simai.core.data.training_data.TrainingData` in this project."""
+        """List of all :class:`~ansys.simai.core.data.training_data.TrainingData` instances in the project."""
         raw_td_list = self._client._api.iter_training_data_in_project(self.id)
         return [
             self._client.training_data._model_from(training_data) for training_data in raw_td_list
@@ -61,7 +61,7 @@ class Project(DataModel):
 
     @property
     def sample(self) -> Optional["TrainingData"]:
-        """The sample of the project.
+        """Sample of the project.
 
         The sample determines what variable and settings are available during model configuration.
         """
@@ -77,17 +77,17 @@ class Project(DataModel):
         self.reload()
 
     def delete(self) -> None:
-        """Deletes the project."""
+        """Delete the project."""
         self._client._api.delete_project(self.id)
 
 
 class ProjectDirectory(Directory[Project]):
-    """Collection of methods related to projects.
+    """Provides a collection of methods related to projects.
 
-    Accessed through ``client.projects``
+    This class is accessed through ``client.projects``.
 
     Example:
-        Listing all the projects::
+        List all projects::
 
             import ansys.simai.core
 
@@ -98,35 +98,35 @@ class ProjectDirectory(Directory[Project]):
     _data_model = Project
 
     def list(self) -> List[Project]:
-        """Lists all the projects available on the server."""
+        """List all projects available on the server."""
         return [self._model_from(data) for data in self._client._api.projects()]
 
     def create(self, name: str) -> Project:
-        """Creates a new project."""
+        """Create a project."""
         return self._model_from(self._client._api.create_project(name=name))
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None):
-        """Gets a project by name or id.
+        """Get a project by ID or name.
 
-        Only one of id or name should be specified
+        Only the ID or name should be specified.
 
         Args:
-            id: The id of the project to get
-            name: The name of the project to get
+            id: ID of the project.
+            name: Name of the project.
         """
         if name and id:
-            raise InvalidArguments("Only one of name and id arguments should be specified")
+            raise InvalidArguments("Only the 'id' or 'name' argument should be specified.")
         elif name:
             return self._model_from(self._client._api.get_project_by_name(name))
         elif id:
             return self._model_from(self._client._api.get_project(id))
         else:
-            raise InvalidArguments("Either name or id argument should be specified")
+            raise InvalidArguments("Either the 'id' or 'name' argument should be specified.")
 
     def delete(self, project: Identifiable[Project]) -> None:
-        """Deletes a project.
+        """Delete a project.
 
         Args:
-            project: The id or :class:`model <Project>` of the project to delete
+            project: ID or :class:`model <Project>` of the project.
         """
         self._client._api.delete_project(get_id_from_identifiable(project))

@@ -81,7 +81,7 @@ class PredictionClientMixin(ApiClientMixin):
         solution: Optional[Union[BinaryIO, str, Path]] = None,
         monitor_callback: Optional[Callable[[int], None]] = None,
     ):
-        """Send feedback on your prediction.
+        """Send feedback on your prediction so improvements can be made.
 
         Args:
             prediction_id: ID of the target prediction.

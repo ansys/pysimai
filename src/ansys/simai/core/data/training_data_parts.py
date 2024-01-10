@@ -24,26 +24,26 @@ from ansys.simai.core.data.base import DataModel, Directory, UploadableResourceM
 
 
 class TrainingDataPart(UploadableResourceMixin, DataModel):
-    """Local representation of a training data part object."""
+    """Provides the local representation of a training data part object."""
 
     def __repr__(self) -> str:
         return f"<TrainingDataPart: {self.id}, {self.name}>"
 
     @property
     def name(self) -> str:
-        """The name of the file."""
+        """Name of the file."""
         return self.fields["name"]
 
     @property
     def size(self) -> int:
-        """The size of the file, in bytes."""
+        """Size of the file in bytes."""
         return self.fields["size"]
 
 
 class TrainingDataPartDirectory(Directory[TrainingDataPart]):
-    """Collection of methods related to training data parts.
+    """Provides the collection of methods related to training data parts.
 
-    Accessed through ``client.training_data_parts``
+    This class is accessed through ``client.training_data_parts``.
     """
 
     _data_model = TrainingDataPart

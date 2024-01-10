@@ -36,8 +36,8 @@ if TYPE_CHECKING:
 
 
 class SelectionPostProcessingsMethods:
-    """Class acting as namespace inside :py:class:`~ansys.simai.core.data.selections.Selection` objects,
-    allowing to access or run post-processings on whole selections.
+    """Acts as a namespace inside :py:class:`~ansys.simai.core.data.selections.Selection` objects,
+    allowing you to access or run postprocessings on whole selections.
     """
 
     def __init__(self, selection: "Selection"):
@@ -46,18 +46,20 @@ class SelectionPostProcessingsMethods:
     def global_coefficients(self) -> ExportablePPList[GlobalCoefficients]:
         """Compute or get the global coefficients of the selected predictions.
 
-        This is a non-blocking method. It will return a
-        :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
-        objects without waiting. Those PostProcessing objects may not have
-        data right away if computation is still in progress. Data will be filled
-        asynchronously once computation is finished.
-        State of computation can be waited upon with the wait() method.
+        This is a non-blocking method. It returns a
+        :py:class:`~ansys.simai.core.data.lists.ExportablePPList` instance
+        of :py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
+        objects without waiting. Those ```PostProcessing`` objects may not have
+        data right away if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be waited upon with the ``wait()`` method.
 
-        Computation will be launched only on first call of this method.
-        Subsequent calls will not relaunch it.
+        The Computation is launched only on the first call of this method.
+        Subsequent calls do not relaunch it.
 
         Returns:
-            A :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
+            :py:class:`~ansys.simai.core.data.lists.ExportablePPList` instance
+            of :py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
             objects.
         """
         return ExportablePPList(
@@ -67,24 +69,25 @@ class SelectionPostProcessingsMethods:
     def surface_evol(self, axis: str, delta: float) -> ExportablePPList[SurfaceEvol]:
         """Compute or get the SurfaceEvol of the predictions, for specific parameters.
 
-        This is a non-blocking method. It will return a
-        :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`
-        objects without waiting. Those PostProcessing objects may not have
-        data right away if computation is still in progress. Data will be filled
-        asynchronously once computation is finished.
-        State of computation can be waited upon with the wait() method.
+        This is a non-blocking method. It returns a
+        :py:class:`~ansys.simai.core.data.lists.ExportablePPList` instance
+        of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`
+        objects without waiting. Those ``PostProcessing objects`` may not have
+        data right away if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be waited upon with the ``wait()`` method.
 
-        Computation will be launched only on first call of this method
+        The computation is launched only on the first call of this method
         with a specific set of parameters.
-        Subsequent calls with the same parameters will not relaunch it.
+        Subsequent calls with the same parameters do not relaunch it.
 
         Args:
-            axis: For which axis the SurfaceEvol should be computed
-            delta: Increment of the abscissa in meters
+            axis: Axis to compute the the SurfaceEvol on.
+            delta: Increment of the abscissa in meters.
 
         Returns:
-            A :py:class:`~ansys.simai.core.data.lists.ExportablePPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`
-            objects.
+            :py:class:`~ansys.simai.core.data.lists.ExportablePPList` instance of
+            :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol` objects.
         """
         return ExportablePPList(
             selection=self._selection,
@@ -94,26 +97,27 @@ class SelectionPostProcessingsMethods:
     def slice(self, axis: str, coordinate: float) -> PPList[Slice]:
         """Compute or get a slice from each prediction in the selection.
 
-        This is a non-blocking method. It will return a
-        :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.Slice`
-        objects without waiting. Those PostProcessing objects may not have
-        data right away if computation is still in progress. Data will be filled
-        asynchronously once computation is finished.
-        State of computation can be waited upon with the wait() method.
+        This is a non-blocking method. It returns a
+        :py:class:`~ansys.simai.core.data.lists.PPList` instance of
+        :py:class:`~ansys.simai.core.data.post_processings.Slice`
+        objects without waiting. Those ``PostProcessing`` objects may not have
+        data right away if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be waited upon with the ``wait()`` method.
 
-        Computation will be launched only on first call of this method
+        The computation is launched only on the first call of this method
         with a specific set of parameters.
-        Subsequent calls with the same parameters will not relaunch it.
+        Subsequent calls with the same parameters do not relaunch it.
 
-        The slices will be in the NPZ format.
+        The slices are in the NPZ format.
 
         Args:
-            axis: The axis to slice
-            coordinate: Coordinate along the given axis to slice at
+            axis: Axis to slice.
+            coordinate: Coordinate along the given axis to slice at.
 
         Returns:
-            A :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.Slice`
-            objects.
+            :py:class:`~ansys.simai.core.data.lists.PPList` list of
+            :py:class:`~ansys.simai.core.data.post_processings.Slice` objects.
         """
         return PPList(
             selection=self._selection,
@@ -123,38 +127,40 @@ class SelectionPostProcessingsMethods:
     def volume_vtu(self) -> PPList[VolumeVTU]:
         """Compute or get the result of each prediction's volume in the VTU format.
 
-        This is a non-blocking method. It will return a
-        :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.VolumeVTU`
-        objects without waiting. Those PostProcessing objects may not have
-        data right away if computation is still in progress. Data will be filled
-        asynchronously once computation is finished.
-        State of computation can be waited upon with the wait() method.
+        This is a non-blocking method. It returns a
+        :py:class:`~ansys.simai.core.data.lists.PPList` instance of
+        :py:class:`~ansys.simai.core.data.post_processings.VolumeVTU`
+        objects without waiting. Those ``PostProcessing`` objects may not have
+        data right away if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be waited upon with the ``wait()`` method.
 
-        Computation will be launched only on first call of this method.
-        Subsequent calls will not relaunch it.
+        The computation is launched only on the first call of this method.
+        Subsequent calls do not relaunch it.
 
         Returns:
-            A :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.VolumeVTU`
-            objects.
+            :py:class:`~ansys.simai.core.data.lists.PPList` instance of
+            :py:class:`~ansys.simai.core.data.post_processings.VolumeVTU` objects.
         """
         return PPList(selection=self._selection, post=lambda pred: pred.post.volume_vtu())
 
     def surface_vtp(self) -> PPList[SurfaceVTP]:
         """Compute or get the result of each prediction's surface in the VTP format.
 
-        This is a non-blocking method. It will return a
-        :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP`
-        objects without waiting. Those PostProcessing objects may not have
-        data right away if computation is still in progress. Data will be filled
-        asynchronously once computation is finished.
-        State of computation can be waited upon with the wait() method.
+        This is a non-blocking method. It returns a
+        :py:class:`~ansys.simai.core.data.lists.PPList` instance of
+        :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP`
+        objects without waiting. Those ``PostProcessing`` objects may not have
+        data right away if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be waited upon with the ``wait()`` method.
 
 
-        Computation will be launched only on first call of this method.
-        Subsequent calls will not relaunch it.
+        The computation is launched only on first call of this method.
+        Subsequent calls do not relaunch it.
 
         Returns:
-            A :py:class:`~ansys.simai.core.data.lists.PPList` of :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP`
-            objects.
+            :py:class:`~ansys.simai.core.data.lists.PPList` instance of
+            :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP` objects.
         """
         return PPList(selection=self._selection, post=lambda pred: pred.post.surface_vtp())
