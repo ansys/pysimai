@@ -20,15 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import io
 import logging
-from pathlib import Path
-from typing import BinaryIO, Callable, Optional, Union
-
-from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
 from ansys.simai.core.api.mixin import ApiClientMixin
-from ansys.simai.core.utils.files import file_path_to_obj_file
 
 logger = logging.getLogger(__name__)
 
@@ -72,55 +66,3 @@ class PredictionClientMixin(ApiClientMixin):
                 are considered equal. The default is ``10**-6``.
         """
         return self._post(f"geometries/{geometry_id}/predictions", json=kwargs)
-
-    def send_prediction_feedback(
-        self,
-        prediction_id: str,
-        rating: int,
-        comment: str,
-        solution: Optional[Union[BinaryIO, str, Path]] = None,
-        monitor_callback: Optional[Callable[[int], None]] = None,
-    ):
-        """Send feedback on your prediction so improvements can be made.
-
-        Args:
-            prediction_id: ID of the target prediction.
-            rating: Rating from 0 to 4.
-            comment: Additional comment.
-            solution: Client solution to the prediction.
-            monitor_callback: Function or method to pass the
-                :py:class:`~requests_toolbelt.multipart.encoder.MultipartEncoderMonitor` to.
-        """
-        if solution is None:
-            with_solution = False
-            close_file = False
-        else:
-            if isinstance(solution, (Path, str)):
-                solution_file = file_path_to_obj_file(solution, "rb")
-                close_file = True
-            elif isinstance(solution, (io.RawIOBase, io.BufferedIOBase)):
-                solution_file = solution
-                close_file = False
-            else:
-                raise ValueError(
-                    "Could not handle the provided solution." " Use a path or binary file."
-                )
-            with_solution = True
-        upload_form = {"rating": str(rating), "comment": comment}
-        if with_solution:
-            upload_form["solution"] = (
-                "solution",
-                solution_file,
-                "application/octet-stream",
-            )
-        multipart = MultipartEncoder(upload_form)
-        if monitor_callback is not None:
-            multipart = MultipartEncoderMonitor(multipart, monitor_callback)
-
-        self._post(
-            f"predictions/{prediction_id}/feedback",
-            data=multipart,
-            headers={"Content-Type": multipart.content_type},
-        )
-        if close_file is True:
-            solution_file.close()

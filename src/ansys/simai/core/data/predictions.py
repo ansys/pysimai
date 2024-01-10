@@ -99,21 +99,6 @@ class Prediction(ComputableDataModel):
         self._client._api.delete_prediction(self.id)
         self._unregister()
 
-    def feedback(self, **kwargs):  # noqa: D417
-        """Provide feedback on a prediction so improvements might be made.
-
-        This method enables you to give a rating (from 0 to 4) and a comment on a
-        prediction.
-        Moreover, you can upload your computed solution.
-        Your feedback is used to try to make predictions more accurate.
-
-        Keyword Args:
-            rating (int): Rating from 0 to 4.
-            comment (str): Additional comment.
-            solution (Optional[File]): Your solution to the prediction.
-        """
-        self._client._api.send_prediction_feedback(self.id, **kwargs)
-
     def _wait_all(self):
         """Wait until both this prediction and any postprocessing launched on it
         have finished processing.
@@ -277,21 +262,3 @@ class PredictionDirectory(Directory[Prediction]):
         for location, warning_message in prediction.fields.get("warnings", {}).items():
             logger.warning(f"{location}: {warning_message}")
         return prediction
-
-    def feedback(self, prediction: Identifiable[Prediction], **kwargs) -> None:  # noqa: D417
-        """Provide feedback on a prediction so improvements might be made.
-
-        This method enables you to give a rating (from 0 to 4) and a comment on a
-        prediction.
-        Moreover, you can upload your computed solution.
-        Your feedback is used to try to make predictions more accurate.
-
-        Args:
-            prediction: ID or :class:`model <Prediction>` of the prediction.
-
-        Keyword Args:
-            rating (int): Rating from 0 to 4.
-            comment (str): Additional comment.
-            solution (typing.Optional[File]): Your solution to the prediction.
-        """
-        self._client._api.send_prediction_feedback(get_id_from_identifiable(prediction), **kwargs)
