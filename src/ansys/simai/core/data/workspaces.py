@@ -24,7 +24,7 @@ from pprint import pformat
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
-from ansys.simai.core.data.types import File
+from ansys.simai.core.data.types import File, Identifiable, get_id_from_identifiable
 
 
 class ModelManifest:
@@ -172,11 +172,10 @@ class WorkspaceDirectory(Directory[Workspace]):
         """
         return self._model_from(self._client._api.create_workspace(name, model_id))
 
-    def delete(self, workspace_id) -> None:
+    def delete(self, workspace: Identifiable[Workspace]) -> None:
         """Deletes a workspace.
 
         Args:
-            workspace_id: the id of the workspace to delete
+            workspace: the id or :class:`model <Workspace>` of the workspace to delete
         """
-        self._client._api.delete_workspace(workspace_id)
-        return None
+        self._client._api.delete_workspace(get_id_from_identifiable(workspace))

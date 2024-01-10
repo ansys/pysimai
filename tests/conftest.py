@@ -185,8 +185,8 @@ def project_factory(simai_client) -> Project:
 
 
 @pytest.fixture()
-def geometry_directory():
-    yield GeometryDirectory(client=None)
+def geometry_directory(simai_client):
+    yield GeometryDirectory(client=simai_client)
 
 
 @pytest.fixture()

@@ -30,6 +30,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.downloads import DownloadableResult
+from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments, InvalidServerStateError
 from ansys.simai.core.utils.numerical import convert_axis_and_coordinate_to_plane_eq_coeffs
 
@@ -630,7 +631,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
     def list(
         self,
         post_processing_type: Optional[Type[PostProcessing]] = None,
-        prediction_id: Optional[str] = None,
+        prediction: Optional[Identifiable["Prediction"]] = None,
     ) -> List[PostProcessing]:
         """List the postprocessings in the current workspace or associated with a prediction.
 
@@ -640,8 +641,9 @@ class PostProcessingDirectory(Directory[PostProcessing]):
 
         Args:
             post_processing_type: Type of postprocessing to list.
-            prediction_id: ID of a prediction. If an ID is given, only postprocessings
-                associated with this prediction are returned.
+            prediction_id: ID or :class:`model <.predictions.Prediction>` of a prediction.
+            If a value is specified, only postprocessings associated with this prediction
+            are returned.
 
         Raises:
             NotFoundError: Postprocessing type and/or the prediction ID are incorrect.
@@ -658,6 +660,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
                 )
         """
         pp_type_str = post_processing_type._api_name() if post_processing_type else None
+        prediction_id = get_id_from_identifiable(prediction, required=False)
         if not prediction_id:
             post_processings = self._client._api.get_post_processings_in_workspace(
                 self._client.current_workspace.id, pp_type_str
@@ -671,7 +674,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
     def run(
         self,
         post_processing_type: Union[str, Type[PostProcessing]],
-        prediction_id: str,
+        prediction: Identifiable["Prediction"],
         parameters: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> PostProcessing:
@@ -682,12 +685,13 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         of the class names must be respected.
 
         Args:
-            prediction_id: ID of the prediction to run the postprocessing for.
             post_processing_type: Type of postprocessing to run, as a string
                 or as the class itself.
+            prediction: ID or :class:`model <.predictions.Prediction>` of the prediction 
+            to run the postprocessing for.
             parameters: Parameters to apply to the postprocessing, if needed.
                 Alternatively, parameters can be passed as kwargs.
-            **kwargs: Unpacked parameters for the postprocessing,
+            **kwargs: Unpacked parameters for the postprocessing.
 
         Examples:
             .. code-block:: python
@@ -697,16 +701,14 @@ class PostProcessingDirectory(Directory[PostProcessing]):
                 simai = ansys.simai.core_from_config()
                 prediction = simai.predictions.list()[0]
                 simai.post_processings.run(
-                    ansys.simai.core.Slice, prediction.id, {"axis": "x", coordinate: 50}
+                    ansys.simai.core.Slice, prediction, {"axis": "x", coordinate: 50}
                 )
 
             Using kwargs:
 
             .. code-block:: python
 
-                simai.post_processings.run(
-                    ansys.simai.core.Slice, prediction.id, axis="x", coordinate=50
-                )
+                simai.post_processings.run(ansys.simai.core.Slice, prediction, axis="x", coordinate=50)
         """
         if isinstance(post_processing_type, str):
             post_processing_type = getattr(
@@ -726,18 +728,18 @@ class PostProcessingDirectory(Directory[PostProcessing]):
                     """
                 )
             )
-        prediction = self._client.predictions.get(prediction_id)
+        prediction = self._client.predictions.get(get_id_from_identifiable(prediction))
         if not parameters:
             parameters = {}
         parameters.update(**kwargs)
         return prediction.post._get_or_run(pp_class, parameters, True)
 
-    def delete(self, id):
-        """Delete a postprocessing by ID.
+    def delete(self, post_processing: Identifiable[PostProcessing]):
+        """Delete a postprocessing.
 
         Args:
-            id: ID of the postprocessing.
+            post_processing: The ID or :class:`model <PostProcessing>` of the postprocessing.
         """
-        # FIXME?: This won't update the postprocessings of the prediction's PredictionPostProcessings if any.
-        # Doing so would require an extra call to get the prediction info and I'm not sure there's really a point.
-        self._client._api.delete_post_processing(id)
+        # FIXME?: This won't update the post_processings of the prediction's PredictionPostProcessings if any.
+        # Doing so would require an extra call to get the prediction info and I'm not sure there's really a point
+        self._client._api.delete_post_processing(get_id_from_identifiable(post_processing))

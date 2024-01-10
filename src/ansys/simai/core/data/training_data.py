@@ -74,22 +74,18 @@ class TrainingData(ComputableDataModel):
             for training_data_part in self.fields["parts"]
         ]
 
-    # TODO: Use Enum for subsets
-    # FIXME: impossible to pass the "project" during a property access
-    @property
-    def subset(self, project: Optional[Identifiable["Project"]] = None) -> Optional[str]:
+    def get_subset(self, project: Identifiable["Project"]) -> Optional[str]:
         """Indicates which subset this training data belongs to, in relation to the given project.
 
         Args:
-            project: The `Project` object to check for
+            project: The id or :class:`model <.projects.Project>` of the project to check for :class:`~.projects.Project` to check for, or its id
 
         Returns:
             The name of the subset this training data belongs to in the given project
         """
-        if not project:
-            project_model = self._client.current_project
-        else:
-            project_model = get_object_from_identifiable(project, self._client.projects)
+        project_model = get_object_from_identifiable(
+            project, self._client.projects, default=self._client.current_project
+        )
         for subset_name, list_ids in project_model.subsets:
             if self.id in list_ids:
                 return subset_name
@@ -153,7 +149,7 @@ class TrainingData(ComputableDataModel):
         """Adds the training data into a :class:`~ansys.simai.core.data.projects.Project`.
 
         Args:
-            project: The `Project` object into which the data is to be added or it's id
+            project: The id or :class:`model <.projects.Project>` of the project into which the data is to be added
         """
         project_id = get_id_from_identifiable(project)
         self._client._api.add_training_data_to_project(self.id, project_id)
@@ -162,7 +158,7 @@ class TrainingData(ComputableDataModel):
         """Removes the training data from a :class:`~ansys.simai.core.data.projects.Project`.
 
         Args:
-            project: The `Project` object from which the data is to be removed.
+            project: The id or :class:`model <.projects.Project>` of the project from which the data is to be removed.
 
         Raises:
             ansys.simai.core.errors.ApiClientError: if the data is the project's sample
@@ -203,20 +199,20 @@ class TrainingDataDirectory(Directory[TrainingData]):
         """Gets a specific :class:`TrainingData` from the server."""
         return self._model_from(self._client._api.get_training_data(id))
 
-    def delete(self, id: str) -> None:
+    def delete(self, training_data: Identifiable[TrainingData]) -> None:
         """Deletes a TrainingData and it's associated parts from the server.
 
         Args:
-            id: The id of the training data to delete
+            training_data: The id or :class:`model <TrainingData>` of the training data to delete
         """
-        return self._client._api.delete_training_data(id)
+        return self._client._api.delete_training_data(get_id_from_identifiable(training_data))
 
     def create(self, name: str, project: Optional[Identifiable["Project"]] = None) -> TrainingData:
         """Creates a new :class:`TrainingData` object.
 
         Args:
-            name: The name given to the new TrainingData.
-            project: Associate the data with a `Project`.
+            name: The name given to the new :class:`TrainingData`.
+            project: Associate the data with a :class:`~.projects.Project`.
 
         Returns:
             The created TrainingData
@@ -225,12 +221,15 @@ class TrainingDataDirectory(Directory[TrainingData]):
         return self._model_from(self._client._api.create_training_data(name, project_id))
 
     def upload_part(
-        self, id: str, file: NamedFile, monitor_callback: Optional[MonitorCallback] = None
+        self,
+        training_data: Identifiable[TrainingData],
+        file: NamedFile,
+        monitor_callback: Optional[MonitorCallback],
     ) -> "TrainingDataPart":
         """Adds a part to a training data.
 
         Args:
-            id: The id of the TrainingData that will contain the part
+            training_data: The id or :class:`model <TrainingData>` of the training data that will contain the part
             file: A :obj:`~ansys.simai.core.data.types.NamedFile` to upload
             monitor_callback: An optional callback to monitor the progress of the download.
                 See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
@@ -238,10 +237,12 @@ class TrainingDataDirectory(Directory[TrainingData]):
         Returns:
             The created :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart`
         """
-        return _upload_training_data_part(id, file, self._client, monitor_callback)
+        return _upload_training_data_part(
+            get_id_from_identifiable(training_data), file, self._client, monitor_callback
+        )
 
     def upload_folder(
-        self, id: str, folder_path: Path, compute: bool = True
+        self, training_data: Identifiable[TrainingData], folder_path: Path, compute: bool = True
     ) -> List["TrainingDataPart"]:
         """Uploads all the files contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`.
 
@@ -249,7 +250,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
         once the upload is complete unless specified otherwise
 
         Args:
-            id: The id of the TrainingData that will contain the parts
+            training_data: The id or :class:`model <TrainingData>` of the training data that will contain the parts
             folder_path: Path to the folder which contains the files to upload
             compute: Whether to compute the training data after upload, defaults to True
         """
