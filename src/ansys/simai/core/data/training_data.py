@@ -81,7 +81,7 @@ class TrainingData(ComputableDataModel):
 
         Args:
             project: ID or :class:`model <.projects.Project>` of the project to check for
-            the :class:`~.projects.Project` object to check for, or its ID.
+                the :class:`~.projects.Project` object to check for, or its ID.
 
         Returns:
             Name of the subset that the training data belongs to in the given project.
