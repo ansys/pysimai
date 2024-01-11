@@ -200,7 +200,7 @@ class ComputableDataModel(DataModel):
 
         Args:
             timeout: Maximum amount of time in seconds to wat. The default is
-            ``None``, in which case there is no maximum on the time to wait.
+                ``None``, in means that there is no maximum on the time to wait.
 
         Returns:
             ``True`` if the computation has finished, ``False`` if the operation timed out.
