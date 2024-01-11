@@ -72,7 +72,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         """Change the name of the geometry.
 
         Args:
-            name: New name to give to the geometry
+            name: New name to give to the geometry.
 
         Note:
             Only the stem part is modified. The file extension is immutable.
@@ -88,7 +88,9 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
         - New keys-values are added.
         - Existing keys-values are overwritten.
-        - Other key-values are not changed. To delete a metadata, set it to ``None`` explicitly.
+        - Other key-values are not changed.
+
+        To delete a metadata, set it to ``None`` explicitly.
 
         Args:
             metadata: Dictionary with the new data.
@@ -126,13 +128,13 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         """Run a new prediction or return an existing prediction.
 
         This is a non-blocking method. The prediction object is returned.
-        This prediction may be incomplete if its computation is not finished,
+        This object may be incomplete if its computation is not finished,
         in which case the information is filled once the computation is complete.
         The state of the computation can be monitored with the prediction's ``is_ready``
         attribute or waited upon with its ``wait()`` method.
 
-        To learn more about the expected boundary conditions in your workspace, you can do
-        ``simai.current_workspace.model.boundary_conditions`` or ``simai.predictions.boundary_conditions``
+        To learn more about the expected boundary conditions in your workspace, you can use the
+        ``simai.current_workspace.model.boundary_conditions`` or ``simai.predictions.boundary_conditions``,
         where ``ex`` is your `~ansys.simai.core.client.SimAIClient` object.
 
         Args:
@@ -140,7 +142,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             **kwargs: Boundary conditions to pass as keyword arguments.
 
         Returns:
-            Created prediction object
+            Created prediction object.
 
         Raises:
             ProcessingError: If the server failed to process the request.
@@ -152,7 +154,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
                 geometry = simai.geometries.list()[0]
                 geometry.run_prediction(dict(Vx=10.5, Vy=2))
 
-            Using kwargs:
+            Use kwargs:
 
             .. code-block:: python
 
@@ -176,7 +178,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             file: Optional binary file-object or the path of the file to put the
                 content into.
             monitor_callback: Optional callback to monitor the progress of the download.
-                Fore more information, see the :obj:`~ansys.simai.core.data.types.MonitorCallback`
+                For more information, see the :obj:`~ansys.simai.core.data.types.MonitorCallback`
                 object.
 
         Returns:
@@ -196,18 +198,18 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
     ) -> List["Geometry"]:
         """Return geometries whose metadata are closest to the candidate geometry.
 
-        Sweep returns geometries that have the values closest to the candidate
+        This method returns geometries that have the values closest to the candidate
         geometry for each considered metadata variable. For example, if
         sweeping along ``length`` and ``width`` metadata variables, the method
         returns geometries that have identical width and the closest smaller
-        and bigger length, as well as identical length and the closest smaller
-        and bigger width.
+        and larger length, as well as identical length and the closest smaller
+        and larger width.
 
         The ``fixed_metadata`` array allows you to fix one or several variables.
         For each fixed variable, the resulting geometries must have
         a metadata value equal to the considered geometry. For example, if
         ``fixed_metadata`` is ``["xbow"]``, every ``geometry.metadata["xbow"]``
-        result must be equal to the ``candidate_geometry.metadata["xbow"]``
+        result must be equal to the ``candidate_geometry.metadata["xbow"]``.
 
         Metadata passed neither in ``swept_metadata`` nor in ``fixed_metadata``
         are ignored and can have any value (or absence thereof).
@@ -220,29 +222,28 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             fixed_metadata: Optional list of metadata variables that should
                 be fixed, meaning that all the resulting geometries
                 have those values equal to the candidate geometry.
-            geometries: Optional list of Geometry objects to consider for sweeping.
-                If no Geometry objects are passed, all geometries are used.
+            geometries: Optional list of ``Geometry`` objects to consider for sweeping.
+                If no ``Geometry`` objects are passed, all geometries are used.
             tolerance: Optional delta. If the difference between two numbers
                 is lower than the tolerance, they are considered as equal.
                 The default is ``10**-6``.
-            order: Optional depth of sweep. The default is ``1``. This parameter
+            order: Optional depth of the sweep. The default is ``1``. This parameter
                 determines the number of returned groups of equal smaller and
-                bigger values for each swept variable. For example, if sweeping
+                larger values for each swept variable. For example, if sweeping
                 on a space with lengths ``[1, 2.1, 2.1, 3.5, 3.5, 4, 4]``
                 from the candidate with ``length=1``, ``order=2`` returns
                 the geometries with lengths ``2.1, 2.1, 3.5, 3.5``.
-            include_center: Optional Boolean (defaults to False)
-                Whether geometries with values equal to the candidate
-                geometry (including the candidate itself) are to be returned
-                among the result.
-            include_diagonals: Optional boolean (defaults to False)
-                Whether to include diagonals when sweeping on more than one variable.
+            include_center: Optional Boolean indicating whether geometries with values
+                equal to the candidate geometry (including the candidate itself) are
+                to be returned among the result. The default is ``False``.
+            include_diagonals: Optional Boolean indicating whether to include diagonals
+                when sweeping on more than one variable. The default is ``False``.
                 For example, if sweeping on two variables from point ``(0, 0)``
                 and with ``order=1``, in addition to ``(0, 1)`` and ``(1, 0)``,
                 geometry ``(1, 1)`` is returned.
 
         Returns:
-            List of Geometry objects neighboring the candidate geometry for each metadata.
+            List of ``Geometry`` objects neighboring the candidate geometry for each metadata.
 
         Raises:
             ValueError: If a passed variable doesn't exist in the
@@ -340,7 +341,7 @@ class GeometryDirectory(Directory[Geometry]):
 
         Args:
             kwargs: Filters to apply. Only the elements with matching key-values in
-                their metadata are returned. Each filter can one of the following data types:
+                their metadata are returned. Each filter can be one of the following data types:
 
                 - A string
                 - A numerical value (int or float)
@@ -361,12 +362,14 @@ class GeometryDirectory(Directory[Geometry]):
         id: Optional[str] = None,
         workspace: Optional[Identifiable[Workspace]] = None,
     ) -> Geometry:
-        """Get a specific geometry object from the server either by name or by ID.
+        """Get a specific geometry object from the server either by name or ID.
+
+        You can specify either the ID or the name, not both.
 
 
         Args:
-            name: Name of the geometry to get.
-            id: ID of the geometry to get.
+            name: Name of the geometry.
+            id: ID of the geometry.
             workspace: ID or :class:`model <.workspaces.Workspace>` of the workspace containing the geometry.
                 This parameter is necessary if providing a name and no global workspace is set for the client.
 
@@ -374,7 +377,7 @@ class GeometryDirectory(Directory[Geometry]):
             :py:class:`Geometry`.
 
         Raises:
-            InvalidArguments: If neither a name nor ID is given.
+            InvalidArguments: If neither a name nor an ID is given.
             NotFoundError: If no geometry with the given name or ID exists.
 
         Examples:
@@ -435,9 +438,9 @@ class GeometryDirectory(Directory[Geometry]):
         """Upload a geometry to the SimAI platform.
 
         Args:
-            file: Binary file-object or the path of the file to open.
+            file: Binary file-object or the path of the geometry to open.
                 For more information, see the :class:`~ansys.simai.core.data.types.NamedFile` class.
-            metadata: Optional metadata to add to the geometry, simple key-value store.
+            metadata: Optional metadata to add to the geometry's simple key-value store.
                 Lists and nested objects are not supported.
             workspace_id: ID or :class:`model <.workspaces.Workspace>` of the workspace to
                 upload the geometry to. This parameter is only necessary if no workspace
@@ -486,7 +489,7 @@ class GeometryDirectory(Directory[Geometry]):
                 object.
 
         Returns:
-            ``None`` if a file is provided or a :class:`~io.BytesIO` object with the geometry's content otherwise
+            ``None`` if a file is provided or a :class:`~io.BytesIO` object with the geometry's content otherwise.
 
         See Also:
             :func:`Geometry.download`

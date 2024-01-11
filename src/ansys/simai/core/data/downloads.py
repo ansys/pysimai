@@ -56,7 +56,7 @@ class DownloadableResult:
         """Load the postprocessing data in memory.
 
         Returns:
-            :class:`io.BytesIO` object containing the postprocessing data
+            :class:`io.BytesIO` object containing the postprocessing data.
         """
         return self._download_file(self.url)
 

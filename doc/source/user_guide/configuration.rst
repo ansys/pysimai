@@ -17,7 +17,7 @@ instance:
     simai = ansys.simai.core.SimAIClient(organization="my-company")
 
 
-As demonstrated in the preceding example, you configure the instance by
+As demonstrated in the preceding code, you configure the instance by
 passing the required parameters on client creation. You are prompted
 for any missing parameters.
 
@@ -38,7 +38,7 @@ class:
 
 
 Credentials
-+++++++++++
+-----------
 
 To use the SimAI API, your :class:`~ansys.simai.core.client.SimAIClient`
 instance must be authenticated. By default, you are prompted to log in

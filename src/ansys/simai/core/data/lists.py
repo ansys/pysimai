@@ -38,7 +38,7 @@ T = TypeVar("T", bound=PostProcessing)
 class PPList(List, Generic[T]):
     """Provides a subclass of the :class:`list` class for storing postprocessings and adding a few shortcut methods.
 
-    As a :class:`list` subclass, the ``PPList`` class support any list operation.
+    As a :class:`list` subclass, the ``PPList`` class supports any list operation.
     Its elements can be iterated on and accessed by index.
     """
 
@@ -66,19 +66,19 @@ class PPList(List, Generic[T]):
 class ExportablePPList(PPList, Generic[T]):
     """Provides a subclass of the :class:`PPList` class for downloading the results of a group of postprocessings.
 
-    As a :class:`list` subclass, the ``ExportablePPList`` class support any list operation.
-        Its elements can be iterated on and accessed by index.
+    As a :class:`list` subclass, the ``ExportablePPList`` class supports any list operation.
+    Its elements can be iterated on and accessed by index.
     """
 
     def export(self, format: Optional[str] = "json") -> DownloadableResult:
-        """Export the postprocessings results in the desired format.
+        """Export the postprocessing results in the desired format.
 
         Accessing this property blocks until the data is ready.
 
         Args:
-            format: format to exported data in. The default is ```json```.
-                Options are ```'csv.zip'``, `'json'``, and ``xlsx``.
-                Note that the ``csv.zip`` option exports a ZIP file containing
+            format: format to exported data in. The default is ``'json'``.
+                Options are ```'csv.zip'``, ``'json'``, and ```xlsx```.
+                Note that the ``'csv.zip'`` option exports a ZIP file containing
                 multiple CSV sheets.
 
         Returns:

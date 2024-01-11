@@ -68,7 +68,7 @@ class TrainingData(ComputableDataModel):
 
     @property
     def parts(self) -> List["TrainingDataPart"]:
-        """Lists the :class:`parts<ansys.simai.core.data.training_data_parts.TrainingDataPart>`
+        """List of all :class:`parts<ansys.simai.core.data.training_data_parts.TrainingDataPart>`
         objects in the training data.
         """
         return [
@@ -80,8 +80,8 @@ class TrainingData(ComputableDataModel):
         """Get the subset that the training data belongs to, in relation to the given project.
 
         Args:
-            project: ID or :class:`model <.projects.Project>` of the project to check for
-                the :class:`~.projects.Project` object to check for, or its ID.
+            project: ID or :class:`model <.projects.Project>` of the project to check
+                the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
             Name of the subset that the training data belongs to in the given project.
@@ -133,7 +133,7 @@ class TrainingData(ComputableDataModel):
         compute: bool = True,
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> List["TrainingDataPart"]:
-        """Upload all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData`.
+        """Upload all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData` instance.
 
         This method automatically requests computation of the training data
         once the upload is complete unless specified otherwise.
@@ -179,7 +179,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
     This class is accessed through ``client.training_data``.
 
     Example:
-        List all the training data::
+        List all of the training data::
 
             import ansys.simai.core
 
@@ -208,7 +208,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
         """Delete a :class:`TrainingData` object and its associated parts from the server.
 
         Args:
-            training_data: ID or :class:`model <TrainingData>` object of the training data to delete.
+            training_data: ID or :class:`model <TrainingData>` object of the :class:`TrainingData` object.
         """
         return self._client._api.delete_training_data(get_id_from_identifiable(training_data))
 

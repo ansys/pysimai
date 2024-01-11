@@ -74,10 +74,10 @@ class PostProcessing(ComputableDataModel, ABC):
     def prediction(self) -> "Prediction":
         """Parent prediction.
 
-        It will be queried if not already known by the current SimAPI client session.
+        The parent prediction is queried if it is not already known by the current SimAPI client session.
 
         See Also:
-            - :attr:`prediction_id`: Return the parent prediction's ID without query.
+            - :attr:`prediction_id`: Get the parent prediction's ID without query.
         """
         if self._prediction is None:
             if self.prediction_id in self._client.predictions._registry:
@@ -142,8 +142,8 @@ class ExportablePostProcessing(PostProcessing, ABC):
 
         Args:
             format: Format to export the data in. The default is ``'json'``.
-                Options are ``'csv.zip'`` and ``'xlsx'``. Note that the
-                ``'csv.zip'`` option exports a ZIP file containing
+                Options are ``'csv.zip'``, ``'json'``, and ``'xlsx'``. Note that
+                the ``'csv.zip'`` option exports a ZIP file containing
                 multiple CSV sheets.
 
         Returns:
@@ -171,7 +171,7 @@ class GlobalCoefficients(ExportablePostProcessing):
 
     @property
     def data(self) -> Dict[str, List]:
-        """Dictionary containing the global coefficients including pressure
+        """Dictionary containing the global coefficients, including pressure
         and velocity components.
 
         Accessing this property blocks until the data is ready.
@@ -183,15 +183,15 @@ class GlobalCoefficients(ExportablePostProcessing):
 
 
 class SurfaceEvol(ExportablePostProcessing):
-    """Provides the representation of the SurfaceEvol.
+    """Provides the representation of the ``SurfaceEvol`` object.
 
-    Generated through :meth:`PredictionPostProcessings.surface_evol()`
+    This class is generated through :meth:`PredictionPostProcessings.surface_evol()`
     """
 
     @property
     def data(self) -> DownloadableResult:
         """:class:`DownloadableResult` object that allows access to the
-        SurfaceEvol JSON data, both directly in memory any by downloading it
+        ``SurfaceEvol`` JSON data, both directly in memory any by downloading it
         into a file.
 
         Accessing this property blocks until the data is ready.
@@ -201,7 +201,7 @@ class SurfaceEvol(ExportablePostProcessing):
         return DownloadableResult(results["data"]["resources"]["json"], self._client)
 
     def as_dict(self) -> Dict[str, Any]:
-        """Download the SurfaceEvol JSON data and load it as Python dictionary.
+        """Download the SurfaceEvol JSON data and load it as a Python dictionary.
 
         Accessing this help method blocks until the data is ready.
         """
@@ -209,7 +209,7 @@ class SurfaceEvol(ExportablePostProcessing):
 
 
 class Slice(PostProcessing):
-    """Provides a Representation of a slice from the prediction in PNG or VTP format.
+    """Provides a representation of a slice from the prediction in PNG or VTP format.
 
     This class is generated through the :meth:`PredictionPostProcessings.slice()` method.
     """
@@ -220,7 +220,7 @@ class Slice(PostProcessing):
         access to slice data, both directly in memory
         and by downloading it into a file.
 
-        Accessing this property will block until the data is ready.
+        Accessing this property blocks until the data is ready.
 
         Returns:
             A :class:`DownloadableResult`
@@ -250,21 +250,21 @@ class _PostProcessingVTKExport(PostProcessing, ABC):
 
 
 class VolumeVTU(_PostProcessingVTKExport):
-    """Exports the volume of the prediction in VTU format.
+    """Provides for exporting the volume of the prediction in VTU format.
 
     This class is generated through the :meth:`PredictionPostProcessings.volume_vtu()` method.
     """
 
 
 class SurfaceVTP(_PostProcessingVTKExport):
-    """Exports the surface of the prediction in VTP format.
+    """Provides for exporting the surface of the prediction in VTP format.
 
     This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
     """
 
 
 class PredictionPostProcessings:
-    """Acts as namespace inside :py:class:`~ansys.simai.core.data.predictions.Prediction` objects.
+    """Acts as the namespace inside :py:class:`~ansys.simai.core.data.predictions.Prediction` objects.
 
     This class allows you to analyze the results of a prediction.
 
@@ -293,7 +293,7 @@ class PredictionPostProcessings:
         object without waiting. This object may not have data right away
         if the computation is still in progress. Data is filled
         asynchronously once the computation is finished.
-        The state of computation can be monitored with the ``is_ready`` flag,
+        The state of computation can be monitored with the ``is_ready`` flag
         or waited upon with the ``wait()`` method.
 
         Computation is launched only on first call of this method.
@@ -307,7 +307,7 @@ class PredictionPostProcessings:
         Returns:
             ``GlobalCoefficients`` object that eventually contains
             the global coefficients with its pressure and velocity components.
-            `None` if ``run=False`` and the postprocessing does not exist.
+            Returns ``None`` if ``run=False`` and the postprocessing does not exist.
         """
         return self._get_or_run(GlobalCoefficients, {}, run)
 
@@ -334,7 +334,7 @@ class PredictionPostProcessings:
 
         Returns:
             ``SurfaceEvol`` that allows access to the values.
-            ``None`` if ``run=False`` and the postprocessing does not exist.
+            Returns ``None`` if ``run=False`` and the postprocessing does not exist.
         """
         if axis not in ["x", "y", "z"]:
             raise TypeError("Axis must be x, y, or z.")
@@ -356,7 +356,7 @@ class PredictionPostProcessings:
 
         The computation is launched only on first call of this method
         with a specific set of parameters. Subsequent calls with the same
-        do not relaunch it.
+        parameters do not relaunch it.
 
         The slice is in the NPZ format.
 
@@ -371,10 +371,11 @@ class PredictionPostProcessings:
 
         Returns:
             ``Slice`` object that allows downloading the binary data.
-            ``None`` if ``run=False`` and the postprocessing does not exist.
+            Returns ``None`` if ``run=False`` and the postprocessing does not exist.
 
         Example:
-            Make a slice and open it in a new window using the pillow library.
+            Make a slice and open it in a new window using the `Pillow <https://pypi.org/project/pillow/>
+            library.
 
             .. code-block:: python
 
@@ -405,7 +406,7 @@ class PredictionPostProcessings:
         The state of computation can be monitored with the ``is_ready`` flag
         or waited upon with the ``wait()`` method.
 
-        The Computation is launched only on first call of this method.
+        The computation is launched only on first call of this method.
         Subsequent calls do not relaunch it.
 
         Args:
@@ -415,7 +416,7 @@ class PredictionPostProcessings:
 
         Returns:
             :class:`SurfaceVTP` object that allows downloading the binary data.
-            ``None`` if ``run=False`` and the postprocessing does not exist.
+            Returns ``None`` if ``run=False`` and the postprocessing does not exist.
 
         Examples:
             Run and download a surface VTP.
@@ -636,7 +637,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         """List the postprocessings in the current workspace or associated with a prediction.
 
         Optionally you can choose to list only postprocessings of a specific type.
-        For the name of the available postprocessings, see :ref:`available_pp`
+        For the name of the available postprocessings, see :ref:`available_pp`.
         Note that the case must be respected.
 
         Args:
@@ -681,11 +682,11 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         """Run a postprocessing on a prediction.
 
         For the name and the parameters expected by the postprocessings,
-        see :ref:`available_pp` and :ref`pp_methods`. Note that the case
+        see :ref:`available_pp` and :ref:`pp_methods`. Note that the case
         of the class names must be respected.
 
         Args:
-            post_processing_type: Type of postprocessing to run, as a string
+            post_processing_type: Type of postprocessing to run as a string
                 or as the class itself.
             prediction: ID or :class:`model <.predictions.Prediction>` of the prediction
                 to run the postprocessing for.
@@ -738,7 +739,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         """Delete a postprocessing.
 
         Args:
-            post_processing: The ID or :class:`model <PostProcessing>` of the postprocessing.
+            post_processing: ID or :class:`model <PostProcessing>` of the postprocessing.
         """
         # FIXME?: This won't update the post_processings of the prediction's PredictionPostProcessings if any.
         # Doing so would require an extra call to get the prediction info and I'm not sure there's really a point

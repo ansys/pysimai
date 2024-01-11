@@ -46,15 +46,15 @@ class SelectionPostProcessingsMethods:
     def global_coefficients(self) -> ExportablePPList[GlobalCoefficients]:
         """Compute or get the global coefficients of the selected predictions.
 
-        This is a non-blocking method. It returns a
+        This is a non-blocking method. It returns an
         :py:class:`~ansys.simai.core.data.lists.ExportablePPList` instance
         of :py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
-        objects without waiting. Those ```PostProcessing`` objects may not have
+        objects without waiting. Those ``PostProcessing`` objects may not have
         data right away if the computation is still in progress. Data is filled
         asynchronously once the computation is finished.
         The state of computation can be waited upon with the ``wait()`` method.
 
-        The Computation is launched only on the first call of this method.
+        The computation is launched only on the first call of this method.
         Subsequent calls do not relaunch it.
 
         Returns:
@@ -67,12 +67,12 @@ class SelectionPostProcessingsMethods:
         )
 
     def surface_evol(self, axis: str, delta: float) -> ExportablePPList[SurfaceEvol]:
-        """Compute or get the SurfaceEvol of the predictions, for specific parameters.
+        """Compute or get the SurfaceEvol of the predictions for specific parameters.
 
-        This is a non-blocking method. It returns a
+        This is a non-blocking method. It returns an
         :py:class:`~ansys.simai.core.data.lists.ExportablePPList` instance
         of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`
-        objects without waiting. Those ``PostProcessing objects`` may not have
+        objects without waiting. Those ``PostProcessing`` objects may not have
         data right away if the computation is still in progress. Data is filled
         asynchronously once the computation is finished.
         The state of computation can be waited upon with the ``wait()`` method.

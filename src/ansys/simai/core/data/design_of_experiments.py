@@ -62,7 +62,7 @@ class DesignOfExperimentsCollection:
 
         Args:
             file: Path of the file to put the content into.
-            format: Expected format. The default is ``'xlsx'``. Options are ``'xlsx'``
+            format: Expected format. The default is ``'csv'``. Options are ``'xlsx'``
                 and ``'csv'``.
 
         Returns:

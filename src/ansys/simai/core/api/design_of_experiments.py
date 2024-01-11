@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class DesignOfExperimentsMixin(ApiClientMixin):
-    """Provides the client for the design of experiments ("/design-of-experiments/") (DOE) part of the API."""
+    """Provides the client for the design of experiments ("/design-of-experiments/") part of the API."""
 
     def download_design_of_experiments(
         self,
@@ -43,10 +43,11 @@ class DesignOfExperimentsMixin(ApiClientMixin):
         Args:
             file: Binary file-object or the path of the file to put the content into.
             format: Format to download. Options are ``'xlsx'`` or ``'csv'``.
-            workspace_id: ID of the workspace to download the DOE for.
+            workspace_id: ID of the workspace to download the design of experiments for.
 
         Return:
-            None if a file is provided or a ``BytesIO``object with the DOE content otherwise
+            ``None`` if a file is provided or a ``BytesIO`` object with the content for
+            the design of experiments otherwise.
         """
         logger.debug("Attempting to download design of experiments.")
         return self.download_file(

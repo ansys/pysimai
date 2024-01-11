@@ -8,9 +8,9 @@ Training
    Training is still experimental and subject to API changes.
 
 Before you can use the solver, you must train the SimAI solution on your prediction
-data. First, you upload your prediction data into a global pool of
+data. You first upload your prediction data into a global pool of
 :class:`training data<ansys.simai.core.data.training_data.TrainingData>` instances
-and then assign this data to different :class:`Projects<ansys.simai.core.data.projects.Project>`
+and then assign this data to different :class:`Project<ansys.simai.core.data.projects.Project>`
 instances, which you configure for training your model.
 
 Train on prediction data
@@ -28,7 +28,7 @@ Train on prediction data
    information, see :ref:`configuration`.
 
 #. Upload your prediction data by creating a
-   :class:`training data<ansys.simai.core.data.training_data.TrainingData>` instance
+   :class:`TrainingData<ansys.simai.core.data.training_data.TrainingData>` instance
    and then loading your files into it::
 
      td = simai.training_data.create("my-first-data")

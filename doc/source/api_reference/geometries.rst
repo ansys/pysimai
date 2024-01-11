@@ -6,7 +6,7 @@ Geometries
 .. py:module:: ansys.simai.core.data.geometries
 
 Geometries are the core of *SimAI deep learning-powered predictions*.
-A geometry is a 3D model and associated metadata managed by the SimAI platform.
+A geometry is a 3D model and the associated metadata managed by the SimAI platform.
 
 .. _geometry_format:
 

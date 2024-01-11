@@ -52,9 +52,9 @@ logger = logging.getLogger(__name__)
 
 
 class SimAIClient:
-    """Provide the client for communicating with the SimAI API.
+    """Provides the client for communicating with the SimAI API.
 
-    Keyword Args: See the :class:`~ansys.simai.core.utils.configuration.ClientConfig` class.
+    For keyword argsuments, see the :class:`~ansys.simai.core.utils.configuration.ClientConfig` class.
 
     Example:
         .. code-block:: python
@@ -98,7 +98,7 @@ class SimAIClient:
 
         .. note::
             You should not set the workspace directly. Instead, use the :meth:`set_current_workspace`
-            method, which uses the workspace name and also ensures that the workspace exists.
+            method, which uses the workspace name and ensures that the workspace exists.
         """
         if self._current_workspace is None:
             raise InvalidClientStateError("Current workspace is not set.")
@@ -146,7 +146,7 @@ class SimAIClient:
 
         .. note::
             You should not set the project directly. Instead, use the :meth:`set_current_project`
-            method, which uses the project name and also ensures that the project exists.
+            method, which uses the project name and ensures that the project exists.
         """
         if self._current_project is None:
             raise InvalidClientStateError("Current project is not set.")
@@ -184,72 +184,63 @@ class SimAIClient:
     @property
     def geometries(self):
         """Representation of all geometries on the server.
-
-        For more information, see :doc:`Geometries <geometries>`.
+        For more information, see :ref:`geometries`.
         """
         return self._geometry_directory
 
     @property
     def optimizations(self):
         """Representation of all optimizations on the server.
-
-        For more information, see :doc:`Optimization <optimizations>`.
+        For more information, see :ref:`optimizations`.
         """
         return self._optimization_directory
 
     @property
     def training_data(self):
         """Representation of all training data on the server.
-
-        For more information, see :doc:`TrainingData<training_data>`.
+        For more information, see :ref:`training_data`.
         """
         return self._training_data_directory
 
     @property
     def training_data_parts(self):
         """Representation of all training data parts on the server.
-
-        For more information, see :doc:`TrainingDataParts<training_data_parts>`.
+        For more information, see :ref:`training_data_parts`.
         """
         return self._training_data_part_directory
 
     @property
     def predictions(self):
         """Representation of all predictions on the server.
-
-        For more information, see :doc:`Predictions <predictions>`.
+        For more information, see :ref:`predictions`.
         """
         return self._prediction_directory
 
     @property
     def post_processings(self):
         """Representation of all postprocessings on the server.
-
-        For more information, see :doc:`Postprocessings <post_processings>`.
+        For more information, see :ref:`post_processings`.
         """
         return self._post_processing_directory
 
     @property
     def projects(self):
         """Representation of all projects on the server.
-
-        For more information, see :doc:`Projects <projects>`.
+        For more information, see :ref:`projects`.
         """
         return self._project_directory
 
     @property
     def design_of_experiments(self):
         """Methods for exporting design of experiments.
-
-        For more information, see :doc:`Design of Experiments <design_of_experiments>`.
+        For more information, see :ref:`design_of_experiments`.
         """
         return self._doe_collection
 
     @property
     def workspaces(self):
         """Representation of all workspaces on the server.
-
-        For more information, see :doc:`Workspaces <workspaces>`.
+        For more information, see :ref:`workspaces`.
         """
         return self._workspace_directory
 
@@ -263,7 +254,7 @@ class SimAIClient:
         """Initializes a SimAI client by reading a configuration file.
 
         You can provide the path of the configuration file to load. If no path is
-        given, it looks at the default locations.
+        given, this method looks at the default locations.
 
         For more information, see :ref:`Configuration file<config_file>`.
 
@@ -271,7 +262,7 @@ class SimAIClient:
 
         Args:
             profile: Profile to load from the configuration file. The default profile
-                is loaded if a profile is not provided.
+                is loaded if no profile is provided.
             path: Path for the configuration file.
             **kwargs: Additional arguments to pass to the SimAI client.
 
@@ -280,11 +271,11 @@ class SimAIClient:
 
         Raises:
             ConfigurationNotFoundError: No configuration file was found at the given location
-                or the default profile if no path was given.
+                or in the default profile if no path was given.
             InvalidConfigurationError: Configuration is invalid or incomplete.
 
         Example:
-            After setting up your :ref:`configuration file.<config_file>`
+            Create the client after setting up your :ref:`configuration file.<config_file>`.
 
             .. code-block:: python
 
@@ -298,8 +289,7 @@ class SimAIClient:
         return cls(**get_config(path, profile, **kwargs))
 
     def wait(self) -> None:
-        """Wait for all the ongoing operations
-        on locally known predictions and postprocessings
+        """Wait for all ongoing operations on locally known predictions and postprocessings
         to finish.
 
 

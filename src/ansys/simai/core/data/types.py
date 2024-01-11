@@ -47,7 +47,7 @@ BoundaryConditions = Dict[str, Number]
 
 Path = Union[pathlib.Path, str, os.PathLike]
 """
-Path to a file or folder, as a :obj:`pathlib.Path` or a format supported by pathlib.
+Path to a file or folder as an :obj:`pathlib.Path` object or a format supported by ``pathlib``.
 """
 
 File = Union[BinaryIO, io.RawIOBase, io.BufferedIOBase, Path]
@@ -78,12 +78,10 @@ APIResponse = Union[Response, Dict[str, Any], List[Dict[str, Any]]]
 MonitorCallback = Callable[[int], None]
 """Callback used to monitor the download or upload of a file.
 
-For downloads:
-The callback is called one time with the total size of the download.
+For downloads, the callback is called one time with the total size of the download.
 Subsequent calls are passed the number of bytes read in this iteration.
 
-For uploads:
-The callback receives the number of bytes written each iteration.
+For uploads, the callback receives the number of bytes written each iteration.
 """
 
 Identifiable = Union[DataModelType, str]

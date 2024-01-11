@@ -9,9 +9,8 @@ postprocessings, explore your data, and gather insights from it.
 Selections
 ----------
 
-The :class:`Selection<ansys.simai.core.data.selections.Selection>` class enables you to
-manipulate a large number of geometries and boundary conditions simultaneously. It also
-allows you to easily run many predictions or postprocessings in parallel.
+:ref:`selections` enable you to manipulate a large number of geometries and boundary conditions
+simultaneously. They also allow you to easily run many predictions or postprocessings in parallel.
 
 You create a selection by combining a list of geometries with a list of boundary conditions:
 
@@ -45,7 +44,8 @@ different strategies:
 - The :meth:`GeometryDirectory.list<ansys.simai.core.data.geometries.GeometryDirectory.list>`
   method, which is described in :ref:`filtering_geometries`.
 
-For more information on selection methods, see :ref:`selections`.
+For more information on selections and geometry exploration methods, see :ref:`selections`
+and :ref:`geometries`.
 
 .. _sweeping:
 
@@ -80,4 +80,3 @@ geometries with range filters.
 
    geometries = simai.geometries.list(filters={"SINK": Range(-5.1, -4.8)})
 
-For more information on geometry exploration methods, see :ref:`geometries`.

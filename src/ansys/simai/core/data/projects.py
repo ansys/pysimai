@@ -61,10 +61,7 @@ class Project(DataModel):
 
     @property
     def sample(self) -> Optional["TrainingData"]:
-        """Sample of the project.
-
-        The sample determines what variable and settings are available during model configuration.
-        """
+        """Sample of the project. The sample determines what variable and settings are available during model configuration."""
         raw_sample = self.fields["sample"]
         if raw_sample is None:
             return None
@@ -106,9 +103,9 @@ class ProjectDirectory(Directory[Project]):
         return self._model_from(self._client._api.create_project(name=name))
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None):
-        """Get a project by ID or name.
+        """Get a project by either ID or name.
 
-        Only the ID or name should be specified.
+        You can specify either the ID or the name, not both.
 
         Args:
             id: ID of the project.

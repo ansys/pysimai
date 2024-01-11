@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class Optimization(ComputableDataModel):
-    """Provides a local representation of an optimization definition object."""
+    """Provides the local representation of an optimization definition object."""
 
     def _try_geometry(
         self, geometry: Identifiable[Geometry], geometry_parameters: Dict
@@ -47,7 +47,7 @@ class Optimization(ComputableDataModel):
 
 
 class OptimizationTrialRun(ComputableDataModel):
-    """Provides a local representation of an optimization trial run object.
+    """Provides the local representation of an optimization trial run object.
 
     The optimization trial run is an iteration of the optimization process.
     Each trial run tests a geometry and returns new parameters for the next geometry to try.
@@ -110,8 +110,8 @@ class OptimizationDirectory(Directory[Optimization]):
                 on a global coefficient. The outcome constraint should be in the form ``gc >= x``,
                 where:
 
-                - ``gc`` is a valid global coefficient name
-                - ``x`` is a float bound
+                - ``gc`` is a valid global coefficient name.
+                - ``x`` is a float bound.
                 - The comparison operator is ``>=`` or ``<=``.
 
             n_iters: Number of iterations of the optimization loop.
@@ -120,13 +120,13 @@ class OptimizationDirectory(Directory[Optimization]):
                 not specified, the default is the configured workspace.
 
         Returns:
-            List of dictionaries representing the result of each iterations. The list can be shorter
-                than the number of iterations when constraints are specified.
+            List of dictionaries representing the result of each iteration. when constraints
+            are specified, the list can be shorter than the number of iterations.
 
-        Warning:
+        .. warning::
             This is a long-running process and your computer must be powered on to generate the iterations.
-                This method attempts to prevent your computer from sleeping but keep your computer open
-                during the process.
+            This method attempts to prevent your computer from sleeping, keeping your computer open
+            during the process.
 
         Example:
           .. code-block:: python
@@ -224,7 +224,7 @@ class OptimizationTrialRunDirectory(Directory[OptimizationTrialRun]):
     _data_model = OptimizationTrialRun
 
     def get(self, trial_run_id: str):
-        """Get a specific trial run object from the server."""
+        """Get a specific trial run from the server."""
         return self._model_from(self._client._api.get_optimization_trial_run(trial_run_id))
 
     def _try_geometry(

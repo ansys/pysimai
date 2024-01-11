@@ -62,7 +62,7 @@ class Prediction(ComputableDataModel):
         SimAI client session.
 
         See Also:
-            - :attr:`geometry_id`: Return the parent geometry's ID without query.
+            - :attr:`geometry_id`: Get the parent geometry's ID without query.
         """
         if self._geometry is None:
             if self.geometry_id in self._client.geometries._registry:
@@ -100,12 +100,12 @@ class Prediction(ComputableDataModel):
         self._unregister()
 
     def feedback(self, **kwargs):  # noqa: D417
-        """Give us your feedback on a prediction so improvements might be made.
+        """Provide feedback on a prediction so improvements might be made.
 
         This method enables you to give a rating (from 0 to 4) and a comment on a
         prediction.
         Moreover, you can upload your computed solution.
-        This feedback is used to try to make predictions more accurate.
+        Your feedback is used to try to make predictions more accurate.
 
         Keyword Args:
             rating (int): Rating from 0 to 4.
@@ -228,7 +228,7 @@ class PredictionDirectory(Directory[Prediction]):
             prediction: ID or :class:`model <Prediction>` of the prediction.
 
         Raises:
-            :py:class:`ansys.simai.core.errors.NotFoundError`: No prediction with the given id exists
+            :py:class:`ansys.simai.core.errors.NotFoundError`: No prediction with the given ID exists.
         """
         prediction_id = get_id_from_identifiable(prediction)
         self._client._api.delete_prediction(prediction_id)
@@ -240,7 +240,7 @@ class PredictionDirectory(Directory[Prediction]):
         boundary_conditions: Optional[BoundaryConditions] = None,
         **kwargs,
     ) -> Prediction:
-        """Run a SimAI prediction on the given geometry with the given boundary conditions.
+        """Run a prediction on a given geometry with a given boundary conditions.
 
         Boundary conditions can be passed as a dictionary or as kwargs.
 
@@ -279,12 +279,12 @@ class PredictionDirectory(Directory[Prediction]):
         return prediction
 
     def feedback(self, prediction: Identifiable[Prediction], **kwargs) -> None:  # noqa: D417
-        """Give us your feedback on a prediction so improvements might be made.
+        """Provide feedback on a prediction so improvements might be made.
 
         This method enables you to give a rating (from 0 to 4) and a comment on a
         prediction.
         Moreover, you can upload your computed solution.
-        This feedback is used to try to make predictions more accurate.
+        Your feedback is used to try to make predictions more accurate.
 
         Args:
             prediction: ID or :class:`model <Prediction>` of the prediction.

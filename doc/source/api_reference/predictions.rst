@@ -5,12 +5,13 @@ Predictions
 
 .. py:module:: ansys.simai.core.data.predictions
 
-The Prediction module is in charge of running the *SimAI-powered
+The ``Prediction`` module is in charge of running the *SimAI-powered
 predictions* on the :py:class:`geometries<ansys.simai.core.data.geometries.Geometry>`
 that you have uploaded.
 
 A prediction represents a numerical prediction with geometry and boundary conditions.
-The arguments to the :py:meth:`predictions.run()<PredictionDirectory.run>` depend on your model.
+The arguments to the :py:meth:`predictions.run()<PredictionDirectory.run>` method
+depend on your model.
 
 .. code-block:: python
 

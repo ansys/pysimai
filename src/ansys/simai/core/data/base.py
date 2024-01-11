@@ -134,7 +134,7 @@ class ComputableDataModel(DataModel):
 
     @property
     def is_pending(self):
-        """Boolean indicating the object is still in creation.
+        """Boolean indicating if the object is still in creation.
         The value becomes ``False`` once object creation is either successful
         or has failed.
 
@@ -199,10 +199,11 @@ class ComputableDataModel(DataModel):
         or fail.
 
         Args:
-            timeout: Maximum amount of time in seconds to wat. The default is unlimited.
+            timeout: Maximum amount of time in seconds to wat. The default is
+            ``None``, in which case there is no maximum on the time to wait.
 
         Returns:
-            ``True`` if the computation has finished. ``False`` if the operation timed out.
+            ``True`` if the computation has finished, ``False`` if the operation timed out.
         """
         is_done = self._is_over.wait(timeout)
         if self.has_failed:

@@ -39,7 +39,7 @@ from ansys.simai.core.utils.validation import _enforce_as_list_passing_predicate
 
 
 class Point:
-    """Provides a Point object, where a prediction can be run.
+    """Provides a ``Point`` object, where a prediction can be run.
 
     A point is at the intersection of a :class:`~ansys.simai.core.data.geometries.Geometry`
     isstance and :class:`~ansys.simai.core.data.types.BoundaryConditions` instance.
@@ -57,20 +57,20 @@ class Point:
 
     @property
     def boundary_conditions(self) -> BoundaryConditions:
-        """Returns the :class:`~ansys.simai.core.data.types.BoundaryConditions` object for the :class:`Point`
-        omstamce.
+        """:class:`~ansys.simai.core.data.types.BoundaryConditions` object for the :class:`Point`
+        instance.
         """
         return self._boundary_conditions
 
     @property
     def prediction(self) -> Union[Prediction, None]:
-        """Returns the :class:`~ansys.simai.core.data.predictions.Prediction` instance
+        """:class:`~ansys.simai.core.data.predictions.Prediction` instance
         corresponding to the point or ``None`` if no prediction has yet been run.
         """
         return self._prediction
 
     def run_prediction(self, boundary_conditions: BoundaryConditions):
-        """Runs the prediction on the geometry for this boundary condition."""
+        """Run the prediction on the geometry for this boundary condition."""
         self._prediction = self._geometry.run_prediction(boundary_conditions=boundary_conditions)
 
     def __repr__(self):
@@ -80,7 +80,7 @@ class Point:
 
 
 class Selection:
-    """Provides a selection object, which is a collection of :class:`Points <Point>` instances.
+    """Provides a ``Selection`` object, which is a collection of :class:`Points <Point>` instances.
 
     Selections are built from a list of :class:`Geometries <ansys.simai.core.data.geometries.Geometry>`
     instances and a list of :class:`~ansys.simai.core.data.types.BoundaryConditions` instances.
@@ -136,7 +136,7 @@ class Selection:
 
     @property
     def predictions(self) -> List[Prediction]:
-        """List of all existing :class:`Predictions <ansys.simai.core.data.predictions.Prediction>`
+        """List of all existing :class:`Prediction <ansys.simai.core.data.predictions.Prediction>`
         instances in the selection.
         """
         return self.get_predictions()
@@ -194,7 +194,7 @@ class Selection:
     def reload(self) -> None:
         """Refreshes the predictions in the selection.
 
-        This method loads any prediction run from another session and
+        This method loads any predictions run from another session and
         removes possible deleted predictions.
         """
         _predictions_by_geometry_id: Dict[str, List[Prediction]] = {}

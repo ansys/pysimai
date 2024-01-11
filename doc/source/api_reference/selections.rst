@@ -3,8 +3,8 @@
 Selections
 ==========
 
-Selections basics
------------------
+Selection basics
+----------------
 .. py:module:: ansys.simai.core.data.selections
 
 The :class:`Selection<ansys.simai.core.data.selections.Selection>` class allows you
@@ -73,10 +73,9 @@ class.
 
 
 You can use the :meth:`~ansys.simai.core.data.lists.ExportablePPList.export()`
-method to export results for exportable postprocessings
+method to export results in batch for exportable postprocessings
 (:py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
-and :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol` instances)
-in batch:
+and :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol` instances):
 
 .. code-block:: python
 
@@ -84,8 +83,8 @@ in batch:
         "/path/to/file.xlsx"
     )
 
-Note that the ``csv`` export generates a ZIP file containing multiple CSV files.
-You can read them directly using Python's `zipfile <https://docs.python.org/3/library/zipfile.html>`
+Note that a CSV export generates a ZIP file containing multiple CSV files.
+You can read them directly using Python's `zipfile<https://docs.python.org/3/library/zipfile.html>`
 module:
 
 .. code-block:: python

@@ -8,8 +8,8 @@ Asynchronicity
 
 While the SimAI client doesn't use async/await mechanics, it is somewhat asynchronous in nature.
 While uploading geometries is a blocking method, running a prediction or a postprocessing returns
-the created object immediately before the result is computed on the servers or available locally.
-This behavior makes it possible to request multiple computations to be run on the SimAI platform
+the created object immediately, before the result is computed on the servers or available locally.
+This behavior makes it possible to request that multiple computations be run on the SimAI platform
 without waiting for any of the data to be available.
 
 To wait for an object to be fully available, you can call the ``wait()`` method on the object.
@@ -19,10 +19,10 @@ method to wait for all requests to complete.
 
 Alternatively, you can try to access the object's data, in which case the SimAI client automatically
 waits for the data to be ready if needed. Because of this behavior, when running a large number of
-computations, you should send all the requests before accessing any of the data.
+computations, you should send all requests before accessing any of the data.
 
 This example requests the predictions and postprocessings sequentially, which requires waiting
-for the data to be available and used before the next one can be requested.
+for the data to be available and used before requesting the next one.
 
 .. code-block:: python
    :name: sequential-way

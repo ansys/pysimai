@@ -14,13 +14,13 @@ instance from a configuration file, you use the
 Location
 --------
 
-If no ``path`` is given, the :class:`~ansys.simai.core.client.SimAIClient`
+If no path is given, the :class:`~ansys.simai.core.client.SimAIClient`
 instance looks at default locations. These locations differ according to
-your operating system:
+your operating system.
 
 **Linux/MacOS**
 
-For UNIX systems the default locations are, in order :
+For UNIX systems, the default locations are, in order:
 
 * ``$XDG_CONFIG_HOME/ansys_simai.conf``
 * ``$XDG_CONFIG_HOME/ansys/simai.conf``
@@ -31,13 +31,13 @@ For UNIX systems the default locations are, in order :
 
 .. note ::
 
-   The first one found is used. ``$XDG_CONFIG_HOME`` defaults to ``~/.config``.
+   The first location found is used. ``$XDG_CONFIG_HOME`` defaults to ``~/.config``.
 
-**For Windows XP**
+**Windows XP**
 
 * ``C:\Documents and Settings\<user>\Local Settings\Application Data\Ansys\simai.conf``
 
-**For Windows 7 to 11**
+**Windows 7 to 11**
 
 * ``C:\Users\<user>\AppData\Roaming\Ansys\simai.conf``
 
@@ -51,7 +51,7 @@ Content
 -------
 
 You write the configuration file in `TOML <https://toml.io/>`_.
-From this file, you can pass any parameter used to configure
+From this file, you can pass parameters for configuring
 the :class:`~ansys.simai.core.client.SimAIClient` instance.
 
 
@@ -73,7 +73,7 @@ Proxy
 """""
 
 If your network is situated behind a proxy, you must add its address
-in a ``https_proxy`` key in the ```[default]``` block:
+in a ``https_proxy`` key in the ``[default]`` block:
 
 .. code-block:: TOML
 
