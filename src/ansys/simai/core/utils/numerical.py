@@ -32,10 +32,12 @@ def is_number(value: Any):
 
 
 def is_smaller_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """Strict smaller than (<) comparison,
-    with a tolerance (default .000001);
-    meaning if the diff between the two numbers is inferior
-    than the tolerance, a is considered equal, thus not smaller.
+    """Run the `less than`(<) comparison with a tolerance.
+
+    The default for the tolerance is ``.000001``.
+
+    If the difference between the two numbers is less
+    than the tolerance, ``a`` is considered equal, not smaller.
     """
     if tolerance is None:
         tolerance = DEFAULT_COMPARISON_EPSILON
@@ -43,10 +45,12 @@ def is_smaller_with_tolerance(a: float, b: float, tolerance: Optional[float] = N
 
 
 def is_bigger_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """Strict bigger than (>) comparison,
-    with a tolerance (default .000001);
-    meaning if the diff between the two numbers is inferior
-    than the tolerance, b is considered equal, thus not bigger.
+    """Run the `greater than` (>) comparison with a tolerance.
+
+    The default for the tolerance is ``.000001``.
+
+    If the difference between the two numbers is greater
+    than the tolerance, ``b`` is considered equal, not larger.
     """
     if tolerance is None:
         tolerance = DEFAULT_COMPARISON_EPSILON
@@ -54,27 +58,33 @@ def is_bigger_with_tolerance(a: float, b: float, tolerance: Optional[float] = No
 
 
 def is_smaller_or_equal_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """Smaller or equal to (<=) comparison,
-    with a tolerance (default .000001);
-    meaning if the diff between the two numbers is inferior
-    than the tolerance, b is considered equal.
+    """Run the `less than or equal to` (<=) comparison with a tolerance.
+
+    The default for the tolerance is ``.000001``.
+
+    If the difference between the two numbers is smaller
+    than the tolerance, ``b`` is considered equal.
     """
     return not is_bigger_with_tolerance(a, b, tolerance)
 
 
 def is_bigger_or_equal_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """Bigger or equal to (>=) comparison,
-    with a tolerance (default .000001);
-    meaning if the diff between the two numbers is inferior
-    than the tolerance, b is considered equal.
+    """Run the `greater than or equal to` (>=) comparison with a tolerance.
+
+    The default for the tolerance is ``.000001``.
+
+    If the difference between the two numbers is smaller
+    than the tolerance, ``b`` is considered equal.
     """
     return not is_smaller_with_tolerance(a, b, tolerance)
 
 
 def is_equal_with_tolerance(a: float, b: float, tolerance: Optional[float] = None):
-    """Compare the equality of two numbers,
-    with a tolerance (default .000001);
-    meaning if the diff between the two numbers is inferior
+    """Compare the equality of two numbers with a tolerance.
+
+    The default toleranance is ``.000001``.
+
+    If the difference between the two numbers is smaller
     than the tolerance, they are considered equal.
     """
     if tolerance is None:

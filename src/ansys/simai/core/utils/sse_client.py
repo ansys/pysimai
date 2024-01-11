@@ -49,9 +49,9 @@ class ReconnectingSSERequestsClient:
 
     def _connect(self):
         self._disconnect_client()
-        logger.info(f"Will connect to SSE with last event id {self._last_event_id}")
+        logger.info(f"Will connect to SSE with last event id {self._last_event_id}.")
         event_source = self._event_source_factory(self._last_event_id)
-        logger.info("Create SSEClient with event source")
+        logger.info("Create SSEClient with event source,")
         self._sseclient = sseclient.SSEClient(event_source)
 
     def _disconnect_client(self):

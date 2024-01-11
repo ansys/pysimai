@@ -32,14 +32,14 @@ logger = logging.getLogger(__name__)
 
 
 def handle_http_errors(response: requests.Response) -> None:
-    """Raises an error if the response status_code is an error.
+    """Raise an error if the response status code is an error.
 
     Args:
-        response: The response to check for errors
+        response: Response to check for errors.
 
     Raises:
-        NotFoundError: If the response is a 404
-        ApiClientError: If the response is a 4xx or 5xx other than 404
+        NotFoundError: If the response is a 404 error.
+        ApiClientError: If the response is a 4xx or 5xx error other than the 404 error.
     """
     logger.debug("Checking for HTTP errors.")
     try:
@@ -77,14 +77,14 @@ def handle_http_errors(response: requests.Response) -> None:
 
 
 def handle_response(response: requests.Response, return_json: bool = True) -> APIResponse:
-    """Handles http errors and returns the relevant data from the response.
+    """Handle HTTP errors and return the relevant data from the response.
 
     Args:
-        response: The response to handle
-        return_json: Whether to return the json content or the whole response.
+        response: Response to handle
+        return_json: Whether to return the JSON content or the whole response.
 
     Returns:
-        The json dict of the response if :py:args:`return_json` is True. The raw
+        JSON dict of the response if :py:args:`return_json` is ``True`` or the raw
             :py:class:`requests.Response` otherwise.
     """
     handle_http_errors(response)
@@ -94,7 +94,7 @@ def handle_response(response: requests.Response, return_json: bool = True) -> AP
         try:
             return response.json()
         except (ValueError, JSONDecodeError):
-            logger.debug("Failed to read json response.")
+            logger.debug("Failed to read JSON response.")
             raise ApiClientError(
                 "Expected a JSON response but did not receive one.", response
             ) from None

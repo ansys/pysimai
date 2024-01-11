@@ -26,11 +26,11 @@ from ansys.simai.core.utils.numerical import is_equal_with_tolerance
 
 
 class _ToleranceGroup:
-    """_ToleranceGroup is a group of approximately equal values,
-    as returned by itertools.groupby when using _ToleranceGrouper.
+    """Provides a group of approximately equal values,
+    as returned by ``itertools.groupby`` when using ``_ToleranceGrouper``.
 
-    Note that with the way itertools.groupby works,
-    accessing center should be done only after accessing (iterating) the bucket's elements.
+    Note that with the way ``itertools.groupby`` works,
+    accessing the center should be done only after accessing (iterating) the bucket's elements.
     """
 
     def __init__(
@@ -71,21 +71,20 @@ class _ToleranceGroup:
 
 
 class _ToleranceGrouper:
-    """_ToleranceGrouper is a grouping class, destined to be used by
-        itertools.groupby, to create groups of
-        approximately equal value (according to tolerance).
+    """Provides a grouping class destined to be used by ``itertools.groupby`` to create
+    groups of approximately equal value (according to tolerance).
 
-    _ToleranceGrouper is meant to be passed as `key` argument for itertools.groupby.
-        It create buckets defined by a central value, and will contain all
-        values around it, +-tolerance. Each bucket is an instance of _ToleranceGroup.
+    The ``_ToleranceGrouper`` class is meant to be passed as `key` argument for ``itertools.groupby``.
+    It creates buckets defined by a central value and contains all values around it, plus or minus
+    the tolerance. Each bucket is an instance of the ``_ToleranceGroup`` class.
 
     Args:
-        key_func: optional function computing a key value for each passed element.
-            If not passed, the element itself will be used.
-        tolerance: optional tolerance, by default 10**-6
-        forced_central_value: optional value that we want to force to be at the
-            center of its group. Meaning the group will span maximally
-            from forced_central_value - tolerance to forced_central_value + tolerance
+        key_func: Optional function computing a key value for each passed element.
+            If no element is passed, the element itself is used.
+        tolerance: Optional tolerance. The default is ``10**-6``.
+        forced_central_value: Optional value that is forced to be at the
+            center of its group. This means that the group spans maximally
+            from forced_central_value - tolerance to forced_central_value + tolerance.
     """
 
     def __init__(
@@ -114,6 +113,6 @@ class _ToleranceGrouper:
             )
         self.current_bucket.collect_value(new_value)
 
-        # Return bucket, which will be used by groupby
+        # Return bucket, which is used by groupby
         # to group all values together
         return self.current_bucket

@@ -37,10 +37,10 @@ logger = logging.getLogger(__name__)
 
 
 def _scan_defaults_config_paths() -> Optional[Path]:
-    """Look for a configuration files in the default locations.
+    """Look for configuration files in the default locations.
 
     Returns:
-        The path of the first configuration file from the list that exists
+        Path of the first configuration file from the list of existing configuration files.
     """
     system = platform.system()
     if system == "Windows":
@@ -61,7 +61,7 @@ def _scan_defaults_config_paths() -> Optional[Path]:
         for path in conf_paths:
             path = Path(path).expanduser()  # noqa: PLW2901
             if path.is_file():
-                logger.debug(f"Found a configuration file at {path}")
+                logger.debug(f"Found a configuration file at {path}.")
                 return path
     else:
         raise ConfigurationNotFoundError("Could not determine OS.")
@@ -75,13 +75,15 @@ def get_config(
     ignore_missing=False,
     **kwargs,
 ) -> Dict[Any, Any]:
-    """Get configuration, validates it and returns it as a flat dict.
+    """Get configuration file, validate it, and return it as a flat dictionary.
 
     Args:
-        path: Where to find the config file. If None, looks in default locations.
-        profile: The profile to load. If not specified, looks for `[default]`
-        ignore_missing: don't raise exception if no path to a config file was found
-        **kwargs: Overrides to apply to the configuration
+        path: Path of the configuration file. The default is ``None, in which
+            case the method looks in default locations.
+        profile: Profile to load. If no oath is specified, the method looks for ``[default]``.
+        ignore_missing: Whether to raise an exception if no path to a configuration
+            file is found. The default is ``False``.
+        **kwargs: Overrides to apply to the configuration.
     """
     config_path = path or _scan_defaults_config_paths()
     if config_path is None:
@@ -102,7 +104,7 @@ def get_config(
             cleandoc(  # Takes care of the indentation
                 f"""
                 Did not find the [{profile}] profile section in the configuration file.
-                Please make sure you have a [default] section or that you specify the name of the profile in your from_config call.
+                Make sure that you have a '[default]' section or specify the name of the profile in your 'from_config' call.
                 """
             )
         )

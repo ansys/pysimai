@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 def steal_kwargs_type(
     original_fn: "Callable[P, Any]",
 ) -> "Callable[[Callable], Callable[P, T]]":
-    """Returns casted original function, with the kwargs type stolen from original_fn."""
+    """Return the casted original function, with the kwargs type stolen from original_fn."""
 
     def return_func(func: "Callable[..., T]") -> "Callable[P, T]":
         return cast("Callable[P, T]", func)

@@ -42,9 +42,10 @@ logger = logging.getLogger(__name__)
 
 
 class _AuthTokens(BaseModel):
-    """Class that represents the OIDC tokens we receive from the auth server.
-    It can fetch and refresh these tokens.
-    It will cache the tokens to disk automatically.
+    """Represents the OIDC tokens received from the auth server.
+
+    The class can fetch and refresh these tokens.
+    It caches the tokens to disk automatically.
     """
 
     _EXPIRATION_BUFFER = timedelta(seconds=5)
@@ -104,7 +105,7 @@ class _AuthTokens(BaseModel):
             session.post(device_auth_url, data={"client_id": "sdk", "scope": "openid"})
         )
         print(  # noqa: T201
-            f"Please go to {auth_codes['verification_uri']} and enter the code {auth_codes['user_code']}"
+            f"Go to {auth_codes['verification_uri']} and enter the code {auth_codes['user_code']}"
         )
         webbrowser.open(auth_codes["verification_uri_complete"])
         while True:
@@ -173,7 +174,7 @@ class Authenticator(AuthBase):
         self._session = session
         self._enabled = not getattr(config, "_disable_authentication", False)
         if not self._enabled:
-            logger.debug("Disabling authentication logic")
+            logger.debug("Disabling authentication logic.")
             return
         self._url_prefix = config.url
         # HACK: start with a slash to override the /v2/ on the api url
@@ -195,13 +196,13 @@ class Authenticator(AuthBase):
         self._schedule_auth_refresh()
 
     def __call__(self, request: requests.Request) -> requests.Request:
-        """Called to prepare the requests.
+        """Call to prepare the requests.
 
         Args:
-            request: the request to authenticate
+            request: Request to authenticate.
 
         Returns:
-            the request with the authentication
+            Request with the authentication.
         """
         request_host = request.url.split("://", 1)[-1]  # ignore protocol part
         if self._enabled and request_host.startswith(self._url_prefix.host):
@@ -222,7 +223,7 @@ class Authenticator(AuthBase):
         self._schedule_auth_refresh()
 
     def _schedule_auth_refresh(self):
-        """Schedule auth refresh to avoids refresh token expiring if the client is idle for a long time."""
+        """Schedule authentication refresh to avoids refresh token expiring if the client is idle for a long time."""
         if self._refresh_timer:
             self._refresh_timer.cancel()
         self._refresh_timer = threading.Timer(
