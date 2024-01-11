@@ -211,7 +211,7 @@ class SurfaceEvol(ExportablePostProcessing):
 class Slice(PostProcessing):
     """Provides a representation of a slice from the prediction in PNG or VTP format.
 
-    This class is generated through the :meth:`PredictionPostProcessings.slice()` method.
+    This class is generated through the :meth:`PredictionPostProcessings.slice` method.
     """
 
     @property
@@ -374,7 +374,7 @@ class PredictionPostProcessings:
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
 
         Example:
-            Make a slice and open it in a new window using the `Pillow <https://pypi.org/project/pillow/>
+            Make a slice and open it in a new window using the `Pillow <https://pypi.org/project/pillow/>`_
             library.
 
             .. code-block:: python
