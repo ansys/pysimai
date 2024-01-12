@@ -112,7 +112,7 @@ class ApiClientMixin:
             *args: Additional arguments for the request.
             return_json: Whether the expected response is a json. If ``True``, the JSON
                 is returned directly. Otherwise, the response is returned.
-            **kwargs: Additional kwargs for request
+            **kwargs: Additional kwargs for request.
 
         Returns:
             JSON dictionary of the response if :py:args:`return_json` is True. The raw

@@ -55,7 +55,7 @@ class GeometryClientMixin(ApiClientMixin):
 
         Args:
             name: Name of the geometry.
-            workspace_id: ID of the workspace that the geometry belongs to
+            workspace_id: ID of the workspace that the geometry belongs to.
         """
         return self._get(f"geometries/name/{quote(name)}", params={"workspace": workspace_id})
 

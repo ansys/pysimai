@@ -199,7 +199,7 @@ class ComputableDataModel(DataModel):
         or fail.
 
         Args:
-            timeout: Maximum amount of time in seconds to wat. The default is
+            timeout: Maximum amount of time in seconds to wait. The default is
                 ``None``, in means that there is no maximum on the time to wait.
 
         Returns:

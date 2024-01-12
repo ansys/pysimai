@@ -123,7 +123,7 @@ class OptimizationDirectory(Directory[Optimization]):
             List of dictionaries representing the result of each iteration. when constraints
             are specified, the list can be shorter than the number of iterations.
 
-        .. warning::
+        Warning:
             This is a long-running process and your computer must be powered on to generate the iterations.
             This method attempts to prevent your computer from sleeping, keeping your computer open
             during the process.

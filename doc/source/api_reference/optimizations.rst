@@ -18,8 +18,8 @@ Model
     :members:
     :inherited-members:
 
-Trial runs
-==========
+TrialRuns
+=========
 
 Trial runs are a single step of the optimization process.
 

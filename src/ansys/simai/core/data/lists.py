@@ -77,7 +77,7 @@ class ExportablePPList(PPList, Generic[T]):
 
         Args:
             format: format to exported data in. The default is ``'json'``.
-                Options are ```'csv.zip'``, ``'json'``, and ```xlsx```.
+                Options are ``'csv.zip'``, ``'json'``, and ``'xlsx'``.
                 Note that the ``'csv.zip'`` option exports a ZIP file containing
                 multiple CSV sheets.
 

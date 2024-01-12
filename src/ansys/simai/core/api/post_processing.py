@@ -111,7 +111,7 @@ class PostProcessingClientMixin(ApiClientMixin):
         Args:
             prediction_id: ID of the target prediction.
             pp_type: Type of postprocessings to return. If this parameter is empty, all
-            postprocessings are returned.
+                postprocessings are returned.
             filters: Filters to apply to the query, if any.
         """
         endpoint = f"predictions/{prediction_id}/post-processings/"

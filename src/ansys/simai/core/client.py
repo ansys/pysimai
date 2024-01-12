@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 class SimAIClient:
     """Provides the client for communicating with the SimAI API.
 
-    For keyword argsuments, see the :class:`~ansys.simai.core.utils.configuration.ClientConfig` class.
+    For keyword arguments, see the :class:`~ansys.simai.core.utils.configuration.ClientConfig` class.
 
     Example:
         .. code-block:: python
@@ -96,7 +96,7 @@ class SimAIClient:
     def current_workspace(self) -> Workspace:
         """Workspace currently used by the SimAI client.
 
-        .. note::
+        Note:
             You should not set the workspace directly. Instead, use the :meth:`set_current_workspace`
             method, which uses the workspace name and ensures that the workspace exists.
         """
@@ -144,7 +144,7 @@ class SimAIClient:
     def current_project(self) -> Project:
         """Project currently used by the SimAPI client.
 
-        .. note::
+        Note:
             You should not set the project directly. Instead, use the :meth:`set_current_project`
             method, which uses the project name and ensures that the project exists.
         """
@@ -283,7 +283,7 @@ class SimAIClient:
 
                 simai = ansys.simai.core_from_config()
 
-        .. note::
+        Note:
             The default paths are only supported on Unix systems.
         """
         return cls(**get_config(path, profile, **kwargs))

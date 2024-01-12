@@ -87,7 +87,7 @@ class Prediction(ComputableDataModel):
 
     @property
     def confidence_score(self) -> str:
-        """Confidence score, which is ether ``high`` or ``low``.
+        """Confidence score, which is either ``high`` or ``low``.
 
         This method blocks until the confidence score is computed.
         """
