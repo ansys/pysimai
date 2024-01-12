@@ -32,5 +32,5 @@ def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Any]] = No
     bc = boundary_conditions if boundary_conditions else {}
     bc.update(**kwargs)
     if not bc:
-        raise ValueError("No boundary condition was specified")
+        raise ValueError("No boundary condition was specified.")
     return bc

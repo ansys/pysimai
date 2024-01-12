@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 class Prediction(ComputableDataModel):
-    """Local representation of a prediction object."""
+    """Provides the local representation of a prediction object."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -47,21 +47,22 @@ class Prediction(ComputableDataModel):
 
     @property
     def geometry_id(self) -> str:
-        """The id of the parent geometry.
+        """ID of the parent geometry.
 
         See Also:
-            - :attr:`geometry`: Get the parent geometry
+            - :attr:`geometry`: Get the parent geometry.
         """
         return self.fields["geometry_id"]
 
     @property
     def geometry(self) -> Geometry:
-        """The parent geometry.
+        """Parent geometry.
 
-        It will be queried if not already known by the current SDK session.
+        The parent geometry is queried if is not already known by the current
+        SimAI client session.
 
         See Also:
-            - :attr:`geometry_id`: Return the parent geometry's id without query
+            - :attr:`geometry_id`: Get the parent geometry's ID without query.
         """
         if self._geometry is None:
             if self.geometry_id in self._client.geometries._registry:
@@ -72,22 +73,23 @@ class Prediction(ComputableDataModel):
 
     @property
     def boundary_conditions(self) -> BoundaryConditions:
-        """The boundary conditions of the prediction."""
+        """Boundary conditions of the prediction."""
         return self.fields["boundary_conditions"]
 
     @property
     def post(self) -> PredictionPostProcessings:
-        """Namespace containing methods to post-process the result of a prediction.
+        """Namespace containing methods for postprocessing the result of a prediction.
 
-        See :py:class:`~ansys.simai.core.data.post_processings.PredictionPostProcessings` for more information
+        For more information, see the :py:class:`~ansys.simai.core.data.post_processings.PredictionPostProcessings`
+        class.
         """
         return self._post_processings
 
     @property
     def confidence_score(self) -> str:
-        """The confidence score. Either *high* or *low*.
+        """Confidence score, which is either ``high`` or ``low``.
 
-        This method will block until the confidence score is computed.
+        This method blocks until the confidence score is computed.
         """
         self.wait()
         return self.fields["confidence_score"]
@@ -98,30 +100,28 @@ class Prediction(ComputableDataModel):
         self._unregister()
 
     def feedback(self, **kwargs):  # noqa: D417
-        """Give us your feedback on a prediction to help us improve.
+        """Provide feedback on a prediction so improvements might be made.
 
         This method enables you to give a rating (from 0 to 4) and a comment on a
         prediction.
-        Moreover you can upload your computed solution.
-        This feedback will help us make our predictions more accurate for you.
+        Moreover, you can upload your computed solution.
+        Your feedback is used to try to make predictions more accurate.
 
         Keyword Args:
-            rating (int): A rating from 0 to 4
-            comment (str): Additional comment
-            solution (Optional[File]): Your solution to the
-                prediction
+            rating (int): Rating from 0 to 4.
+            comment (str): Additional comment.
+            solution (Optional[File]): Your solution to the prediction.
         """
         self._client._api.send_prediction_feedback(self.id, **kwargs)
 
     def _wait_all(self):
-        """Wait until both this prediction, and any post-processing launched on it
+        """Wait until both this prediction and any postprocessing launched on it
         have finished processing.
 
-        Blocking method, which once called, blocks until both the prediction,
-        and any post-processing launched locally, have either finished processing,
-        or have failed.
+        This method blocks until both the prediction and any postprocessing launched
+        locally have either finished processing or have failed.
 
-        Post-processing launched by other SDK sessions or on the front-end
+        Postprocessing launched by other SimAI client sessions or on the front-end
         are not waited upon.
         """
         # wait for own creation Event
@@ -131,7 +131,7 @@ class Prediction(ComputableDataModel):
             return
         # Wait for its post-processings if any
         if self.post._local_post_processings:
-            logger.debug("prediction: waiting for post-processings loading")
+            logger.debug("prediction: waiting for postprocessings loading")
             for post_processing in self.post._local_post_processings:
                 post_processing.wait()
 
@@ -145,9 +145,9 @@ class Prediction(ComputableDataModel):
 
 
 class PredictionDirectory(Directory[Prediction]):
-    """Collection of methods related to model predictions.
+    """Provides a collection of methods related to model predictions.
 
-    Accessed through ``client.prediction``.
+    This method is accessed through ``client.prediction``.
 
     Example:
         .. code-block:: python
@@ -162,17 +162,21 @@ class PredictionDirectory(Directory[Prediction]):
 
     @property
     def boundary_conditions(self) -> Dict[str, Any]:
-        """Information on the boundary conditions expected by the model of the current workspace, i.e. the prediction's input."""
+        """Information on the boundary conditions expected by the model of the current workspace.
+        For example, the prediction's input.
+        """
         return self._client.current_workspace.model.boundary_conditions
 
     @property
     def physical_quantities(self) -> Dict[str, Any]:
-        """Information on the physical quantities generated by the model, i.e. the prediction's output."""
+        """Information on the physical quantities generated by the model. For example, the
+        prediction's output.
+        """
         return self._client.current_workspace.model.physical_quantities
 
     @property
     def info(self):
-        """Information on the predictions inputs and outputs.
+        """Information on the prediction's inputs and outputs.
 
         Example:
             .. code-block:: python
@@ -190,11 +194,11 @@ class PredictionDirectory(Directory[Prediction]):
         }
 
     def list(self, workspace: Optional[Identifiable[Workspace]] = None) -> List[Prediction]:
-        """List all predictions on the server that belong to the specified workspace or configured one.
+        """List all predictions on the server that belong to the specified workspace or the configured one.
 
         Args:
-            workspace: The id or :class:`model <.workspaces.Workspace>` of the workspace for which to list the predictions,
-                necessary if no workspace is set for the client.
+            workspace: ID or :class:`model <.workspaces.Workspace>` of the workspace to list the predictions for.
+                This parameter is necessary if no workspace is set for the client.
         """
         return [
             self._model_from(prediction)
@@ -204,16 +208,16 @@ class PredictionDirectory(Directory[Prediction]):
         ]
 
     def get(self, id: str) -> Prediction:
-        """Get a specific prediction object from the server.
+        """Get a specific prediction object from the server by ID.
 
         Args:
-            id: The id of the prediction to get
+            id: ID of the prediction.
 
         Returns:
-            The :class:`Prediction` with the given id if it exists
+            :class:`Prediction` instance with the given ID if it exists.
 
         Raises:
-            :class:`NotFoundError`: No prediction with the given id exists
+            :class:`NotFoundError`: No prediction with the given ID exists.
         """
         return self._model_from(self._client._api.get_prediction(id))
 
@@ -221,10 +225,10 @@ class PredictionDirectory(Directory[Prediction]):
         """Delete a specific prediction from the server.
 
         Args:
-            prediction: The id or :class:`model <Prediction>` of the prediction to delete
+            prediction: ID or :class:`model <Prediction>` of the prediction.
 
         Raises:
-            :py:class:`ansys.simai.core.errors.NotFoundError`: No prediction with the given id exists
+            :py:class:`ansys.simai.core.errors.NotFoundError`: No prediction with the given ID exists.
         """
         prediction_id = get_id_from_identifiable(prediction)
         self._client._api.delete_prediction(prediction_id)
@@ -236,20 +240,20 @@ class PredictionDirectory(Directory[Prediction]):
         boundary_conditions: Optional[BoundaryConditions] = None,
         **kwargs,
     ) -> Prediction:
-        """Run a SimAI prediction on the given geometry with the given boundary conditions.
+        """Run a prediction on a given geometry with a given boundary conditions.
 
         Boundary conditions can be passed as a dictionary or as kwargs.
 
-        To learn more about the expected boundary conditions in your workspace you can do
+        To learn more about the expected boundary conditions in your workspace, you can use the
         ``simai.current_workspace.model.boundary_conditions`` or ``simai.predictions.boundary_conditions``
-        where ``ex`` is your `~ansys.simai.core.client.SimAIClient` object.
+        method, where ``ex`` is your `~ansys.simai.core.client.SimAIClient` object.
 
         Args:
-            geometry: The id or :class:`model <.geometries.Geometry>` of the target geometry
-            boundary_conditions: The boundary conditions to apply, in dictionary form
+            geometry: ID or :class:`model <.geometries.Geometry>` of the target geometry.
+            boundary_conditions: Boundary conditions to apply in dictionary form.
 
         Returns:
-            The created prediction object
+            Created prediction object.
 
         Raises:
             ProcessingError: If the server failed to process the request.
@@ -275,20 +279,19 @@ class PredictionDirectory(Directory[Prediction]):
         return prediction
 
     def feedback(self, prediction: Identifiable[Prediction], **kwargs) -> None:  # noqa: D417
-        """Give us your feedback on a prediction to help us improve.
+        """Provide feedback on a prediction so improvements might be made.
 
         This method enables you to give a rating (from 0 to 4) and a comment on a
         prediction.
-        Moreover you can upload your computed solution.
-        This feedback will help us make our predictions more accurate for you.
+        Moreover, you can upload your computed solution.
+        Your feedback is used to try to make predictions more accurate.
 
         Args:
-            prediction: The id or :class:`model <Prediction>` of the prediction to give feedback for
+            prediction: ID or :class:`model <Prediction>` of the prediction.
 
         Keyword Args:
-            rating (int): A rating from 0 to 4, required
-            comment (str): Additional comment, required
-            solution (typing.Optional[File]): Your solution to the
-                prediction, optional
+            rating (int): Rating from 0 to 4.
+            comment (str): Additional comment.
+            solution (typing.Optional[File]): Your solution to the prediction.
         """
         self._client._api.send_prediction_feedback(get_id_from_identifiable(prediction), **kwargs)

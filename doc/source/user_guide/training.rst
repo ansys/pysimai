@@ -5,39 +5,48 @@ Training
 
 .. note::
 
-   The training section is still experimental and subject to API changes.
+   Training is still experimental and subject to API changes.
 
-In order to use the solver, the SimAI solution must first be trained on your prediction data.
-Your prediction data is uploaded onto a global pool of :class:`training data<ansys.simai.core.data.training_data.TrainingData>` and can then be assigned to different :class:`projects<ansys.simai.core.data.projects.Project>` where you can configure how to train your model.
+Before you can use the solver, you must train the SimAI solution on your prediction
+data. You first upload your prediction data into a global pool of
+:class:`training data<ansys.simai.core.data.training_data.TrainingData>` instances
+and then assign this data to different :class:`Project<ansys.simai.core.data.projects.Project>`
+instances, which you configure for training your model.
 
-Getting started
-===============
+Train on prediction data
+========================
 
-Create an :class:`~ansys.simai.core.client.SimAIClient` object::
+#. Create a :class:`~ansys.simai.core.client.SimAIClient` instance::
 
-  import ansys.simai.core
+     import ansys.simai.core
 
-  simai = ansys.simai.core.SimAIClient()
+     simai = ansys.simai.core.SimAIClient()
 
-You will be prompted for your credentials and for the name of the workspace you want to use.
-Alternative ways to authenticate are described :ref:`here<configuration>`.
+   You are prompted for your credentials.
 
-Start by uploading your prediction data by creating a training data and uploading your files into it::
+   If desired, you can create an instance using a configuration file. For more
+   information, see :ref:`configuration`.
 
-  td = simai.training_data.create("my-first-data")
-  td.upload_folder("/path/to/folder/where/files/are/stored")
+#. Upload your prediction data by creating a
+   :class:`TrainingData<ansys.simai.core.data.training_data.TrainingData>` instance
+   and then loading your files into it::
 
-You can then create a project::
+     td = simai.training_data.create("my-first-data")
+     td.upload_folder("/path/to/folder/where/files/are/stored")
 
-  project = simai.projects.create("my-first-project")
+#. Create a project::
 
-And assign the created training data to this project::
+     project = simai.projects.create("my-first-project")
 
-  td.add_to_project(project)
+#. Assign the created training data to your project::
 
-You can start training a model from the web-app once you have a few training data in your project.
+     td.add_to_project(project)
+
+Once you have training data in your project, you can use the web app to
+train a model.
 
 Learn more
 ==========
 
-Check out the API references for :ref:`training_data`, :ref:`training_data_parts` and :ref:`projects` to learn more about the actions available to you.
+For more information on the actions available to you, see :ref:`training_data`,
+:ref:`training_data_parts`, and :ref:`projects`.

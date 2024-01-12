@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class GeometryClientMixin(ApiClientMixin):
-    """Client for the Geometry ("/geometries/") part of the API."""
+    """Provides the client for the Geometry ("/geometries/") part of the API."""
 
     def geometries(self, workspace_id: str, filters: Optional[Dict[str, Any]] = None):
         """Get list of all geometries."""
@@ -46,26 +46,26 @@ class GeometryClientMixin(ApiClientMixin):
         """Get information on a single geometry.
 
         Args:
-            geometry_id: The id of the geometry to get
+            geometry_id: ID of the geometry.
         """
         return self._get(f"geometries/{geometry_id}")
 
     def get_geometry_by_name(self, name: str, workspace_id: str):
-        """Get information on a single geometry, by name instead of id.
+        """Get information on a single geometry by name instead of ID.
 
         Args:
-            name: The name of the geometry to get
-            workspace_id: The id of the workspace the geometry belongs to
+            name: Name of the geometry.
+            workspace_id: ID of the workspace that the geometry belongs to.
         """
         return self._get(f"geometries/name/{quote(name)}", params={"workspace": workspace_id})
 
     def delete_geometry(self, geometry_id: str):
         """Delete a single geometry.
 
-        All objects associated to that geometry are also deleted.
+        All objects associated with that geometry are also deleted.
 
         Args:
-            geometry_id: The id of the geometry to delete
+            geometry_id: ID of the geometry.
         """
         # TODO: Have user confirm or delete confirmation from API ?
         return self._delete(
@@ -80,12 +80,12 @@ class GeometryClientMixin(ApiClientMixin):
         name: Optional[str] = None,
         metadata: Optional[dict] = None,
     ):
-        """Update a geometry information.
+        """Update the information for a given geometry.
 
         Args:
-            geometry_id: The id of the geometry to update
-            name: The new name to give to the geometries
-            metadata: The metadata to update the geometry with
+            geometry_id: ID of the geometry.
+            name: New name to give to the geometries.
+            metadata: Metadata to update the geometry with.
         """
         request_json = {}
         if name is not None:
@@ -101,16 +101,18 @@ class GeometryClientMixin(ApiClientMixin):
         extension: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ):
-        """Create a new geometry, without pushing the data.
+        """Create a geometry without pushing the data.
 
         Args:
-            workspace_id: The id of the workspace the geometry should belong to.
-            name: The name to give to the geometry
-            extension: The extension to give to the file
-            metadata: Metadata to apply to the geometry on creation
+            workspace_id: ID of the workspace to assign the geometry to.
+            name: Name to give to the geometry.
+            extension: Extension to give to the file.
+            metadata: Metadata to apply to the geometry on creation.
 
         Returns:
-           A tuple containing the geometry object and a 'presigned post' dictionary containing the url on which to upload the data and fields to include into the request
+           Tuple containing the geometry object and a 'presigned post'
+           dictionary, which contains the URL to upload the data and fields to
+           that was included in the request.
         """
         post_data = {
             "name": name,
@@ -134,13 +136,13 @@ class GeometryClientMixin(ApiClientMixin):
         file: Optional[File] = None,
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> Union[None, BinaryIO]:
-        """Downloads the input geometry into the file at the given path.
+        """Download the input geometry into the file at the given path.
 
         Args:
-            geometry_id: The id of the geometry to download
-            file: A binary file-object or the path of the file to put the content into
-            monitor_callback: Function or method that will be passed the bytes_read
-                delta. Can be used to monitor progress.
+            geometry_id: ID of the geometry to download.
+            file: Binary file-object or the path of the file to put the content into.
+            monitor_callback: Function or method to pass the ``bytes_read`` delta to.
+                This delta can be used to monitor progress.
         """
         return self.download_file(f"geometries/{geometry_id}/download", file, monitor_callback)
 
@@ -148,6 +150,6 @@ class GeometryClientMixin(ApiClientMixin):
         """Get predictions associated with a geometry.
 
         Args:
-            geometry_id: The id of the geometry whose predictions to get
+            geometry_id: ID of the geometry.
         """
         return self._get(f"geometries/{geometry_id}/predictions")

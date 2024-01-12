@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class Optimization(ComputableDataModel):
-    """Local representation of an optimization definition object."""
+    """Provides the local representation of an optimization definition object."""
 
     def _try_geometry(
         self, geometry: Identifiable[Geometry], geometry_parameters: Dict
@@ -47,7 +47,7 @@ class Optimization(ComputableDataModel):
 
 
 class OptimizationTrialRun(ComputableDataModel):
-    """Local representation of an optimization trial run object.
+    """Provides the local representation of an optimization trial run object.
 
     The optimization trial run is an iteration of the optimization process.
     Each trial run tests a geometry and returns new parameters for the next geometry to try.
@@ -55,9 +55,9 @@ class OptimizationTrialRun(ComputableDataModel):
 
 
 class OptimizationDirectory(Directory[Optimization]):
-    """Collection of methods related to optimizations.
+    """Provides a collection of methods related to optimizations.
 
-    Accessed through ``client.optimizations``.
+    This class is accessed through ``client.optimizations``.
 
     Example:
         .. code-block:: python
@@ -74,10 +74,10 @@ class OptimizationDirectory(Directory[Optimization]):
         """Get a specific optimization object from the server.
 
         Args:
-            optimization_id: The id of the optimization to get
+            optimization_id: ID of the optimization.
 
         Returns:
-            A :py:class:`Optimization`
+            :py:class:`Optimization`.
         """
         return self._model_from(self._client._api.get_optimization(optimization_id))
 
@@ -96,33 +96,37 @@ class OptimizationDirectory(Directory[Optimization]):
         """Run an optimization process.
 
         Args:
-            geometry_generation_fn: The function that will be called to generate a new geometry
-                with the generated parameters.
-                Should return a :obj:`~ansys.simai.core.data.types.NamedFile`
-            geometry_parameters: Specifies the name of the geometry parameters and their bounds or possible values (choices)
-            boundary_conditions: The values of the boundary conditions at which the optimization is performed.
-                They should map to existing boundary conditions in your project/workspace
+            geometry_generation_fn: Function to call to generate a new geometry
+                with the generated parameters. This parameter should return a
+                :obj:`~ansys.simai.core.data.types.NamedFile` object.
+            geometry_parameters: Name of the geometry parameters and their bounds or possible values (choices).
+            boundary_conditions: Values of the boundary conditions to perform the optimization at.
+                The values should map to existing boundary conditions in your project/workspace.
             minimize: List of global coefficients to minimize.
-                They should map to existing coefficients in your project/workspace
+                The global coefficients should map to existing coefficients in your project/workspace.
             maximize: List of global coefficients to maximize.
-                They should map to existing coefficients in your project/workspace
-            outcome_constraints:
-                List of string representing a linear inequality constraint
-                on a global coefficient.
-                Outcome constraint should be of form ``gc >= x``,
-                where gc is a valid global coefficient name,
-                x is a float bound and comparison operator is ``>=`` or ``<=``
-            n_iters: Number of iterations of the optimization loop
-            show_progress: Whether to print progress on stdout
-            workspace: The workspace in which to run the optimization. Defaults to the configured workspace if not specified
+                The global coefficients should map to existing coefficients in your project/workspace.
+            outcome_constraints: List of strings representing a linear inequality constraint
+                on a global coefficient. The outcome constraint should be in the form ``gc >= x``,
+                where:
+
+                - ``gc`` is a valid global coefficient name.
+                - ``x`` is a float bound.
+                - The comparison operator is ``>=`` or ``<=``.
+
+            n_iters: Number of iterations of the optimization loop.
+            show_progress: Whether to print progress on stdout.
+            workspace: Workspace to run the optimization in. If a workspace is
+                not specified, the default is the configured workspace.
 
         Returns:
-            A list of dictionaries representing the result of each iterations. The list can be shorter
-                than the number of iterations when constraints are specified.
+            List of dictionaries representing the result of each iteration. when constraints
+            are specified, the list can be shorter than the number of iterations.
 
         Warning:
-            This is a long running process and your computer needs to be powered on to generate the iterations.
-                This method will attempt to prevent your computer from sleeping but please keep your computer open during the process.
+            This is a long-running process and your computer must be powered on to generate the iterations.
+            This method attempts to prevent your computer from sleeping, keeping your computer open
+            during the process.
 
         Example:
           .. code-block:: python
@@ -154,7 +158,7 @@ class OptimizationDirectory(Directory[Optimization]):
         """
         workspace_id = get_id_from_identifiable(workspace, False, self._client._current_workspace)
         if not minimize and not maximize:
-            raise InvalidArguments("No global coefficient to optimize")
+            raise InvalidArguments("No global coefficient to optimize.")
         objective = {}
         if minimize:
             for global_coefficient in minimize:
@@ -170,32 +174,32 @@ class OptimizationDirectory(Directory[Optimization]):
             "outcome_constraints": outcome_constraints or [],
         }
         with tqdm(total=n_iters, disable=not show_progress) as progress_bar:
-            progress_bar.set_description("Creating optimization definition")
+            progress_bar.set_description("Creating optimization definition.")
             optimization = self._model_from(
                 self._client._api.define_optimization(workspace_id, optimization_parameters)
             )
             optimization.wait()
             geometry_parameters = optimization.fields["initial_geometry_parameters"]
-            logger.debug("Optimization defined, starting optimization loop")
+            logger.debug("Optimization defined. Starting optimization loop.")
             iterations_results: List[Dict] = []
             with keep.running() as k:
                 if not k.success:
                     logger.info("Failed to get sleep inhibition lock.")
                 while geometry_parameters:
-                    logger.debug(f"Generating geometry with parameters {geometry_parameters}")
-                    progress_bar.set_description("Generating geometry")
+                    logger.debug(f"Generating geometry with parameters {geometry_parameters}.")
+                    progress_bar.set_description("Generating geometry.")
                     # TODO: Somehow keep session alive for long geometry generation
                     generated_geometry = geometry_generation_fn(**geometry_parameters)
-                    logger.debug("Uploading geometry")
-                    progress_bar.set_description("Uploading geometry")
+                    logger.debug("Uploading geometry.")
+                    progress_bar.set_description("Uploading geometry.")
                     # TODO: Name geometry ourselves ? Then we need to know the output format
                     geometry = self._client.geometries.upload(
                         generated_geometry,
                         metadata=geometry_parameters,
                         workspace_id=workspace_id,
                     )
-                    logger.debug("Running trial")
-                    progress_bar.set_description("Running trial")
+                    logger.debug("Running trial.")
+                    progress_bar.set_description("Running trial.")
                     trial_run = optimization.try_geometry(geometry, geometry_parameters)
                     trial_run.wait()
                     iteration_result = {
@@ -208,10 +212,10 @@ class OptimizationDirectory(Directory[Optimization]):
                     else:
                         logger.debug("Trial run results did not match constraints. Skipping.")
                     geometry_parameters = trial_run.fields["next_geometry_parameters"]
-                    logger.debug("Trial completed")
+                    logger.debug("Trial complete.")
                     progress_bar.update(1)
-                logger.debug("Optimization complete")
-                progress_bar.set_description("Optimization complete")
+                logger.debug("Optimization complete.")
+                progress_bar.set_description("Optimization complete.")
             return iterations_results
 
 
@@ -220,7 +224,7 @@ class OptimizationTrialRunDirectory(Directory[OptimizationTrialRun]):
     _data_model = OptimizationTrialRun
 
     def get(self, trial_run_id: str):
-        """Get a specific trial run object from the server."""
+        """Get a specific trial run from the server."""
         return self._model_from(self._client._api.get_optimization_trial_run(trial_run_id))
 
     def _try_geometry(

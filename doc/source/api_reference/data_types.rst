@@ -1,4 +1,4 @@
-Data Types
+Data types
 ==========
 
 .. automodule:: ansys.simai.core.data.types

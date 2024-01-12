@@ -34,17 +34,17 @@ logger = logging.getLogger(__name__)
 
 
 class PredictionClientMixin(ApiClientMixin):
-    """Client for the Prediction ("/predictions") part of the API."""
+    """Provides the client for the Prediction ("/predictions") part of the API."""
 
     def predictions(self, workspace_id: str):
-        """Get list of all predictions."""
+        """Get a list of all predictions."""
         return self._get("predictions/", params={"workspace": workspace_id})
 
     def get_prediction(self, prediction_id: str):
         """Get information on a single prediction.
 
         Args:
-            prediction_id: The id of the prediction to get
+            prediction_id: ID of the prediction.
         """
         return self._get(f"predictions/{prediction_id}")
 
@@ -52,7 +52,7 @@ class PredictionClientMixin(ApiClientMixin):
         """Delete a single prediction.
 
         Args:
-            prediction_id: The id of the prediction to delete
+            prediction_id: ID of the prediction.
         """
         return self._delete(
             f"predictions/{prediction_id}",
@@ -61,14 +61,15 @@ class PredictionClientMixin(ApiClientMixin):
         )
 
     def run_prediction(self, geometry_id: str, **kwargs):  # noqa: D417
-        """Run a prediction on the given geometry.
+        """Run a prediction on a given geometry.
 
         Args:
-            geometry_id: The id of the target geometry
+            geometry_id: ID of the target geometry.
 
         Keyword Arguments:
-            boundary_conditions dict: The contrainsts of the problem in dictionary form.
-            tolerance float: The delta under which two boundary condition components are considered equal, default is 10**-6
+            boundary_conditions dict: Constraints of the problem in dictionary form.
+            tolerance float: Delta under which two boundary condition components
+                are considered equal. The default is ``10**-6``.
         """
         return self._post(f"geometries/{geometry_id}/predictions", json=kwargs)
 
@@ -80,16 +81,15 @@ class PredictionClientMixin(ApiClientMixin):
         solution: Optional[Union[BinaryIO, str, Path]] = None,
         monitor_callback: Optional[Callable[[int], None]] = None,
     ):
-        """Send feedback on your prediction.
+        """Send feedback on your prediction so improvements can be made.
 
         Args:
-            prediction_id: Id of the target prediction
-            rating: A rating from 0 to 4
-            comment: Additional comment
-            solution: The client
-                solution to the prediction
-            monitor_callback: Function or method that will be passed
-                a :py:class:`~requests_toolbelt.multipart.encoder.MultipartEncoderMonitor`
+            prediction_id: ID of the target prediction.
+            rating: Rating from 0 to 4.
+            comment: Additional comment.
+            solution: Client solution to the prediction.
+            monitor_callback: Function or method to pass the
+                :py:class:`~requests_toolbelt.multipart.encoder.MultipartEncoderMonitor` to.
         """
         if solution is None:
             with_solution = False
@@ -103,7 +103,7 @@ class PredictionClientMixin(ApiClientMixin):
                 close_file = False
             else:
                 raise ValueError(
-                    "Could not handle the provided solution." " Please use a path or binary file."
+                    "Could not handle the provided solution." " Use a path or binary file."
                 )
             with_solution = True
         upload_form = {"rating": str(rating), "comment": comment}

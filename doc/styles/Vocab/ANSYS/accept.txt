@@ -1,7 +1,10 @@
 (?i)ansys
+(?i)simai
 [Aa]synchronicity
 csv
+DOE
 https_proxy
 [Nn]amespace
-(?i)simai
+[Pp]ostprocessing
+PySimAI
 zipfile

@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 class ApiClientMixin:
-    """The core on which all the mixins and the ApiClient are built."""
+    """Provides the core that all mixins and the API client are built on."""
 
     def __init__(self, *args, config: ClientConfig):  # noqa: D107
         self._session = requests.Session()
@@ -103,19 +103,19 @@ class ApiClientMixin:
     ) -> APIResponse:
         """Wrap around :py:meth:`requests.Session.request`.
 
-        By default this method expects a json response. If you call an endpoint that does
-        not return a json, specify return_json=False
+        By default, this method expects a JSON response. If you call an endpoint that does
+        not return a JSON response, specify ``return_json=False``.
 
         Args:
-            method: The HTTP verb of the request
-            url: The url of the request
-            *args: Additional args for the request
-            return_json: Whether the expected response is a json. If yes returns
-                directly the json, otherwise the Response is returned
-            **kwargs: Additional kwargs for request
+            method: HTTP verb of the request.
+            url: URL of the request.
+            *args: Additional arguments for the request.
+            return_json: Whether the expected response is a json. If ``True``, the JSON
+                is returned directly. Otherwise, the response is returned.
+            **kwargs: Additional kwargs for request.
 
         Returns:
-            The json dict of the response if :py:args:`return_json` is True. The raw
+            JSON dictionary of the response if :py:args:`return_json` is True. The raw
                 :py:class:`requests.Response` otherwise.
         """
         logger.debug(f"Request {method} on {url}")
@@ -136,21 +136,23 @@ class ApiClientMixin:
         request_json_body: Optional[Dict[str, Any]] = None,
         request_method: str = "GET",
     ) -> Union[None, BinaryIO]:
-        """Download a file from the given URL into the given file or a :class:`BytesIO`.
+        """Download a file from a URL into a file or a :class:`BytesIO` object.
 
         Args:
-            download_url: url to GET the file
-            file: Optional binary file or path onto which to put the downloaded file
-            monitor_callback: An optional callback to monitor the progress of the download.
-                See :obj:`~ansys.simai.core.data.types.MonitorCallback` for details.
-            request_json_body: Optional JSON to include in the request
-            request_method: The HTTP verb
+            download_url: URL for getting the file.
+            file: Optional binary file or path for the downloaded file.
+            monitor_callback: Optional callback to monitor the progress of the download.
+                For more information, see the :obj:`~ansys.simai.core.data.types.MonitorCallback`
+                object.
+            request_json_body: Optional JSON to include in the request.
+            request_method: HTTP verb of the request.
 
         Raises:
-            ConnectionError: If an error occurred during the download
+            ConnectionError: If an error occurred during the download.
 
         Returns:
-            None if a file is provided, a BytesIO with the file's content otherwise
+            None if a file is provided or a ``BytesIO`` object with the file's
+            content otherwise.
         """
         if file is None:
             output_file = BytesIO()
@@ -227,10 +229,10 @@ class ApiClientMixin:
         part_size: int = int(100e6),
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> List[Dict[str, Any]]:
-        """Upload parts using the given endpoints to get presigned PUT urls.
+        """Upload parts using the given endpoints to get presigned ``PUT`` URLs.
 
         Returns:
-            The list of parts, with their id and their etag
+            List of parts with their IDs and HTTP ETags.
         """
         part_number = 1
         parts = []

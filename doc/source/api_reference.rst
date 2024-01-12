@@ -1,6 +1,6 @@
 .. _api_reference:
 
-API Reference
+API reference
 =============
 
 .. toctree::

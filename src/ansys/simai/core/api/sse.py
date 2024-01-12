@@ -38,7 +38,7 @@ SSE_ENDPOINT = "sessions/events"
 
 
 class SSEMixin(ApiClientMixin):
-    """Client for the server-sent-events ("/sessions/events")."""
+    """Provides the client for the server-sent-events ("/sessions/events")."""
 
     def __init__(self, config: ClientConfig, simai_client=None):
         super().__init__(config=config)
@@ -46,7 +46,7 @@ class SSEMixin(ApiClientMixin):
         if simai_client:
             self.simai_client = simai_client
         else:
-            logger.warning("SSEMixin has no simai_client")
+            logger.warning("SSEMixin has no SIM AI client.")
 
         # Disable sse thread in unit tests
         if config.no_sse_connection:
@@ -54,12 +54,12 @@ class SSEMixin(ApiClientMixin):
             return
 
         # Flag for stopping the threads when this object is destroyed.
-        # We have to use a flag, as Python's threading lib does not provide
+        # A flag is used because Python's threading library does not provide
         # a "stop" command.
         # The _stop_sse_threads is to allow unit tests to kill the thread
         # immediately without needing another event.
         self._stop_sse_threads = getattr(config, "_stop_sse_threads", False)
-        logger.debug("Connecting to SSE")
+        logger.debug("Connecting to SSE.")
 
         def sse_connection_factory(last_event_id: Optional[str]):
             headers = {"Accept": "text/event-stream"}
@@ -75,12 +75,12 @@ class SSEMixin(ApiClientMixin):
         try:
             self.sse_client = ReconnectingSSERequestsClient(sse_connection_factory)
         except Exception as e:
-            raise ConnectionError("Impossible to connect to events endpoint.") from e
+            raise ConnectionError("Impossible to connect to event's endpoint.") from e
         logger.debug("SSEMixin is connected to SSE endpoint.")
-        logger.debug("Starting listener thread")
+        logger.debug("Starting listener thread.")
         self.listener_thread = threading.Thread(target=self._sse_thread_loop, daemon=True)
         self.listener_thread.start()
-        logger.debug("Started listener thread")
+        logger.debug("Started listener thread.")
 
     def __del__(self):
         self._stop_sse_threads = True
@@ -92,7 +92,7 @@ class SSEMixin(ApiClientMixin):
                     break
                 self._handle_sse_event(event)
         except Exception:
-            logger.critical("Unhandled exception in SSE Thread: ", exc_info=True)
+            logger.critical("Unhandled exception in SSE thread: ", exc_info=True)
             # if object has been garbage collected, ignore exceptions
             if not self._stop_sse_threads:
                 os._exit(1)
@@ -106,7 +106,7 @@ class SSEMixin(ApiClientMixin):
             logger.debug(f"received {data}")
 
             if "type" not in data:
-                raise ValueError("No type for SSE Event")
+                raise ValueError("No type is given for SSE event.")
             msg_type = data["type"]
             if msg_type == "session":
                 self._handle_session_event(data)
@@ -134,7 +134,7 @@ class SSEMixin(ApiClientMixin):
             self.simai_client._optimization_trial_run_directory._handle_sse_event(data)
         else:
             logger.debug(
-                f"Unknown type {target['type']} received for job or resource event. Ignoring"
+                f"Unknown type {target['type']} received for job or resource event. Ignoring."
             )
 
     def _handle_session_event(self, data):

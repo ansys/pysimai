@@ -29,20 +29,21 @@ if TYPE_CHECKING:
 
 
 class DesignOfExperimentsCollection:
-    """Collection of methods related to the whole Design of Experiments.
+    """Provides a collection of methods related to design of experiments.
 
-    Accessed through ``client.design_of_experiments``.
+    This class is accessed through ``client.design_of_experiments``.
     """
 
     def __init__(self, client: "ansys.simai.core.client.SimAIClient"):
         self._client = client
 
     def download(self, file: Union[str, Path], format: str = "xlsx") -> None:
-        """Downloads the design of experiments data to the specified file or path.
+        """Download the design of experiments data to the specified file or path.
 
         Args:
-            file: the path of the file to put the content into
-            format: the expected format, either ``xlsx`` for excel or ``csv`` (by default ``xlsx``).
+            file: Path of the file to put the content into.
+            format: Expected format. The default is ``'xlsx'``. Options are ``'xlsx'``
+                and ``'csv'``.
 
         Example:
             .. code-block:: python
@@ -57,14 +58,15 @@ class DesignOfExperimentsCollection:
         )
 
     def in_memory(self, format: Optional[str] = "csv") -> io.BytesIO:
-        """Loads the design of experiments data in memory.
+        """Load the design of experiments data in memory.
 
         Args:
-            file: the path of the file to put the content into
-            format: the expected format, either ``xlsx`` for excel or ``csv`` (by default ``csv``).
+            file: Path of the file to put the content into.
+            format: Expected format. The default is ``'csv'``. Options are ``'xlsx'``
+                and ``'csv'``.
 
         Returns:
-            A :class:`~io.BytesIO` object containing the design of experiments data.
+            :class:`~io.BytesIO` object containing the design of experiments data.
 
         Example:
             .. code-block:: python
@@ -73,7 +75,7 @@ class DesignOfExperimentsCollection:
 
                 simai = ansys.simai.core.from_config()
                 data = simai.design_of_experiments.in_memory(format="csv")
-                # Read data with CSV Reader, ...
+                # Read data with CSV reader, ...
         """
         return self._client._api.download_design_of_experiments(
             None, format, self._client.current_workspace.id

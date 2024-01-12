@@ -39,9 +39,10 @@ from ansys.simai.core.utils.validation import _enforce_as_list_passing_predicate
 
 
 class Point:
-    """A Point object, where a Prediction can be run.
+    """Provides a ``Point`` object, where a prediction can be run.
 
-    A Point is at the intersection of a :class:`~ansys.simai.core.data.geometries.Geometry` and :class:`~ansys.simai.core.data.types.BoundaryConditions`.
+    A point is at the intersection of a :class:`~ansys.simai.core.data.geometries.Geometry`
+    isstance and :class:`~ansys.simai.core.data.types.BoundaryConditions` instance.
     """
 
     def __init__(self, geometry: Geometry, boundary_conditions: BoundaryConditions):
@@ -51,23 +52,25 @@ class Point:
 
     @property
     def geometry(self) -> Geometry:
-        """Returns the :class:`~ansys.simai.core.data.geometries.Geometry` object for this :class:`Point`."""
+        """:class:`~ansys.simai.core.data.geometries.Geometry` object for the :class:`Point` instance."""
         return self._geometry
 
     @property
     def boundary_conditions(self) -> BoundaryConditions:
-        """Returns the :class:`~ansys.simai.core.data.types.BoundaryConditions` for this :class:`Point`."""
+        """:class:`~ansys.simai.core.data.types.BoundaryConditions` object for the :class:`Point`
+        instance.
+        """
         return self._boundary_conditions
 
     @property
     def prediction(self) -> Union[Prediction, None]:
-        """Returns the :class:`~ansys.simai.core.data.predictions.Prediction`
-        corresponding to this Point, or None if no prediction has yet been ran.
+        """:class:`~ansys.simai.core.data.predictions.Prediction` instance
+        corresponding to the point or ``None`` if no prediction has yet been run.
         """
         return self._prediction
 
     def run_prediction(self, boundary_conditions: BoundaryConditions):
-        """Runs the prediction on this Geometry for this boundary condition."""
+        """Run the prediction on the geometry for this boundary condition."""
         self._prediction = self._geometry.run_prediction(boundary_conditions=boundary_conditions)
 
     def __repr__(self):
@@ -77,21 +80,21 @@ class Point:
 
 
 class Selection:
-    """A Selection object, which is a collection of :class:`Points <Point>`.
+    """Provides a ``Selection`` object, which is a collection of :class:`Points <Point>` instances.
 
     Selections are built from a list of :class:`Geometries <ansys.simai.core.data.geometries.Geometry>`
-    and a list of :class:`~ansys.simai.core.data.types.BoundaryConditions`.
+    instances and a list of :class:`~ansys.simai.core.data.types.BoundaryConditions` instances.
 
-    The resulting Selection contains all combinations between the geometries
+    The resulting selection contains all combinations between the geometries
     and the boundary conditions.
 
     Args:
-        geometries: the geometries to include in the selection
-        boundary_conditions: the boundary conditions to include in the selection
-        tolerance: Optional delta applied to boundary condition equality;
-                if the difference between two boundary conditions
-                is lower than tolerance, they are considered as equal
-                (default 10**-6).
+        geometries: Geometries to include in the selection.
+        boundary_conditions: Boundary conditions to include in the selection.
+        tolerance: Optional delta to apply to boundary condition equality.
+                The default is ``10**-6``. If the difference between two boundary
+                conditions is lower than the tolerance, the two boundary conditions
+                are considered as equal.
     """
 
     def __init__(
@@ -104,12 +107,12 @@ class Selection:
         geometries = _enforce_as_list_passing_predicate(
             geometries,
             lambda g: isinstance(g, Geometry),
-            "geometries must be a Geometry or a list of Geometry objects",
+            "'geometries' must be a geometry or a list of 'Geometry' objects.",
         )
         boundary_conditions = _enforce_as_list_passing_predicate(
             boundary_conditions,
             lambda bc: is_boundary_conditions(bc),
-            "boundary_conditions must be a dict of numbers",
+            "'boundary_conditions' must be a dictionary of numbers.",
         )
         if tolerance is None:
             tolerance = DEFAULT_COMPARISON_EPSILON
@@ -128,64 +131,71 @@ class Selection:
 
     @property
     def points(self) -> List[Point]:
-        """Returns a list of all the :class:`Points <Point>` composing this Selection."""
+        """List of all :class:`Points <Point>` instances in the selection."""
         return self._points
 
     @property
     def predictions(self) -> List[Prediction]:
-        """Returns a list of all the existing :class:`Predictions <ansys.simai.core.data.predictions.Prediction>` in this selection."""
+        """List of all existing :class:`Prediction <ansys.simai.core.data.predictions.Prediction>`
+        instances in the selection.
+        """
         return self.get_predictions()
 
     @property
     def geometries(self) -> List[Geometry]:
-        """Returns a list of all the existing :class:`Geometries <ansys.simai.core.data.geometries.Geometry>` in this selection."""
+        """List of all existing :class:`Geometries <ansys.simai.core.data.geometries.Geometry>`
+        instances in the selection.
+        """
         return self._geometries
 
     @property
     def boundary_conditions(self) -> List[BoundaryConditions]:
-        """Returns a list of all the existing :class:`BoundaryConditions <ansys.simai.core.data.types.BoundaryConditions>` in this selection."""
+        """List of all existing :class:`BoundaryConditions <ansys.simai.core.data.types.BoundaryConditions>`
+        instances in the selection.
+        """
         return self._boundary_conditions
 
     @property
     def points_with_prediction(self) -> List[Optional[Point]]:
-        """Returns a list of all the points :class:`Points <Point>` in this selection for which a prediction exists."""
+        """List of all :class:`Points <Point>` instances in the selection where predictions exist."""
         return [(point if point.prediction else None) for point in self.points]
 
     @property
     def points_without_prediction(self) -> List[Optional[Point]]:
-        """Returns a list of all the points :class:`Points <Point>` in this selection for which no prediction exists."""
+        """List of all :class:`Points <Point>` instances in the selection where predictions don't exist."""
         return [(point if point.prediction is None else None) for point in self.points]
 
     def get_predictions(self) -> List[Prediction]:  # noqa D102
         return [point.prediction for point in self.points if point.prediction is not None]
 
     def get_runnable_predictions(self) -> List[Point]:
-        """Return a list of :class:`Points <Point>` in this selection
-        for which predictions haven't been ran yet.
+        """List of all :class:`Points <Point>` instances in the selection where predictions haven't
+        been run yet.
         """
         return [point for point in self.points if point.prediction is None]
 
     def run_predictions(self) -> None:
-        """Run all the missing predictions in this selection."""
+        """Run all missing predictions in the selection."""
         _foreach_despite_errors(
             lambda point: point.run_prediction(boundary_conditions=point.boundary_conditions),
             self.get_runnable_predictions(),
         )
 
     def wait(self) -> None:
-        """Wait for all the ongoing operations (predictions, post-processings)
-        in this selection to finish.
+        """Wait for all ongoing operations (predictions and postprocessings)
+        in the selection to finish.
 
         Raises:
-            ansys.simai.core.errors.SimAIError: if a single error occurred during computing this selection's operations
-            ansys.simai.core.errors.MultipleErrors: if multiple exceptions occurred when computing this selection's operations
+            ansys.simai.core.errors.SimAIError: If a single error occurred when computing this selection's operations.
+            ansys.simai.core.errors.MultipleErrors: If multiple exceptions occurred when computing this selection's operations.
         """
         _foreach_despite_errors(lambda prediction: prediction._wait_all(), self.get_predictions())
 
     def reload(self) -> None:
-        """Refreshes the predictions in this selection.
-        Loads any prediction ran from another session,
-        or removes possible deleted predictions.
+        """Refreshes the predictions in the selection.
+
+        This method loads any predictions run from another session and
+        removes possible deleted predictions.
         """
         _predictions_by_geometry_id: Dict[str, List[Prediction]] = {}
         for point in self.points:
@@ -210,10 +220,11 @@ class Selection:
 
     @property
     def post(self) -> SelectionPostProcessingsMethods:
-        """Namespace containing methods to access and run post-processings
-        for predictions in this selection.
+        """Namespace containing methods to access and run postprocessings
+        for the predictions in the selection.
 
-        See :py:class:`~ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods`
-        for more information.
+        For more information, see the :py:class:`~ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods`
+        class.
+
         """
         return self._post_processings

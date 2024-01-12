@@ -1,17 +1,14 @@
 .. _configuration:
 .. py:module:: ansys.simai.core.utils.configuration
 
-Client Configuration
+Client configuration
 ====================
 
 Where to start
 --------------
 
-You can start by creating an `SimAIClient`, you will
-be prompted for any missing parameter (see :ref:`getting started<index>`).
-
-You can then start configuring the :class:`~ansys.simai.core.client.SimAIClient`
-by passing the required parameters on client creation, like so:
+You start by creating a :class:`~ansys.simai.core.client.SimAIClient`
+instance:
 
 .. code-block:: python
 
@@ -19,15 +16,19 @@ by passing the required parameters on client creation, like so:
 
     simai = ansys.simai.core.SimAIClient(organization="my-company")
 
-Once you understand how this works, we recommend looking into the SimAI
-:ref:`configuration file<config_file>`.
 
+As demonstrated in the preceding code, you configure the instance by
+passing the required parameters on client creation. You are prompted
+for any missing parameters.
 
-Available options
------------------
+Once you understand how creating an instance works, you can look into using a
+:ref:`configuration file<config_file>` for creating a client instance.
 
-All of the configuration variables for :class:`~ansys.simai.core.client.SimAIClient`
-are documented in the following class:
+Configuration options
+---------------------
+
+Descriptions follow of all configuration options for the :class:`~ansys.simai.core.client.SimAIClient`
+class:
 
 .. autopydantic_model:: ClientConfig
   :model-show-config-summary: False
@@ -37,14 +38,12 @@ are documented in the following class:
 
 
 Credentials
-+++++++++++
+-----------
 
-To use SimAI API your SDK needs to be authenticated.
-
-By default, :class:`~ansys.simai.core.client.SimAIClient` will prompt you to log in
-via your web browser.
-
-You can also pass your credentials as parameters on client creation, like so:
+To use the SimAI API, your :class:`~ansys.simai.core.client.SimAIClient`
+instance must be authenticated. By default, you are prompted to log in
+via your web browser. However, you can pass your credentials as parameters
+on client creation:
 
 .. code-block:: python
 
@@ -57,6 +56,12 @@ You can also pass your credentials as parameters on client creation, like so:
             "password": "hunter12",
         },
     )
+
+Credential options
+------------------
+
+Descriptions follow of all credential options for the :class:`~ansys.simai.core.client.SimAIClient`
+class:
 
 .. autopydantic_model:: Credentials
   :model-show-config-summary: False

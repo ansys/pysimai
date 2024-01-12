@@ -32,13 +32,14 @@ def _list_elements_pass_predicate(items_list: List[T], predicate: Callable[[Any]
 def _enforce_as_list_passing_predicate(
     parameter: Union[T, List[T]], predicate: Callable[[Any], bool], error_message: str
 ) -> List[T]:
-    """Makes sure the passed parameter either is a single element passing predicate,
-    or is a list of elements all passing predicate.
-    In both case return a list.
-    If other cases, raises a TypeError with error_message.
+    """Make sure that the passed parameter is either a single element passing a predicate
+    or a list of elements that are all passing predicates.
 
-    Useful for validating a type of parameter, i.e. either accept a Geometry
-    or a list of Geometries.
+    In both case, a list is returned. In other cases, raise a TypeError with the
+    error message.
+
+    This method is useful for validating a type of parameter. For example, accepting either
+    a geometry or a list of geometries.
     """
     if predicate(parameter):
         return [parameter]

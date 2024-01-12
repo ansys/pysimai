@@ -1,10 +1,11 @@
 .. _config_file:
 
-Configuration File
+Configuration file
 ==================
 
-To create a client from a configuration file, you can use the
-:py:meth:`~ansys.simai.core.client.SimAIClient.from_config` function :
+To create a :class:`~ansys.simai.core.client.SimAIClient`
+instance from a configuration file, you use the
+:py:meth:`~ansys.simai.core.client.SimAIClient.from_config` method:
 
 .. code-block:: python
 
@@ -13,35 +14,34 @@ To create a client from a configuration file, you can use the
 Location
 --------
 
-If no ``path`` is given, the ``SimAIClient`` will look at default locations.
-These locations differ according to your operating system:
+If no path is given, the :class:`~ansys.simai.core.client.SimAIClient`
+instance looks at default locations. These locations differ according to
+your operating system.
 
-* Linux/MacOS:
+**Linux/MacOS**
 
-  For UNIX systems the default locations are, in order :
+For UNIX systems, the default locations are, in order:
 
-  * ``$XDG_CONFIG_HOME/ansys_simai.conf``
-  * ``$XDG_CONFIG_HOME/ansys/simai.conf``
-  * ``~/.ansys_simai.conf``
-  * ``~/.ansys/simai.conf``
-  * ``/etc/ansys_simai.conf``
-  * ``/etc/ansys/simai.conf``
+* ``$XDG_CONFIG_HOME/ansys_simai.conf``
+* ``$XDG_CONFIG_HOME/ansys/simai.conf``
+* ``~/.ansys_simai.conf``
+* ``~/.ansys/simai.conf``
+* ``/etc/ansys_simai.conf``
+* ``/etc/ansys/simai.conf``
 
-  .. note ::
+.. note ::
 
-    Only the first one found will be used.
+   The first location found is used. ``$XDG_CONFIG_HOME`` defaults to ``~/.config``.
 
-    ``$XDG_CONFIG_HOME`` defaults to ``~/.config``.
+**Windows XP**
 
-* For Windows XP :
+* ``C:\Documents and Settings\<user>\Local Settings\Application Data\Ansys\simai.conf``
 
-  * ``C:\Documents and Settings\<user>\Local Settings\Application Data\Ansys\simai.conf``
+**Windows 7 to 11**
 
-* For Windows 7 to 11:
+* ``C:\Users\<user>\AppData\Roaming\Ansys\simai.conf``
 
-  * ``C:\Users\<user>\AppData\Roaming\Ansys\simai.conf``
-
-Optionally you can specify the path yourself:
+Optionally, you can specify the path yourself:
 
 .. code-block:: python
 
@@ -50,13 +50,13 @@ Optionally you can specify the path yourself:
 Content
 -------
 
-The configuration file is written in `TOML <https://toml.io/>`_.
-Any parameter used to configure the :class:`~ansys.simai.core.client.SimAIClient` can
-be be passed from the configuration file.
+You write the configuration file in `TOML <https://toml.io/>`_.
+From this file, you can pass parameters for configuring
+the :class:`~ansys.simai.core.client.SimAIClient` instance.
 
 
-Example :
-"""""""""
+Example
+"""""""
 
 .. code-block:: TOML
 
@@ -69,11 +69,11 @@ Example :
    totp_enabled = true
 
 
-Proxy :
-"""""""
+Proxy
+"""""
 
-If your network is situated behind a proxy, then you will need to add its address
-in a `https_proxy` key in the `[default]` block:
+If your network is situated behind a proxy, you must add its address
+in a ``https_proxy`` key in the ``[default]`` block:
 
 .. code-block:: TOML
 
@@ -84,9 +84,8 @@ in a `https_proxy` key in the `[default]` block:
 Profiles
 --------
 
-The SDK supports having multiple configurations in a single file through profiles.
-
-Profiles can be loaded like so :
+The :class:`~ansys.simai.core.client.SimAIClient` instance supports having multiple
+configurations in a single file through profiles, which are loaded like this:
 
 .. code-block:: TOML
 

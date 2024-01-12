@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
 
 class DownloadableResult:
-    """Object representing a result data for a post-processing in binary format."""
+    """Provides the object representing a result data for a postprocessing in binary format."""
 
     def __init__(
         self,
@@ -45,18 +45,18 @@ class DownloadableResult:
         self._request_json_body = request_json_body
 
     def download(self, file: File) -> None:
-        """Downloads the post-processing data to the specified file or path.
+        """Download the postprocessing data to the specified file or path.
 
         Args:
-            file: Binary file-object or path of file to download the data into.
+            file: Binary file-object or path of the file to download the data into.
         """
         self._download_file(self.url, file)
 
     def in_memory(self) -> BytesIO:
-        """Loads the post-processing data in memory.
+        """Load the postprocessing data in memory.
 
         Returns:
-            A :class:`io.BytesIO` object containing the post-processing data
+            :class:`io.BytesIO` object containing the postprocessing data.
         """
         return self._download_file(self.url)
 

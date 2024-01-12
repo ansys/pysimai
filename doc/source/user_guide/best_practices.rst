@@ -1,24 +1,28 @@
 .. _best_practices:
 
-Best Practices
+Best practices
 ==============
 
 Asynchronicity
 --------------
 
-While the SDK doesn't use async/await mechanics, it is somewhat asynchronous in nature:
-uploading geometries is a blocking method but running a prediction or a post-processing will
-return the created object immediately before the result is computed on the servers or available locally.
-This behavior makes it possible to request multiple computations to be ran on the
-SimAI platform without waiting for any of the data to be available.
+While the SimAI client doesn't use async/await mechanics, it is somewhat asynchronous in nature.
+While uploading geometries is a blocking method, running a prediction or a postprocessing returns
+the created object immediately, before the result is computed on the servers or available locally.
+This behavior makes it possible to request that multiple computations be run on the SimAI platform
+without waiting for any of the data to be available.
 
-To wait for an object to be fully available, you can call the ``wait()`` method on the object
-(for example :meth:`Prediction.wait()<ansys.simai.core.data.predictions.Prediction.wait>`) or you can call the global
-:meth:`SimAIClient.wait()<ansys.simai.core.client.SimAIClient.wait>` method to wait for all requests to be complete.
-Alternatively you can try to access the object's data in which case the SDK will automatically wait for the data to be ready if needed.
+To wait for an object to be fully available, you can call the ``wait()`` method on the object.
+For example, you can call the :meth:`Prediction.wait()<ansys.simai.core.data.predictions.Prediction.wait>`
+method on a prediction. Or, you can call the global :meth:`SimAIClient.wait()<ansys.simai.core.client.SimAIClient.wait>`
+method to wait for all requests to complete.
 
-Because of this behavior, it is recommended when running a large number of computations to send all the
-requests before accessing any of the data.
+Alternatively, you can try to access the object's data, in which case the SimAI client automatically
+waits for the data to be ready if needed. Because of this behavior, when running a large number of
+computations, you should send all requests before accessing any of the data.
+
+This example requests the predictions and postprocessings sequentially, which requires waiting
+for the data to be available and used before requesting the next one.
 
 .. code-block:: python
    :name: sequential-way
@@ -33,14 +37,14 @@ requests before accessing any of the data.
            # Run prediction
            pred = geom.run_prediction(Vx=vx)
            # Request global coefficients postprocessing
-           # Since we're accessing the data, this will wait for the computation to finish
+           # Because you are accessing the data, you must wait for the computation to finish
            coeffs = pred.post.global_coefficients().data
            # do something with the data
            print(coeffs)
 
-In the previous example, the predictions and post-processings will be requested sequentially, waiting for the data
-to be available and used before requesting the next one.
-Thus a more efficient way would be as follows:
+
+This more efficient example requests all the predictions and postprocessings right away
+and then processes the data once they are all available.
 
 .. code-block:: python
    :name: requests-first
@@ -56,7 +60,7 @@ Thus a more efficient way would be as follows:
            # Run prediction
            pred = geom.run_prediction(Vx=vx)
            # Request global coefficients postprocessing
-           # Since we're not accessing the data, this will not block
+           # Because you are not accessing the data, you are not blocked
            pred.post.global_coefficients()
            predictions.append(pred)
 
@@ -65,5 +69,3 @@ Thus a more efficient way would be as follows:
        # do something with the data
        print(pred.post.global_coefficients().data)
 
-In this example, all the predictions and post-processings are requested right away and the
-data crunching will happen once all of it is available.
