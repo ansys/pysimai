@@ -22,6 +22,7 @@
 
 import pytest
 import responses
+from pydantic import HttpUrl
 
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.errors import ApiClientError, NotFoundError
@@ -37,7 +38,7 @@ def test_construct_default_url():
         skip_version_check=True,
         organization="ExtraBanane",
     )
-    assert client._api._url_prefix == "https://api.simai.ansys.com/v2/"
+    assert client._api._url_prefix == HttpUrl("https://api.simai.ansys.com/v2/")
 
 
 @responses.activate

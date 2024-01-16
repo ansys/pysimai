@@ -57,7 +57,7 @@ class Credentials(BaseModel, extra="forbid"):
 
 class ClientConfig(BaseModel, extra="allow"):
     url: HttpUrl = Field(
-        default="https://api.simai.ansys.com/v2/",
+        default=HttpUrl("https://api.simai.ansys.com/v2/"),
         description="URL to the SimAI API.",
     )
     "URL to the SimAI API."
@@ -96,6 +96,8 @@ class ClientConfig(BaseModel, extra="allow"):
 
     @validator("url", pre=True)
     def clean_url(cls, url):
+        if isinstance(url, bytes):
+            url = url.decode()
         url = urlunparse(urlparse(url))
         if not url.endswith("/"):
             url = url + "/"
