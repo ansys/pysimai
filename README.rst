@@ -6,11 +6,11 @@ PySimAI
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/pypi/pyversions/simai?logo=pypi
-   :target: https://pypi.org/project/simai/
+.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-simai-core?logo=pypi
+   :target: https://pypi.org/project/ansys-simai-core/
    :alt: Python
 
-.. |pypi| image:: https://img.shields.io/pypi/v/simai.svg?logo=python&logoColor=white
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-simai-core.svg?logo=python&logoColor=white
    :target: https://pypi.org/project/ansys-simai-core
    :alt: PyPI
 
