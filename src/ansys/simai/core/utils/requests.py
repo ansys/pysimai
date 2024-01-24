@@ -44,14 +44,14 @@ def handle_http_errors(response: requests.Response) -> None:
     logger.debug("Checking for HTTP errors.")
     try:
         response.raise_for_status()
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError as e:
         try:
             json_response = response.json()
         except (ValueError, JSONDecodeError):
             # raise the errors from None
             # as we want to ignore the JSONDecodeError
             if response.status_code == 404:
-                raise NotFoundError("Not Found", response) from None
+                raise NotFoundError("Not Found", response) from e
             else:
                 raise ApiClientError(
                     f"{response.status_code} {response.reason}", response
@@ -66,14 +66,14 @@ def handle_http_errors(response: requests.Response) -> None:
             )
 
             if response.status_code == 404:
-                raise NotFoundError(f"{message}", response) from None
+                raise NotFoundError(f"{message}", response) from e
             else:
                 raise ApiClientError(
                     f"{response.status_code} {message}",
                     response,
-                ) from None
+                ) from e
         else:
-            raise ApiClientError(f"{response.status_code}: {response.reason}", response) from None
+            raise ApiClientError(f"{response.status_code}: {response.reason}", response) from e
 
 
 def handle_response(response: requests.Response, return_json: bool = True) -> APIResponse:
