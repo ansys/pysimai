@@ -131,7 +131,6 @@ class TrainingData(ComputableDataModel):
         self,
         folder_path: Path,
         compute: bool = True,
-        monitor_callback: Optional[MonitorCallback] = None,
     ) -> List["TrainingDataPart"]:
         """Upload all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData` instance.
 
@@ -141,14 +140,11 @@ class TrainingData(ComputableDataModel):
         Args:
             folder_path: Path to the folder with the files to upload.
             compute: Whether to compute the training data after upload. The default is ``True``.
-            monitor_callback: Optional callback for monitoring the progress of the upload.
-                For more information, see the :obj:`~ansys.simai.core.data.types.MonitorCallback`
-                object.
 
         Returns:
             List of uploaded training data parts.
         """
-        return self._directory.upload_folder(self.id, folder_path, compute, monitor_callback)
+        return self._directory.upload_folder(self.id, folder_path, compute)
 
     def add_to_project(self, project: Identifiable["Project"]):
         """Add the training data to a :class:`~ansys.simai.core.data.projects.Project` object.
@@ -249,7 +245,10 @@ class TrainingDataDirectory(Directory[TrainingData]):
         )
 
     def upload_folder(
-        self, training_data: Identifiable[TrainingData], folder_path: Path, compute: bool = True
+        self,
+        training_data: Identifiable[TrainingData],
+        folder_path: Path,
+        compute: bool = True,
     ) -> List["TrainingDataPart"]:
         """Upload all files in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData` object.
 
@@ -261,6 +260,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
             folder_path: Path to the folder that contains the files to upload.
             compute: Whether to compute the training data after upload. The default is ``True``.
         """
+        training_data_id = get_id_from_identifiable(training_data)
         path = pathlib.Path(folder_path)
         if not path.is_dir():
             raise InvalidArguments("Provided path is not a folder.")
@@ -268,7 +268,9 @@ class TrainingDataDirectory(Directory[TrainingData]):
         files = (obj for obj in path_content if obj.is_file())
         uploaded_parts = []
         for file in files:
-            uploaded_parts.append(_upload_training_data_part(id, file, self._client, None))
+            uploaded_parts.append(
+                _upload_training_data_part(training_data_id, file, self._client, None)
+            )
         if compute:
-            self._client._api.compute_training_data(id)
+            self._client._api.compute_training_data(training_data_id)
         return uploaded_parts
