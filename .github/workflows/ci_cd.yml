@@ -70,6 +70,11 @@ jobs:
         with:
           pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
           checkout: false
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: matrix.python-version ==  ${{ env.MAIN_PYTHON_VERSION }} && matrix.os == 'ubuntu-latest'
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   doc-build:
     name: "Build documentation"
