@@ -60,7 +60,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Setup PDM
-        uses: pdm-project/setup-pdm@v3
+        uses: pdm-project/setup-pdm@v4
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: pdm install --dev
@@ -82,7 +82,7 @@ jobs:
     needs: [doc-style]
     steps:
       - name: Setup PDM
-        uses: pdm-project/setup-pdm@v3
+        uses: pdm-project/setup-pdm@v4
       - uses: actions/checkout@v4
       - name: Generate doc requirements
         run: pdm export -G doc --no-default -o doc_requirements.txt
