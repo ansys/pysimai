@@ -1,6 +1,11 @@
 Changelog
 ---------
 
+0.1.3 (2024-02-02)
+******************
+
+Fix config args not taken into account if a config file is not found
+
 0.1.2 (2024-01-24)
 ******************
 
