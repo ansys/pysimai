@@ -49,3 +49,12 @@ def test_get_config_invalid_profile(tmpdir):
         f.flush()
         with pytest.raises(err.InvalidConfigurationError):
             get_config(profile="kaboom", path=path_config)
+
+
+def test_get_config_ignore_missing(mocker):
+    mocker.patch(
+        "ansys.simai.core.utils.config_file._scan_defaults_config_paths",
+        return_value=None,
+    )
+    config = get_config(ignore_missing=True, organization="kangarooooo")
+    assert config == {"organization": "kangarooooo"}
