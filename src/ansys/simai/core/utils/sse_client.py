@@ -76,8 +76,8 @@ class ReconnectingSSERequestsClient:
                 requests.exceptions.ChunkedEncodingError,
                 requests.RequestException,
                 EOFError,
-            ):
-                logger.info("SSEClient disconnected ", exc_info=True)
+            ) as e:
+                logger.info(f"SSEClient disconnected: {e}")
                 logger.info(f"Will try to reconnect after {self._retry_timeout_sec}s")
                 time.sleep(self._retry_timeout_sec)
                 self._connect()
