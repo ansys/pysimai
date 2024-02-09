@@ -60,39 +60,30 @@ class ClientConfig(BaseModel, extra="allow"):
         default=HttpUrl("https://api.simai.ansys.com/v2/"),
         description="URL to the SimAI API.",
     )
-    "URL to the SimAI API."
     organization: str = Field(
         default_factory=prompt_for_input_factory("organization"),
         description="Name of the organization(/company) that the user belongs to.",
     )
-    "Name of the organization(/company) that the user belongs to."
     credentials: Optional[Credentials] = Field(
         default=None,
         description="Authenticate via username/password instead of the device authorization code.",
     )
-    "Authenticate via username/password instead of the device authorization code."
     workspace: Optional[str] = Field(
         default=None, description="Name of the workspace to use by default."
     )
-    "Name of the workspace to use by default."
     project: Optional[str] = Field(
         default=None, description="Name of the project to use by default."
     )
-    "Name of the project to use by default."
     https_proxy: Optional[AnyHttpUrl] = Field(
         default=None, description="URL of the HTTPS proxy to use."
     )
-    "URL of the HTPPS proxy to use."
     skip_version_check: bool = Field(default=False, description="Skip checking for updates.")
-    "Skip checking for updates."
     no_sse_connection: bool = Field(
         default=False, description="Don't receive live updates from the SimAI API."
     )
-    "Don't receive live updates from the SimAI API."
     disable_cache: bool = Field(
         default=False, description="Don't use cached authentication tokens."
     )
-    "Don't use cached authentication tokens."
 
     @validator("url", pre=True)
     def clean_url(cls, url):
