@@ -88,31 +88,10 @@ need to follow these steps:
 
 #. Finally, verify your development installation by running:
 
-   * For Linux/Mac:
+   .. code:: bash
 
-      .. code:: bash
-
+         python -m pip install tox
          tox
-
-   * For Windows:
-
-      * You may need to install pip first:
-
-         .. code:: shell
-
-            python -m ensurepip --upgrade
-
-      * And install tox as well:
-
-         .. code:: shell
-
-            python -m pip install tox
-
-      * and then run tox
-
-         .. code:: shell
-
-            tox
 
 
 
