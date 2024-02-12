@@ -71,7 +71,7 @@ class ModelManifest:
         """Information on the postprocessings available for the model
         and the accepted parameters when relevant.
         """
-        return self._raw["available-postprocessings"]
+        return self._raw["available-post-processings"]
 
 
 class Workspace(DataModel):
