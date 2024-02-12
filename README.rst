@@ -69,21 +69,51 @@ need to follow these steps:
 
       git clone https://github.com/ansys/pysimai
 
-#. `Install PDM <https://pdm-project.org/latest/#recommended-installation-method>`_
+#. `Install PDM <https://pdm-project.org/latest/#recommended-installation-method>`_. NB: If you are a Windows user, make sure that Python is installed on your system and it is added to the Path.
 
 #. Use PDM to create a virtual env with the dependencies and activate it
 
-   .. code:: bash
+   * For Linux/Mac:
+      .. code:: bash
 
-      pdm install
-      eval $(pdm venv activate)
+         pdm install
+         eval $(pdm venv activate)
 
+   * For Windows:
+
+      .. code:: shell
+
+         pdm install
+         Invoke-Expression (pdm venv activate)
 
 #. Finally, verify your development installation by running:
 
-   .. code:: bash
+   * For Linux/Mac:
 
-      tox
+      .. code:: bash
+
+         tox
+
+   * For Windows:
+
+      * You may need to install pip first:
+
+         .. code:: shell
+
+            python -m ensurepip --upgrade
+
+      * And install tox as well:
+
+         .. code:: shell
+
+            python -m pip install tox
+
+      * and then run tox
+
+         .. code:: shell
+
+            tox
+
 
 
 How to test
