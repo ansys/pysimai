@@ -20,9 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from io import BytesIO
+
 import pytest
 import responses
 from pydantic import HttpUrl
+from responses import matchers
 
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.errors import ApiClientError, NotFoundError
@@ -154,3 +157,33 @@ def test_use_user_provided_proxies(mocker):
         https_proxy="https://😛.com",
     )
     assert client._api._session.proxies == {"https": "https://xn--528h.com/"}
+
+
+@responses.activate
+def test_upload_file_with_presigned_post_monitor_callback(mocker, api_client):
+    presigned_post = {"fields": {"sandstorm": "TUTUTUUTUTU"}, "url": "https://leekspin.com/"}
+    file = BytesIO(b"Hello World")
+    file.name = "hello.txt"
+    responses.add(
+        responses.POST,
+        "https://leekspin.com/",
+        match=[
+            matchers.multipart_matcher(
+                data={
+                    **presigned_post["fields"],
+                },
+                files={"file": ("hello.txt", file, "application/octet-stream")},
+            )
+        ],
+        status=200,
+    )
+    monitor_values = []
+    api_client.upload_file_with_presigned_post(
+        file=file,
+        presigned_post=presigned_post,
+        monitor_callback=lambda x: monitor_values.append(x),
+    )
+    # Bigger than `file` because:
+    # * the multipart encoding
+    # * the other fields (`sandstorm`)
+    assert monitor_values == [297]
