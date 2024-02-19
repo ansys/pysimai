@@ -201,22 +201,19 @@ class ApiClientMixin:
         filename = getattr(file, "name", "")
         upload_form["file"] = (filename, file, "application/octet-stream")
         multipart = MultipartEncoder(upload_form)
-
         if monitor_callback is not None:
             # Wrap the monitor callback so that it receives only the bytes read
             # instead of the full MultipartEncoderMonitor object
-            def wrap_monitor_callback(monitor_callback):
-                # FIXME: This ain't gonna work chief
-                def wrapped_monitor_callback(monitor):
-                    update = monitor_callback(monitor)
-                    return update.bytes_read
+            def callback(monitor):
+                monitor.previous_bytes_read = getattr(monitor, "previous_bytes_read", 0)
+                new_bytes = monitor.bytes_read - monitor.previous_bytes_read
+                monitor.previous_bytes_read += new_bytes
+                monitor_callback(new_bytes)
 
-                return wrapped_monitor_callback
-
-            multipart = MultipartEncoderMonitor(multipart, wrap_monitor_callback(monitor_callback))
+            multipart = MultipartEncoderMonitor(multipart, callback)
         self._post(
             presigned_post["url"],
-            data=multipart,
+            data=multipart.read(),
             headers={"Content-Type": multipart.content_type},
             return_json=False,
         )
