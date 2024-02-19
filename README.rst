@@ -74,17 +74,18 @@ need to follow these steps:
 #. Use PDM to create a virtual env with the dependencies and activate it
 
    * For Linux/Mac:
-      .. code:: bash
 
-         pdm install
-         eval $(pdm venv activate)
+     .. code:: bash
+
+        pdm install
+        eval $(pdm venv activate)
 
    * For Windows:
 
-      .. code:: shell
+     .. code:: shell
 
-         pdm install
-         Invoke-Expression (pdm venv activate)
+        pdm install
+        Invoke-Expression (pdm venv activate)
 
 #. Finally, verify your development installation by running:
 
