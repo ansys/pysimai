@@ -1,6 +1,15 @@
 Changelog
 ---------
 
+0.1.4 (2024-02-26)
+******************
+
+- Less verbose sse disconnects
+- Fix client config vars being described two times
+- Fix type/KeyError in workspace.model.post_processings
+- Fix monitor_callback interface not respected in upload_file_with_presigned_post
+- Fix README indentation
+
 0.1.3 (2024-02-02)
 ******************
 
