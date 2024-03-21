@@ -64,6 +64,9 @@ class ClientConfig(BaseModel, extra="allow"):
         default_factory=prompt_for_input_factory("organization"),
         description="Name of the organization(/company) that the user belongs to.",
     )
+    interactive_mode: Optional[bool] = Field(
+        default=True, description="Enable terminal interaction"
+    )
     credentials: Optional[Credentials] = Field(
         default=None,
         description="Authenticate via username/password instead of the device authorization code.",
