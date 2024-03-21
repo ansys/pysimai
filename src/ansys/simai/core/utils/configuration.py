@@ -48,7 +48,7 @@ def prompt_for_input_factory(*args, **kwargs):
 def error_or_prompt(interactive_mode, **kwargs):
     """Raise an error or prompt for input according to _interactive_mode."""
     if not interactive_mode:
-        raise PydanticCustomError("missing_param", kwargs["name"])
+        raise PydanticCustomError("param_missing", kwargs["name"])
     return prompt_for_input(**kwargs)
 
 
