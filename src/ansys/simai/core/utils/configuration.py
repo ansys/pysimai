@@ -48,14 +48,16 @@ def prompt_for_input_factory(*args, **kwargs):
 def error_or_prompt(interactive_mode, **kwargs):
     """Raise an error or prompt for input according to _interactive_mode."""
     if not interactive_mode:
-        raise PydanticCustomError("param_missing", kwargs["name"])
+        raise PydanticCustomError(
+            "conf_param_missing", f"""Missing parameter "{kwargs["name"]}" from configuration"""
+        )
     return prompt_for_input(**kwargs)
 
 
 class Credentials(BaseModel, extra="forbid"):
-    username: str = ""  # dummy default, the root validator will call prompt_for_input
+    username: str  # dummy default, the root validator will call prompt_for_input
     "Username: Required if :code:`Credentials` is defined, automatically prompted."
-    password: str = ""  # dummy default, like above
+    password: str  # dummy default, like above
     "Password: Required if :code:`Credentials` is defined, automatically prompted."
     totp: Optional[str] = None
     "One-time password: required if :code:`totp_enabled=True`, automatically prompted."
@@ -64,7 +66,7 @@ class Credentials(BaseModel, extra="forbid"):
     @classmethod
     def prompt(cls, values, info):
         if "username" not in values:
-            values["username"] = error_or_prompt(
+            values["username"] = prompt_for_input(
                 interactive_mode=info.data["interactive"], name="username"
             )
         if "password" not in values:
@@ -79,7 +81,9 @@ class Credentials(BaseModel, extra="forbid"):
 
 
 class ClientConfig(BaseModel, extra="allow"):
-    interactive: Optional[bool] = Field(default=True, description="Enable terminal interaction")
+    interactive: Optional[bool] = Field(
+        default=True, description="If True, it enables interaction with the terminal."
+    )
     url: HttpUrl = Field(
         default=HttpUrl("https://api.simai.ansys.com/v2/"),
         description="URL to the SimAI API.",
