@@ -45,7 +45,7 @@ def prompt_for_input_factory(*args, **kwargs):
     return lambda: prompt_for_input(*args, **kwargs)
 
 
-def error_or_prompt(interactive_mode, **kwargs):
+def prompt_if_interactive(interactive_mode, **kwargs):
     """Raise an error or prompt for input according to _interactive_mode."""
     if not interactive_mode:
         raise PydanticCustomError(
@@ -66,17 +66,19 @@ class Credentials(BaseModel, extra="forbid"):
     @classmethod
     def prompt(cls, values, info):
         if "username" not in values:
-            values["username"] = prompt_for_input(
+            values["username"] = prompt_if_interactive(
                 interactive_mode=info.data["interactive"], name="username"
             )
         if "password" not in values:
-            values["password"] = error_or_prompt(
+            values["password"] = prompt_if_interactive(
                 interactive_mode=info.data["interactive"],
                 name="password",
                 hide_input=True,
             )
         if values.pop("totp_enabled", False) and "totp" not in values:
-            values["totp"] = error_or_prompt(interactive_mode=info.data["interactive"], name="totp")
+            values["totp"] = prompt_if_interactive(
+                interactive_mode=info.data["interactive"], name="totp"
+            )
         return values
 
 
@@ -137,5 +139,7 @@ class ClientConfig(BaseModel, extra="allow"):
     @classmethod
     def check_organization_exists(cls, val, info):
         if not val:
-            val = error_or_prompt(interactive_mode=info.data["interactive"], name="organization")
+            val = prompt_if_interactive(
+                interactive_mode=info.data["interactive"], name="organization"
+            )
         return val
