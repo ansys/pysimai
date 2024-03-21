@@ -71,12 +71,8 @@ class SimAIClient:
     def __init__(self, **kwargs):
         try:
             config = ClientConfig(**kwargs)
-        except ValidationError as pyandic_exc:
-            missing_properties = [exc["msg"] for exc in pyandic_exc.errors()]
-            raise InvalidConfigurationError(
-                f"""Missing propert{'ies' if len(missing_properties)>1 else 'y'}: """
-                f"""{', '.join(missing_properties)} """
-            ) from None
+        except ValidationError as pydandic_exc:
+            raise InvalidConfigurationError(pydandic_exc) from None
 
         api_client_class = getattr(config, "_api_client_class_override", ApiClient)
         self._api = api_client_class(simai_client=self, config=config)
