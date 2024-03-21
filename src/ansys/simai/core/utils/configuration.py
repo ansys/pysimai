@@ -41,10 +41,6 @@ from ansys.simai.core.utils.misc import prompt_for_input
 logger = logging.getLogger(__name__)
 
 
-def prompt_for_input_factory(*args, **kwargs):
-    return lambda: prompt_for_input(*args, **kwargs)
-
-
 def prompt_if_interactive(interactive, **kwargs):
     """Raise an error or prompt for input according to _interactive_mode."""
     if not interactive:
