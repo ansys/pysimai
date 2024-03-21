@@ -25,7 +25,15 @@ import logging
 from typing import Optional
 from urllib.parse import urlparse, urlunparse
 
-from pydantic import AnyHttpUrl, BaseModel, Field, HttpUrl, root_validator, validator
+from pydantic import (
+    AnyHttpUrl,
+    BaseModel,
+    Field,
+    HttpUrl,
+    field_validator,
+    model_validator,
+    validator,
+)
 
 from ansys.simai.core.utils.misc import prompt_for_input
 
@@ -51,27 +59,35 @@ class Credentials(BaseModel, extra="forbid"):
     totp: Optional[str] = None
     "One-time password: required if :code:`totp_enabled=True`, automatically prompted."
 
-    @root_validator(pre=True)
-    def prompt(cls, values):
+    @model_validator(mode="before")
+    @classmethod
+    def prompt(cls, values, info):
         if "username" not in values:
-            values["username"] = prompt_for_input("username")
+            values["username"] = error_or_prompt(
+                interactive_mode=info.data["interactive"], name="username"
+            )
         if "password" not in values:
-            values["password"] = prompt_for_input("password", hide_input=True)
+            values["password"] = error_or_prompt(
+                interactive_mode=info.data["interactive"],
+                name="password",
+                hide_input=True,
+            )
         if values.pop("totp_enabled", False) and "totp" not in values:
-            values["totp"] = prompt_for_input("totp")
+            values["totp"] = error_or_prompt(interactive_mode=info.data["interactive"], name="totp")
         return values
 
 
 class ClientConfig(BaseModel, extra="allow"):
+    interactive: Optional[bool] = Field(default=True, description="Enable terminal interaction")
     url: HttpUrl = Field(
         default=HttpUrl("https://api.simai.ansys.com/v2/"),
         description="URL to the SimAI API.",
     )
     organization: str = Field(
-        default_factory=prompt_for_input_factory("organization"),
+        default=None,
+        validate_default=True,
         description="Name of the organization(/company) that the user belongs to.",
     )
-    interactive: Optional[bool] = Field(default=True, description="Enable terminal interaction")
     credentials: Optional[Credentials] = Field(
         default=None,
         description="Authenticate via username/password instead of the device authorization code.",
@@ -111,3 +127,10 @@ class ClientConfig(BaseModel, extra="allow"):
         if config_file_profile:
             hasher.update(config_file_profile.encode())
         return hasher.hexdigest()
+
+    @field_validator("organization", mode="before")
+    @classmethod
+    def check_organization_exists(cls, val, info):
+        if not val:
+            val = error_or_prompt(interactive_mode=info.data["interactive"], name="organization")
+        return val
