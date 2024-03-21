@@ -36,6 +36,13 @@ def prompt_for_input_factory(*args, **kwargs):
     return lambda: prompt_for_input(*args, **kwargs)
 
 
+def error_or_prompt(interactive_mode, **kwargs):
+    """Raise an error or prompt for input according to _interactive_mode."""
+    if not interactive_mode:
+        raise ValueError(f"Required field {kwargs['name']} is missing")
+    return prompt_for_input(**kwargs)
+
+
 class Credentials(BaseModel, extra="forbid"):
     username: str = ""  # dummy default, the root validator will call prompt_for_input
     "Username: Required if :code:`Credentials` is defined, automatically prompted."
