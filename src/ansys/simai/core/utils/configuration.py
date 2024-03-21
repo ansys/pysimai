@@ -45,9 +45,9 @@ def prompt_for_input_factory(*args, **kwargs):
     return lambda: prompt_for_input(*args, **kwargs)
 
 
-def prompt_if_interactive(interactive_mode, **kwargs):
+def prompt_if_interactive(interactive, **kwargs):
     """Raise an error or prompt for input according to _interactive_mode."""
-    if not interactive_mode:
+    if not interactive:
         raise PydanticCustomError(
             "conf_param_missing", f"""Missing parameter "{kwargs["name"]}" from configuration"""
         )
