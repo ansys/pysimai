@@ -34,6 +34,7 @@ from pydantic import (
     model_validator,
     validator,
 )
+from pydantic_core import PydanticCustomError
 
 from ansys.simai.core.utils.misc import prompt_for_input
 
@@ -47,7 +48,7 @@ def prompt_for_input_factory(*args, **kwargs):
 def error_or_prompt(interactive_mode, **kwargs):
     """Raise an error or prompt for input according to _interactive_mode."""
     if not interactive_mode:
-        raise ValueError(f"Required field {kwargs['name']} is missing")
+        raise PydanticCustomError("missing_param", kwargs["name"])
     return prompt_for_input(**kwargs)
 
 
