@@ -63,17 +63,17 @@ class Credentials(BaseModel, extra="forbid"):
     def prompt(cls, values, info):
         if "username" not in values:
             values["username"] = prompt_if_interactive(
-                interactive_mode=info.data["interactive"], name="username"
+                interactive=info.data["interactive"], name="username"
             )
         if "password" not in values:
             values["password"] = prompt_if_interactive(
-                interactive_mode=info.data["interactive"],
+                interactive=info.data["interactive"],
                 name="password",
                 hide_input=True,
             )
         if values.pop("totp_enabled", False) and "totp" not in values:
             values["totp"] = prompt_if_interactive(
-                interactive_mode=info.data["interactive"], name="totp"
+                interactive=info.data["interactive"], name="totp"
             )
         return values
 
@@ -93,6 +93,7 @@ class ClientConfig(BaseModel, extra="allow"):
     )
     credentials: Optional[Credentials] = Field(
         default=None,
+        validate_default=True,
         description="Authenticate via username/password instead of the device authorization code.",
     )
     workspace: Optional[str] = Field(
@@ -134,8 +135,18 @@ class ClientConfig(BaseModel, extra="allow"):
     @field_validator("organization", mode="before")
     @classmethod
     def check_organization_exists(cls, val, info):
+        """If organization is not set, either prompt the user or raise exception."""
         if not val:
-            val = prompt_if_interactive(
-                interactive_mode=info.data["interactive"], name="organization"
+            val = prompt_if_interactive(interactive=info.data["interactive"], name="organization")
+        return val
+
+    @field_validator("credentials", mode="before")
+    @classmethod
+    def creds_exist_when_non_interactive(cls, val, info):
+        """If interactive mode is OFF and credentials are not set, raise exception."""
+        if not info.data["interactive"] and not val:
+            raise PydanticCustomError(
+                "creds_missing_in_non_interactive",
+                """Credentials should exist when interactive is false""",
             )
         return val
