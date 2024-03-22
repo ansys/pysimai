@@ -35,6 +35,8 @@ class:
   :model-show-validator-summary: False
   :model-show-json: False
   :model-show-field-summary: False
+  :model-show-validator-members: False
+  :field-list-validators: False
 
 
 Credentials
@@ -43,7 +45,7 @@ Credentials
 To use the SimAI API, your :class:`~ansys.simai.core.client.SimAIClient`
 instance must be authenticated. By default, you are prompted to log in
 via your web browser. However, you can pass your credentials as parameters
-on client creation:
+on client creation in the interactive mode (see `Interactive mode`_.):
 
 .. code-block:: python
 
@@ -66,4 +68,21 @@ class:
 .. autopydantic_model:: Credentials
   :model-show-config-summary: False
   :model-show-validator-summary: False
+  :model-show-validator-members: False
   :model-show-json: False
+  :field-list-validators: False
+
+.. _Interactive mode:
+
+Interactive mode
+------------------
+
+When the property `interactive` is set to `true`, the users could enter configuration
+properties from the terminal as they get prompted.
+When the property is `false`, the interactive mode is disabled, and errors would be raised
+in case of missing configuration properties.
+Default behavior is `interactive=true`.
+
+It is important to note that credentials become required when `interactive=false`.
+This means that if the credentials are missing, the users won't be prompted to enter them
+from the terminal, and an error would be raised instead.
