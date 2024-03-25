@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import pytest
+from pydantic_core import ValidationError
 
 from ansys.simai.core.utils.configuration import ClientConfig
 
@@ -100,6 +101,27 @@ from ansys.simai.core.utils.configuration import ClientConfig
             {"organization": "12_monkeys"},
             {"organization": "12_monkeys"},
         ),
+        (
+            [],
+            None,
+            {
+                "organization": "12_monkeys",
+                "interactive": False,
+                "credentials": {
+                    "username": "timmy",
+                },
+            },
+            ValidationError,
+        ),
+        (
+            [],
+            None,
+            {
+                "interactive": False,
+                "credentials": {"username": "timmy", "password": "shakaponk"},
+            },
+            ValidationError,
+        ),
     ],
 )
 def test_get_authentication_configuration(inputs, password, config, expected_output, mocker):
@@ -109,10 +131,15 @@ def test_get_authentication_configuration(inputs, password, config, expected_out
     """
     mocker.patch("builtins.input", side_effect=inputs)
     mocker.patch("getpass.getpass", return_value=password)
-    client_config = ClientConfig(**config).dict(exclude_none=True)
-    # the config contains many fields, here we only test a subset
-    tested_fields = ["organization", "credentials"]
-    for f in list(client_config.keys()):
-        if f not in tested_fields:
-            client_config.pop(f)
-    assert client_config == expected_output
+    if type(expected_output) == type and issubclass(expected_output, Exception):
+        with pytest.raises(expected_output):
+            client_config = ClientConfig(**config)
+    else:
+        # if type(expected_output) is not PydanticCustomError:
+        client_config = ClientConfig(**config).dict(exclude_none=True)
+        # the config contains many fields, here we only test a subset
+        tested_fields = ["organization", "credentials"]
+        for f in list(client_config.keys()):
+            if f not in tested_fields:
+                client_config.pop(f)
+        assert client_config == expected_output
