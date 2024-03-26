@@ -83,6 +83,6 @@ When the property is `false`, the interactive mode is disabled, and errors would
 in case of missing configuration properties.
 Default behavior is `interactive=true`.
 
-It is important to note that credentials become required when `interactive=false`.
+It is important to note that login through web browser is disabled and credentials become required when `interactive=false`.
 This means that if the credentials are missing, the users won't be prompted to enter them
 from the terminal, and an error would be raised instead.
