@@ -150,6 +150,22 @@ from ansys.simai.core.utils.configuration import ClientConfig
             },
             {"expect_error": True, "type": ValidationError, "error_count": 1},
         ),
+        (
+            [],
+            "pass",
+            {  # sanity check; interactive is set explicitly to ON
+                "interactive": True,
+                "credentials": {"username": "timmy"},
+                "organization": "12_monkeys",
+            },
+            {
+                "credentials": {
+                    "username": "timmy",
+                    "password": "pass",
+                },
+                "organization": "12_monkeys",
+            },
+        ),
     ],
 )
 def test_get_authentication_configuration(inputs, password, config, expected_output, mocker):
