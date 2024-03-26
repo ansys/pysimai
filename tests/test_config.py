@@ -104,7 +104,7 @@ from ansys.simai.core.utils.configuration import ClientConfig
         (
             [],
             None,
-            {
+            {  # interactive mode is OFF, and password is missing from credentials
                 "organization": "12_monkeys",
                 "interactive": False,
                 "credentials": {
@@ -116,7 +116,7 @@ from ansys.simai.core.utils.configuration import ClientConfig
         (
             [],
             None,
-            {
+            {  # interactive mode is OFF, and organization is missing
                 "interactive": False,
                 "credentials": {"username": "timmy", "password": "teas"},
             },
@@ -125,7 +125,7 @@ from ansys.simai.core.utils.configuration import ClientConfig
         (
             [],
             None,
-            {
+            {  # interactive mode is OFF, and organization and password are missing
                 "interactive": False,
                 "credentials": {"username": "timmy"},
             },
@@ -134,7 +134,7 @@ from ansys.simai.core.utils.configuration import ClientConfig
         (
             [],
             None,
-            {
+            {  # interactive mode is OFF, and organization and password are missing, and url is not valid
                 "url": "123",
                 "interactive": False,
                 "credentials": {"username": "timmy"},
@@ -144,7 +144,7 @@ from ansys.simai.core.utils.configuration import ClientConfig
         (
             [],
             None,
-            {
+            {  # interactive mode is ON, and credentials are missing
                 "organization": "12_monkeys",
                 "interactive": False,
             },
@@ -160,12 +160,11 @@ def test_get_authentication_configuration(inputs, password, config, expected_out
     mocker.patch("builtins.input", side_effect=inputs)
     mocker.patch("getpass.getpass", return_value=password)
     if expected_output.get("expect_error", None):
-        # if type(expected_output) == type and issubclass(expected_output, Exception):
+        # if an error is expected, catch the exception type and assert the error count
         with pytest.raises(expected_output.get("type")) as ex:
             client_config = ClientConfig(**config)
         assert ex.value.error_count() == expected_output.get("error_count")
     else:
-        # if type(expected_output) is not PydanticCustomError:
         client_config = ClientConfig(**config).dict(exclude_none=True)
         # the config contains many fields, here we only test a subset
         tested_fields = ["organization", "credentials"]
