@@ -77,8 +77,8 @@ class:
 Interactive mode
 ------------------
 
-When the property `interactive` is set to `true`, the users could enter configuration
-properties from the terminal as they get prompted.
+When the property `interactive` is set to `true`, the users will be prompted for the missing configuration
+properties.
 When the property is `false`, the interactive mode is disabled, and errors would be raised
 in case of missing configuration properties.
 Default behavior is `interactive=true`.
