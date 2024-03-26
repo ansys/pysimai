@@ -111,16 +111,44 @@ from ansys.simai.core.utils.configuration import ClientConfig
                     "username": "timmy",
                 },
             },
-            ValidationError,
+            {"expect_error": True, "type": ValidationError, "error_count": 1},
         ),
         (
             [],
             None,
             {
                 "interactive": False,
-                "credentials": {"username": "timmy", "password": "shakaponk"},
+                "credentials": {"username": "timmy", "password": "teas"},
             },
-            ValidationError,
+            {"expect_error": True, "type": ValidationError, "error_count": 1},
+        ),
+        (
+            [],
+            None,
+            {
+                "interactive": False,
+                "credentials": {"username": "timmy"},
+            },
+            {"expect_error": True, "type": ValidationError, "error_count": 2},
+        ),
+        (
+            [],
+            None,
+            {
+                "url": "123",
+                "interactive": False,
+                "credentials": {"username": "timmy"},
+            },
+            {"expect_error": True, "type": ValidationError, "error_count": 3},
+        ),
+        (
+            [],
+            None,
+            {
+                "organization": "12_monkeys",
+                "interactive": False,
+            },
+            {"expect_error": True, "type": ValidationError, "error_count": 1},
         ),
     ],
 )
@@ -131,9 +159,11 @@ def test_get_authentication_configuration(inputs, password, config, expected_out
     """
     mocker.patch("builtins.input", side_effect=inputs)
     mocker.patch("getpass.getpass", return_value=password)
-    if type(expected_output) == type and issubclass(expected_output, Exception):
-        with pytest.raises(expected_output):
+    if expected_output.get("expect_error", None):
+        # if type(expected_output) == type and issubclass(expected_output, Exception):
+        with pytest.raises(expected_output.get("type")) as ex:
             client_config = ClientConfig(**config)
+        assert ex.value.error_count() == expected_output.get("error_count")
     else:
         # if type(expected_output) is not PydanticCustomError:
         client_config = ClientConfig(**config).dict(exclude_none=True)
