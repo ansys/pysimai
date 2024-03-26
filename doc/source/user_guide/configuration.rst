@@ -45,7 +45,7 @@ Credentials
 To use the SimAI API, your :class:`~ansys.simai.core.client.SimAIClient`
 instance must be authenticated. By default, you are prompted to log in
 via your web browser. However, you can pass your credentials as parameters
-on client creation in the interactive mode (see `Interactive mode`_.):
+on client creation:
 
 .. code-block:: python
 
