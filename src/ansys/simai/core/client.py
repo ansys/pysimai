@@ -23,6 +23,7 @@
 import logging
 from typing import List, Optional
 
+from pydantic import ValidationError
 from semver.version import Version
 
 from ansys.simai.core import __version__
@@ -68,7 +69,10 @@ class SimAIClient:
 
     @steal_kwargs_type(ClientConfig)
     def __init__(self, **kwargs):
-        config = ClientConfig(**kwargs)
+        try:
+            config = ClientConfig(**kwargs)
+        except ValidationError as pydandic_exc:
+            raise InvalidConfigurationError(pydandic_exc) from None
 
         api_client_class = getattr(config, "_api_client_class_override", ApiClient)
         self._api = api_client_class(simai_client=self, config=config)
