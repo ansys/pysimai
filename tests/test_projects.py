@@ -22,9 +22,11 @@
 
 from typing import TYPE_CHECKING
 
+import pytest
 import responses
 
 from ansys.simai.core.data.training_data import TrainingData
+from ansys.simai.core.errors import ApiClientError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
@@ -97,3 +99,30 @@ def test_project_sample(simai_client):
     project.sample = raw_td["id"]
     assert isinstance(project.sample, TrainingData)
     assert project.sample.id == raw_td["id"]
+
+
+@responses.activate
+@pytest.mark.parametrize(
+    "trainable_url,status_code, expected_output",
+    [
+        ("https://test.test/projects/xxxxxxx/trainable", 200, {"value": True}),
+        (
+            "https://test.test/projects/xxxxxxx/trainable",
+            400,
+            {"expect_error": True, "type": ApiClientError},
+        ),
+    ],
+)
+def test_is_trainable(simai_client, trainable_url, status_code, expected_output):
+    """Test if the response is 200 it returns True, otherwise it raises error."""
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    responses.add(responses.GET, trainable_url.replace("xxxxxxx", project.id), status=status_code)
+
+    if expected_output.get("expect_error", None):
+        with pytest.raises(expected_output.get("type")):
+            project.is_trainable()
+    else:
+        assert project.is_trainable() is expected_output.get("value")
