@@ -77,6 +77,10 @@ class Project(DataModel):
         """Delete the project."""
         self._client._api.delete_project(self.id)
 
+    def is_trainable(self) -> bool:
+        """Check if the project meets the prerequisites to be trained."""
+        return self._client._api.is_project_trainable(self.id).status_code == 200
+
 
 class ProjectDirectory(Directory[Project]):
     """Provides a collection of methods related to projects.
