@@ -103,23 +103,24 @@ def test_project_sample(simai_client):
 
 @responses.activate
 @pytest.mark.parametrize(
-    "trainable_url,status_code, expected_output",
+    "status_code,expected_output",
     [
-        ("https://test.test/projects/xxxxxxx/trainable", 200, {"value": True}),
+        (200, {"value": True}),
         (
-            "https://test.test/projects/xxxxxxx/trainable",
             400,
             {"expect_error": True, "type": ApiClientError},
         ),
     ],
 )
-def test_is_trainable(simai_client, trainable_url, status_code, expected_output):
-    """Test if the response is 200 it returns True, otherwise it raises error."""
+def test_is_trainable(simai_client, status_code, expected_output):
+    """If the response is 200 should return True, otherwise it raises error."""
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
-    responses.add(responses.GET, trainable_url.replace("xxxxxxx", project.id), status=status_code)
+    responses.add(
+        responses.GET, f"https://test.test/projects/{project.id}/trainable", status=status_code
+    )
 
     if expected_output.get("expect_error", None):
         with pytest.raises(expected_output.get("type")):
