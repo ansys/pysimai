@@ -81,6 +81,14 @@ class Project(DataModel):
         """Check if the project meets the prerequisites to be trained."""
         return self._client._api.is_project_trainable(self.id).status_code == 200
 
+    def get_variables(self) -> dict:
+        """Get the available variables for the model's input/output."""
+        variables = self.sample.fields.get("extracted_metadata")
+        data = {}
+        for key in variables:
+            data |= {key: [var.get("name") for var in variables.get(key).get("fields")]}
+        return data
+
 
 class ProjectDirectory(Directory[Project]):
     """Provides a collection of methods related to projects.
