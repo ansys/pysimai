@@ -30,6 +30,7 @@ from ansys.simai.core.data.types import (
     NamedFile,
     Path,
     get_id_from_identifiable,
+    get_object_from_identifiable,
     unpack_named_file,
 )
 from ansys.simai.core.errors import InvalidArguments
@@ -75,7 +76,7 @@ class TrainingData(ComputableDataModel):
             for training_data_part in self.fields["parts"]
         ]
 
-    def get_subset(self) -> Optional[str]:
+    def get_subset(self, project: Identifiable["Project"]) -> Optional[str]:
         """Get the subset that the training data belongs to, in relation to the given project.
 
         Args:
@@ -85,7 +86,11 @@ class TrainingData(ComputableDataModel):
         Returns:
             Name of the subset that the training data belongs to in the given project.
         """
-        return self._fields["subset"]
+        project_model = get_object_from_identifiable(
+            project, self._client.projects, default=self._client.current_project
+        )
+        if project_model._fields["id"] == self._fields["project"].id:
+            return self._fields["subset"]
 
     @property
     def extracted_metadata(self) -> Optional[Dict]:
