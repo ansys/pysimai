@@ -78,3 +78,22 @@ def test_training_data_remove_from_project(simai_client, training_data_factory, 
         status=204,
     )
     td.remove_from_project(project)
+
+
+@responses.activate
+def test_get_subset(simai_client, training_data_factory, project_factory):
+    project = project_factory(id="e45y", name="coolest_proj")
+    td1: TrainingData = training_data_factory(
+        project=project, id="777", name="ICBM", subset="Training"
+    )
+    td2: TrainingData = training_data_factory(
+        project=project, id="888", name="Duke Nukem", subset="Validation"
+    )
+    td3: TrainingData = training_data_factory(
+        project=project, id="999", name="Roman", subset="Test"
+    )
+    simai_client.current_project = project
+
+    assert td1.get_subset(project=project) == "Training"
+    assert td2.get_subset(project=project) == "Validation"
+    assert td3.get_subset(project=project) == "Test"
