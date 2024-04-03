@@ -68,4 +68,4 @@ class ProjectClientMixin(ApiClientMixin):
         self._delete(f"projects/{project_id}", return_json=False)
 
     def is_project_trainable(self, project_id: str):
-        return self._get(f"projects/{project_id}/trainable", return_json=False)
+        return self._get(f"projects/{project_id}/trainable")
