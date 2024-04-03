@@ -51,9 +51,9 @@ def prompt_if_interactive(interactive, **kwargs):
 
 
 class Credentials(BaseModel, extra="forbid"):
-    username: str  # dummy default, the root validator will call prompt_for_input
+    username: str  # the root validator will call prompt_for_input
     "Username: Required if :code:`Credentials` is defined, automatically prompted."
-    password: str  # dummy default, like above
+    password: str  # like above
     "Password: Required if :code:`Credentials` is defined, automatically prompted."
     totp: Optional[str] = None
     "One-time password: required if :code:`totp_enabled=True`, automatically prompted."
