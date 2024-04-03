@@ -30,6 +30,7 @@ from pydantic import (
     BaseModel,
     Field,
     HttpUrl,
+    ValidationInfo,
     field_validator,
     model_validator,
     validator,
@@ -51,11 +52,11 @@ def prompt_if_interactive(interactive, **kwargs):
 
 
 class Credentials(BaseModel, extra="forbid"):
-    username: str  # the root validator will call prompt_for_input
+    username: str  # the model validator will call prompt_for_interactive when interactive is on
     "Username: Required if :code:`Credentials` is defined, automatically prompted."
     password: str  # like above
     "Password: Required if :code:`Credentials` is defined, automatically prompted."
-    totp: Optional[str] = None
+    totp: Optional[str] = None  # like the above
     "One-time password: required if :code:`totp_enabled=True`, automatically prompted."
 
     @model_validator(mode="before")
@@ -134,7 +135,7 @@ class ClientConfig(BaseModel, extra="allow"):
 
     @field_validator("organization", mode="before")
     @classmethod
-    def check_organization_exists(cls, val, info):
+    def check_organization_exists(cls, val, info: ValidationInfo):
         """If organization is not set, either prompt the user or raise exception."""
         if not val:
             val = prompt_if_interactive(interactive=info.data["interactive"], name="organization")
@@ -142,7 +143,7 @@ class ClientConfig(BaseModel, extra="allow"):
 
     @field_validator("credentials", mode="before")
     @classmethod
-    def creds_exist_when_non_interactive(cls, val, info):
+    def creds_exist_when_non_interactive(cls, val, info: ValidationInfo):
         """If interactive mode is OFF and credentials are not set, raise exception."""
         if not info.data["interactive"] and not val:
             raise PydanticCustomError(
