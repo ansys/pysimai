@@ -89,7 +89,7 @@ class TrainingData(ComputableDataModel):
         project_model = get_object_from_identifiable(
             project, self._client.projects, default=self._client.current_project
         )
-        if project_model._fields["id"] == self._fields["project"].id:
+        if self._fields.get("subset") and project_model._fields["id"] == self._fields["project"].id:
             return self._fields["subset"]
 
     @property
