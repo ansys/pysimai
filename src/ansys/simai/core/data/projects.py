@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
@@ -28,6 +28,35 @@ from ansys.simai.core.errors import InvalidArguments
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.training_data import TrainingData
+
+
+class IsTrainableInfo(NamedTuple):
+    """Properties for project's trainability.
+
+    The objects of this class are associated with the output of the
+    evaluation, so that it returns a boolean variable according to
+    trainability of the project:
+
+    Example:
+        Verify the project is trainable::
+            pt = my_project.is_trainable()
+
+            if pt:
+                print(pt)
+
+       It prints:
+             <is_trainable: False, reason(s): Not enough data to train a model: we need at least 3 data points to train a model.>
+
+    """
+
+    is_trainable: bool
+    reason: str = None
+
+    def __bool__(self) -> bool:
+        return self.is_trainable
+
+    def __repr__(self) -> str:
+        return f"<is_trainable: {self.is_trainable}, reason(s): {self.reason}>"
 
 
 class Project(DataModel):
@@ -79,7 +108,8 @@ class Project(DataModel):
 
     def is_trainable(self) -> bool:
         """Check if the project meets the prerequisites to be trained."""
-        return self._client._api.is_project_trainable(self.id).status_code == 200
+        tt = self._client._api.is_project_trainable(self.id)
+        return IsTrainableInfo(**tt)
 
     def get_variables(self) -> dict:
         """Get the available variables for the model's input/output."""

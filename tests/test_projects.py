@@ -103,27 +103,31 @@ def test_project_sample(simai_client):
 
 @responses.activate
 @pytest.mark.parametrize(
-    "status_code,expected_output",
+    "status_code,response_body,error_type",
     [
-        (200, {"value": True}),
-        (
-            400,
-            {"expect_error": True, "type": ApiClientError},
-        ),
+        (200, {"is_trainable": True}, None),
+        (200, {"is_trainable": False, "reason": "a reason why it fails"}, None),
+        (400, None, ApiClientError),
     ],
 )
-def test_is_trainable(simai_client, status_code, expected_output):
-    """If the response is 200 should return True, otherwise it raises error."""
+def test_is_trainable(simai_client, status_code, response_body, error_type):
+    """Test is_trainable method according to is_trainable parameter and the response status code."""
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
     responses.add(
-        responses.GET, f"https://test.test/projects/{project.id}/trainable", status=status_code
+        responses.GET,
+        f"https://test.test/projects/{project.id}/trainable",
+        status=status_code,
+        json=response_body,
     )
 
-    if expected_output.get("expect_error", None):
-        with pytest.raises(expected_output.get("type")):
-            project.is_trainable()
+    if status_code == 200:
+        pt = project.is_trainable()
+
+        assert bool(pt) is response_body.get("is_trainable")
+        assert pt.reason == response_body.get("reason")
     else:
-        assert project.is_trainable() is expected_output.get("value")
+        with pytest.raises(error_type):
+            project.is_trainable()
