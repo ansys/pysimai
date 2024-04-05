@@ -25,47 +25,76 @@ import logging
 from typing import Optional
 from urllib.parse import urlparse, urlunparse
 
-from pydantic import AnyHttpUrl, BaseModel, Field, HttpUrl, root_validator, validator
+from pydantic import (
+    AnyHttpUrl,
+    BaseModel,
+    Field,
+    HttpUrl,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+    validator,
+)
+from pydantic_core import PydanticCustomError
 
 from ansys.simai.core.utils.misc import prompt_for_input
 
 logger = logging.getLogger(__name__)
 
 
-def prompt_for_input_factory(*args, **kwargs):
-    return lambda: prompt_for_input(*args, **kwargs)
+def prompt_if_interactive(interactive, **kwargs):
+    """Raise an error or prompt for input according to _interactive_mode."""
+    if not interactive:
+        raise PydanticCustomError(
+            "conf_param_missing", f"""Missing parameter "{kwargs["name"]}" from configuration"""
+        )
+    return prompt_for_input(**kwargs)
 
 
 class Credentials(BaseModel, extra="forbid"):
-    username: str = ""  # dummy default, the root validator will call prompt_for_input
+    username: str  # the model validator will call prompt_for_interactive when interactive is on
     "Username: Required if :code:`Credentials` is defined, automatically prompted."
-    password: str = ""  # dummy default, like above
+    password: str  # like above
     "Password: Required if :code:`Credentials` is defined, automatically prompted."
-    totp: Optional[str] = None
+    totp: Optional[str] = None  # like the above
     "One-time password: required if :code:`totp_enabled=True`, automatically prompted."
 
-    @root_validator(pre=True)
-    def prompt(cls, values):
+    @model_validator(mode="before")
+    @classmethod
+    def prompt(cls, values, info):
         if "username" not in values:
-            values["username"] = prompt_for_input("username")
+            values["username"] = prompt_if_interactive(
+                interactive=info.data["interactive"], name="username"
+            )
         if "password" not in values:
-            values["password"] = prompt_for_input("password", hide_input=True)
+            values["password"] = prompt_if_interactive(
+                interactive=info.data["interactive"],
+                name="password",
+                hide_input=True,
+            )
         if values.pop("totp_enabled", False) and "totp" not in values:
-            values["totp"] = prompt_for_input("totp")
+            values["totp"] = prompt_if_interactive(
+                interactive=info.data["interactive"], name="totp"
+            )
         return values
 
 
 class ClientConfig(BaseModel, extra="allow"):
+    interactive: Optional[bool] = Field(
+        default=True, description="If True, it enables interaction with the terminal."
+    )
     url: HttpUrl = Field(
         default=HttpUrl("https://api.simai.ansys.com/v2/"),
         description="URL to the SimAI API.",
     )
     organization: str = Field(
-        default_factory=prompt_for_input_factory("organization"),
+        default=None,
+        validate_default=True,
         description="Name of the organization(/company) that the user belongs to.",
     )
     credentials: Optional[Credentials] = Field(
         default=None,
+        validate_default=True,
         description="Authenticate via username/password instead of the device authorization code.",
     )
     workspace: Optional[str] = Field(
@@ -103,3 +132,22 @@ class ClientConfig(BaseModel, extra="allow"):
         if config_file_profile:
             hasher.update(config_file_profile.encode())
         return hasher.hexdigest()
+
+    @field_validator("organization", mode="before")
+    @classmethod
+    def check_organization_exists(cls, val, info: ValidationInfo):
+        """If organization is not set, either prompt the user or raise exception."""
+        if not val:
+            val = prompt_if_interactive(interactive=info.data["interactive"], name="organization")
+        return val
+
+    @field_validator("credentials", mode="before")
+    @classmethod
+    def creds_exist_when_non_interactive(cls, val, info: ValidationInfo):
+        """If interactive mode is OFF and credentials are not set, raise exception."""
+        if not info.data["interactive"] and not val:
+            raise PydanticCustomError(
+                "creds_missing_in_non_interactive",
+                """Credentials should exist when interactive is false""",
+            )
+        return val

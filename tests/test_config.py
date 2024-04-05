@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import pytest
+from pydantic_core import ValidationError
 
 from ansys.simai.core.utils.configuration import ClientConfig
 
@@ -100,6 +101,71 @@ from ansys.simai.core.utils.configuration import ClientConfig
             {"organization": "12_monkeys"},
             {"organization": "12_monkeys"},
         ),
+        (
+            [],
+            None,
+            {  # interactive mode is OFF, and password is missing from credentials
+                "organization": "12_monkeys",
+                "interactive": False,
+                "credentials": {
+                    "username": "timmy",
+                },
+            },
+            {"expect_error": True, "type": ValidationError, "error_count": 1},
+        ),
+        (
+            [],
+            None,
+            {  # interactive mode is OFF, and organization is missing
+                "interactive": False,
+                "credentials": {"username": "timmy", "password": "teas"},
+            },
+            {"expect_error": True, "type": ValidationError, "error_count": 1},
+        ),
+        (
+            [],
+            None,
+            {  # interactive mode is OFF, and organization and password are missing
+                "interactive": False,
+                "credentials": {"username": "timmy"},
+            },
+            {"expect_error": True, "type": ValidationError, "error_count": 2},
+        ),
+        (
+            [],
+            None,
+            {  # interactive mode is OFF, and organization and password are missing, and url is not valid
+                "url": "123",
+                "interactive": False,
+                "credentials": {"username": "timmy"},
+            },
+            {"expect_error": True, "type": ValidationError, "error_count": 3},
+        ),
+        (
+            [],
+            None,
+            {  # interactive mode is ON, and credentials are missing
+                "organization": "12_monkeys",
+                "interactive": False,
+            },
+            {"expect_error": True, "type": ValidationError, "error_count": 1},
+        ),
+        (
+            [],
+            "pass",
+            {  # sanity check; interactive is set explicitly to ON
+                "interactive": True,
+                "credentials": {"username": "timmy"},
+                "organization": "12_monkeys",
+            },
+            {
+                "credentials": {
+                    "username": "timmy",
+                    "password": "pass",
+                },
+                "organization": "12_monkeys",
+            },
+        ),
     ],
 )
 def test_get_authentication_configuration(inputs, password, config, expected_output, mocker):
@@ -109,10 +175,16 @@ def test_get_authentication_configuration(inputs, password, config, expected_out
     """
     mocker.patch("builtins.input", side_effect=inputs)
     mocker.patch("getpass.getpass", return_value=password)
-    client_config = ClientConfig(**config).dict(exclude_none=True)
-    # the config contains many fields, here we only test a subset
-    tested_fields = ["organization", "credentials"]
-    for f in list(client_config.keys()):
-        if f not in tested_fields:
-            client_config.pop(f)
-    assert client_config == expected_output
+    if expected_output.get("expect_error", None):
+        # if an error is expected, catch the exception type and assert the error count
+        with pytest.raises(expected_output.get("type")) as ex:
+            client_config = ClientConfig(**config)
+        assert ex.value.error_count() == expected_output.get("error_count")
+    else:
+        client_config = ClientConfig(**config).dict(exclude_none=True)
+        # the config contains many fields, here we only test a subset
+        tested_fields = ["organization", "credentials"]
+        for f in list(client_config.keys()):
+            if f not in tested_fields:
+                client_config.pop(f)
+        assert client_config == expected_output
