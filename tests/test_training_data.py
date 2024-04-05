@@ -82,32 +82,24 @@ def test_training_data_remove_from_project(simai_client, training_data_factory, 
 
 
 @pytest.mark.parametrize(
-    "td_factory_args, td_subset",
+    "td_factory_args",
     [
-        ({"id": "777", "name": "ICBM", "subset": "Training"}, "Training"),
-        ({"id": "888", "name": "Duke Nukem", "subset": ""}, None),
-        ({"id": "999", "name": "Roman"}, None),
+        ({"id": "777", "name": "ICBM", "subset": "Training"}),
+        ({"id": "888", "name": "Duke Nukem", "subset": ""}),
+        ({"id": "999", "name": "Roman"}),
     ],
 )
 @responses.activate
-def test_subset_with_project(
-    simai_client, training_data_factory, project_factory, td_factory_args, td_subset
-):
+def test_get_subset(training_data_factory, project_factory, td_factory_args):
     project = project_factory(id="e45y", name="coolest_proj")
+    td_subset = td_factory_args.get("subset")
     td_factory_args["project"] = project
     td: TrainingData = training_data_factory(**td_factory_args)
 
-    simai_client.current_project = project
-    assert td.get_subset(project=project) == td_subset
-
-
-@responses.activate
-def test_subset_without_project(training_data_factory):
-    td: TrainingData = training_data_factory(
-        id="8118",
-        name="Suez",
-        subset="Test",
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{project.id}/data/{td.id}/subset",
+        status=200,
+        json={"subset": td_subset},
     )
-    with pytest.raises(Exception) as e:
-        td.get_subset(project="fake_proj")
-    assert str(e.value) == "Current project is not set."
+    assert td.get_subset(project=project) == td_subset
