@@ -73,6 +73,11 @@ class Project(DataModel):
         self._client._api.set_project_sample(self.id, td_id)
         self.reload()
 
+    @property
+    def last_model_configuration(self):
+        """The last configuration that was used for training a model in this project."""
+        return self.fields.get("last_model_configuration")
+
     def delete(self) -> None:
         """Delete the project."""
         self._client._api.delete_project(self.id)
