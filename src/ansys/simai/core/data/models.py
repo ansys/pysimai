@@ -27,7 +27,7 @@ from ansys.simai.core.data.base import ComputableDataModel, Directory
 
 
 @dataclass
-class BuildConfiguration:
+class ModelConfiguration:
     """Build configuration."""
 
     boundary_conditions: Dict[str, Any] = None
@@ -46,9 +46,9 @@ class Model(ComputableDataModel):
         return f"<Model: {self.id}>"
 
     @property
-    def configuration(self):
+    def configuration(self) -> ModelConfiguration:
         """The build configuration of model."""
-        return BuildConfiguration(**self.fields["configuration"])
+        return ModelConfiguration(**self.fields["configuration"])
 
 
 class ModelDirectory(Directory[Model]):
@@ -56,22 +56,39 @@ class ModelDirectory(Directory[Model]):
 
     _data_model = Model
 
-    def get(self, project_id: str) -> Model:
-        """Get a model by project ID.
+    def get(self, model_id: str) -> Model:
+        """[Do not use] Get a model by project ID.
 
         Args:
-            project_id: ID of the project.
+            model_id: ID of the project.
         """
 
-        return self._model_from(self._client._api.get_model(project_id))
+        raise NotImplementedError("The method 'get' of the class Model is not implemented yet.")
 
     def build(
         self,
-        configuration: BuildConfiguration,
+        configuration: ModelConfiguration,
         dismiss_data_with_fields_discrepancies: bool = False,
         dismiss_data_with_volume_overflow: bool = False,
     ):
-        """Launches a build given a configuration."""
+        """Launches a build given a configuration.
+
+        Args:
+            configuration: a ModelConfiguration object that contains the properties to be used in the build
+            dismiss_data_with_fields_discrepancies: set to True for omitting training data with missing properties
+            dismiss_data_with_volume_overflow: set to True to
+
+        Example:
+            Use a previous configuration for a new build
+            .. code-block:: python
+
+                a_project = simai.projects.get("project_A")
+
+                build_conf = a_project.last_model_configuration
+
+                new_model = simai.models.build(build_conf)
+
+        """
         build_conf = asdict(configuration)
         project_id = build_conf.pop("project_id")
         return self._model_from(
