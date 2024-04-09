@@ -28,7 +28,7 @@ from ansys.simai.core.data.base import ComputableDataModel, Directory
 
 @dataclass
 class ModelConfiguration:
-    """Build configuration."""
+    """The configuration for building a model."""
 
     boundary_conditions: Dict[str, Any] = None
     build_preset: str = None
@@ -52,7 +52,7 @@ class Model(ComputableDataModel):
 
 
 class ModelDirectory(Directory[Model]):
-    """Provides a collection of methods related to training models."""
+    """Provides a collection of methods related to building models."""
 
     _data_model = Model
 
@@ -80,6 +80,7 @@ class ModelDirectory(Directory[Model]):
 
         Example:
             Use a previous configuration for a new build
+
             .. code-block:: python
 
                 a_project = simai.projects.get("project_A")
