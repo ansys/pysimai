@@ -66,3 +66,19 @@ class ProjectClientMixin(ApiClientMixin):
 
     def delete_project(self, project_id: str):
         self._delete(f"projects/{project_id}", return_json=False)
+
+    def launch_build(
+        self,
+        project_id: str,
+        build_config: Dict[str, Any],
+        dismiss_data_with_fields_discrepancie: bool = False,
+        dismiss_data_with_volume_overflow: bool = False,
+    ):
+        params = {
+            "dismiss_data_with_fields_discrepancies": dismiss_data_with_fields_discrepancie,
+            "dismiss_data_with_volume_overflow": dismiss_data_with_volume_overflow,
+        }
+        return self._post(f"projects/{project_id}/model", json=build_config, params=params)
+
+    def get_model(self, project_id: str):
+        return self._get(f"projects/{project_id}/model")

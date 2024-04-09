@@ -23,6 +23,7 @@
 from typing import TYPE_CHECKING, List, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
+from ansys.simai.core.data.models import BuildConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments
 
@@ -76,7 +77,7 @@ class Project(DataModel):
     @property
     def last_model_configuration(self):
         """The last configuration that was used for training a model in this project."""
-        return self.fields.get("last_model_configuration")
+        return BuildConfiguration(project_id=self.id, **self.fields.get("last_model_configuration"))
 
     def delete(self) -> None:
         """Delete the project."""
