@@ -33,19 +33,28 @@ if TYPE_CHECKING:
 class IsTrainableInfo(NamedTuple):
     """Properties for project's trainability.
 
-    The objects of this class are associated with the output of the
-    evaluation, so that it returns a boolean variable according to
-    trainability of the project:
+    The objects of this class can be used as booleans
+    in condition statements as in the example:
 
     Example:
-        Verify the project is trainable::
+        Verify the project is trainable
+
+        .. code-block:: python
+
             pt = my_project.is_trainable()
 
             if pt:
                 print(pt)
 
-       It prints:
-             <is_trainable: False, reason(s): Not enough data to train a model: we need at least 3 data points to train a model.>
+        It prints:
+
+        .. code-block:: shell
+
+            <is_trainable: False, reason(s): Not enough data to train a model: we need at least 3 data points to train a model.>
+
+    Attributes:
+        is_trainable (bool):    True if the project is trainable, False if it is not.
+        reason (str):           If not_trainable is False, the reason why the project is not trainable. None otherwise.
 
     """
 
