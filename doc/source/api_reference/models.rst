@@ -8,7 +8,7 @@ Build a Model
 A collection for classes for building a SimAI model.
 Launching a build requires a configuration
 (:py:class:`ModelConfiguration<ansys.simai.core.data.models.ModelConfiguration>`)
-with defines the model  properties, such as its inputs and outputs,
+which defines the model properties, such as its inputs and outputs,
 the Global Coefficients and the Domain of Analysis, and its project id. The
 :py:class:`ModelConfiguration<ansys.simai.core.data.models.ModelConfiguration>`
 object is, then, parsed to :py:meth:`models.build()<ModelDirectory.build>` for
