@@ -79,8 +79,8 @@ class ProjectClientMixin(ApiClientMixin):
         Args:
             project_id: the ID of the project
             config: the build configuration
-            dismiss_data_with_fields_discrepancies: set to True for omitting training data with missing properties
-            dismiss_data_with_volume_overflow: set to True to
+            dismiss_data_with_fields_discrepancies: set to True for omitting data with missing properties
+            dismiss_data_with_volume_overflow: set to True for omitting data outside the Domain of Analysis
 
         """
         params = {

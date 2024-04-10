@@ -46,9 +46,14 @@ class Model(ComputableDataModel):
         return f"<Model: {self.id}>"
 
     @property
+    def project_id(self) -> str:
+        """The ID of the model's project."""
+        return self.fields["project_id"]
+
+    @property
     def configuration(self) -> ModelConfiguration:
         """The build configuration of model."""
-        return ModelConfiguration(**self.fields["configuration"])
+        return ModelConfiguration(project_id=self.project_id, **self.fields["configuration"])
 
 
 class ModelDirectory(Directory[Model]):
@@ -75,8 +80,8 @@ class ModelDirectory(Directory[Model]):
 
         Args:
             configuration: a ModelConfiguration object that contains the properties to be used in the build
-            dismiss_data_with_fields_discrepancies: set to True for omitting training data with missing properties
-            dismiss_data_with_volume_overflow: set to True to
+            dismiss_data_with_fields_discrepancies: set to True for omitting data with missing properties
+            dismiss_data_with_volume_overflow: set to True for omitting data outside the Domain of Analysis
 
         Example:
             Use a previous configuration for a new build
