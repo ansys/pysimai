@@ -122,10 +122,14 @@ class Project(DataModel):
 
     def get_variables(self) -> dict:
         """Get the available variables for the model's input/output."""
-        variables = self.sample.fields.get("extracted_metadata")
+        if not self.sample:
+            return None
+
+        sample_metadata = self.sample.fields.get("extracted_metadata")
         data = {}
-        for key in variables:
-            data |= {key: [var.get("name") for var in variables.get(key).get("fields")]}
+        for key, vals in sample_metadata.items():
+            local_fields = vals.get("fields", [])
+            data[key] = [local_field.get("name") for local_field in local_fields]
         return data
 
 

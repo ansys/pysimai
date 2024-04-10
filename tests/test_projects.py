@@ -131,3 +131,82 @@ def test_is_trainable(simai_client, status_code, response_body, error_type):
     else:
         with pytest.raises(error_type):
             project.is_trainable()
+
+
+########## Variables for testing get_variables ##########
+METADATA_RAW = {
+    "boundary_conditions": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "name": "Vx",
+                "unit": None,
+                "value": -5.569587230682373,
+            }
+        ]
+    },
+    "surface": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "TurbulentViscosity",
+                "unit": None,
+            },
+        ]
+    },
+    "volume": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            }
+        ]
+    },
+}
+
+VARS_OUT = {
+    "boundary_conditions": ["Vx"],
+    "surface": ["Pressure", "TurbulentViscosity"],
+    "volume": ["Pressure"],
+}
+
+SAMPLE_RAW = {
+    "extracted_metadata": METADATA_RAW,
+    "id": "DarkKnight",
+    "is_complete": True,
+    "is_deletable": True,
+    "is_in_a_project_being_trained": False,
+    "is_sample_of_a_project": True,
+    "luggage_version": "52.2.2",
+}
+
+
+@pytest.mark.parametrize(
+    "in_sample,vars_out",
+    [
+        (None, None),
+        (SAMPLE_RAW, VARS_OUT),
+    ],
+)
+def test_get_variables(simai_client, in_sample, vars_out):
+    """WHEN sample exists
+    THEN the output is the names of the available variables"""
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": in_sample}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    var_pool = project.get_variables()
+    assert var_pool == vars_out
