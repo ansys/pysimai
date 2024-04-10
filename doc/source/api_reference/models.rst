@@ -1,12 +1,12 @@
 .. _models:
 
-Build Model
+Build a Model
 ==============
 
 .. py:module:: ansys.simai.core.data.models
 
-A collection for classes for launching a build of a SimAI model.
-Launing a build requires a configuration
+A collection for classes for building a SimAI model.
+Launching a build requires a configuration
 (:py:class:`ModelConfiguration<ansys.simai.core.data.models.ModelConfiguration>`)
 with defines the model  properties, such as its inputs and outputs,
 the Global Coefficients and the Domain of Analysis, and its project id. The
