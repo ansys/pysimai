@@ -113,7 +113,7 @@ MODEL_RAW = {
 
 
 @responses.activate
-def test_launch_build(simai_client):
+def test_build(simai_client):
     """WHEN I call launch_build() with a ModelConfiguration
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
