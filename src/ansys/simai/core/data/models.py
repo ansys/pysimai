@@ -47,7 +47,7 @@ class Model(ComputableDataModel):
 
     @property
     def project_id(self) -> str:
-        """The ID of the model's project."""
+        """The ID of the project where the model exists."""
         return self.fields["project_id"]
 
     @property
@@ -84,13 +84,28 @@ class ModelDirectory(Directory[Model]):
             dismiss_data_with_volume_overflow: set to True for omitting data outside the Domain of Analysis
 
         Example:
-            Use a previous configuration for a new build
+            Use a previous configuration for a new build in the same project
 
             .. code-block:: python
 
                 a_project = simai.projects.get("project_A")
 
                 build_conf = a_project.last_model_configuration
+
+                new_model = simai.models.build(build_conf)
+
+            Use a previous configuration for a new build in another project
+
+            .. code-block:: python
+
+                a_project = simai.projects.get("project_A")
+
+                build_conf = a_project.last_model_configuration
+
+                b_project = simai.projects.get("project_B")
+
+                # set the id of b_project as the project_id of the configuration
+                builf_conf.project_id = b_project.id
 
                 new_model = simai.models.build(build_conf)
 
