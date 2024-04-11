@@ -27,6 +27,14 @@ from ansys.simai.core.data.base import ComputableDataModel, Directory
 
 
 @dataclass
+class ModelInput:
+    """Input model."""
+
+    surface: List[str]
+    boundary_conditions: List[str]
+
+
+@dataclass
 class ModelConfiguration:
     """The configuration for building a model."""
 
@@ -37,6 +45,7 @@ class ModelConfiguration:
     global_coefficients: List[Dict[str, Any]] = None
     simulation_volume: Dict[str, Any] = None
     project_id: str = None
+    model_input: ModelInput = None
 
 
 class Model(ComputableDataModel):
