@@ -28,10 +28,19 @@ from ansys.simai.core.data.base import ComputableDataModel, Directory
 
 @dataclass
 class ModelInput:
-    """Input model."""
+    """The inputs of a model."""
 
-    surface: List[str]
-    boundary_conditions: List[str]
+    surface: List[str] = None
+    boundary_conditions: List[str] = None
+
+
+@dataclass
+class ModelOutput:
+    """The outputs of a model."""
+
+    surface: List[str] = None
+    volume: List[str] = None
+    global_coefficients: List[str] = None
 
 
 @dataclass
@@ -46,6 +55,7 @@ class ModelConfiguration:
     simulation_volume: Dict[str, Any] = None
     project_id: str = None
     model_input: ModelInput = None
+    model_output: ModelOutput = None
 
 
 class Model(ComputableDataModel):
@@ -63,6 +73,11 @@ class Model(ComputableDataModel):
     def configuration(self) -> ModelConfiguration:
         """The build configuration of model."""
         return ModelConfiguration(project_id=self.project_id, **self.fields["configuration"])
+
+    @property
+    def model_output(self) -> ModelOutput:
+        """The outputs of the model."""
+        return ModelOutput()
 
 
 class ModelDirectory(Directory[Model]):
@@ -129,3 +144,8 @@ class ModelDirectory(Directory[Model]):
                 dismiss_data_with_volume_overflow,
             )
         )
+
+    @property
+    def model_input(self) -> ModelInput:
+        """Returns an empty ModelInput object."""
+        return ModelInput()
