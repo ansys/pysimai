@@ -19,3 +19,10 @@ Model
 .. autoclass:: Project()
     :members:
     :inherited-members:
+
+IsTrainableInfo
+---------------
+
+.. autoclass:: IsTrainableInfo()
+    :members:
+    :exclude-members: is_trainable, reason
