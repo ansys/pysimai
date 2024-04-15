@@ -9,7 +9,7 @@ Changelog
 - Introduce method that checks if the project meets the minimum requirements for training
 - Introduce method for getting the available variables for a model's inputs and outputs
 - Fix subset of training data not getting pulled
-- Fix optimization being
+- Fix call to private function in optimization run
 
 
 0.1.4 (2024-02-26)
