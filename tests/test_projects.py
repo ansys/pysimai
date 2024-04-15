@@ -20,11 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 import pytest
 import responses
 
+from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.errors import ApiClientError
 
@@ -99,6 +101,41 @@ def test_project_sample(simai_client):
     project.sample = raw_td["id"]
     assert isinstance(project.sample, TrainingData)
     assert project.sample.id == raw_td["id"]
+
+
+@responses.activate
+def test_last_model_configuration(simai_client):
+    """Test last_configuration property."""
+
+    last_conf = {
+        "boundary_conditions": {"Vx": {}},
+        "build_preset": "debug",
+        "continuous": False,
+        "fields": {},
+        "global_coefficients": None,
+        "simulation_volume": None,
+    }
+
+    raw_project = {
+        "id": "xX007Xx",
+        "name": "fifi",
+        "sample": None,
+        "last_model_configuration": last_conf,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{project.id}/",
+        status=200,
+        json=raw_project,
+    )
+
+    project_last_conf = project.last_model_configuration
+
+    assert isinstance(project_last_conf, ModelConfiguration)
+    assert asdict(project_last_conf) == (last_conf | {"project_id": raw_project.get("id")})
 
 
 @responses.activate

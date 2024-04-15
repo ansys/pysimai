@@ -23,6 +23,7 @@
 from typing import TYPE_CHECKING, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
+from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments
 
@@ -110,6 +111,11 @@ class Project(DataModel):
         td_id = get_id_from_identifiable(new_sample)
         self._client._api.set_project_sample(self.id, td_id)
         self.reload()
+
+    @property
+    def last_model_configuration(self) -> ModelConfiguration:
+        """The last :class:`configuration <ansys.simai.core.data.models.ModelConfiguration>` that was used for training a model in this project."""
+        return ModelConfiguration(project_id=self.id, **self.fields.get("last_model_configuration"))
 
     def delete(self) -> None:
         """Delete the project."""

@@ -30,7 +30,11 @@ from ansys.simai.core import __version__
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.design_of_experiments import DesignOfExperimentsCollection
 from ansys.simai.core.data.geometries import GeometryDirectory
-from ansys.simai.core.data.optimizations import OptimizationDirectory, OptimizationTrialRunDirectory
+from ansys.simai.core.data.models import ModelDirectory
+from ansys.simai.core.data.optimizations import (
+    OptimizationDirectory,
+    OptimizationTrialRunDirectory,
+)
 from ansys.simai.core.data.post_processings import PostProcessingDirectory
 from ansys.simai.core.data.predictions import PredictionDirectory
 from ansys.simai.core.data.projects import Project, ProjectDirectory
@@ -82,6 +86,7 @@ class SimAIClient:
         self._optimization_trial_run_directory = OptimizationTrialRunDirectory(client=self)
         self._post_processing_directory = PostProcessingDirectory(client=self)
         self._project_directory = ProjectDirectory(client=self)
+        self._model_directory = ModelDirectory(client=self)
         self._workspace_directory = WorkspaceDirectory(client=self)
         self._prediction_directory = PredictionDirectory(client=self)
         self._training_data_directory = TrainingDataDirectory(client=self)
@@ -247,6 +252,13 @@ class SimAIClient:
         For more information, see :ref:`workspaces`.
         """
         return self._workspace_directory
+
+    @property
+    def models(self):
+        """Representation of all workspaces on the server.
+        For more information, see :ref:`workspaces`.
+        """
+        return self._model_directory
 
     @classmethod
     def from_config(
