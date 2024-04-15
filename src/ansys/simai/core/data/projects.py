@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.models import ModelConfiguration
@@ -29,6 +29,44 @@ from ansys.simai.core.errors import InvalidArguments
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.training_data import TrainingData
+
+
+class IsTrainableInfo(NamedTuple):
+    """Properties for project's trainability.
+
+    The objects of this class can be used as booleans
+    in condition statements as in the example:
+
+    Example:
+        Verify the project is trainable
+
+        .. code-block:: python
+
+            pt = my_project.is_trainable()
+
+            if pt:
+                print(pt)
+
+        It prints:
+
+        .. code-block:: shell
+
+            <is_trainable: False, reason(s): Not enough data to train a model: we need at least 3 data points to train a model.>
+
+    Attributes:
+        is_trainable (bool):    True if the project is trainable, False if it is not.
+        reason (str):           If not_trainable is False, the reason why the project is not trainable. None otherwise.
+
+    """
+
+    is_trainable: bool
+    reason: str = None
+
+    def __bool__(self) -> bool:
+        return self.is_trainable
+
+    def __repr__(self) -> str:
+        return f"<is_trainable: {self.is_trainable}, reason(s): {self.reason}>"
 
 
 class Project(DataModel):
@@ -76,12 +114,29 @@ class Project(DataModel):
 
     @property
     def last_model_configuration(self) -> ModelConfiguration:
-        """The last configuration :class:`~ansys.simai.core.data.models.ModelConfiguration` that was used for training a model in this project."""
+        """The last :class:`configuration <ansys.simai.core.data.models.ModelConfiguration>` that was used for training a model in this project."""
         return ModelConfiguration(project_id=self.id, **self.fields.get("last_model_configuration"))
 
     def delete(self) -> None:
         """Delete the project."""
         self._client._api.delete_project(self.id)
+
+    def is_trainable(self) -> bool:
+        """Check if the project meets the prerequisites to be trained."""
+        tt = self._client._api.is_project_trainable(self.id)
+        return IsTrainableInfo(**tt)
+
+    def get_variables(self) -> dict[str, list[str]] | None:
+        """Get the available variables for the model's input/output."""
+        if not self.sample:
+            return None
+
+        sample_metadata = self.sample.fields.get("extracted_metadata")
+        data = {}
+        for key, vals in sample_metadata.items():
+            local_fields = vals.get("fields", [])
+            data[key] = [local_field.get("name") for local_field in local_fields]
+        return data
 
 
 class ProjectDirectory(Directory[Project]):

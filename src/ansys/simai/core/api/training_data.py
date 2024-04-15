@@ -62,3 +62,6 @@ class TrainingDataClientMixin(ApiClientMixin):
 
     def compute_training_data(self, training_data_id: str) -> None:
         self._post(f"training_data/{training_data_id}/compute")
+
+    def get_training_data_subset(self, project_id: str, training_data_id: str) -> Dict[str, Any]:
+        return self._get(f"projects/{project_id}/data/{training_data_id}/subset")

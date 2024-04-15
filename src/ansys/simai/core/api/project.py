@@ -88,3 +88,6 @@ class ProjectClientMixin(ApiClientMixin):
             "dismiss_data_with_volume_overflow": dismiss_data_with_volume_overflow,
         }
         return self._post(f"projects/{project_id}/model", json=config, params=params)
+
+    def is_project_trainable(self, project_id: str):
+        return self._get(f"projects/{project_id}/trainable")
