@@ -138,6 +138,7 @@ def test_last_model_configuration(simai_client):
     assert asdict(project_last_conf) == (last_conf | {"project_id": raw_project.get("id")})
 
 
+@responses.activate
 @pytest.mark.parametrize(
     "status_code,response_body,error_type",
     [
