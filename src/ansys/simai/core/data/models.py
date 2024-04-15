@@ -27,6 +27,36 @@ from ansys.simai.core.data.base import ComputableDataModel, Directory
 
 
 @dataclass
+class ModelField:
+    """Single field definition for model input/output."""
+
+    format: str = "value"
+    keys: str = None
+    location: str = "cell"
+    name: str
+    unit: str = None
+
+
+@dataclass
+class GcField:
+    """Single Global Coefficient field."""
+
+    _formula: str
+    _name: str
+
+    # def check_formula(self):
+    # pass
+
+    # def calculate_formula(self):
+    #     pass
+
+    # @property
+    # def formula(self):
+    #     check_formula
+    #     calculate_formula
+
+
+@dataclass
 class ModelInput:
     """The inputs of a model."""
 
@@ -40,7 +70,7 @@ class ModelOutput:
 
     surface: List[str] = None
     volume: List[str] = None
-    global_coefficients: List[str] = None
+    global_coefficients: List[GcField] = None
 
 
 @dataclass
@@ -54,8 +84,24 @@ class ModelConfiguration:
     global_coefficients: List[Dict[str, Any]] = None
     simulation_volume: Dict[str, Any] = None
     project_id: str = None
-    model_input: ModelInput = None
-    model_output: ModelOutput = None
+    _model_input: ModelInput = None
+    _model_output: ModelOutput = None
+
+    @property
+    def input(self) -> ModelInput:
+        """The inputs of a model."""
+        return self._model_input
+
+    @property
+    def output(self) -> ModelOutput:
+        """The outputs of a model."""
+        return self._model_output
+
+    @input.setter
+    def input(self, m_input: ModelInput):
+        """Sets the inputs of a model."""
+        self.fields["surface_input"] = [asdict(ModelField(name=name)) for name in m_input.surface]
+        self.global_coefficients = m_input.global_coefficients
 
 
 class Model(ComputableDataModel):
@@ -73,11 +119,6 @@ class Model(ComputableDataModel):
     def configuration(self) -> ModelConfiguration:
         """The build configuration of model."""
         return ModelConfiguration(project_id=self.project_id, **self.fields["configuration"])
-
-    @property
-    def model_output(self) -> ModelOutput:
-        """The outputs of the model."""
-        return ModelOutput()
 
 
 class ModelDirectory(Directory[Model]):
@@ -149,3 +190,8 @@ class ModelDirectory(Directory[Model]):
     def model_input(self) -> ModelInput:
         """Returns an empty ModelInput object."""
         return ModelInput()
+
+    @property
+    def model_output(self) -> ModelOutput:
+        """Empty ModelOutput object."""
+        return ModelOutput()
