@@ -76,7 +76,7 @@ class Project(DataModel):
 
     @property
     def last_model_configuration(self) -> ModelConfiguration:
-        """The last configuration :class:`~ansys.simai.core.data.models.ModelConfiguration` that was used for training a model in this project."""
+        """The last :class:`configuration <ansys.simai.core.data.models.ModelConfiguration>` that was used for training a model in this project."""
         return ModelConfiguration(project_id=self.id, **self.fields.get("last_model_configuration"))
 
     def delete(self) -> None:

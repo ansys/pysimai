@@ -65,7 +65,7 @@ class ModelDirectory(Directory[Model]):
         """[Do not use] Get a model by project ID.
 
         Args:
-            model_id: ID of the project.
+            model_id: ID of the model.
         """
 
         raise NotImplementedError("The method 'get' of the class Model is not implemented yet.")
