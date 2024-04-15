@@ -4,13 +4,12 @@ Changelog
 0.1.5 (2024-04-15)
 ******************
 
-- Launch training using the last build configuration from a project
-- Enable non-interactive mode
-- Introduce method that checks if the project meets the minimum requirements for training
-- Introduce method for getting the available variables for a model's inputs and outputs
-- Fix subset of training data not getting pulled
-- Fix call to private function in optimization run
-
+- Training can now be launched using the most recent model configuration from a project.
+- Enabled non-interactive mode capability, allowing for automation or operations without manual inputs.
+- Added new validation :py:meth:`Project.is_trainable()<ansys.simai.core.data.projects.Project.is_trainable>` to verify if the project meets all minimum requirements for training.
+- Added new method :py:meth:`Project.get_variables()<ansys.simai.core.data.projects.Project.get_variables>` to get all available variables used for a model's inputs and outputs.
+- Fixed bug where a subset of training data could not be pulled. A subset of training data is now correctly retrieved.
+- Fixed erroneous call to a private function during the optimization run.
 
 0.1.4 (2024-02-26)
 ******************
