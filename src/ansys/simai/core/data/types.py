@@ -24,6 +24,7 @@ import io
 import os
 import pathlib
 from contextlib import contextmanager
+from enum import Enum
 from numbers import Number
 from typing import Any, BinaryIO, Callable, Dict, Generator, List, Optional, Tuple, Union
 
@@ -262,3 +263,10 @@ def get_object_from_identifiable(
         return get_object_from_identifiable(default, directory)
     else:
         raise InvalidArguments(f"Argument {identifiable} is neither a data model nor an ID string.")
+
+
+class SubsetEnum(str, Enum):
+    none = None
+    training = "Training"
+    validation = "Validation"
+    test = "Test"

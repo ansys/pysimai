@@ -26,6 +26,8 @@ from typing import TYPE_CHECKING
 import pytest
 import responses
 
+from ansys.simai.core.data.types import SubsetEnum
+
 if TYPE_CHECKING:
     from ansys.simai.core.data.training_data import TrainingData
 
@@ -84,7 +86,7 @@ def test_training_data_remove_from_project(simai_client, training_data_factory, 
 @pytest.mark.parametrize(
     "td_factory_args",
     [
-        ({"id": "777", "name": "ICBM", "subset": "Training"}),
+        ({"id": "777", "name": "ICBM", "subset": SubsetEnum.training}),
         ({"id": "888", "name": "Duke Nukem", "subset": ""}),
         ({"id": "999", "name": "Roman"}),
     ],
@@ -103,3 +105,17 @@ def test_get_subset(training_data_factory, project_factory, td_factory_args):
         json={"subset": td_subset},
     )
     assert td.get_subset(project=project) == td_subset
+
+
+@responses.activate
+def test_set_subset(training_data_factory, project_factory):
+    project = project_factory(id="n07e45y", name="bananarama")
+    td: TrainingData = training_data_factory(project=project, subset=SubsetEnum.training)
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{project.id}/data/{td.id}/subset",
+        status=200,
+        json={"subset": SubsetEnum.validation},
+    )
+    assert td.get_subset(project=project) == SubsetEnum.validation

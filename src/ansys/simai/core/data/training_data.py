@@ -29,6 +29,7 @@ from ansys.simai.core.data.types import (
     MonitorCallback,
     NamedFile,
     Path,
+    SubsetEnum,
     get_id_from_identifiable,
     unpack_named_file,
 )
@@ -87,6 +88,11 @@ class TrainingData(ComputableDataModel):
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         return self._client._api.get_training_data_subset(project_id, self.id).get("subset")
+
+    def set_subset(self, project: Identifiable["Project"], subset: SubsetEnum) -> None:
+        """Declare a subset for training data in relation to given project."""
+        project_id = get_id_from_identifiable(project, default=self._client._current_project)
+        self._client._api.put_training_data_subset(project_id, self.id, subset)
 
     @property
     def extracted_metadata(self) -> Optional[Dict]:
