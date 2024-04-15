@@ -97,7 +97,10 @@ class ModelConfiguration:
     @output.setter
     def output(self, model_outputs: ModelOutput):
         """Sets the outputs of a model."""
-        self.global_coefficients = [asdict(gc) for gc in model_outputs.global_coefficients]
+        self.global_coefficients = [
+            asdict(gc, dict_factory=self._check_gc_formula)
+            for gc in model_outputs.global_coefficients
+        ]
         self.fields["volume"] = [asdict(ModelField(name=name)) for name in model_outputs.volume]
         self.fields["surface"] = [asdict(ModelField(name=name)) for name in model_outputs.surface]
 
