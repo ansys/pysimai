@@ -41,19 +41,8 @@ class ModelField:
 class GcField:
     """Single Global Coefficient field."""
 
-    _formula: str
-    _name: str
-
-    # def check_formula(self):
-    # pass
-
-    # def calculate_formula(self):
-    #     pass
-
-    # @property
-    # def formula(self):
-    #     check_formula
-    #     calculate_formula
+    formula: str
+    name: str
 
 
 @dataclass
@@ -98,10 +87,22 @@ class ModelConfiguration:
         return self._model_output
 
     @input.setter
-    def input(self, m_input: ModelInput):
+    def input(self, model_inputs: ModelInput):
         """Sets the inputs of a model."""
-        self.fields["surface_input"] = [asdict(ModelField(name=name)) for name in m_input.surface]
-        self.global_coefficients = m_input.global_coefficients
+        self.fields["surface_input"] = [
+            asdict(ModelField(name=name)) for name in model_inputs.surface
+        ]
+        self.boundary_conditions = {bc_name: {} for bc_name in model_inputs.boundary_conditions}
+
+    @output.setter
+    def output(self, model_outputs: ModelOutput):
+        """Sets the outputs of a model."""
+        self.global_coefficients = [asdict(gc) for gc in model_outputs.global_coefficients]
+        self.fields["volume"] = [asdict(ModelField(name=name)) for name in model_outputs.volume]
+        self.fields["surface"] = [asdict(ModelField(name=name)) for name in model_outputs.surface]
+
+    def _check_gc_formula(self):
+        pass
 
 
 class Model(ComputableDataModel):
