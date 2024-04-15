@@ -28,7 +28,11 @@ from wakepy import keep
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.geometries import Geometry
-from ansys.simai.core.data.types import Identifiable, NamedFile, get_id_from_identifiable
+from ansys.simai.core.data.types import (
+    Identifiable,
+    NamedFile,
+    get_id_from_identifiable,
+)
 from ansys.simai.core.data.workspaces import Workspace
 from ansys.simai.core.errors import InvalidArguments
 
@@ -41,7 +45,7 @@ class Optimization(ComputableDataModel):
     def _try_geometry(
         self, geometry: Identifiable[Geometry], geometry_parameters: Dict
     ) -> "OptimizationTrialRun":
-        return self._client._optimization_trial_run_directory.try_geometry(
+        return self._client._optimization_trial_run_directory._try_geometry(
             self.id, geometry, geometry_parameters
         )
 
@@ -200,7 +204,7 @@ class OptimizationDirectory(Directory[Optimization]):
                     )
                     logger.debug("Running trial.")
                     progress_bar.set_description("Running trial.")
-                    trial_run = optimization.try_geometry(geometry, geometry_parameters)
+                    trial_run = optimization._try_geometry(geometry, geometry_parameters)
                     trial_run.wait()
                     iteration_result = {
                         "parameters": geometry_parameters,
