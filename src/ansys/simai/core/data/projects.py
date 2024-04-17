@@ -20,15 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, List, NamedTuple, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
-from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.training_data import TrainingData
+
+EXTRA_CALCULETTE_FIELDS = ["Area", "Normals", "Centroids"]
 
 
 class IsTrainableInfo(NamedTuple):
@@ -115,7 +117,7 @@ class Project(DataModel):
     @property
     def last_model_configuration(self) -> ModelConfiguration:
         """The last :class:`configuration <ansys.simai.core.data.models.ModelConfiguration>` that was used for training a model in this project."""
-        return ModelConfiguration(project_id=self.id, **self.fields.get("last_model_configuration"))
+        return ModelConfiguration(project=self, **self.fields.get("last_model_configuration"))
 
     def delete(self) -> None:
         """Delete the project."""
@@ -137,6 +139,66 @@ class Project(DataModel):
             local_fields = vals.get("fields", [])
             data[key] = [local_field.get("name") for local_field in local_fields]
         return data
+
+    def verify_gc_formula(
+        self, gc_formula: str, bc: List[str] = None, surface_variables: List[str] = None
+    ):
+        """Verifies if the Global Coefficient formula is valid."""
+
+        if not self.sample:
+            raise ProcessingError(
+                f"No sample is set in the project {self.id}. A sample should be set for verifying a Global Coefficients formula."
+            )
+
+        sample_metadata = self.sample.fields.get("extracted_metadata")
+
+        calculette_payload = self._compose_calculette_payload(
+            gc_formula, sample_metadata, bc, surface_variables
+        )
+
+        return self._client._api.check_formula(self.id, calculette_payload)
+
+    def compute_gc_formula(
+        self, gc_formula: str, bc: List[str] = None, surface_variables: List[str] = None
+    ):
+        """Verifies if the Global Coefficient formula is valid."""
+
+        if not self.sample:
+            raise ProcessingError(
+                f"No sample is set in the project {self.id}. A sample should be set for computing the results of a Global Coefficients formula."
+            )
+
+        sample_metadata = self.sample.fields.get("extracted_metadata")
+
+        calculette_payload = self._compose_calculette_payload(
+            gc_formula, sample_metadata, bc, surface_variables
+        )
+
+        return self._client._api.compute_formula(self.id, calculette_payload)
+
+    def _compose_calculette_payload(
+        self,
+        gc_formula: str,
+        sample_metadata: Dict[str, Any],
+        bc: List[str] = None,
+        surface_variables: List[str] = None,
+    ):
+        """Composes the payload for a calculette request."""
+
+        surface_vars_list = EXTRA_CALCULETTE_FIELDS
+        if surface_variables:
+            surface_vars_list += surface_variables
+
+        return {
+            "formula": gc_formula,
+            "bc_list": bc if bc else [],
+            "surface_field_list": [
+                fd
+                for fd in sample_metadata.get("surface").get("fields")
+                if fd.get("name") in surface_vars_list
+            ],
+            "volume_field_list": [],
+        }
 
 
 class ProjectDirectory(Directory[Project]):
