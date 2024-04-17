@@ -91,3 +91,39 @@ class ProjectClientMixin(ApiClientMixin):
 
     def is_project_trainable(self, project_id: str):
         return self._get(f"projects/{project_id}/trainable")
+
+    def check_formula(self, project_id: str, calculette_payload: Dict[str, Any]):
+        """Verify the validity of a Global Coefficient formula.
+
+        Args:
+            project_id:         the ID of the project
+            calculette_payload: the payload for calculette that includes the
+                                formula that describes a Global Coefficient
+        """
+
+        return self._post(
+            f"projects/{project_id}/check-formula",
+            json=calculette_payload,
+            return_json=False,
+        )
+
+    def compute_formula(self, project_id: str, calculette_payload: Dict[str, Any]):
+        """Computes the result of a Global Coefficient formula according to the project's sample.
+
+        Args:
+            project_id:         the ID of the project
+            calculette_payload: the payload for calculette that includes the
+                                formula that describes a Global Coefficient
+        """
+
+        return self._post(
+            f"projects/{project_id}/compute-formula",
+            json=calculette_payload,
+            return_json=False,
+        )
+
+    def request_calculette_session(self, project_id: str):
+        """Request a calculette session."""
+        return self._post(
+            f"projects/{project_id}/calculette-session",
+        )
