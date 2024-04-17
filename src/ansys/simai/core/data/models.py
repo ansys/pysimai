@@ -21,20 +21,13 @@
 # SOFTWARE.
 
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
+from ansys.simai.core.errors import ProcessingError
 
-
-@dataclass
-class ModelField:
-    """Single field definition for model input/output."""
-
-    format: str = "value"
-    keys: str = None
-    location: str = "cell"
-    name: str
-    unit: str = None
+if TYPE_CHECKING:
+    from ansys.simai.core.data.projects import Project
 
 
 @dataclass
@@ -63,7 +56,7 @@ class ModelOutput:
 
 
 @dataclass
-class ModelConfiguration:
+class ModelConfiguration(ComputableDataModel):
     """The configuration for building a model."""
 
     boundary_conditions: Dict[str, Any] = None
@@ -72,9 +65,9 @@ class ModelConfiguration:
     fields: Dict[str, Any] = None
     global_coefficients: List[Dict[str, Any]] = None
     simulation_volume: Dict[str, Any] = None
-    project_id: str = None
+    project: "Project" = None
     _model_input: ModelInput = None
-    _model_output: ModelOutput = None
+    _model_output: ModelOutput = ModelOutput()
 
     @property
     def input(self) -> ModelInput:
@@ -87,25 +80,92 @@ class ModelConfiguration:
         return self._model_output
 
     @input.setter
-    def input(self, model_inputs: ModelInput):
+    def input(self, model_input: ModelInput):
         """Sets the inputs of a model."""
-        self.fields["surface_input"] = [
-            asdict(ModelField(name=name)) for name in model_inputs.surface
-        ]
-        self.boundary_conditions = {bc_name: {} for bc_name in model_inputs.boundary_conditions}
+
+        self.project.reload()
+
+        if not self.project.sample:
+            raise ProcessingError(
+                f"No sample is set in the project {self.project.id}. A sample should be set before setting the model's input"
+            )
+
+        sample_metadata = self.project.sample.fields.get("extracted_metadata")
+
+        if self.fields is None:
+            self.fields = {}
+
+        if model_input.surface is not None:
+            self.fields["surface_input"] = [
+                fd
+                for fd in sample_metadata.get("surface").get("fields")
+                if fd.get("name") in model_input.surface
+            ]
+            self._model_input.surface = model_input.surface
+
+        if model_input.boundary_conditions is not None:
+            self.boundary_conditions = {bc_name: {} for bc_name in model_input.boundary_conditions}
+            self._model_input.boundary_conditions = model_input.boundary_conditions
 
     @output.setter
-    def output(self, model_outputs: ModelOutput):
+    def output(self, model_output: ModelOutput):
         """Sets the outputs of a model."""
-        self.global_coefficients = [
-            asdict(gc, dict_factory=self._check_gc_formula)
-            for gc in model_outputs.global_coefficients
-        ]
-        self.fields["volume"] = [asdict(ModelField(name=name)) for name in model_outputs.volume]
-        self.fields["surface"] = [asdict(ModelField(name=name)) for name in model_outputs.surface]
 
-    def _check_gc_formula(self):
-        pass
+        self.project.reload()
+
+        if not self.project.sample:
+            raise ProcessingError(
+                f"No sample is set in the project {self.project.id}. A sample should be set before setting the model's output"
+            )
+
+        sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        if self.fields is None:
+            self.fields = {}
+        if model_output.volume is not None:
+            self.fields["volume"] = [
+                fd
+                for fd in sample_metadata.get("volume").get("fields")
+                if fd.get("name") in model_output.volume
+            ]
+            self._model_output.volume = model_output.volume
+
+        if model_output.surface is not None:
+            self.fields["surface"] = [
+                fd
+                for fd in sample_metadata.get("surface").get("fields")
+                if fd.get("name") in model_output.surface
+            ]
+            self._model_output.surface = model_output.surface
+
+        if model_output.global_coefficients is not None:
+            if self.global_coefficients is None:
+                self.global_coefficients = []
+            for gc in model_output.global_coefficients:
+                bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
+                self.project.verify_gc_formula(gc.formula, bc_keys, model_output.surface)
+                self.global_coefficients += [asdict(gc)]
+
+            self._model_output.global_coefficients = model_output.global_coefficients
+
+    def to_payload(self):
+        """Constracts the payload for a build request."""
+        return {
+            "boundary_conditions": self.boundary_conditions,
+            "build_preset": self.build_preset,
+            "continuous": self.continuous,
+            "fields": self.fields,
+            "global_coefficients": self.global_coefficients,
+            "simulation_volume": self.simulation_volume,
+        }
+
+    def global_coefficient_values(self):
+        """Computes the results of ."""
+        rr = []
+
+        for gc in self._model_output.global_coefficients:
+            bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
+            rr += [self.project.compute_gc_formula(gc.formula, bc_keys, self._model_output.surface)]
+        return rr
 
 
 class Model(ComputableDataModel):
@@ -179,12 +239,12 @@ class ModelDirectory(Directory[Model]):
                 new_model = simai.models.build(build_conf)
 
         """
-        build_conf = asdict(configuration)
-        project_id = build_conf.pop("project_id")
+
+        project_id = configuration.project.id
         return self._model_from(
             self._client._api.launch_build(
                 project_id,
-                build_conf,
+                configuration.to_payload(),
                 dismiss_data_with_fields_discrepancies,
                 dismiss_data_with_volume_overflow,
             )
@@ -199,3 +259,12 @@ class ModelDirectory(Directory[Model]):
     def model_output(self) -> ModelOutput:
         """Empty ModelOutput object."""
         return ModelOutput()
+
+    @property
+    def model_configuration(self) -> ModelConfiguration:
+        """Empty ModelConfiguration object."""
+        return ModelConfiguration()
+
+    def global_coefficient(self, formula: str, name: str) -> GcField:
+        """Empty GlobalCoefficient object."""
+        return GcField(formula, name)
