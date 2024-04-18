@@ -23,9 +23,13 @@
 from dataclasses import asdict
 from typing import TYPE_CHECKING
 
+import pytest
 import responses
 
-from ansys.simai.core.data.models import ModelConfiguration
+from ansys.simai.core.data.models import (
+    ModelConfiguration,
+)
+from ansys.simai.core.errors import InvalidArguments
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.models import Model
@@ -138,3 +142,51 @@ def test_build(simai_client):
     model_conf.pop("project_id")
 
     assert model_conf == MODEL_CONF_RAW
+
+
+def test_set_doa(simai_client):
+    """WHEN the Domain of Analysis is updated
+    THEN the simulation_volume is updated accordingly
+    """
+
+    model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
+
+    doa = model_conf.domain_of_analysis
+
+    new_height = {"position": "relative_to_center", "value": 0.5, "length": 15.2}
+
+    doa.Height = simai_client.models.doa_axis_definition(**new_height)
+
+    model_conf.domain_of_analysis = doa
+
+    assert model_conf.simulation_volume.get("Z").get("type") == new_height.get("position")
+    assert model_conf.simulation_volume.get("Z").get("value") == new_height.get("value")
+    assert model_conf.simulation_volume.get("Z").get("length") == new_height.get("length")
+
+
+def test_get_doa(simai_client):
+    """WHEN the Domain of Analysis is retrieved
+    THEN the params of the axes match
+    """
+
+    model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
+
+    doa_length_raw = MODEL_CONF_RAW.get("simulation_volume").get("X")
+
+    doa = model_conf.domain_of_analysis
+
+    assert doa.Length.length == doa_length_raw.get("length")
+    assert doa.Length.position == doa_length_raw.get("type")
+    assert doa.Length.value == doa_length_raw.get("value")
+
+
+def test_wrong_doa_axis_values(simai_client):
+    """WHEN the value of the DomainAxisDefinition is negative
+    AND the position is not absolute
+    THEN an InvalidArguments exception is raised.
+    """
+
+    doa_axis_raw = {"position": "relative_to_center", "value": -0.5, "length": 15.2}
+
+    with pytest.raises(InvalidArguments):
+        simai_client.models.doa_axis_definition(**doa_axis_raw)
