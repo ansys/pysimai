@@ -14,6 +14,17 @@ the Global Coefficients and the Domain of Analysis, and its project id. The
 object is, then, parsed to :py:meth:`models.build()<ModelDirectory.build>` for
 launching a build.
 
+DomainAxisDefinition
+--------------------
+
+.. autoclass:: DomainAxisDefinition()
+
+
+DomainOfAnalysis
+--------------------
+
+.. autoclass:: DomainOfAnalysis()
+
 
 ModelConfiguration
 ------------------
