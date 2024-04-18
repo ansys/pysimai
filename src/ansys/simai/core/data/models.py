@@ -72,6 +72,29 @@ class DomainOfAnalysis:
         Length: the definition of the Domain of Analysis along the X axis
         Width: the definition of the Domain of Analysis along the Y axis
         Height: the definition of the Domain of Analysis along the Z axis
+
+    Example:
+        Get the Domain of Analysis from a configuration and replace it with a new one
+
+        .. code-block:: python
+
+            # get the last configuration from a project
+            bld_conf = my_project.last_model_configuration
+
+            # get DoA from the configuration
+            doa = bld_conf.domain_of_analysis
+
+            # create a new DoA
+            new_doa = simai.models.domain_of_analysis()
+
+            new_doa.Height = simai.models.doa_axis_definition("relative_to_min", 4.5, 4.1)
+            new_doa.Length = simai.models.doa_axis_definition("relative_to_center", 0.5, 15)
+            new_doa.Width = simai.models.doa_axis_definition("absolute", -1.5, 6.1)
+
+            # set the new DoA to the configuration
+
+            bld_conf.domain_of_analysis = new_doa
+
     """
 
     Length: DomainAxisDefinition = None
