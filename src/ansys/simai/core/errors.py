@@ -80,6 +80,10 @@ class InvalidServerStateError(SimAIError):
     """Server's state is invalid."""
 
 
+class InvalidOperationError(SimAIError):
+    """This operation is not possible in the current state."""
+
+
 class MultipleErrors(SimAIError):
     """Multiple errors occurred."""
 

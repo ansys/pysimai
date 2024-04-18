@@ -23,6 +23,7 @@
 from ansys.simai.core.api.design_of_experiments import DesignOfExperimentsMixin
 from ansys.simai.core.api.geometry import GeometryClientMixin
 from ansys.simai.core.api.optimization import OptimizationClientMixin
+from ansys.simai.core.api.point_cloud import PointCloudClientMixin
 from ansys.simai.core.api.post_processing import PostProcessingClientMixin
 from ansys.simai.core.api.prediction import PredictionClientMixin
 from ansys.simai.core.api.project import ProjectClientMixin
@@ -35,6 +36,7 @@ from ansys.simai.core.api.workspace import WorkspaceClientMixin
 class ApiClient(
     DesignOfExperimentsMixin,
     GeometryClientMixin,
+    PointCloudClientMixin,
     OptimizationClientMixin,
     PostProcessingClientMixin,
     ProjectClientMixin,

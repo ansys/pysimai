@@ -59,6 +59,10 @@ Available postprocessings
     :members:
 
 
+.. autoclass:: CustomVolumePointCloud()
+    :members:
+
+
 Helpers
 -------
 
