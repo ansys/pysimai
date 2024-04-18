@@ -24,8 +24,15 @@ import logging
 from numbers import Number
 from typing import TYPE_CHECKING, Any, BinaryIO, Dict, List, Optional, Union
 
-from ansys.simai.core.data.base import ComputableDataModel, Directory, UploadableResourceMixin
-from ansys.simai.core.data.geometry_utils import _geometry_matches_range_constraints, _sweep
+from ansys.simai.core.data.base import (
+    ComputableDataModel,
+    Directory,
+    UploadableResourceMixin,
+)
+from ansys.simai.core.data.geometry_utils import (
+    _geometry_matches_range_constraints,
+    _sweep,
+)
 from ansys.simai.core.data.types import (
     BoundaryConditions,
     File,
@@ -39,7 +46,7 @@ from ansys.simai.core.data.types import (
     unpack_named_file,
 )
 from ansys.simai.core.data.workspaces import Workspace
-from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.errors import InvalidArguments, InvalidOperationError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.predictions import Prediction
@@ -67,6 +74,11 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
     def creation_time(self) -> str:
         """Time when the geometry was created in a UTC ISO8601 format string."""
         return self.fields["creation_time"]
+
+    @property
+    def point_cloud(self) -> Optional[Dict[str, Any]]:
+        """The attached input cloud file info if any."""
+        return self.fields.get("point_cloud")
 
     def rename(self, name: str) -> None:
         """Change the name of the geometry.
@@ -170,7 +182,9 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         return [self._client.predictions._model_from(pred_data) for pred_data in predictions_data]
 
     def download(
-        self, file: Optional[File] = None, monitor_callback: Optional[MonitorCallback] = None
+        self,
+        file: Optional[File] = None,
+        monitor_callback: Optional[MonitorCallback] = None,
     ) -> Union[None, BinaryIO]:
         """Download the geometry into the provided file or in memory if no file is provided.
 
@@ -272,6 +286,39 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             include_diagonals=include_diagonals,
             tolerance=tolerance,
         )
+
+    def upload_point_cloud(
+        self, file: NamedFile, monitor_callback: Optional[MonitorCallback] = None
+    ):
+        """Upload a point cloud for this geometry.
+
+        Args:
+            file: :obj:`~ansys.simai.core.data.types.NamedFile` to upload.
+            monitor_callback: Optional callback for monitoring the progress of the upload.
+                For more information, see the :obj:`~ansys.simai.core.data.types.MonitorCallback`
+                object.
+        """
+        with unpack_named_file(file) as (readable_file, name, extension):
+            (point_cloud_fields, upload_id) = self._client._api.create_point_cloud(
+                self.id, name, extension
+            )
+            parts = self._client._api.upload_parts(
+                f"point-clouds/{point_cloud_fields['id']}/part",
+                readable_file,
+                upload_id,
+                monitor_callback=monitor_callback,
+            )
+            self._client._api.complete_point_cloud_upload(
+                point_cloud_fields["id"], upload_id, parts
+            )
+            self._fields["point_cloud"] = point_cloud_fields
+
+    def delete_point_cloud(self):
+        """Delete the associated input cloud file."""
+        if not self.point_cloud:
+            raise InvalidOperationError("No input cloud to delete")
+        self._client._api.delete_point_cloud(self.point_cloud["id"])
+        self._fields["point_cloud"] = None
 
 
 class GeometryDirectory(Directory[Geometry]):
