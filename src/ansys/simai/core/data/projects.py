@@ -20,9 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
 from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional
 
-from ansys.simai.core.data.base import DataModel, Directory
+from ansys.simai.core.data.base import (
+    ERROR_STATES,
+    PENDING_STATES,
+    ComputableDataModel,
+    Directory,
+)
 from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
@@ -31,6 +37,8 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.training_data import TrainingData
 
 EXTRA_CALCULETTE_FIELDS = ["Area", "Normals", "Centroids"]
+
+logger = logging.getLogger(__name__)
 
 
 class IsTrainableInfo(NamedTuple):
@@ -71,7 +79,7 @@ class IsTrainableInfo(NamedTuple):
         return f"<is_trainable: {self.is_trainable}, reason(s): {self.reason}>"
 
 
-class Project(DataModel):
+class Project(ComputableDataModel):
     """Provides the local representation of a  project object."""
 
     def __repr__(self) -> str:
@@ -155,7 +163,6 @@ class Project(DataModel):
         calculette_payload = self._compose_calculette_payload(
             gc_formula, sample_metadata, bc, surface_variables
         )
-
         return self._client._api.check_formula(self.id, calculette_payload)
 
     def compute_gc_formula(
@@ -175,6 +182,10 @@ class Project(DataModel):
         )
 
         return self._client._api.compute_formula(self.id, calculette_payload)
+
+    def get_latest_gc_result(self):
+        """Get the latest results of the formulas."""
+        return self.fields["gc_compute_result"]
 
     def _compose_calculette_payload(
         self,
@@ -199,6 +210,32 @@ class Project(DataModel):
             ],
             "volume_field_list": [],
         }
+
+    def _handle_job_sse_event(self, data):
+        """Update object with the information and state received through the SSE."""
+        logger.debug(f"Handling SSE job event for {self._classname} id {self.id}")
+
+        state: str = data.get("status")
+
+        target = data.get("target")
+
+        if state in PENDING_STATES:
+            logger.debug(f"{self._classname} id {self.id} set status pending")
+            self._set_is_pending()
+        elif state == "successful":
+            logger.debug(f"{self._classname} id {self.id} set status successful")
+            if target.get("action") == "compute":
+                self.fields["gc_compute_result"] = data.get("result").get("value")
+                self._set_is_over()
+        elif state in ERROR_STATES:
+            self.fields[
+                "error"
+            ] = f"Verification of formula {target.get('formula')} failed with {data.get('reason')}"
+            logger.debug(
+                f"Verification of formula {target.get('formula')} failed with {data.get('reason')}"
+            )
+            self._set_has_failed()
+            logger.error(self.fields.get("error"))
 
 
 class ProjectDirectory(Directory[Project]):

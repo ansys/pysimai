@@ -132,6 +132,8 @@ class SSEMixin(ApiClientMixin):
             self.simai_client.optimizations._handle_sse_event(data)
         elif target["type"] == "optimization_trial_run":
             self.simai_client._optimization_trial_run_directory._handle_sse_event(data)
+        elif target["type"] == "project":
+            self.simai_client.projects._handle_sse_event(data)
         else:
             logger.debug(
                 f"Unknown type {target['type']} received for job or resource event. Ignoring."

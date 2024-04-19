@@ -56,7 +56,7 @@ class ModelOutput:
 
 
 @dataclass
-class ModelConfiguration(ComputableDataModel):
+class ModelConfiguration:
     """The configuration for building a model."""
 
     boundary_conditions: Dict[str, Any] = None
@@ -66,6 +66,7 @@ class ModelConfiguration(ComputableDataModel):
     global_coefficients: List[Dict[str, Any]] = None
     simulation_volume: Dict[str, Any] = None
     project: "Project" = None
+    _gc_results: List[float] = None
 
     @property
     def input(self) -> ModelInput:
@@ -148,7 +149,6 @@ class ModelConfiguration(ComputableDataModel):
                 for fd in sample_metadata.get("volume").get("fields")
                 if fd.get("name") in model_output.volume
             ]
-            self._model_output.volume = model_output.volume
 
         if model_output.surface is not None:
             self.fields["surface"] = [
@@ -156,7 +156,6 @@ class ModelConfiguration(ComputableDataModel):
                 for fd in sample_metadata.get("surface").get("fields")
                 if fd.get("name") in model_output.surface
             ]
-            self._model_output.surface = model_output.surface
 
         if model_output.global_coefficients is not None:
             if self.global_coefficients is None:
@@ -164,9 +163,12 @@ class ModelConfiguration(ComputableDataModel):
             for gc in model_output.global_coefficients:
                 bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
                 self.project.verify_gc_formula(gc.formula, bc_keys, model_output.surface)
+                self.project.compute_gc_formula(gc.formula, bc_keys, model_output.surface)
+                self.project.wait()
                 self.global_coefficients += [asdict(gc)]
-
-            self._model_output.global_coefficients = model_output.global_coefficients
+                if self._gc_results is not None:
+                    self._gc_results = []
+                self._gc_results += [self.project.get_latest_gc_result()]
 
     def to_payload(self):
         """Constracts the payload for a build request."""
@@ -184,14 +186,9 @@ class ModelConfiguration(ComputableDataModel):
             "simulation_volume": self.simulation_volume,
         }
 
-    def global_coefficient_values(self):
+    def compute_global_coefficient(self):
         """Computes the results of ."""
-        rr = []
-
-        for gc in self._model_output.global_coefficients:
-            bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
-            rr += [self.project.compute_gc_formula(gc.formula, bc_keys, self._model_output.surface)]
-        return rr
+        return self._gc_results if self._gc_results else None
 
 
 class Model(ComputableDataModel):
