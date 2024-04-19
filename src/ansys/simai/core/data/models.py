@@ -66,18 +66,41 @@ class ModelConfiguration(ComputableDataModel):
     global_coefficients: List[Dict[str, Any]] = None
     simulation_volume: Dict[str, Any] = None
     project: "Project" = None
-    _model_input: ModelInput = None
-    _model_output: ModelOutput = ModelOutput()
 
     @property
     def input(self) -> ModelInput:
         """The inputs of a model."""
-        return self._model_input
+
+        mdl_input = ModelInput()
+
+        if (
+            self.fields is not None
+            and "surface_input" in self.fields
+            and self.fields.get("surface_input")
+        ):
+            mdl_input.surface = [fd.get("name") for fd in self.fields["surface_input"]]
+
+        if self.boundary_conditions is not None:
+            mdl_input.boundary_conditions = self.boundary_conditions.keys()
+
+        return mdl_input
 
     @property
     def output(self) -> ModelOutput:
         """The outputs of a model."""
-        return self._model_output
+        mdl_output = ModelOutput()
+
+        if self.fields is not None:
+            if "surface" in self.fields and self.fields.get("surface"):
+                mdl_output.surface = [fd.get("name") for fd in self.fields["surface"]]
+
+            if "volume" in self.fields and self.fields.get("volume"):
+                mdl_output.surface = [fd.get("name") for fd in self.fields["volume"]]
+
+        if self.global_coefficients:
+            mdl_output.global_coefficients = [GcField(**gc) for gc in self.global_coefficients]
+
+        return mdl_output
 
     @input.setter
     def input(self, model_input: ModelInput):
@@ -101,11 +124,9 @@ class ModelConfiguration(ComputableDataModel):
                 for fd in sample_metadata.get("surface").get("fields")
                 if fd.get("name") in model_input.surface
             ]
-            self._model_input.surface = model_input.surface
 
         if model_input.boundary_conditions is not None:
             self.boundary_conditions = {bc_name: {} for bc_name in model_input.boundary_conditions}
-            self._model_input.boundary_conditions = model_input.boundary_conditions
 
     @output.setter
     def output(self, model_output: ModelOutput):
@@ -149,12 +170,17 @@ class ModelConfiguration(ComputableDataModel):
 
     def to_payload(self):
         """Constracts the payload for a build request."""
+        flds = {
+            "surface": self.fields.get("surface", []),
+            "surface_input": self.fields.get("surface_input", []),
+            "volume": self.fields.get("volume", []),
+        }
         return {
-            "boundary_conditions": self.boundary_conditions,
+            "boundary_conditions": (self.boundary_conditions if self.boundary_conditions else {}),
             "build_preset": self.build_preset,
             "continuous": self.continuous,
-            "fields": self.fields,
-            "global_coefficients": self.global_coefficients,
+            "fields": flds,
+            "global_coefficients": (self.global_coefficients if self.global_coefficients else []),
             "simulation_volume": self.simulation_volume,
         }
 
