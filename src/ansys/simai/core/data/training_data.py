@@ -89,8 +89,17 @@ class TrainingData(ComputableDataModel):
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         return self._client._api.get_training_data_subset(project_id, self.id).get("subset")
 
-    def set_subset(self, project: Identifiable["Project"], subset: SubsetEnum) -> None:
-        """Declare a subset for training data in relation to given project."""
+    def assign_subset(self, project: Identifiable["Project"], subset: SubsetEnum) -> None:
+        """Assign the data subset in relation to a given project.
+
+        Args:
+            project: ID or :class:`model <.projects.Project>` of the project to check
+                the :class:`~.projects.Project` object for, or its ID.
+            subset: Define which subset this data belongs to (Training, Validation, Test, Ignored).
+
+        Returns:
+            None
+        """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         self._client._api.put_training_data_subset(project_id, self.id, subset)
 
@@ -275,3 +284,12 @@ class TrainingDataDirectory(Directory[TrainingData]):
         if compute:
             self._client._api.compute_training_data(training_data_id)
         return uploaded_parts
+
+    @property
+    def subset_names(self) -> List[str]:
+        """List assignable subset names to use in `assign_subset(project=project, subset=subset_type)`.
+
+        Returns:
+            `['Ignored', 'Training', 'Validation', 'Test']`.
+        """
+        return [subset.value for subset in SubsetEnum]

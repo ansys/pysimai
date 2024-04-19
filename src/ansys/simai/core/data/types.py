@@ -266,7 +266,7 @@ def get_object_from_identifiable(
 
 
 class SubsetEnum(str, Enum):
-    none = None
-    training = "Training"
-    validation = "Validation"
-    test = "Test"
+    IGNORED = "Ignored"
+    TRAINING = "Training"
+    VALIDATION = "Validation"
+    TEST = "Test"

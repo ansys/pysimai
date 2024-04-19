@@ -86,7 +86,7 @@ def test_training_data_remove_from_project(simai_client, training_data_factory, 
 @pytest.mark.parametrize(
     "td_factory_args",
     [
-        ({"id": "777", "name": "ICBM", "subset": SubsetEnum.training}),
+        ({"id": "777", "name": "ICBM", "subset": SubsetEnum.TRAINING}),
         ({"id": "888", "name": "Duke Nukem", "subset": ""}),
         ({"id": "999", "name": "Roman"}),
     ],
@@ -110,12 +110,12 @@ def test_get_subset(training_data_factory, project_factory, td_factory_args):
 @responses.activate
 def test_set_subset(training_data_factory, project_factory):
     project = project_factory(id="n07e45y", name="bananarama")
-    td: TrainingData = training_data_factory(project=project, subset=SubsetEnum.training)
+    td: TrainingData = training_data_factory(project=project, subset=SubsetEnum.TRAINING)
 
     responses.add(
         responses.GET,
         f"https://test.test/projects/{project.id}/data/{td.id}/subset",
         status=200,
-        json={"subset": SubsetEnum.validation},
+        json={"subset": SubsetEnum.VALIDATION},
     )
-    assert td.get_subset(project=project) == SubsetEnum.validation
+    assert td.get_subset(project=project) == SubsetEnum.VALIDATION
