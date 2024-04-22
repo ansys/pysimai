@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, PositiveFloat, ValidationError, model_validator
 
@@ -87,9 +87,9 @@ class DomainOfAnalysis:
             # create a new DoA
             new_doa = simai.models.domain_of_analysis()
 
-            new_doa.Height = simai.models.doa_axis_definition("relative_to_min", 4.5, 4.1)
-            new_doa.Length = simai.models.doa_axis_definition("relative_to_center", 0.5, 15)
-            new_doa.Width = simai.models.doa_axis_definition("absolute", -1.5, 6.1)
+            new_doa.height = simai.models.doa_axis_definition("relative_to_min", 4.5, 4.1)
+            new_doa.length = simai.models.doa_axis_definition("relative_to_center", 0.5, 15)
+            new_doa.width = simai.models.doa_axis_definition("absolute", -1.5, 6.1)
 
             # set the new DoA to the configuration
 
@@ -97,34 +97,34 @@ class DomainOfAnalysis:
 
     """
 
-    Length: DomainAxisDefinition = None
-    Width: DomainAxisDefinition = None
-    Height: DomainAxisDefinition = None
+    length: DomainAxisDefinition = None
+    width: DomainAxisDefinition = None
+    height: DomainAxisDefinition = None
 
 
 @dataclass
 class ModelConfiguration:
     """The configuration for building a model."""
 
-    boundary_conditions: Dict[str, Any] = None
+    boundary_conditions: dict[str, Any] = None
     build_preset: str = None
     continuous: bool = False
-    fields: Dict[str, Any] = None
-    global_coefficients: List[Dict[str, Any]] = None
-    simulation_volume: Dict[str, Any] = None
+    fields: dict[str, Any] = None
+    global_coefficients: dict[dict[str, Any]] = None
+    simulation_volume: dict[str, Any] = None
     project_id: str = None
 
     @property
-    def domain_of_analysis(self) -> DomainOfAnalysis | None:
+    def domain_of_analysis(self) -> DomainOfAnalysis:
         """The Domain of Analysis of the model configuration."""
         if not self.simulation_volume:
             return None
 
         doa = DomainOfAnalysis()
 
-        doa.Length = self._get_doa_axis("X")
-        doa.Width = self._get_doa_axis("Y")
-        doa.Height = self._get_doa_axis("Z")
+        doa.length = self._get_doa_axis("X")
+        doa.width = self._get_doa_axis("Y")
+        doa.height = self._get_doa_axis("Z")
 
         return doa
 
@@ -135,15 +135,15 @@ class ModelConfiguration:
         if self.simulation_volume is None:
             self.simulation_volume = {}
 
-        self.simulation_volume["X"] = self._set_doa_axis(doa.Length, "Length")
-        self.simulation_volume["Y"] = self._set_doa_axis(doa.Width, "Width")
-        self.simulation_volume["Z"] = self._set_doa_axis(doa.Height, "Height")
+        self.simulation_volume["X"] = self._set_doa_axis(doa.length, "Length")
+        self.simulation_volume["Y"] = self._set_doa_axis(doa.width, "Width")
+        self.simulation_volume["Z"] = self._set_doa_axis(doa.height, "Height")
 
     def _get_doa_axis(self, rel_pos: str) -> DomainAxisDefinition:
         pos = self.simulation_volume.get(rel_pos)
         return DomainAxisDefinition(position=pos["type"], value=pos["value"], length=pos["length"])
 
-    def _set_doa_axis(self, fld: DomainAxisDefinition, param: str) -> Dict[str, Any]:
+    def _set_doa_axis(self, fld: DomainAxisDefinition, param: str) -> dict[str, Any]:
         """Serializes a DomainAxisDefinition to the required format for the server."""
         if fld is None:
             raise InvalidArguments(
