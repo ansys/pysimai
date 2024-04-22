@@ -183,9 +183,14 @@ class Project(ComputableDataModel):
 
         return self._client._api.compute_formula(self.id, calculette_payload)
 
-    def get_latest_gc_result(self):
+    @property
+    def latest_gc_result(self):
         """Get the latest results of the formulas."""
-        return self.fields["gc_compute_result"]
+        return self._gc_compute_result if self._gc_compute_result else None
+
+    @latest_gc_result.setter
+    def latest_gc_result(self, val):
+        self._gc_compute_result = val
 
     def _compose_calculette_payload(
         self,
@@ -225,8 +230,8 @@ class Project(ComputableDataModel):
         elif state == "successful":
             logger.debug(f"{self._classname} id {self.id} set status successful")
             if target.get("action") == "compute":
-                self.fields["gc_compute_result"] = data.get("result").get("value")
-                self._set_is_over()
+                self.latest_gc_result = data.get("result").get("value")
+            self._set_is_over()
         elif state in ERROR_STATES:
             self.fields[
                 "error"
@@ -236,6 +241,10 @@ class Project(ComputableDataModel):
             )
             self._set_has_failed()
             logger.error(self.fields.get("error"))
+
+    @ComputableDataModel._failure_message.getter
+    def _failure_message(self):
+        return self.fields.get("error")
 
 
 class ProjectDirectory(Directory[Project]):

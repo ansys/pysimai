@@ -163,12 +163,11 @@ class ModelConfiguration:
             for gc in model_output.global_coefficients:
                 bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
                 self.project.verify_gc_formula(gc.formula, bc_keys, model_output.surface)
-                self.project.compute_gc_formula(gc.formula, bc_keys, model_output.surface)
                 self.project.wait()
                 self.global_coefficients += [asdict(gc)]
-                if self._gc_results is not None:
+                if self._gc_results is None:
                     self._gc_results = []
-                self._gc_results += [self.project.get_latest_gc_result()]
+                self._gc_results += [self.project.latest_gc_result]
 
     def to_payload(self):
         """Constracts the payload for a build request."""
@@ -188,7 +187,16 @@ class ModelConfiguration:
 
     def compute_global_coefficient(self):
         """Computes the results of ."""
-        return self._gc_results if self._gc_results else None
+
+        bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
+
+        rr = []
+        for gc in self.global_coefficients:
+            self.project.compute_gc_formula(gc.get("formula"), bc_keys, [])
+            self.project.wait()
+            rr = self.project.latest_gc_result
+
+        return [rr, self._gc_results if self._gc_results else None]
 
 
 class Model(ComputableDataModel):
