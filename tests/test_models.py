@@ -155,7 +155,7 @@ def test_set_doa(simai_client):
 
     new_height = {"position": "relative_to_center", "value": 0.5, "length": 15.2}
 
-    doa.Height = simai_client.models.doa_axis_definition(**new_height)
+    doa.height = simai_client.models.doa_axis_definition(**new_height)
 
     model_conf.domain_of_analysis = doa
 
@@ -164,7 +164,7 @@ def test_set_doa(simai_client):
     assert model_conf.simulation_volume.get("Z").get("length") == new_height.get("length")
 
 
-def test_get_doa(simai_client):
+def test_get_doa():
     """WHEN the Domain of Analysis is retrieved
     THEN the params of the axes match
     """
@@ -175,9 +175,9 @@ def test_get_doa(simai_client):
 
     doa = model_conf.domain_of_analysis
 
-    assert doa.Length.length == doa_length_raw.get("length")
-    assert doa.Length.position == doa_length_raw.get("type")
-    assert doa.Length.value == doa_length_raw.get("value")
+    assert doa.length.length == doa_length_raw.get("length")
+    assert doa.length.position == doa_length_raw.get("type")
+    assert doa.length.value == doa_length_raw.get("value")
 
 
 def test_wrong_doa_axis_values(simai_client):
