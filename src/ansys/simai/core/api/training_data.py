@@ -23,6 +23,7 @@
 from typing import Any, Dict, Iterable, Optional
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+from ansys.simai.core.data.types import SubsetEnum
 
 
 class TrainingDataClientMixin(ApiClientMixin):
@@ -66,7 +67,12 @@ class TrainingDataClientMixin(ApiClientMixin):
     def get_training_data_subset(self, project_id: str, training_data_id: str) -> Dict[str, Any]:
         return self._get(f"projects/{project_id}/data/{training_data_id}/subset")
 
-    def put_training_data_subset(self, project_id: str, training_data_id: str, subset: str) -> None:
-        return self._put(
-            f"projects/{project_id}/data/{training_data_id}/subset", json={"subset": subset}
-        )
+    def put_training_data_subset(
+        self, project_id: str, training_data_id: str, subset: SubsetEnum
+    ) -> None:
+        if subset not in SubsetEnum.__members__.values():
+            raise ValueError("Must be one of: Ignored, Training, Test, Validation.")
+        else:
+            return self._put(
+                f"projects/{project_id}/data/{training_data_id}/subset", json={"subset": subset}
+            )

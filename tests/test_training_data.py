@@ -87,8 +87,7 @@ def test_training_data_remove_from_project(simai_client, training_data_factory, 
     "td_factory_args",
     [
         ({"id": "777", "name": "ICBM", "subset": SubsetEnum.TRAINING}),
-        ({"id": "888", "name": "Duke Nukem", "subset": ""}),
-        ({"id": "999", "name": "Roman"}),
+        ({"id": "888", "name": "Duke Nukem", "subset": "Validation"}),
     ],
 )
 @responses.activate
@@ -108,14 +107,34 @@ def test_get_subset(training_data_factory, project_factory, td_factory_args):
 
 
 @responses.activate
-def test_set_subset(training_data_factory, project_factory):
-    project = project_factory(id="n07e45y", name="bananarama")
-    td: TrainingData = training_data_factory(project=project, subset=SubsetEnum.TRAINING)
-
+def test_get_subset_fails_enum_check(training_data_factory, project_factory):
+    project = project_factory(id="bon5ai", name="coolest_proj")
+    td: TrainingData = training_data_factory(project=project, id="415")
+    td_subset = "Trainidation"
     responses.add(
         responses.GET,
         f"https://test.test/projects/{project.id}/data/{td.id}/subset",
         status=200,
+        json={"subset": td_subset},
+    )
+    with pytest.raises(ValueError) as e:
+        td.get_subset(project=project)
+    assert str(e.value) == f"'{td_subset}' is not a valid SubsetEnum"
+
+
+@responses.activate
+def test_assign_subset(training_data_factory, project_factory):
+    project = project_factory(id="n07e45y", name="bananarama")
+    td: TrainingData = training_data_factory(project=project, subset=SubsetEnum.TRAINING)
+
+    responses.add(
+        responses.PUT,
+        f"https://test.test/projects/{project.id}/data/{td.id}/subset",
+        status=200,
         json={"subset": SubsetEnum.VALIDATION},
     )
-    assert td.get_subset(project=project) == SubsetEnum.VALIDATION
+    td.assign_subset(project=project, subset=SubsetEnum.VALIDATION)
+    td.assign_subset(project=project, subset="Validation")
+    with pytest.raises(ValueError) as ve:
+        td.assign_subset(project=project, subset="Travalignorinestidation")
+    assert str(ve.value) == "Must be one of: Ignored, Training, Test, Validation."

@@ -76,7 +76,7 @@ class TrainingData(ComputableDataModel):
             for training_data_part in self.fields["parts"]
         ]
 
-    def get_subset(self, project: Identifiable["Project"]) -> Optional[str]:
+    def get_subset(self, project: Identifiable["Project"]) -> SubsetEnum:
         """Get the subset that the training data belongs to, in relation to the given project.
 
         Args:
@@ -84,18 +84,20 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            Name of the subset that the training data belongs to in the given project.
+            SubsetEnum of the subset that the training data belongs to in the given project.
+                (e.g. <SubsetEnum.VALIDATION: 'Validation'>)
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
-        return self._client._api.get_training_data_subset(project_id, self.id).get("subset")
+        subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
+        return SubsetEnum(subset_value)
 
     def assign_subset(self, project: Identifiable["Project"], subset: SubsetEnum) -> None:
-        """Assign the data subset in relation to a given project.
+        """Assign the training data subset in relation to a given project.
 
         Args:
-            project: ID or :class:`model <.projects.Project>` of the project to check
-                the :class:`~.projects.Project` object for, or its ID.
-            subset: Define which subset this data belongs to (Training, Validation, Test, Ignored).
+            project: ID or :class:`model <.projects.Project>`
+            subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training").
+                Available options: (Training, Validation, Test, Ignored)
 
         Returns:
             None
@@ -284,12 +286,3 @@ class TrainingDataDirectory(Directory[TrainingData]):
         if compute:
             self._client._api.compute_training_data(training_data_id)
         return uploaded_parts
-
-    @property
-    def subset_names(self) -> List[str]:
-        """List assignable subset names to use in `assign_subset(project=project, subset=subset_type)`.
-
-        Returns:
-            `['Ignored', 'Training', 'Validation', 'Test']`.
-        """
-        return [subset.value for subset in SubsetEnum]
