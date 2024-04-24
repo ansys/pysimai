@@ -27,6 +27,7 @@ import pytest
 import responses
 
 from ansys.simai.core.data.types import SubsetEnum
+from ansys.simai.core.errors import InvalidArguments
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.training_data import TrainingData
@@ -135,6 +136,6 @@ def test_assign_subset(training_data_factory, project_factory):
     )
     td.assign_subset(project=project, subset=SubsetEnum.VALIDATION)
     td.assign_subset(project=project, subset="Validation")
-    with pytest.raises(ValueError) as ve:
+    with pytest.raises(InvalidArguments) as ve:
         td.assign_subset(project=project, subset="Travalignorinestidation")
     assert str(ve.value) == "Must be one of: Ignored, Training, Test, Validation."

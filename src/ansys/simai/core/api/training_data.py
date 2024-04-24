@@ -24,6 +24,7 @@ from typing import Any, Dict, Iterable, Optional
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.data.types import SubsetEnum
+from ansys.simai.core.errors import InvalidArguments
 
 
 class TrainingDataClientMixin(ApiClientMixin):
@@ -71,8 +72,7 @@ class TrainingDataClientMixin(ApiClientMixin):
         self, project_id: str, training_data_id: str, subset: SubsetEnum
     ) -> None:
         if subset not in SubsetEnum.__members__.values():
-            raise ValueError("Must be one of: Ignored, Training, Test, Validation.")
-        else:
-            return self._put(
-                f"projects/{project_id}/data/{training_data_id}/subset", json={"subset": subset}
-            )
+            raise InvalidArguments("Must be one of: Ignored, Training, Test, Validation.")
+        return self._put(
+            f"projects/{project_id}/data/{training_data_id}/subset", json={"subset": subset}
+        )
