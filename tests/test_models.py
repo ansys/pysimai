@@ -20,13 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 import pytest
 import responses
 
 from ansys.simai.core.data.models import (
+    DomainAxisDefinition,
+    DomainOfAnalysis,
     ModelConfiguration,
 )
 from ansys.simai.core.errors import InvalidArguments
@@ -138,10 +139,7 @@ def test_build(simai_client):
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
 
-    model_conf = asdict(launched_model.configuration)
-    model_conf.pop("project_id")
-
-    assert model_conf == MODEL_CONF_RAW
+    assert launched_model.configuration._to_payload() == MODEL_CONF_RAW
 
 
 def test_set_doa(simai_client):
@@ -151,22 +149,24 @@ def test_set_doa(simai_client):
 
     model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
 
-    doa = model_conf.domain_of_analysis
-
     new_height = {"position": "relative_to_center", "value": 0.5, "length": 15.2}
 
-    doa.height = simai_client.models.doa_axis_definition(**new_height)
+    model_conf.domain_of_analysis.height = DomainAxisDefinition(**new_height)
 
-    model_conf.domain_of_analysis = doa
-
-    assert model_conf.simulation_volume.get("Z").get("type") == new_height.get("position")
-    assert model_conf.simulation_volume.get("Z").get("value") == new_height.get("value")
-    assert model_conf.simulation_volume.get("Z").get("length") == new_height.get("length")
+    assert model_conf._to_payload().get("simulation_volume").get("Z").get("type") == new_height.get(
+        "position"
+    )
+    assert model_conf._to_payload().get("simulation_volume").get("Z").get(
+        "value"
+    ) == new_height.get("value")
+    assert model_conf._to_payload().get("simulation_volume").get("Z").get(
+        "length"
+    ) == new_height.get("length")
 
 
 def test_get_doa():
     """WHEN the Domain of Analysis is retrieved
-    THEN the params of the axes match
+    THEN the parameters of the axes match
     """
 
     model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
@@ -180,13 +180,64 @@ def test_get_doa():
     assert doa.length.value == doa_length_raw.get("value")
 
 
-def test_wrong_doa_axis_values(simai_client):
-    """WHEN the value of the DomainAxisDefinition is negative
-    AND the position is not absolute
+@pytest.mark.parametrize(
+    "doa_axis_raw",
+    [
+        ({"position": "relative_to_center", "value": -0.5, "length": 15.2}),
+        ({"position": "relative_to_center", "value": 0.5, "length": -15.2}),
+    ],
+)
+def test_wrong_doa_axis_construction(doa_axis_raw):
+    """1: WHEN the parameter length of the DomainAxisDefinition is negative
+    2: WHEN the parameter value of the DomainAxisDefinition is negative AND the position is not absolute
     THEN an InvalidArguments exception is raised.
     """
 
-    doa_axis_raw = {"position": "relative_to_center", "value": -0.5, "length": 15.2}
+    with pytest.raises(InvalidArguments):
+        DomainAxisDefinition(**doa_axis_raw)
+
+
+def test_wrong_doa_axis_length_in_assignment():
+    """WHEN a negative number is assigned to the parameter length of DomainAxisDefinition
+    THEN an InvalidArguments exception is raised.
+    """
+
+    doa_axis = DomainAxisDefinition("relative_to_center", 1.5, 15.2)
 
     with pytest.raises(InvalidArguments):
-        simai_client.models.doa_axis_definition(**doa_axis_raw)
+        doa_axis.length = -11.2
+
+
+def test_wrong_doa_axis_value_in_assignment():
+    """WHEN a negative number is assigned to the parameter value of DomainAxisDefinition
+    THEN an InvalidArguments exception is raised.
+    """
+
+    doa_axis = DomainAxisDefinition("relative_to_center", 1.5, 15.2)
+
+    with pytest.raises(InvalidArguments):
+        doa_axis.value = -11.2
+
+
+def test_doa_tuple():
+    """WHEN a negative number is assigned to the parameter value of DomainAxisDefinition
+    THEN an InvalidArguments exception is raised.
+    """
+
+    lgth = ("relative_to_max", 5, 8.1)
+    wdth = ("relative_to_max", 5, 8.1)
+    hght = ("absolute", -4.5, 0.1)
+
+    doa_tuple = DomainOfAnalysis(
+        length=lgth,
+        width=wdth,
+        height=hght,
+    )
+
+    doa_long = DomainOfAnalysis(
+        length=DomainAxisDefinition(*lgth),
+        height=DomainAxisDefinition(*hght),
+        width=DomainAxisDefinition(*wdth),
+    )
+
+    assert doa_tuple == doa_long

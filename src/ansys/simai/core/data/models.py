@@ -20,79 +20,117 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import asdict, dataclass
-from typing import Any, Literal
-
-from pydantic import BaseModel, PositiveFloat, ValidationError, model_validator
+from dataclasses import dataclass
+from typing import Any, Literal, Optional
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.errors import InvalidArguments
 
 
-class DomainAxisDefinition(BaseModel):
-    """Representation of an axis in Domain of Analysis.
+@dataclass
+class DomainAxisDefinition:
+    """Defines an axis in the Domain of Analysis.
 
     Args:
-        position: indicates the position of the anchor.
+        position: Anchor point position.
 
-                    | *relative_to_min*: it corresponds to `VolXmin = xmin - value`
+                    | *relative_to_min*: `VolXmin = xmin - value`
 
-                    | *relative_to_max*: it corresponds to `VolXmax = xmax + value`
+                    | *relative_to_max*: `VolXmax = xmax + value`
 
-                    | *relative_to_center*: it corresponds to `(xmin+xmax)/2 - value`
+                    | *relative_to_center*: `(xmin+xmax)/2 - value`
 
-                    | *absolute*: it corresponds to `VolXmin = value`
+                    | *absolute*: `VolXmin = value`
 
-        value:      the distance of the anchor from the position. When position is set to
-                    "absolute", value could be either positive or negative. Only positive
-                    values are accepted in any other case.
-        length:     the length of the Domain of Analysis along the axis.
+        value:      Distance of the anchor from the position.
+                        When ``position=absolute``, the distance can be either positive or negative.
+                        In any other case, only positive values are accepted.
+        length:     Length of the Domain of Analysis along the axis. Only positive numbers are accepted.
+
+    Example:
+        Define the Z-axis(i.e., height) in a Domain of Analysis
+
+        .. code-block:: python
+
+            from ansys.simai.core.data.models import DomainAxisDefinition, DomainOfAnalysis
+
+            # Get the last configuration from a project
+            bld_conf = my_project.last_model_configuration
+
+            # Define a new axis for the Domain of Analysis
+            new_doa_height = DomainAxisDefinition("relative_to_min", 180.5, 99.1)
+
+            # Assign the new Domain of Analysis to the configuration
+            bld_conf.domain_of_analysis.height = new_doa_height
 
     """
 
-    position: Literal["relative_to_min", "relative_to_max", "relative_to_center", "absolute"]
-    value: float
-    length: PositiveFloat
+    def __post_init__(self):
+        """Assess whether the value and length are correctly set."""
 
-    @model_validator(mode="after")
-    def chek_value(self):
-        """Evaluates that the value is set correctly according to the position argument."""
-        if self.value < 0 and self.position != "absolute":
+        self.__validate_length(self.length)
+        self.__validate_value(self.value)
+
+    def __set_value(self, val: float):
+        self.__validate_value(val)
+        self.__dict__["value"] = val
+
+    def __get_value(self):
+        return self.__dict__.get("value")
+
+    def __validate_value(self, val: float):
+        if val < 0 and self.position != "absolute":
             raise InvalidArguments(
-                "value should be a positive number when the position is not absolute"
-            )
-        return self
+                f"{self.__class__.__name__}: 'value' must be a positive number when the position is not 'absolute'.",
+            ) from None
+
+    def __set_length(self, lgth: float):
+        self.__validate_length(lgth)
+        self.__dict__["length"] = lgth
+
+    def __get_length(self):
+        return self.__dict__.get("length")
+
+    def __validate_length(self, lgth: float):
+        if not lgth > 0:
+            raise InvalidArguments(
+                f"{self.__class__.__name__}: 'length' must be a positive number.",
+            ) from None
+
+    position: Literal["relative_to_min", "relative_to_max", "relative_to_center", "absolute"]
+    value: float = property(__get_value, __set_value)
+    length: float = property(__get_length, __set_length)
+
+    del __set_length, __set_value, __get_length, __get_value
 
 
 @dataclass
 class DomainOfAnalysis:
-    """Definition of the Domain of Analysis.
+    """Defines the Domain of Analysis.
 
     Args:
-        Length: the definition of the Domain of Analysis along the X axis
-        Width: the definition of the Domain of Analysis along the Y axis
-        Height: the definition of the Domain of Analysis along the Z axis
+        length: Domain of Analysis along the X axis
+        width: Domain of Analysis along the Y axis
+        height: Domain of Analysis along the Z axis
 
     Example:
         Get the Domain of Analysis from a configuration and replace it with a new one
 
         .. code-block:: python
 
-            # get the last configuration from a project
+            from ansys.simai.core.data.models import DomainOfAnalysis
+
+            # Get the last configuration from a project
             bld_conf = my_project.last_model_configuration
 
-            # get DoA from the configuration
-            doa = bld_conf.domain_of_analysis
+            # Define a new Domain of Analysis
+            new_doa = DomainOfAnalysis(
+                length=("relative_to_max", 5, 8.1),
+                width=("relative_to_max", 5, 8.1),
+                height=("absolute", -4.5, 0.1),
+            )
 
-            # create a new DoA
-            new_doa = simai.models.domain_of_analysis()
-
-            new_doa.height = simai.models.doa_axis_definition("relative_to_min", 4.5, 4.1)
-            new_doa.length = simai.models.doa_axis_definition("relative_to_center", 0.5, 15)
-            new_doa.width = simai.models.doa_axis_definition("absolute", -1.5, 6.1)
-
-            # set the new DoA to the configuration
-
+            # Assign the new Domain of Analysis to the configuration
             bld_conf.domain_of_analysis = new_doa
 
     """
@@ -101,55 +139,119 @@ class DomainOfAnalysis:
     width: DomainAxisDefinition = None
     height: DomainAxisDefinition = None
 
+    def __post_init__(self):
+        if type(self.length) == tuple:
+            self.length = DomainAxisDefinition(*self.length)
+        if type(self.width) == tuple:
+            self.width = DomainAxisDefinition(*self.width)
+        if type(self.height) == tuple:
+            self.height = DomainAxisDefinition(*self.height)
+
 
 @dataclass
 class ModelConfiguration:
-    """The configuration for building a model."""
+    """Configures the build of a model.
 
-    boundary_conditions: dict[str, Any] = None
-    build_preset: str = None
-    continuous: bool = False
-    fields: dict[str, Any] = None
-    global_coefficients: dict[dict[str, Any]] = None
-    simulation_volume: dict[str, Any] = None
-    project_id: str = None
+    Attributes:
+        domain_of_analysis: The Domain of Analysis of the model configuration.
 
-    @property
-    def domain_of_analysis(self) -> DomainOfAnalysis:
-        """The Domain of Analysis of the model configuration."""
-        if not self.simulation_volume:
-            return None
+    Example:
+        Define the Domain of Analsysin in a new model configuration
 
-        doa = DomainOfAnalysis()
+        .. code-block:: python
 
-        doa.length = self._get_doa_axis("X")
-        doa.width = self._get_doa_axis("Y")
-        doa.height = self._get_doa_axis("Z")
+            from ansys.simai.core.data.models import (
+                DomainAxisDefinition,
+                DomainOfAnalysis,
+                ModelConfiguration,
+            )
 
-        return doa
+            # Create an empty model configuration
+            mdl_conf = ModelConfiguration()
 
-    @domain_of_analysis.setter
-    def domain_of_analysis(self, doa: DomainOfAnalysis):
-        """Sets the Domain of Analysis in the configuration."""
+            # Domain of Analysis parameters can be set one-by-one, as:
+            # such as setting the length
+            mdl_conf.domain_of_analysis.length = DomainAxisDefinition(
+                "relative_to_min", 11155.5, 27.1
+            )
 
-        if self.simulation_volume is None:
-            self.simulation_volume = {}
+            # Also, a Domain of Analysis can be assigned to the configuration at once
+            mdl_conf.domain_of_analysis = DomainOfAnalysis(
+                length=("relative_to_max", 5, 8.1),
+                width=("relative_to_max", 5, 8.1),
+                height=("absolute", -4.5, 0.1),
+            )
+    """
 
-        self.simulation_volume["X"] = self._set_doa_axis(doa.length, "Length")
-        self.simulation_volume["Y"] = self._set_doa_axis(doa.width, "Width")
-        self.simulation_volume["Z"] = self._set_doa_axis(doa.height, "Height")
+    domain_of_analysis: DomainOfAnalysis = DomainOfAnalysis()
+
+    def __init__(
+        self,
+        boundary_conditions: Optional[dict[str, Any]] = None,
+        build_preset: Optional[str] = None,
+        continuous: Optional[bool] = False,
+        fields: Optional[dict[str, Any]] = None,
+        global_coefficients: Optional[dict[dict[str, Any]]] = None,
+        simulation_volume: Optional[dict[str, Any]] = None,
+        project_id: Optional[str] = None,
+        domain_of_analysis: Optional[DomainOfAnalysis] = None,
+    ):
+        """Sets the properties of a build configuration."""
+        self.boundary_conditions = boundary_conditions
+        self.build_preset = build_preset
+        self.continuous = continuous
+        self.__fields = fields
+        self.global_coefficients = global_coefficients
+        self.domain_of_analysis = domain_of_analysis
+        if domain_of_analysis is not None and simulation_volume is not None:
+            raise InvalidArguments(
+                f"Either the 'domain_of_analysis' or the 'simulation_volume' parameter could be set in the {self.__class__.__name__} constructor."
+            )
+        self.__simulation_volume = simulation_volume
+        if self.__simulation_volume is not None:
+            self.domain_of_analysis = DomainOfAnalysis(
+                length=self._get_doa_axis("X"),
+                width=self._get_doa_axis("Y"),
+                height=self._get_doa_axis("Z"),
+            )
+
+        self.project_id = project_id
 
     def _get_doa_axis(self, rel_pos: str) -> DomainAxisDefinition:
-        pos = self.simulation_volume.get(rel_pos)
+        """Composes a DomainAxisDefinition from raw json."""
+        pos = self.__simulation_volume.get(rel_pos)
         return DomainAxisDefinition(position=pos["type"], value=pos["value"], length=pos["length"])
 
     def _set_doa_axis(self, fld: DomainAxisDefinition, param: str) -> dict[str, Any]:
         """Serializes a DomainAxisDefinition to the required format for the server."""
         if fld is None:
             raise InvalidArguments(
-                f"Empty parameter {param} found when setting the Domain of Analysis. All the parameters should be filled in."
+                f"Empty parameter '{param}' found when setting the Domain of Analysis. All parameters should be set."
             )
         return {"length": fld.length, "type": fld.position, "value": fld.value}
+
+    def _to_payload(self):
+        """Constracts the payload for a build request."""
+        flds = {
+            "surface": self.__fields.get("surface", []),
+            "surface_input": self.__fields.get("surface_input", []),
+            "volume": self.__fields.get("volume", []),
+        }
+
+        simulation_volume = {
+            "X": self._set_doa_axis(self.domain_of_analysis.length, "length"),
+            "Y": self._set_doa_axis(self.domain_of_analysis.width, "width"),
+            "Z": self._set_doa_axis(self.domain_of_analysis.height, "height"),
+        }
+
+        return {
+            "boundary_conditions": (self.boundary_conditions if self.boundary_conditions else {}),
+            "build_preset": self.build_preset,
+            "continuous": self.continuous,
+            "fields": flds,
+            "global_coefficients": (self.global_coefficients if self.global_coefficients else []),
+            "simulation_volume": simulation_volume,
+        }
 
 
 class Model(ComputableDataModel):
@@ -223,34 +325,12 @@ class ModelDirectory(Directory[Model]):
                 new_model = simai.models.build(build_conf)
 
         """
-        build_conf = asdict(configuration)
-        project_id = build_conf.pop("project_id")
+        project_id = configuration.project_id
         return self._model_from(
             self._client._api.launch_build(
                 project_id,
-                build_conf,
+                configuration._to_payload(),
                 dismiss_data_with_fields_discrepancies,
                 dismiss_data_with_volume_overflow,
             )
         )
-
-    def doa_axis_definition(
-        self, position: str, value: float, length: PositiveFloat
-    ) -> DomainAxisDefinition:
-        """Sets an axis in the Domain of Analysis.
-
-        Returns:
-            a :class:`DomainAxisDefinition <DomainAxisDefinition>` object.
-
-        Raises:
-            `ansys.simai.core.errors.InvalidArguments`: when the arguments are not compatible with the definition of an axis of the Domain of Analysis.
-
-        """
-        try:
-            return DomainAxisDefinition(position=position, value=value, length=length)
-        except ValidationError as pydandic_exc:
-            raise InvalidArguments(pydandic_exc) from None
-
-    def domain_of_analysis(self):
-        """An empty :class:`DomainOfAnalysis <DomainOfAnalysis>` object."""
-        return DomainOfAnalysis()
