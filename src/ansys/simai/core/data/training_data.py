@@ -76,7 +76,7 @@ class TrainingData(ComputableDataModel):
             for training_data_part in self.fields["parts"]
         ]
 
-    def get_subset(self, project: Identifiable["Project"]) -> SubsetEnum:
+    def get_subset(self, project: Identifiable["Project"]) -> Optional[SubsetEnum]:
         """Get the subset that the training data belongs to, in relation to the given project.
 
         Args:
@@ -89,7 +89,7 @@ class TrainingData(ComputableDataModel):
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
-        return SubsetEnum(subset_value)
+        return SubsetEnum(subset_value) if subset_value else None
 
     def assign_subset(self, project: Identifiable["Project"], subset: SubsetEnum) -> None:
         """Assign the training data subset in relation to a given project.
@@ -102,6 +102,8 @@ class TrainingData(ComputableDataModel):
         Returns:
             None
         """
+        if subset not in SubsetEnum.__members__.values():
+            raise InvalidArguments("Must be one of: Ignored, Training, Test, Validation.")
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         self._client._api.put_training_data_subset(project_id, self.id, subset)
 

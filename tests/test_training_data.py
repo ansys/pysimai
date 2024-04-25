@@ -89,6 +89,9 @@ def test_training_data_remove_from_project(simai_client, training_data_factory, 
     [
         ({"id": "777", "name": "ICBM", "subset": SubsetEnum.TRAINING}),
         ({"id": "888", "name": "Duke Nukem", "subset": "Validation"}),
+        ({"id": "999", "name": "Roman"}),
+        ({"id": "81", "name": "Diablo", "subset": None}),
+        ({"id": "9191", "name": "Deckard", "subset": "Ignored"}),
     ],
 )
 @responses.activate
