@@ -160,7 +160,7 @@ class OptimizationDirectory(Directory[Optimization]):
 
             print(results)
         """
-        workspace_id = get_id_from_identifiable(workspace, False, self._client._current_workspace)
+        workspace_id = get_id_from_identifiable(workspace, True, self._client._current_workspace)
         if not minimize and not maximize:
             raise InvalidArguments("No global coefficient to optimize.")
         objective = {}

@@ -29,6 +29,7 @@ from ansys.simai.core.data.types import (
     MonitorCallback,
     NamedFile,
     Path,
+    SubsetEnum,
     get_id_from_identifiable,
     unpack_named_file,
 )
@@ -75,7 +76,7 @@ class TrainingData(ComputableDataModel):
             for training_data_part in self.fields["parts"]
         ]
 
-    def get_subset(self, project: Identifiable["Project"]) -> Optional[str]:
+    def get_subset(self, project: Identifiable["Project"]) -> Optional[SubsetEnum]:
         """Get the subset that the training data belongs to, in relation to the given project.
 
         Args:
@@ -83,10 +84,28 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            Name of the subset that the training data belongs to in the given project.
+            SubsetEnum of the subset that the training data belongs to in the given project.
+                (e.g. <SubsetEnum.VALIDATION: 'Validation'>)
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
-        return self._client._api.get_training_data_subset(project_id, self.id).get("subset")
+        subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
+        return SubsetEnum(subset_value) if subset_value else None
+
+    def assign_subset(self, project: Identifiable["Project"], subset: SubsetEnum) -> None:
+        """Assign the training data subset in relation to a given project.
+
+        Args:
+            project: ID or :class:`model <.projects.Project>`
+            subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training").
+                Available options: (Training, Validation, Test, Ignored)
+
+        Returns:
+            None
+        """
+        if subset not in SubsetEnum.__members__.values():
+            raise InvalidArguments("Must be one of: Ignored, Training, Test, Validation.")
+        project_id = get_id_from_identifiable(project, default=self._client._current_project)
+        self._client._api.put_training_data_subset(project_id, self.id, subset)
 
     @property
     def extracted_metadata(self) -> Optional[Dict]:

@@ -1,4 +1,5 @@
 *
-!Vocab
-!Vocab/**
+!config
+!config/vocabularies
+!config/vocabularies/**
 !.gitignore
