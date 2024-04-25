@@ -178,8 +178,8 @@ class Authenticator(AuthBase):
             return
         self._url_prefix = config.url
         # HACK: start with a slash to override the /v2/ on the api url
-        realm_url = urljoin(str(config.url), "/auth/realms/simai")
-        self._token_url = f"{realm_url}/protocol/openid-connect/token"
+        self._realm_url = urljoin(str(config.url), "/auth/realms/simai")
+        self._token_url = f"{self._realm_url}/protocol/openid-connect/token"
         self._organization_name = config.organization
         self._refresh_timer = None
         if config.credentials:
@@ -187,7 +187,7 @@ class Authenticator(AuthBase):
                 self._session, self._token_url, config.credentials
             )
         else:
-            device_auth_url = f"{realm_url}/protocol/openid-connect/auth/device"
+            device_auth_url = f"{self._realm_url}/protocol/openid-connect/auth/device"
             auth_hash = None if config.disable_cache else config._auth_hash()
             auth = _get_cached_or_request_device_auth(
                 self._session, device_auth_url, self._token_url, auth_hash
@@ -211,7 +211,8 @@ class Authenticator(AuthBase):
             is_request_multipart_data = "multipart/form_data" in request.headers.get(
                 "Content-Type", ""
             )
-            if is_token_expired or is_request_multipart_data:
+            is_auth_request = self._realm_url in request.url
+            if not is_auth_request and is_token_expired or is_request_multipart_data:
                 self._refresh_auth()
             request.headers["Authorization"] = f"Bearer {self._authentication.access_token}"
             request.headers["X-Org"] = self._organization_name
@@ -227,7 +228,7 @@ class Authenticator(AuthBase):
         if self._refresh_timer:
             self._refresh_timer.cancel()
         self._refresh_timer = threading.Timer(
-            self._authentication.refresh_expires_in - 30, self._refresh_auth
+            self._authentication.refresh_expires_in - 60, self._refresh_auth
         )
         self._refresh_timer.daemon = True
         self._refresh_timer.start()
