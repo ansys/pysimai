@@ -144,7 +144,7 @@ def test_build(simai_client):
 
 def test_set_doa(simai_client):
     """WHEN the Domain of Analysis is updated
-    THEN the simulation_volume is updated accordingly
+    THEN the simulation_volume is updated accordingly.
     """
 
     model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
@@ -166,7 +166,7 @@ def test_set_doa(simai_client):
 
 def test_get_doa():
     """WHEN the Domain of Analysis is retrieved
-    THEN the parameters of the axes match
+    THEN the parameters of the axes match.
     """
 
     model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
