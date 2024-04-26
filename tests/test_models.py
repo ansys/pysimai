@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 import responses
@@ -29,6 +28,7 @@ from ansys.simai.core.data.models import ModelConfiguration
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.models import Model
+    from ansys.simai.core.data.projects import Project
 
 
 MODEL_CONF_RAW = {
@@ -127,14 +127,26 @@ def test_build(simai_client):
         status=200,
     )
 
-    in_model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": None,
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    in_model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
 
     launched_model: Model = simai_client.models.build(in_model_conf)
 
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
 
-    model_conf = asdict(launched_model.configuration)
-    model_conf.pop("project_id")
-
-    assert model_conf == MODEL_CONF_RAW
+    assert launched_model.configuration._to_payload() == MODEL_CONF_RAW

@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 import pytest
@@ -111,9 +110,33 @@ def test_last_model_configuration(simai_client):
         "boundary_conditions": {"Vx": {}},
         "build_preset": "debug",
         "continuous": False,
-        "fields": {},
-        "global_coefficients": None,
-        "simulation_volume": None,
+        "fields": {
+            "surface": [
+                {
+                    "format": "value",
+                    "keys": None,
+                    "location": "cell",
+                    "name": "WallShearStress_0",
+                    "unit": None,
+                }
+            ],
+            "surface_input": [],
+            "volume": [
+                {
+                    "format": "value",
+                    "keys": None,
+                    "location": "cell",
+                    "name": "Pressure",
+                    "unit": None,
+                }
+            ],
+        },
+        "global_coefficients": [],
+        "simulation_volume": {
+            "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
+            "Y": {"length": 80.0, "type": "absolute", "value": -80},
+            "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
+        },
     }
 
     raw_project = {
@@ -135,7 +158,7 @@ def test_last_model_configuration(simai_client):
     project_last_conf = project.last_model_configuration
 
     assert isinstance(project_last_conf, ModelConfiguration)
-    assert asdict(project_last_conf) == (last_conf | {"project_id": raw_project.get("id")})
+    assert project_last_conf._to_payload() == last_conf
 
 
 @responses.activate

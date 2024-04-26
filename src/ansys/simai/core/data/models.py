@@ -162,14 +162,10 @@ class ModelConfiguration:
                 self.global_coefficients = []
             for gc in model_output.global_coefficients:
                 bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
-                self.project.verify_gc_formula(gc.formula, bc_keys, model_output.surface)
-                self.project.wait()
-                self.global_coefficients += [asdict(gc)]
-                if self._gc_results is None:
-                    self._gc_results = []
-                self._gc_results += [self.project.latest_gc_result]
+                if self.project.verify_gc_formula(gc.formula, bc_keys, model_output.surface):
+                    self.global_coefficients += [asdict(gc)]
 
-    def to_payload(self):
+    def _to_payload(self):
         """Constracts the payload for a build request."""
         flds = {
             "surface": self.fields.get("surface", []),
@@ -190,13 +186,10 @@ class ModelConfiguration:
 
         bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
 
-        rr = []
-        for gc in self.global_coefficients:
+        return [
             self.project.compute_gc_formula(gc.get("formula"), bc_keys, [])
-            self.project.wait()
-            rr = self.project.latest_gc_result
-
-        return [rr, self._gc_results if self._gc_results else None]
+            for gc in self.global_coefficients
+        ]
 
 
 class Model(ComputableDataModel):
@@ -213,7 +206,10 @@ class Model(ComputableDataModel):
     @property
     def configuration(self) -> ModelConfiguration:
         """The build configuration of model."""
-        return ModelConfiguration(project_id=self.project_id, **self.fields["configuration"])
+        return ModelConfiguration(
+            project=self._client.projects.get(self.fields["project_id"]),
+            **self.fields["configuration"],
+        )
 
 
 class ModelDirectory(Directory[Model]):
@@ -275,7 +271,7 @@ class ModelDirectory(Directory[Model]):
         return self._model_from(
             self._client._api.launch_build(
                 project_id,
-                configuration.to_payload(),
+                configuration._to_payload(),
                 dismiss_data_with_fields_discrepancies,
                 dismiss_data_with_volume_overflow,
             )

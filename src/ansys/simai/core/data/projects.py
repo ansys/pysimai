@@ -21,19 +21,18 @@
 # SOFTWARE.
 
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional
+from typing import TYPE_CHECKING, List, NamedTuple, Optional
 
-from ansys.simai.core.data.base import (
-    ERROR_STATES,
-    PENDING_STATES,
-    ComputableDataModel,
-    Directory,
-)
+from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
+    from ansys.simai.core.data.global_coefficients_requests import (
+        CheckGlobalCoefficient,
+        ComputeGlobalCoefficient,
+    )
     from ansys.simai.core.data.training_data import TrainingData
 
 EXTRA_CALCULETTE_FIELDS = ["Area", "Normals", "Centroids"]
@@ -79,7 +78,7 @@ class IsTrainableInfo(NamedTuple):
         return f"<is_trainable: {self.is_trainable}, reason(s): {self.reason}>"
 
 
-class Project(ComputableDataModel):
+class Project(DataModel):
     """Provides the local representation of a  project object."""
 
     def __repr__(self) -> str:
@@ -149,7 +148,7 @@ class Project(ComputableDataModel):
         return data
 
     def verify_gc_formula(
-        self, gc_formula: str, bc: List[str] = None, surface_variables: List[str] = None
+        self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
     ):
         """Verifies if the Global Coefficient formula is valid."""
 
@@ -160,13 +159,24 @@ class Project(ComputableDataModel):
 
         sample_metadata = self.sample.fields.get("extracted_metadata")
 
-        calculette_payload = self._compose_calculette_payload(
-            gc_formula, sample_metadata, bc, surface_variables
+        gc_check: CheckGlobalCoefficient = self._client._check_gc_formula_directory._model_from(
+            data={
+                "id": f"{self.id}-check-{gc_formula}",
+            },
+            project_id=self.id,
+            gc_formula=gc_formula,
+            sample_metadata=sample_metadata,
+            bc=bc,
+            surface_variables=surface_variables,
         )
-        return self._client._api.check_formula(self.id, calculette_payload)
+
+        gc_check.run()
+        gc_check.wait()
+
+        return gc_check.is_ready
 
     def compute_gc_formula(
-        self, gc_formula: str, bc: List[str] = None, surface_variables: List[str] = None
+        self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
     ):
         """Verifies if the Global Coefficient formula is valid."""
 
@@ -177,74 +187,25 @@ class Project(ComputableDataModel):
 
         sample_metadata = self.sample.fields.get("extracted_metadata")
 
-        calculette_payload = self._compose_calculette_payload(
-            gc_formula, sample_metadata, bc, surface_variables
+        sample_metadata = self.sample.fields.get("extracted_metadata")
+
+        gc_compute: ComputeGlobalCoefficient = (
+            self._client._compute_gc_formula_directory._model_from(
+                data={
+                    "id": f"{self.id}-compute-{gc_formula}",
+                },
+                project_id=self.id,
+                gc_formula=gc_formula,
+                sample_metadata=sample_metadata,
+                bc=bc,
+                surface_variables=surface_variables,
+            )
         )
 
-        return self._client._api.compute_formula(self.id, calculette_payload)
+        gc_compute.run()
+        gc_compute.wait()
 
-    @property
-    def latest_gc_result(self):
-        """Get the latest results of the formulas."""
-        return self._gc_compute_result if self._gc_compute_result else None
-
-    @latest_gc_result.setter
-    def latest_gc_result(self, val):
-        self._gc_compute_result = val
-
-    def _compose_calculette_payload(
-        self,
-        gc_formula: str,
-        sample_metadata: Dict[str, Any],
-        bc: List[str] = None,
-        surface_variables: List[str] = None,
-    ):
-        """Composes the payload for a calculette request."""
-
-        surface_vars_list = EXTRA_CALCULETTE_FIELDS
-        if surface_variables:
-            surface_vars_list += surface_variables
-
-        return {
-            "formula": gc_formula,
-            "bc_list": bc if bc else [],
-            "surface_field_list": [
-                fd
-                for fd in sample_metadata.get("surface").get("fields")
-                if fd.get("name") in surface_vars_list
-            ],
-            "volume_field_list": [],
-        }
-
-    def _handle_job_sse_event(self, data):
-        """Update object with the information and state received through the SSE."""
-        logger.debug(f"Handling SSE job event for {self._classname} id {self.id}")
-
-        state: str = data.get("status")
-
-        target = data.get("target")
-
-        if state in PENDING_STATES:
-            logger.debug(f"{self._classname} id {self.id} set status pending")
-            self._set_is_pending()
-        elif state == "successful":
-            logger.debug(f"{self._classname} id {self.id} set status successful")
-            if target.get("action") == "compute":
-                self.latest_gc_result = data.get("result").get("value")
-            self._set_is_over()
-        elif state in ERROR_STATES:
-            self.fields[
-                "error"
-            ] = f"Verification of formula {target.get('formula')} failed with {data.get('reason')}"
-            logger.debug(
-                f"Verification of formula {target.get('formula')} failed with {data.get('reason')}"
-            )
-            self._set_has_failed()
-            logger.error(self.fields.get("error"))
-
-    @ComputableDataModel._failure_message.getter
-    def _failure_message(self):
-        return self.fields.get("error")
+        return gc_compute.result if gc_compute.is_ready else None
 
 
 class ProjectDirectory(Directory[Project]):
