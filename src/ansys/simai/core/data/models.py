@@ -94,7 +94,7 @@ class ModelDirectory(Directory[Model]):
                 b_project = simai.projects.get("project_B")
 
                 # set the id of b_project as the project_id of the configuration
-                builf_conf.project_id = b_project.id
+                build_conf.project = b_project
 
                 new_model = simai.models.build(build_conf)
 
