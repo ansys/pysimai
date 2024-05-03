@@ -22,6 +22,7 @@
 
 import json
 import logging
+from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 from urllib.parse import quote
 
@@ -135,6 +136,7 @@ class GeometryClientMixin(ApiClientMixin):
         geometry_id: str,
         file: Optional[File] = None,
         monitor_callback: Optional[MonitorCallback] = None,
+        dir: Optional[str | Path] = None,
     ) -> Union[None, BinaryIO]:
         """Download the input geometry into the file at the given path.
 
@@ -143,8 +145,9 @@ class GeometryClientMixin(ApiClientMixin):
             file: Binary file-object or the path of the file to put the content into.
             monitor_callback: Function or method to pass the ``bytes_read`` delta to.
                 This delta can be used to monitor progress.
+            dir: Optional directory to store the downloaded file, if no file is defined.
         """
-        return self.download_file(f"geometries/{geometry_id}/download", file, monitor_callback)
+        return self.download_file(f"geometries/{geometry_id}/download", file, dir, monitor_callback)
 
     def get_geometry_predictions(self, geometry_id: str):
         """Get predictions associated with a geometry.

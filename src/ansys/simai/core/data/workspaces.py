@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pathlib import Path
 from pprint import pformat
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 
@@ -109,17 +110,18 @@ class Workspace(DataModel):
         self._client.current_workspace = self
 
     def download_model_evaluation_report(
-        self, file: Optional[File] = None
+        self, file: Optional[File] = None, dir: Optional[str | Path] = None
     ) -> Union[None, BinaryIO]:
         """Download the PDF of the model evaluation report for the workspace.
 
         Args:
             file: Binary file-object or the path of the file to put the content into.
+            dir: Optional directory to store the downloaded file, if no file is defined.
 
         Returns:
             ``None`` if a file is specified or a binary file-object otherwise.
         """
-        return self._client._api.download_workspace_model_evaluation_report(self.id, file)
+        return self._client._api.download_workspace_model_evaluation_report(self.id, file, dir)
 
 
 class WorkspaceDirectory(Directory[Workspace]):

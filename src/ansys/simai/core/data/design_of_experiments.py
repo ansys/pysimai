@@ -37,13 +37,19 @@ class DesignOfExperimentsCollection:
     def __init__(self, client: "ansys.simai.core.client.SimAIClient"):
         self._client = client
 
-    def download(self, file: Union[str, Path], format: str = "xlsx") -> None:
+    def download(
+        self,
+        file: Union[str, Path],
+        dir: Optional[str | Path] = None,
+        format: str = "xlsx",
+    ) -> None:
         """Download the design of experiments data to the specified file or path.
 
         Args:
             file: Path of the file to put the content into.
             format: Expected format. The default is ``'xlsx'``. Options are ``'xlsx'``
                 and ``'csv'``.
+            dir: Optional directory to store the downloaded file, if no file is defined.
 
         Example:
             .. code-block:: python
@@ -54,7 +60,7 @@ class DesignOfExperimentsCollection:
                 simai.design_of_experiments.download(file="~/exp_plan.xlsx", format="xlsx")
         """
         self._client._api.download_design_of_experiments(
-            file, format, self._client.current_workspace.id
+            file, dir, format, self._client.current_workspace.id
         )
 
     def in_memory(self, format: Optional[str] = "csv") -> io.BytesIO:
@@ -78,5 +84,5 @@ class DesignOfExperimentsCollection:
                 # Read data with CSV reader, ...
         """
         return self._client._api.download_design_of_experiments(
-            None, format, self._client.current_workspace.id
+            None, None, format, self._client.current_workspace.id
         )

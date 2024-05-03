@@ -22,6 +22,7 @@
 
 import tempfile
 from io import BytesIO
+from os import listdir
 
 import responses
 
@@ -51,6 +52,7 @@ def test_design_of_experiments_export_excel(simai_client):
     THEN a call is made to /design-of-experiments/export?format=xlsx
     ALSO the returned content is written into the provided file
     """
+
     responses.add(
         responses.GET,
         f"https://test.test/design-of-experiments/export?format=xlsx&workspace={simai_client.current_workspace.id}",
@@ -59,7 +61,26 @@ def test_design_of_experiments_export_excel(simai_client):
     )
 
     with tempfile.TemporaryFile() as tmp_file:
-        simai_client.design_of_experiments.download(file=tmp_file, format="xlsx")
+        simai_client.design_of_experiments.download(file=tmp_file, dir=None, format="xlsx")
         tmp_file.seek(0)
         data_line = tmp_file.readline()
         assert data_line.decode("ascii") == "xp-plan-binary-data"
+
+
+@responses.activate
+def test_design_of_experiments_export_to_dir(simai_client):
+    """WHEN Calling design_of_experiments.download with dir not None and file none
+    THEN a file is created in the dir
+    ALSO the returned content is written into the provided file
+    """
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/design-of-experiments/export?format=xlsx&workspace={simai_client.current_workspace.id}",
+        body=b"xp-plan-binary-data",
+        status=200,
+    )
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        simai_client.design_of_experiments.download(file=None, dir=tmp_dir, format="xlsx")
+        assert len(listdir(tmp_dir)) == 1

@@ -22,10 +22,18 @@
 
 import logging
 from numbers import Number
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, BinaryIO, Dict, List, Optional, Union
 
-from ansys.simai.core.data.base import ComputableDataModel, Directory, UploadableResourceMixin
-from ansys.simai.core.data.geometry_utils import _geometry_matches_range_constraints, _sweep
+from ansys.simai.core.data.base import (
+    ComputableDataModel,
+    Directory,
+    UploadableResourceMixin,
+)
+from ansys.simai.core.data.geometry_utils import (
+    _geometry_matches_range_constraints,
+    _sweep,
+)
 from ansys.simai.core.data.types import (
     BoundaryConditions,
     File,
@@ -170,7 +178,10 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         return [self._client.predictions._model_from(pred_data) for pred_data in predictions_data]
 
     def download(
-        self, file: Optional[File] = None, monitor_callback: Optional[MonitorCallback] = None
+        self,
+        file: Optional[File] = None,
+        monitor_callback: Optional[MonitorCallback] = None,
+        dir: Optional[str | Path] = None,
     ) -> Union[None, BinaryIO]:
         """Download the geometry into the provided file or in memory if no file is provided.
 
@@ -180,11 +191,12 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             monitor_callback: Optional callback to monitor the progress of the download.
                 For more information, see the :obj:`~ansys.simai.core.data.types.MonitorCallback`
                 object.
+            dir: Optional directory to store the downloaded file, if no file is defined.
 
         Returns:
             ``None`` if a file is provided or the :class:`~io.BytesIO` object with the geometry's content otherwise.
         """
-        return self._client._api.download_geometry(self.id, file, monitor_callback)
+        return self._client._api.download_geometry(self.id, file, monitor_callback, dir=dir)
 
     def sweep(
         self,
@@ -477,6 +489,7 @@ class GeometryDirectory(Directory[Geometry]):
         geometry: Identifiable[Geometry],
         file: Optional[File] = None,
         monitor_callback: Optional[MonitorCallback] = None,
+        dir: Optional[str | Path] = None,
     ) -> Union[None, BinaryIO]:
         """Download the geometry with the given ID into the file at the given path.
 
@@ -487,6 +500,7 @@ class GeometryDirectory(Directory[Geometry]):
             monitor_callback: Optional callback for monitoring the progress of the download.
                 For more information, see the :obj:`~ansys.simai.core.data.types.MonitorCallback`
                 object.
+            dir: Optional directory to store the downloaded file, if no file is defined.
 
         Returns:
             ``None`` if a file is provided or a :class:`~io.BytesIO` object with the geometry's content otherwise.
@@ -495,7 +509,7 @@ class GeometryDirectory(Directory[Geometry]):
             :func:`Geometry.download`
         """
         return self._client._api.download_geometry(
-            get_id_from_identifiable(geometry), file, monitor_callback
+            get_id_from_identifiable(geometry), file, monitor_callback, dir=dir
         )
 
     def sweep(

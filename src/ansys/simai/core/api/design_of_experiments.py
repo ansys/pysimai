@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+from pathlib import Path
 from typing import BinaryIO, Optional, Union
 
 from ansys.simai.core.api.mixin import ApiClientMixin
@@ -35,6 +36,7 @@ class DesignOfExperimentsMixin(ApiClientMixin):
     def download_design_of_experiments(
         self,
         file: Optional[File],
+        dir: Optional[str | Path],
         format: str,
         workspace_id: str,
     ) -> Union[None, BinaryIO]:
@@ -42,6 +44,7 @@ class DesignOfExperimentsMixin(ApiClientMixin):
 
         Args:
             file: Binary file-object or the path of the file to put the content into.
+            dir: Optional directory to store the downloaded file, if no file is defined.
             format: Format to download. Options are ``'xlsx'`` or ``'csv'``.
             workspace_id: ID of the workspace to download the design of experiments for.
 
@@ -53,4 +56,5 @@ class DesignOfExperimentsMixin(ApiClientMixin):
         return self.download_file(
             f"design-of-experiments/export?format={format}&workspace={workspace_id}",
             file,
+            dir,
         )

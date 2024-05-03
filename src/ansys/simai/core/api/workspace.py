@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pathlib import Path
 from typing import Any, Dict, Optional
 from urllib.parse import quote
 
@@ -94,5 +95,7 @@ class WorkspaceClientMixin(ApiClientMixin):
         """
         return self._delete(f"workspaces/{workspace_id}")
 
-    def download_workspace_model_evaluation_report(self, workspace_id: str, file: Optional[File]):
-        return self.download_file(f"workspaces/{workspace_id}/model-evaluation-report", file)
+    def download_workspace_model_evaluation_report(
+        self, workspace_id: str, file: Optional[File], dir: Optional[str | Path]
+    ):
+        return self.download_file(f"workspaces/{workspace_id}/model-evaluation-report", file, dir)

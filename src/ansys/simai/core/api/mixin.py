@@ -25,7 +25,7 @@ import os
 from io import BytesIO
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Optional, Union
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from urllib.request import getproxies
 
 import requests
@@ -132,6 +132,7 @@ class ApiClientMixin:
         self,
         download_url: str,
         file: Optional[File] = None,
+        dir: Optional[Path | str] = None,
         monitor_callback: Optional[MonitorCallback] = None,
         request_json_body: Optional[Dict[str, Any]] = None,
         request_method: str = "GET",
@@ -141,6 +142,7 @@ class ApiClientMixin:
         Args:
             download_url: URL for getting the file.
             file: Optional binary file or path for the downloaded file.
+            dir: Optional directory to store the downloaded file, if no file is defined.
             monitor_callback: Optional callback to monitor the progress of the download.
                 For more information, see the :obj:`~ansys.simai.core.data.types.MonitorCallback`
                 object.
@@ -154,6 +156,11 @@ class ApiClientMixin:
             None if a file is provided or a ``BytesIO`` object with the file's
             content otherwise.
         """
+        if dir is not None and file is None:
+            parsed_url = urlparse(download_url)
+            filename = os.path.basename(parsed_url.path)
+            file = Path(dir) / filename
+
         if file is None:
             output_file = BytesIO()
             close_file = False
