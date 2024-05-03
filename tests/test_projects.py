@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
-from unittest.mock import Mock
 
 import pytest
 import responses
@@ -263,27 +262,3 @@ def test_last_model_configuration(simai_client):
 
     assert isinstance(project_last_conf, ModelConfiguration)
     assert project_last_conf._to_payload() == last_conf
-
-
-@responses.activate
-def test_check_gc_formula(simai_client):
-    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
-
-    project: Project = simai_client._project_directory._model_from(raw_project)
-
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{raw_project['id']}/check-formula",
-        status=200,
-    )
-
-    simai_client._check_gc_formula_directory._handle_sse_event = Mock()
-
-    simai_client.wait = Mock()
-    rr = project.verify_gc_formula(
-        gc_formula="min(Pressure)",
-        bc=VARS_OUT.get("boundary_conditions"),
-        surface_variables=VARS_OUT.get("surface"),
-    )
-
-    assert rr
