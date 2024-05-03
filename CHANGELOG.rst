@@ -1,6 +1,19 @@
 Changelog
 ---------
 
+0.1.6 (2024-04-25)
+******************
+
+New:
+
+- Added new method :py:meth:`TrainingData.assign_subset()<ansys.simai.core.data.training_data.TrainingData.assign_subset>` that allows you to assign a Train, Validation, or Test subset to your data.
+
+
+Fixes:
+
+- The method :py:meth:`Optimization.run()<ansys.simai.core.data.optimizations.OptimizationDirectory.run>` now raises an exception if no workspace is provided and none is configured.
+- Fix RecursionError on authentication refresh
+
 0.1.5 (2024-04-15)
 ******************
 
