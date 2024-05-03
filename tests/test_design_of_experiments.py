@@ -82,5 +82,5 @@ def test_design_of_experiments_export_to_dir(simai_client):
     )
 
     with tempfile.TemporaryDirectory() as tmp_dir:
-        simai_client.design_of_experiments.download(file=None, dir=tmp_dir, format="xlsx")
+        simai_client.design_of_experiments.download(dir=tmp_dir, format="xlsx")
         assert len(listdir(tmp_dir)) == 1
