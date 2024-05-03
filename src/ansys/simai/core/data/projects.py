@@ -24,7 +24,7 @@ import logging
 from typing import TYPE_CHECKING, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
-from ansys.simai.core.data.models import ModelConfiguration
+from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
 

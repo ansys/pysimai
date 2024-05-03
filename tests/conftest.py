@@ -30,7 +30,10 @@ import pytest
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.geometries import Geometry, GeometryDirectory
-from ansys.simai.core.data.post_processings import PostProcessing, PostProcessingDirectory
+from ansys.simai.core.data.post_processings import (
+    PostProcessing,
+    PostProcessingDirectory,
+)
 from ansys.simai.core.data.predictions import Prediction
 from ansys.simai.core.data.projects import Project
 from ansys.simai.core.data.training_data import TrainingData
@@ -197,5 +200,20 @@ def create_mock_geometry():
         geometry = Geometry(None, None, {"id": id, "name": str(id), "metadata": kwargs})
         geometry.get_predictions = lambda: predictions or []
         return geometry
+
+    return _factory
+
+
+@pytest.fixture(scope="function")
+def global_coefficient_request_factory(simai_client):
+    """Returns a function to create a Globla Coefficient request object."""
+
+    def _factory(request_type="check", **kwargs):
+        if "state" not in kwargs.get("data"):
+            kwargs.get("data").setdefault("state", "successful")
+        if request_type == "check":
+            return simai_client._check_gc_formula_directory._model_from(**kwargs)
+        elif request_type == "compute":
+            return simai_client._compute_gc_formula_directory._model_from(**kwargs)
 
     return _factory

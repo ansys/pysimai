@@ -20,176 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import asdict, dataclass
-from typing import TYPE_CHECKING, Any, Dict, List
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
-from ansys.simai.core.errors import ProcessingError
-
-if TYPE_CHECKING:
-    from ansys.simai.core.data.projects import Project
-
-
-@dataclass
-class GcField:
-    """Single Global Coefficient field."""
-
-    formula: str
-    name: str
-
-
-@dataclass
-class ModelInput:
-    """The inputs of a model."""
-
-    surface: List[str] = None
-    boundary_conditions: List[str] = None
-
-
-@dataclass
-class ModelOutput:
-    """The outputs of a model."""
-
-    surface: List[str] = None
-    volume: List[str] = None
-    global_coefficients: List[GcField] = None
-
-
-@dataclass
-class ModelConfiguration:
-    """The configuration for building a model."""
-
-    boundary_conditions: Dict[str, Any] = None
-    build_preset: str = None
-    continuous: bool = False
-    fields: Dict[str, Any] = None
-    global_coefficients: List[Dict[str, Any]] = None
-    simulation_volume: Dict[str, Any] = None
-    project: "Project" = None
-    _gc_results: List[float] = None
-
-    @property
-    def input(self) -> ModelInput:
-        """The inputs of a model."""
-
-        mdl_input = ModelInput()
-
-        if (
-            self.fields is not None
-            and "surface_input" in self.fields
-            and self.fields.get("surface_input")
-        ):
-            mdl_input.surface = [fd.get("name") for fd in self.fields["surface_input"]]
-
-        if self.boundary_conditions is not None:
-            mdl_input.boundary_conditions = self.boundary_conditions.keys()
-
-        return mdl_input
-
-    @property
-    def output(self) -> ModelOutput:
-        """The outputs of a model."""
-        mdl_output = ModelOutput()
-
-        if self.fields is not None:
-            if "surface" in self.fields and self.fields.get("surface"):
-                mdl_output.surface = [fd.get("name") for fd in self.fields["surface"]]
-
-            if "volume" in self.fields and self.fields.get("volume"):
-                mdl_output.surface = [fd.get("name") for fd in self.fields["volume"]]
-
-        if self.global_coefficients:
-            mdl_output.global_coefficients = [GcField(**gc) for gc in self.global_coefficients]
-
-        return mdl_output
-
-    @input.setter
-    def input(self, model_input: ModelInput):
-        """Sets the inputs of a model."""
-
-        self.project.reload()
-
-        if not self.project.sample:
-            raise ProcessingError(
-                f"No sample is set in the project {self.project.id}. A sample should be set before setting the model's input"
-            )
-
-        sample_metadata = self.project.sample.fields.get("extracted_metadata")
-
-        if self.fields is None:
-            self.fields = {}
-
-        if model_input.surface is not None:
-            self.fields["surface_input"] = [
-                fd
-                for fd in sample_metadata.get("surface").get("fields")
-                if fd.get("name") in model_input.surface
-            ]
-
-        if model_input.boundary_conditions is not None:
-            self.boundary_conditions = {bc_name: {} for bc_name in model_input.boundary_conditions}
-
-    @output.setter
-    def output(self, model_output: ModelOutput):
-        """Sets the outputs of a model."""
-
-        self.project.reload()
-
-        if not self.project.sample:
-            raise ProcessingError(
-                f"No sample is set in the project {self.project.id}. A sample should be set before setting the model's output"
-            )
-
-        sample_metadata = self.project.sample.fields.get("extracted_metadata")
-        if self.fields is None:
-            self.fields = {}
-        if model_output.volume is not None:
-            self.fields["volume"] = [
-                fd
-                for fd in sample_metadata.get("volume").get("fields")
-                if fd.get("name") in model_output.volume
-            ]
-
-        if model_output.surface is not None:
-            self.fields["surface"] = [
-                fd
-                for fd in sample_metadata.get("surface").get("fields")
-                if fd.get("name") in model_output.surface
-            ]
-
-        if model_output.global_coefficients is not None:
-            if self.global_coefficients is None:
-                self.global_coefficients = []
-            for gc in model_output.global_coefficients:
-                bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
-                if self.project.verify_gc_formula(gc.formula, bc_keys, model_output.surface):
-                    self.global_coefficients += [asdict(gc)]
-
-    def _to_payload(self):
-        """Constracts the payload for a build request."""
-        flds = {
-            "surface": self.fields.get("surface", []),
-            "surface_input": self.fields.get("surface_input", []),
-            "volume": self.fields.get("volume", []),
-        }
-        return {
-            "boundary_conditions": (self.boundary_conditions if self.boundary_conditions else {}),
-            "build_preset": self.build_preset,
-            "continuous": self.continuous,
-            "fields": flds,
-            "global_coefficients": (self.global_coefficients if self.global_coefficients else []),
-            "simulation_volume": self.simulation_volume,
-        }
-
-    def compute_global_coefficient(self):
-        """Computes the results of ."""
-
-        bc_keys = self.boundary_conditions.keys() if self.boundary_conditions else None
-
-        return [
-            self.project.compute_gc_formula(gc.get("formula"), bc_keys, [])
-            for gc in self.global_coefficients
-        ]
+from ansys.simai.core.data.model_configuration import ModelConfiguration
 
 
 class Model(ComputableDataModel):
@@ -267,31 +100,11 @@ class ModelDirectory(Directory[Model]):
 
         """
 
-        project_id = configuration.project.id
         return self._model_from(
             self._client._api.launch_build(
-                project_id,
+                configuration.project.id,
                 configuration._to_payload(),
                 dismiss_data_with_fields_discrepancies,
                 dismiss_data_with_volume_overflow,
             )
         )
-
-    @property
-    def model_input(self) -> ModelInput:
-        """Returns an empty ModelInput object."""
-        return ModelInput()
-
-    @property
-    def model_output(self) -> ModelOutput:
-        """Empty ModelOutput object."""
-        return ModelOutput()
-
-    @property
-    def model_configuration(self) -> ModelConfiguration:
-        """Empty ModelConfiguration object."""
-        return ModelConfiguration()
-
-    def global_coefficient(self, formula: str, name: str) -> GcField:
-        """Empty GlobalCoefficient object."""
-        return GcField(formula, name)

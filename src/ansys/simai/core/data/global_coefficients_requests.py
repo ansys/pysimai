@@ -100,7 +100,7 @@ GlobalCoefficientRequestType = TypeVar(
 
 
 class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType]):
-    """Provides a collection of methods related to building models."""
+    """Provides methods for handling SSEs related to Global Coefficients."""
 
     def get(self, item_id: str) -> GlobalCoefficientRequestType:
         """Get a  by project ID.
@@ -116,9 +116,6 @@ class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType])
         action = data.get("target").get("action")
         item_id: str = f"{data['target']['id']}-{action}-{gc_formula}"
         if item_id not in self._registry:
-            # We ignore object whose id is unknown:
-            # we only listen to objects that have been
-            # created by a local operation
             logger.debug(
                 f"{self.__class__.__name__}: Ignoring event for unknown object id {item_id}"
             )
@@ -136,7 +133,7 @@ class CheckGlobalCoefficient(GlobalCoefficientRequest):
         self._client._api.check_formula(self.project_id, self._calculette_payload)
 
     def _handle_job_sse_event(self, data):
-        """Update object with the information and state received through the SSE."""
+        """Manage object's state according to SSE."""
         logger.debug(f"Handling SSE job event for {self._classname} id {self.id}")
 
         state: str = data.get("status")
@@ -161,20 +158,20 @@ class CheckGlobalCoefficient(GlobalCoefficientRequest):
 
 
 class CheckGlobalCoefficientDirectory(GlobalCoefficientRequestDirectory[CheckGlobalCoefficient]):
-    """Provides a collection of methods related to building models."""
+    """Extends GlobalCoefficientRequestDirectory for verifying a Global Coefficient formuala."""
 
     _data_model = CheckGlobalCoefficient
 
 
 class ComputeGlobalCoefficient(GlobalCoefficientRequest):
-    """Computes a Global Coef formula."""
+    """Computes the result of a Global Coefficient formula."""
 
     def run(self):
         """Performs a compute-formula request."""
         self._client._api.compute_formula(self.project_id, self._calculette_payload)
 
     def _handle_job_sse_event(self, data):
-        """Update object with the information and state received through the SSE."""
+        """Manage object's state according to SSE and store the result of the formula."""
         logger.debug(f"Handling SSE job event for {self._classname} id {self.id}")
 
         state: str = data.get("status")
@@ -207,6 +204,6 @@ class ComputeGlobalCoefficient(GlobalCoefficientRequest):
 class ComputeGlobalCoefficientDirectory(
     GlobalCoefficientRequestDirectory[ComputeGlobalCoefficient]
 ):
-    """Provides a collection of methods related to building models."""
+    """Extends GlobalCoefficientRequestDirectory for computing the result of a Global Coefficient formula."""
 
     _data_model = ComputeGlobalCoefficient

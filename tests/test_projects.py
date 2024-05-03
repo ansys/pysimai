@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+from unittest.mock import Mock
 
 import pytest
 import responses
@@ -100,65 +101,6 @@ def test_project_sample(simai_client):
     project.sample = raw_td["id"]
     assert isinstance(project.sample, TrainingData)
     assert project.sample.id == raw_td["id"]
-
-
-@responses.activate
-def test_last_model_configuration(simai_client):
-    """Test last_configuration property."""
-
-    last_conf = {
-        "boundary_conditions": {"Vx": {}},
-        "build_preset": "debug",
-        "continuous": False,
-        "fields": {
-            "surface": [
-                {
-                    "format": "value",
-                    "keys": None,
-                    "location": "cell",
-                    "name": "WallShearStress_0",
-                    "unit": None,
-                }
-            ],
-            "surface_input": [],
-            "volume": [
-                {
-                    "format": "value",
-                    "keys": None,
-                    "location": "cell",
-                    "name": "Pressure",
-                    "unit": None,
-                }
-            ],
-        },
-        "global_coefficients": [],
-        "simulation_volume": {
-            "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
-            "Y": {"length": 80.0, "type": "absolute", "value": -80},
-            "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
-        },
-    }
-
-    raw_project = {
-        "id": "xX007Xx",
-        "name": "fifi",
-        "sample": None,
-        "last_model_configuration": last_conf,
-    }
-
-    project: Project = simai_client._project_directory._model_from(raw_project)
-
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}/",
-        status=200,
-        json=raw_project,
-    )
-
-    project_last_conf = project.last_model_configuration
-
-    assert isinstance(project_last_conf, ModelConfiguration)
-    assert project_last_conf._to_payload() == last_conf
 
 
 @responses.activate
@@ -270,3 +212,78 @@ def test_get_variables(simai_client, in_sample, vars_out):
 
     var_pool = project.get_variables()
     assert var_pool == vars_out
+
+
+def test_last_model_configuration(simai_client):
+    """Test last_configuration property."""
+
+    last_conf = {
+        "boundary_conditions": {"Vx": {}},
+        "build_preset": "debug",
+        "continuous": False,
+        "fields": {
+            "surface": [
+                {
+                    "format": "value",
+                    "keys": None,
+                    "location": "cell",
+                    "name": "TurbulentViscosity",
+                    "unit": None,
+                }
+            ],
+            "surface_input": [],
+            "volume": [
+                {
+                    "format": "value",
+                    "keys": None,
+                    "location": "cell",
+                    "name": "Pressure",
+                    "unit": None,
+                }
+            ],
+        },
+        "global_coefficients": [],
+        "simulation_volume": {
+            "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
+            "Y": {"length": 80.0, "type": "absolute", "value": -80},
+            "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
+        },
+    }
+
+    raw_project = {
+        "id": "xX007Xx",
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+        "last_model_configuration": last_conf,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project_last_conf = project.last_model_configuration
+
+    assert isinstance(project_last_conf, ModelConfiguration)
+    assert project_last_conf._to_payload() == last_conf
+
+
+@responses.activate
+def test_check_gc_formula(simai_client):
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{raw_project['id']}/check-formula",
+        status=200,
+    )
+
+    simai_client._check_gc_formula_directory._handle_sse_event = Mock()
+
+    simai_client.wait = Mock()
+    rr = project.verify_gc_formula(
+        gc_formula="min(Pressure)",
+        bc=VARS_OUT.get("boundary_conditions"),
+        surface_variables=VARS_OUT.get("surface"),
+    )
+
+    assert rr

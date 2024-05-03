@@ -20,11 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
+from unittest.mock import Mock
 
 import responses
 
-from ansys.simai.core.data.models import ModelConfiguration
+from ansys.simai.core.data.model_configuration import (
+    ModelConfiguration,
+    ModelInput,
+    ModelOutput,
+)
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.models import Model
@@ -68,20 +73,6 @@ MODEL_CONF_RAW = {
                 "name": "Velocity_0",
                 "unit": None,
             },
-            {
-                "format": "value",
-                "keys": None,
-                "location": "cell",
-                "name": "Velocity_1",
-                "unit": None,
-            },
-            {
-                "format": "value",
-                "keys": None,
-                "location": "cell",
-                "name": "VolumeFractionWater",
-                "unit": None,
-            },
         ],
     },
     "global_coefficients": [{"formula": "max(Pressure)", "name": "maxpress"}],
@@ -111,10 +102,99 @@ MODEL_RAW = {
     "workspaces": [],
 }
 
+METADATA_RAW = {
+    "boundary_conditions": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "name": "Vx",
+                "unit": None,
+                "value": -5.569587230682373,
+            }
+        ]
+    },
+    "surface": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "TurbulentViscosity",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "WallShearStress_0",
+                "unit": None,
+            },
+        ]
+    },
+    "volume": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Velocity_0",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Velocity_1",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "VolumeFractionWater",
+                "unit": None,
+            },
+        ]
+    },
+}
+
+VARS_OUT = {
+    "boundary_conditions": ["Vx"],
+    "surface": ["Pressure", "TurbulentViscosity"],
+    "volume": ["Pressure"],
+}
+
+SAMPLE_RAW = {
+    "extracted_metadata": METADATA_RAW,
+    "id": "DarkKnight",
+    "is_complete": True,
+    "is_deletable": True,
+    "is_in_a_project_being_trained": False,
+    "is_sample_of_a_project": True,
+    "luggage_version": "52.2.2",
+}
+
+create_sse_event = NamedTuple("SSEEvent", [("data", dict)])
+
 
 @responses.activate
-def test_build(simai_client):
-    """WHEN I call launch_build() with a ModelConfiguration
+def test_build_with_last_config(simai_client):
+    """WHEN I call launch_build() with using the last build configuration
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
     ModelConfiguration and its content matches the raw conf.
@@ -130,7 +210,7 @@ def test_build(simai_client):
     raw_project = {
         "id": MODEL_RAW["project_id"],
         "name": "fifi",
-        "sample": None,
+        "sample": SAMPLE_RAW,
     }
 
     responses.add(
@@ -142,6 +222,8 @@ def test_build(simai_client):
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
+    project.verify_gc_formula = Mock()
+
     in_model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
 
     launched_model: Model = simai_client.models.build(in_model_conf)
@@ -150,3 +232,64 @@ def test_build(simai_client):
     assert launched_model.project_id == MODEL_RAW["project_id"]
 
     assert launched_model.configuration._to_payload() == MODEL_CONF_RAW
+
+
+@responses.activate
+def test_build_with_new_config(simai_client):
+    """WHEN I call launch_build() with using a new build configuration
+    THEN I get a Model object, its project_id matches the
+    id of the project, and its configuration is a
+    ModelConfiguration and its content matches the raw conf.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_input = ModelInput(surface=[], boundary_conditions=["Vx"])
+    model_output = ModelOutput(
+        surface=["Pressure", "WallShearStress_0"], volume=["Velocity_0", "Pressure"]
+    )
+    global_coefficients = [("max(Pressure)", "maxpress")]
+    simulation_volume = {
+        "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
+        "Y": {"length": 80.0, "type": "absolute", "value": -80},
+        "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
+    }
+
+    new_conf = ModelConfiguration(
+        project=project,
+        build_preset="debug",
+        continuous=False,
+        input=model_input,
+        output=model_output,
+        global_coefficients=global_coefficients,
+        simulation_volume=simulation_volume,
+    )
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/model",
+        json=MODEL_RAW,
+        status=200,
+    )
+
+    launched_model: Model = simai_client.models.build(new_conf)
+
+    assert isinstance(launched_model.configuration, ModelConfiguration)
+    assert launched_model.project_id == MODEL_RAW["project_id"]
+
+    assert launched_model.configuration._to_payload() == new_conf._to_payload()
