@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, List, NamedTuple, Optional
+from typing import TYPE_CHECKING, Dict, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.models import ModelConfiguration
@@ -126,7 +126,7 @@ class Project(DataModel):
         tt = self._client._api.is_project_trainable(self.id)
         return IsTrainableInfo(**tt)
 
-    def get_variables(self) -> dict[str, list[str]] | None:
+    def get_variables(self) -> Optional[Dict[str, List[str]]]:
         """Get the available variables for the model's input/output."""
         if not self.sample:
             return None
