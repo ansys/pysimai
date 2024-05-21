@@ -35,6 +35,8 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import sys
+from pathlib import Path
 from datetime import datetime
 
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
@@ -49,6 +51,11 @@ release = version = __version__
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 cname = os.getenv("DOCUMENTATION_CNAME", "simai.docs.pyansys.com")
 
+SOURCE_PATH = Path(__file__).parent.resolve().absolute()
+pyansys_light_mode_logo = str(
+    os.path.join(SOURCE_PATH, "_static", "pyansys-logo-light_mode.png")
+)
+
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -60,8 +67,21 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinxcontrib.autodoc_pydantic",
+    "sphinx_gallery.gen_gallery",
 ]
+    # Sphinx Gallery Options
 
+sphinx_gallery_conf = {
+    #default png file for thumbnails
+    "default_thumb_file": pyansys_light_mode_logo,
+    # path to your examples scripts
+    "examples_dirs": ["examples"],
+    # path where to save gallery generated examples
+    "gallery_dirs": ["_examples"],
+    # Remove the "Download all examples" button from the top level gallery
+    "download_all_examples": False,
+    "plot_gallery": False,
+}
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
 }

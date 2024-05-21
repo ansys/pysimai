@@ -60,6 +60,7 @@ doc = [
     "sphinx>=7.2.0",
     "autodoc-pydantic>=2.0.0",
     "ansys-sphinx-theme>=0.12.5",
+    "sphinx-gallery",
     "blacken-docs>=1.16.0"
 ]
 linting = [

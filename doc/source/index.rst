@@ -6,6 +6,7 @@
 
    user_guide
    api_reference
+   _examples/index
 
 PySimAI documentation
 =====================
