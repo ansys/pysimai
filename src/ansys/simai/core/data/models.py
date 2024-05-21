@@ -140,11 +140,11 @@ class DomainOfAnalysis:
     height: DomainAxisDefinition = None
 
     def __post_init__(self):
-        if type(self.length) == tuple:
+        if isinstance(self.length, tuple):
             self.length = DomainAxisDefinition(*self.length)
-        if type(self.width) == tuple:
+        if isinstance(self.width, tuple):
             self.width = DomainAxisDefinition(*self.width)
-        if type(self.height) == tuple:
+        if isinstance(self.height, tuple):
             self.height = DomainAxisDefinition(*self.height)
 
 

@@ -153,15 +153,10 @@ def test_set_doa(simai_client):
 
     model_conf.domain_of_analysis.height = DomainAxisDefinition(**new_height)
 
-    assert model_conf._to_payload().get("simulation_volume").get("Z").get("type") == new_height.get(
-        "position"
-    )
-    assert model_conf._to_payload().get("simulation_volume").get("Z").get(
-        "value"
-    ) == new_height.get("value")
-    assert model_conf._to_payload().get("simulation_volume").get("Z").get(
-        "length"
-    ) == new_height.get("length")
+    assert model_conf._to_payload()["simulation_volume"]["Z"]["type"] == new_height["position"]
+
+    assert model_conf._to_payload()["simulation_volume"]["Z"]["value"] == new_height["value"]
+    assert model_conf._to_payload()["simulation_volume"]["Z"]["length"] == new_height["length"]
 
 
 def test_get_doa():
@@ -183,7 +178,9 @@ def test_get_doa():
 @pytest.mark.parametrize(
     "doa_axis_raw",
     [
+        # negative "value" with non-absolute position -> error: "value" can be negative only when "position" is "absolute"
         ({"position": "relative_to_center", "value": -0.5, "length": 15.2}),
+        # negative "length" -> error: length cannot be negative
         ({"position": "relative_to_center", "value": 0.5, "length": -15.2}),
     ],
 )
@@ -220,8 +217,10 @@ def test_wrong_doa_axis_value_in_assignment():
 
 
 def test_doa_tuple():
-    """WHEN a negative number is assigned to the parameter value of DomainAxisDefinition
-    THEN an InvalidArguments exception is raised.
+    """WHEN a tuble is introduced to as an argument
+    THEN it can be consumed as an DomainAxisDefinition
+    (both DomainAxisDefinition and tuples can be consumed
+    in the same manner).
     """
 
     lgth = ("relative_to_max", 5, 8.1)
