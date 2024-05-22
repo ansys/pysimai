@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Literal, Optional
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
@@ -183,7 +183,7 @@ class ModelConfiguration:
             )
     """
 
-    domain_of_analysis: DomainOfAnalysis = DomainOfAnalysis()
+    domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
 
     def __init__(
         self,
