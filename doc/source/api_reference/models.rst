@@ -1,7 +1,7 @@
 .. _models:
 
 Models
-==============
+======
 
 .. py:module:: ansys.simai.core.data.models
 
