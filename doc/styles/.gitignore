@@ -1,0 +1,5 @@
+*
+!config
+!config/vocabularies
+!config/vocabularies/**
+!.gitignore

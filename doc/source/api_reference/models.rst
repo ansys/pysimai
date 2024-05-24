@@ -1,7 +1,7 @@
 .. _models:
 
-Build a Model
-==============
+Models
+======
 
 .. py:module:: ansys.simai.core.data.models
 
@@ -13,13 +13,6 @@ the Global Coefficients and the Domain of Analysis, and its project id. The
 :py:class:`ModelConfiguration<ansys.simai.core.data.models.ModelConfiguration>`
 object is, then, parsed to :py:meth:`models.build()<ModelDirectory.build>` for
 launching a build.
-
-
-ModelConfiguration
-------------------
-
-.. autoclass:: ModelConfiguration()
-    :members:
 
 
 Directory
@@ -35,3 +28,23 @@ Model
 
 .. autoclass:: Model()
     :members:
+
+
+DomainAxisDefinition
+--------------------
+
+.. autoclass:: DomainAxisDefinition()
+
+
+DomainOfAnalysis
+--------------------
+
+.. autoclass:: DomainOfAnalysis()
+
+
+ModelConfiguration
+------------------
+
+.. autoclass:: ModelConfiguration()
+    :members:
+
