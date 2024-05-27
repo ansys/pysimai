@@ -60,11 +60,6 @@ class DataModel:
         self.fields = fields or {}
         self._directory = directory
         self._client = client
-        if (
-            self.fields.get("workspace_id")
-            and self.fields["workspace_id"] != self._client.current_workspace.id
-        ):
-            logger.warning("The object does not belong to the currently configured workspace.")
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: {self.id}>"
