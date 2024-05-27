@@ -36,6 +36,7 @@ from ansys.simai.core.utils.numerical import convert_axis_and_coordinate_to_plan
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.predictions import Prediction
+    from ansys.simai.core.data.workspaces import Workspace
 
 
 logger = logging.getLogger(__name__)
@@ -574,6 +575,19 @@ class PredictionPostProcessings:
             logger.warning(f"{location}: {warning_message}")
         return post_processing
 
+    def list(
+        self,
+        post_processing_type: Optional[Type[PostProcessing]] = None,
+    ) -> List[PostProcessing]:
+        """List the postprocessings associated with the prediction.
+
+        See :func:`post_processings.list<ansys.simai.core.data.post_processings.PostProcessingDirectory.list>`
+        """
+        return self._client.post_processings.list(
+            post_processing_type=post_processing_type,
+            prediction=self.prediction,
+        )
+
 
 class PostProcessingDirectory(Directory[PostProcessing]):
     _data_model = PostProcessing
@@ -633,6 +647,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         self,
         post_processing_type: Optional[Type[PostProcessing]] = None,
         prediction: Optional[Identifiable["Prediction"]] = None,
+        workspace: "Optional[Identifiable[Workspace]]" = None,
     ) -> List[PostProcessing]:
         """List the postprocessings in the current workspace or associated with a prediction.
 
@@ -645,15 +660,19 @@ class PostProcessingDirectory(Directory[PostProcessing]):
             prediction: ID or :class:`model <.predictions.Prediction>` of a prediction.
                 If a value is specified, only postprocessings associated with this prediction
                 are returned.
+            workspace: ID or :class:`model <.workspaces.Workspace>` of a workspace.
+                If a value is specified, only postprocessings associated with this workspace
+                are returned.
 
         Raises:
-            NotFoundError: Postprocessing type and/or the prediction ID are incorrect.
+            NotFoundError: Postprocessing type, prediction ID or workspace ID are incorrect.
+            InvalidArguments: if both prediction and workspace are specified.
+            InvalidClientStateError: Neither prediction nor workspace are defined, default
+                workspace is not set.
 
         Example:
             .. code-block:: python
-
                 import ansys.simai.core
-
                 simai = ansys.simai.core_from_config()
                 prediction = simai.predictions.list()[0]
                 post_processings = simai.post_processings.list(
@@ -661,14 +680,20 @@ class PostProcessingDirectory(Directory[PostProcessing]):
                 )
         """
         pp_type_str = post_processing_type._api_name() if post_processing_type else None
-        prediction_id = get_id_from_identifiable(prediction, required=False)
-        if not prediction_id:
-            post_processings = self._client._api.get_post_processings_in_workspace(
-                self._client.current_workspace.id, pp_type_str
-            )
-        else:
+        if workspace and prediction:
+            raise ValueError("Only one of Workspace or Prediction can be specified")
+        if prediction:
+            prediction_id = get_id_from_identifiable(prediction, required=False)
             post_processings = self._client._api.get_post_processings_for_prediction(
                 prediction_id, pp_type_str
+            )
+        else:
+            if workspace:
+                workspace_id = get_id_from_identifiable(workspace, required=False)
+            else:
+                workspace_id = self._client.current_workspace.id
+            post_processings = self._client._api.get_post_processings_in_workspace(
+                workspace_id, pp_type_str
             )
         return list(map(self._model_from, post_processings))
 
