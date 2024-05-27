@@ -230,11 +230,7 @@ DataModelType = TypeVar("DataModelType", bound=DataModel)
 
 
 class Directory(ABC, Generic[DataModelType]):
-    @classmethod
-    @property
-    @abstractmethod
-    def _data_model(cls) -> Type[DataModel]:
-        pass
+    _data_model: Type[DataModelType]
 
     def __init__(self, client: "ansys.simai.core.client.SimAIClient"):
         self._client = client
@@ -254,8 +250,8 @@ class Directory(ABC, Generic[DataModelType]):
         pass
 
     def _model_from(
-        self, data: dict, data_model: Optional[DataModel] = None, **kwargs
-    ) -> DataModel:
+        self, data: dict, data_model: Optional[DataModelType] = None, **kwargs
+    ) -> DataModelType:
         # _model_from overrides object data (fields),
         # thus it is, and should, only be called with
         # complete data from the server, such as from a GET request.
@@ -275,7 +271,7 @@ class Directory(ABC, Generic[DataModelType]):
             self._registry[item_id] = item
         return item
 
-    def _unregister_item(self, item: DataModel):
+    def _unregister_item(self, item: DataModelType):
         """Remove the item from the internal registry,
         mainly after a deletion.
         """
