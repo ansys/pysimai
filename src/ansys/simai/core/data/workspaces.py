@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
 from pprint import pformat
 from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
@@ -94,6 +95,11 @@ class Workspace(DataModel):
 
     @property
     def model(self) -> ModelManifest:
+        warnings.warn("workspace.model is deprecated, please use workspace.model_manifest")
+        return self.model_manifest
+
+    @property
+    def model_manifest(self) -> ModelManifest:
         """:class:`~ansys.simai.core.data.workspaces.ModelManifest` instance containing
         information about the model associated with the workspace.
         """
