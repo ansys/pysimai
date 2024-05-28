@@ -95,7 +95,10 @@ class Workspace(DataModel):
 
     @property
     def model(self) -> ModelManifest:
-        warnings.warn("workspace.model is deprecated, please use workspace.model_manifest")
+        """Deprecated alias to :py:attr:`~model_manifest`."""
+        warnings.warn(
+            "workspace.model is deprecated, please use workspace.model_manifest", stacklevel=2
+        )
         return self.model_manifest
 
     @property

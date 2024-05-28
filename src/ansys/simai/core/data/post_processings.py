@@ -673,6 +673,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         Example:
             .. code-block:: python
                 import ansys.simai.core
+
                 simai = ansys.simai.core_from_config()
                 prediction = simai.predictions.list()[0]
                 post_processings = simai.post_processings.list(
