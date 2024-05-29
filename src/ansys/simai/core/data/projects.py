@@ -135,7 +135,7 @@ class Project(DataModel):
         tt = self._client._api.is_project_trainable(self.id)
         return IsTrainableInfo(**tt)
 
-    def get_variables(self) -> dict[str, list[str]] | None:
+    def get_variables(self) -> Optional[dict[str, List[str]]]:
         """Get the available variables for the model's input/output."""
         if not self.sample:
             return None
