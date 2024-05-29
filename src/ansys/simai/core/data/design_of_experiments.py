@@ -24,11 +24,10 @@ import io
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Union
 
-from ansys.simai.core.data.types import get_id_from_identifiable
+from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 
 if TYPE_CHECKING:
     from ansys.simai.core.client import SimAIClient
-    from ansys.simai.core.data.types import Identifiable
     from ansys.simai.core.data.workspaces import Workspace
 
 
@@ -45,7 +44,7 @@ class DesignOfExperimentsCollection:
         self,
         file: Union[str, Path],
         format: str = "xlsx",
-        workspace: "Optional[Identifiable[Workspace]]" = None,
+        workspace: Optional[Identifiable["Workspace"]] = None,
     ) -> None:
         """Download the design of experiments data to the specified file or path.
 
@@ -68,7 +67,7 @@ class DesignOfExperimentsCollection:
         self._client._api.download_design_of_experiments(file, format, workspace_id)
 
     def in_memory(
-        self, format: Optional[str] = "csv", workspace: "Optional[Identifiable[Workspace]]" = None
+        self, format: Optional[str] = "csv", workspace: Optional[Identifiable["Workspace"]] = None
     ) -> io.BytesIO:
         """Load the design of experiments data in memory.
 

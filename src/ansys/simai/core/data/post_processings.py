@@ -647,7 +647,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         self,
         post_processing_type: Optional[Type[PostProcessing]] = None,
         prediction: Optional[Identifiable["Prediction"]] = None,
-        workspace: "Optional[Identifiable[Workspace]]" = None,
+        workspace: Optional[Identifiable["Workspace"]] = None,
     ) -> List[PostProcessing]:
         """List the postprocessings in the current workspace or associated with a prediction.
 
@@ -671,6 +671,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
 
         Example:
             .. code-block:: python
+
                 import ansys.simai.core
 
                 simai = ansys.simai.core_from_config()
