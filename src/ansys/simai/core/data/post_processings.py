@@ -653,7 +653,6 @@ class PostProcessingDirectory(Directory[PostProcessing]):
 
         Optionally you can choose to list only postprocessings of a specific type.
         For the name of the available postprocessings, see :ref:`available_pp`.
-        Note that the case must be respected.
 
         Args:
             post_processing_type: Type of postprocessing to list.
@@ -682,7 +681,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         """
         pp_type_str = post_processing_type._api_name() if post_processing_type else None
         if workspace and prediction:
-            raise ValueError("Only one of Workspace or Prediction can be specified")
+            raise InvalidArguments("Only one of Workspace or Prediction can be specified")
         if prediction:
             prediction_id = get_id_from_identifiable(prediction, required=False)
             post_processings = self._client._api.get_post_processings_for_prediction(
