@@ -22,10 +22,13 @@
 
 import json
 
+import pytest
 import responses
 
 import ansys.simai.core
+from ansys.simai.core.data import post_processings
 from ansys.simai.core.data.predictions import Prediction
+from ansys.simai.core.errors import InvalidArguments
 
 
 @responses.activate
@@ -249,3 +252,42 @@ def test_post_processing_list(simai_client):
     pps = simai_client.post_processings.list()
     assert len(pps) == 3
     assert ["1", "2", "3"] == [pp.id for pp in pps]
+
+
+@responses.activate
+def test_post_processing_list_prediction_and_workspace_forbidden(simai_client):
+    """WHEN simai.post_processings.list is called with a prediction and a workspace
+    THEN InvalidArguments error is raised
+    """
+    with pytest.raises(InvalidArguments):
+        simai_client.post_processings.list(workspace="toto", prediction="tata")
+
+
+@responses.activate
+def test_post_processing_list_in_prediction(simai_client, mocker):
+    api_mock = mocker.Mock(return_value=[])
+    simai_client._api.get_post_processings_for_prediction = api_mock
+    pp = simai_client.post_processings.list(prediction="CrouAnthem")
+    assert pp == []
+    api_mock.assert_called_with("CrouAnthem", None)
+
+
+@responses.activate
+def test_post_processing_list_in_workspace(simai_client, mocker):
+    api_mock = mocker.Mock(return_value=[])
+    simai_client._api.get_post_processings_in_workspace = api_mock
+    pp = simai_client.post_processings.list(
+        workspace="BODEGA", post_processing_type=post_processings.Slice
+    )
+    assert pp == []
+    api_mock.assert_called_with("BODEGA", post_processings.Slice._api_name())
+
+
+@responses.activate
+def test_prediction_post_list(simai_client, mocker, prediction_factory):
+    pred = prediction_factory()
+    api_mock = mocker.Mock(return_value=[])
+    simai_client._api.get_post_processings_for_prediction = api_mock
+    pp = pred.post.list(post_processings.SurfaceVTP)
+    assert pp == []
+    api_mock.assert_called_with(pred.id, post_processings.SurfaceVTP._api_name())
