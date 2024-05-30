@@ -252,9 +252,9 @@ def unpack_named_file(
 
 
 def get_id_from_identifiable(
-    identifiable: "Optional[Identifiable[D]]" = None,
+    identifiable: Optional[Identifiable["D"]] = None,
     required: bool = True,
-    default: "Optional[Identifiable[D]]" = None,
+    default: Optional[Identifiable["D"]] = None,
 ) -> Optional[str]:
     if isinstance(identifiable, DataModel):
         return identifiable.id

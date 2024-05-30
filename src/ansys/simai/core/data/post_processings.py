@@ -665,7 +665,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
 
         Raises:
             NotFoundError: Postprocessing type, prediction ID or workspace ID are incorrect.
-            InvalidArguments: if both prediction and workspace are specified.
+            InvalidArguments: If both prediction and workspace are specified.
             InvalidClientStateError: Neither prediction nor workspace are defined, default
                 workspace is not set.
 
