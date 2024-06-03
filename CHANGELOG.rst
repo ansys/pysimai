@@ -1,6 +1,21 @@
 Changelog
 ---------
 
+0.1.7 (2024-04-30)
+******************
+
+New:
+
+- Added :py:class:`DomainOfAnalysis<ansys.simai.core.data.models.DomainOfAnalysis>` class to
+  help set the domain of analysis on a new model.
+- Add `workspace` option where we previously relied only on the global workspace
+- Add prediction.post.list()
+
+Fixes:
+
+- Reestablish python 3.9 compatibility.
+- Bump wakepy lib to fix errors when not able to prevent sleep during optimization.
+
 0.1.6 (2024-04-25)
 ******************
 
