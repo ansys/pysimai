@@ -1,5 +1,5 @@
 """
-.. _ref_last_config_new_project:
+.. _ref_model_configuration_reuse:
 
 Model configuration reuse
 =========================
@@ -12,13 +12,14 @@ of a project and use it to launch a model build in another project.
 ###############################################################################
 # Import necessary libraries
 # --------------------------
+
 import ansys.simai.core as asc
 
 simai = asc.from_config()
 
 ###############################################################################
 # Create a project and allocate training data
-# ------------------
+# -------------------------------------------
 # Define the project name.
 new_project_name = "new-project"
 

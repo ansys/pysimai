@@ -1,8 +1,8 @@
 """
-.. _ref_last_config_new_build:
+.. _ref_model_recomputation:
 
 Model recomputation
--------------------------
+===================
 
 This example demonstrates how to relaunch a model build using the latest 
 model configuration in a same project.
@@ -11,21 +11,30 @@ model configuration in a same project.
 
 ###############################################################################
 # Import necessary libraries
+# --------------------------
 
 import ansys.simai.core as asc
 
 simai = asc.from_config()
 
 ###############################################################################
-# Get the project from the server.
+# Get the project from the server
+# -------------------------------
+
 my_project = simai.projects.get(name="old-ps")
 
 ###############################################################################
+# Get the model configuration
+# ---------------------------
 # Get the latest model configuration of the project.
+
 last_build_config = my_project.last_model_configuration
 
 ###############################################################################
+# Verify the project requirements
+# -------------------------------
 # Verify that the project meets the requirements for training (model building).
+
 is_trainable_check = my_project.is_trainable()
 
 ###############################################################################

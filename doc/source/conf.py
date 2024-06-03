@@ -40,8 +40,8 @@ from pathlib import Path
 from datetime import datetime
 
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
-
 from ansys.simai.core import __version__
+from sphinx_gallery.sorting import FileNameSortKey
 
 # -- Project information -----------------------------------------------------
 
@@ -52,8 +52,8 @@ copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 cname = os.getenv("DOCUMENTATION_CNAME", "simai.docs.pyansys.com")
 
 SOURCE_PATH = Path(__file__).parent.resolve().absolute()
-pyansys_light_mode_logo = str(
-    os.path.join(SOURCE_PATH, "_static", "pyansys-logo-light_mode.png")
+ansys_simai = str(
+    os.path.join(SOURCE_PATH, "_static", "ansys_simai.png")
 )
 
 # -- General configuration ---------------------------------------------------
@@ -73,14 +73,15 @@ extensions = [
 
 sphinx_gallery_conf = {
     #default png file for thumbnails
-    "default_thumb_file": pyansys_light_mode_logo,
+    "default_thumb_file": ansys_simai,
     # path to your examples scripts
     "examples_dirs": ["examples"],
     # path where to save gallery generated examples
     "gallery_dirs": ["_examples"],
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
-    "plot_gallery": False,
+    # Sort gallery example by file name instead of number of lines (default)
+    "within_subsection_order": FileNameSortKey,
 }
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),

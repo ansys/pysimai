@@ -39,6 +39,8 @@ class:
   :field-list-validators: False
 
 
+.. _anchor-credentials:
+
 Credentials
 -----------
 
