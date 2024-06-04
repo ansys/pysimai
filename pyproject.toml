@@ -162,6 +162,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D"]
 "src/ansys/simai/core/{api,utils}/*" = ["D102"]
+"doc/source/examples/*" = ["D", "INP001", "T", "E402"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

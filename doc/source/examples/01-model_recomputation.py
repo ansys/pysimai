@@ -4,7 +4,7 @@
 Model recomputation
 ===================
 
-This example demonstrates how to relaunch a model build using the latest 
+This example demonstrates how to relaunch a model build using the latest
 model configuration in a same project.
 
 """
@@ -44,4 +44,3 @@ if is_trainable_check:
     new_model = simai.models.build(last_build_config)
 else:
     print(is_trainable_check.reason)
-

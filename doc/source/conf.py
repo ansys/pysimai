@@ -35,13 +35,13 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
-from ansys.simai.core import __version__
 from sphinx_gallery.sorting import FileNameSortKey
+
+from ansys.simai.core import __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -52,9 +52,7 @@ copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 cname = os.getenv("DOCUMENTATION_CNAME", "simai.docs.pyansys.com")
 
 SOURCE_PATH = Path(__file__).parent.resolve().absolute()
-ansys_simai = str(
-    os.path.join(SOURCE_PATH, "_static", "ansys_simai.png")
-)
+ansys_simai = str(os.path.join(SOURCE_PATH, "_static", "ansys_simai.png"))
 
 # -- General configuration ---------------------------------------------------
 
@@ -69,10 +67,10 @@ extensions = [
     "sphinxcontrib.autodoc_pydantic",
     "sphinx_gallery.gen_gallery",
 ]
-    # Sphinx Gallery Options
+# Sphinx Gallery Options
 
 sphinx_gallery_conf = {
-    #default png file for thumbnails
+    # default png file for thumbnails
     "default_thumb_file": ansys_simai,
     # path to your examples scripts
     "examples_dirs": ["examples"],

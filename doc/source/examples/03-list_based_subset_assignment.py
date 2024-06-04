@@ -4,7 +4,7 @@
 List-based subset assignment
 ============================
 
-This example demonstrates how to distribute your dataset between Test, 
+This example demonstrates how to distribute your dataset between Test,
 Validation and Training subsets using lists.
 
 """
@@ -14,9 +14,9 @@ Validation and Training subsets using lists.
 # --------------------------
 # Import SimAI core library and a logging module.
 
-import ansys.simai.core
-
 import logging
+
+import ansys.simai.core
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 # List the data to be used for test and validation.
 
 # CAUTION:
-# All training data that are not included into the following lists will be  
+# All training data that are not included into the following lists will be
 # assigned the training subset
 TEST_LIST = ["My_td_1", "My_td_2"]
 VAL_LIST = ["My_td_3", "My_td_4"]
