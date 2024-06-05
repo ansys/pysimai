@@ -141,3 +141,20 @@ def test_assign_subset(training_data_factory, project_factory):
     with pytest.raises(InvalidArguments) as ve:
         td.assign_subset(project=project, subset="Travalignorinestidation")
     assert str(ve.value) == "Must be None or one of: 'Training', 'Test'."
+
+
+@responses.activate
+def test_assign_subset_to_none(training_data_factory, project_factory):
+    project = project_factory(id="s4mpl3", name="enzyme")
+    td: TrainingData = training_data_factory(project=project, subset=SubsetEnum.TRAINING)
+    responses.add(
+        responses.DELETE,
+        f"https://test.test/training_data/{td.id}/project/{project.id}/association",
+        status=204,
+    )
+    responses.add(
+        responses.PUT,
+        f"https://test.test/training_data/{td.id}/project/{project.id}/association",
+        status=204,
+    )
+    td.assign_subset(project=project, subset=None)
