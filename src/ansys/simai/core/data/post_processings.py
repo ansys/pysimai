@@ -556,8 +556,8 @@ class PredictionPostProcessings:
                 raise InvalidServerStateError(
                     cleandoc(
                         f"""
-                        Multiple postprocessings where found when only one should be found.
-                        Contact us at support-simai@ansys.com with this message to help us fix the issue.
+                        Multiple postprocessings were found when only one should be found.
+                        Contact us with this message to help us fix the issue.
                         {[pp['id'] for pp in api_response]}
                         """
                     )
