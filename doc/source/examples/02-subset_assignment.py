@@ -40,7 +40,7 @@ simai.training_data.get(id=training_data_id).get_subset(project=project_id)
 simai.training_data.get(id=training_data_id).assign_subset(project=project_id, subset="Validation")
 
 ###############################################################################
-# Use SubsetEnum to assign a valid enum value to the training data.
+# Alternatively, use SubsetEnum to assign a valid enum value to the training data.
 
 from ansys.simai.core.data.types import SubsetEnum
 
