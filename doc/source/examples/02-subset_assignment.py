@@ -38,7 +38,7 @@ print(current_subset)
 # ---------------------------------
 # Manually assign a new subset to the training data.
 
-simai.training_data.get(id=training_data_id).assign_subset(project=project_id, subset="Validation")
+simai.training_data.get(id=training_data_id).assign_subset(project=project_id, subset="Test")
 
 ###############################################################################
 # Alternatively, use SubsetEnum to assign a valid enum value to the training data.
