@@ -30,7 +30,6 @@ logger = logging.getLogger(__name__)
 # All training data that are not included into the following lists will be
 # assigned the training subset
 TEST_LIST = ["My_td_1", "My_td_2"]
-VAL_LIST = ["My_td_3", "My_td_4"]
 
 ###############################################################################
 # Connect to the platform
