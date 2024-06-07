@@ -28,9 +28,10 @@ project_id = "k9756vw0"
 ###############################################################################
 # Get subset assignment
 # ---------------------
-# Get the current subset assigned for this training_data_id.
+# Get and print the current subset assigned for this training_data_id.
 
-simai.training_data.get(id=training_data_id).get_subset(project=project_id)
+current_subset = simai.training_data.get(id=training_data_id).get_subset(project=project_id)
+print(current_subset)
 
 ###############################################################################
 # Assign a new subset (two options)
