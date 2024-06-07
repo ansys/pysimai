@@ -49,7 +49,5 @@ td_list = project.data
 for td in td_list:
     if td.name in TEST_LIST:
         td.assign_subset(project, "Test")
-    elif td.name in VAL_LIST:
-        td.assign_subset(project, "Validation")
     else:
         td.assign_subset(project, "Training")
