@@ -17,9 +17,6 @@ The input format for your workspace is described by the model manifest.
 You use the :attr:`workspace.model.geometry<ansys.simai.core.data.workspaces.ModelManifest.geometry>`
 attribute to access the information for a specific workspace.
 
-If you have a problem converting to the expected format, contact the SimAI team
-at `support-simai@ansys.com <mailto:support-simai@ansys.com>`_.
-
 Directory
 ---------
 
