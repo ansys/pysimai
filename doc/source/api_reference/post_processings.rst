@@ -16,6 +16,7 @@ Model
 
 .. autoclass:: PostProcessing()
     :members:
+    :inherited-members:
 
 
 .. _pp_methods:
