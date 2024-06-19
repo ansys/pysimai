@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 class GlobalCoefficientRequest(ABC, ComputableDataModel):
-    """Creates the basic request for making requests related to Global Coefficients."""
+    """Creates the foundational request for subsequent Global Coefficients requests/inquiries."""
 
     def __init__(
         self,
@@ -126,7 +126,7 @@ class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType])
 
 
 class CheckGlobalCoefficient(GlobalCoefficientRequest):
-    """Verifies a Global Coef formula."""
+    """Verifies a Global Coefficient formula."""
 
     def run(self):
         """Performs a check-formula request."""
@@ -158,7 +158,7 @@ class CheckGlobalCoefficient(GlobalCoefficientRequest):
 
 
 class CheckGlobalCoefficientDirectory(GlobalCoefficientRequestDirectory[CheckGlobalCoefficient]):
-    """Extends GlobalCoefficientRequestDirectory for verifying a Global Coefficient formuala."""
+    """Extends GlobalCoefficientRequestDirectory for verifying a Global Coefficient formula."""
 
     _data_model = CheckGlobalCoefficient
 

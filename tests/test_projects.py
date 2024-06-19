@@ -231,6 +231,7 @@ def test_last_model_configuration(simai_client):
                 }
             ],
             "surface_input": [],
+            "surface_pp_input": [],
             "volume": [
                 {
                     "format": "value",

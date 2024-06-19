@@ -121,9 +121,3 @@ class ProjectClientMixin(ApiClientMixin):
             json=calculette_payload,
             return_json=False,
         )
-
-    def request_calculette_session(self, project_id: str):
-        """Request a calculette session."""
-        return self._post(
-            f"projects/{project_id}/calculette-session",
-        )

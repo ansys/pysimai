@@ -62,6 +62,7 @@ MODEL_CONF_RAW = {
             },
         ],
         "surface_input": [],
+        "surface_pp_input": [],
         "volume": [
             {
                 "format": "value",
@@ -304,7 +305,17 @@ def test_set_doa(simai_client):
     THEN the simulation_volume is updated accordingly.
     """
 
-    model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
 
     new_height = {"position": "relative_to_center", "value": 0.5, "length": 15.2}
 
@@ -316,12 +327,22 @@ def test_set_doa(simai_client):
     assert model_conf._to_payload()["simulation_volume"]["Z"]["length"] == new_height["length"]
 
 
-def test_get_doa():
+def test_get_doa(simai_client):
     """WHEN the Domain of Analysis is retrieved
     THEN the parameters of the axes match.
     """
 
-    model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
 
     doa_length_raw = MODEL_CONF_RAW.get("simulation_volume").get("X")
 

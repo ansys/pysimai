@@ -151,12 +151,12 @@ class DomainOfAnalysis:
 
 
 @dataclass
-class GlobalCoefficientUnit:
-    """Single Global Coefficient field.
+class GlobalCoefficientDefinition:
+    """Global coefficient definition/parameter field.
 
     Args:
-        formula: the Global Coefficient formula.
-        name: the name of the Global Coefficient.
+        formula: Global Coefficient formula.
+        name: Global Coefficient name.
     """
 
     formula: str
@@ -165,11 +165,11 @@ class GlobalCoefficientUnit:
 
 @dataclass
 class ModelInput:
-    """The inputs of a model.
+    """Model inputs.
 
     Args:
-        surface: the input surface variables.
-        boundary_conditions: the boundary conditions.
+        surface: Input surface variables.
+        boundary_conditions: Boundary conditions.
     """
 
     surface: list[str] = None
@@ -197,7 +197,7 @@ class ModelConfiguration:
         project: the project of the configuration.
         build_preset: indicates the build duration. Available options:
 
-                    | *debug*: < 30 min
+                    | *debug*: < 30 min, only 4 dat
 
                     | *short*: < 24 hours
 
@@ -261,7 +261,7 @@ class ModelConfiguration:
             new_model = simai.models.build(new_conf)
     """
 
-    project: "Project" = None
+    project: "Optional[Project]" = None
     build_preset: Literal[
         "debug",
         "short",
@@ -269,41 +269,50 @@ class ModelConfiguration:
         "long",
     ] = "default"
     continuous: bool = False
-    input: ModelInput = ModelInput()
-    output: ModelOutput = ModelOutput()
+    input: ModelInput = field(default_factory=lambda: ModelInput())
+    output: ModelOutput = field(default_factory=lambda: ModelOutput())
     domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
 
-    def __set_gc(self, gcs: list[tuple | GlobalCoefficientUnit]):
+    def __set_gc(self, gcs: list[tuple | GlobalCoefficientDefinition]):
         verified_gcs = []
+
         for gc in gcs:
-            gc_unit = GlobalCoefficientUnit(*gc) if isinstance(gc, tuple) else gc
-            self.project.verify_gc_formula(
-                gc_unit.formula, self.input.boundary_conditions, self.output.surface
-            )
-            verified_gcs += [gc_unit]
+            gc_unit = GlobalCoefficientDefinition(*gc) if isinstance(gc, tuple) else gc
+            if self.project is not None:
+                self.project.verify_gc_formula(
+                    gc_unit.formula, self.input.boundary_conditions, self.output.surface
+                )
+            verified_gcs.append(gc_unit)
         self.__dict__["global_coefficients"] = verified_gcs
 
     def __get_gc(self):
         return self.__dict__.get("global_coefficients")
 
-    global_coefficients: ModelOutput = property(__get_gc, __set_gc)
+    global_coefficients: list[GlobalCoefficientDefinition] = property(__get_gc, __set_gc)
 
     def __init__(
         self,
         boundary_conditions: Optional[dict[str, Any]] = None,
         build_preset: Optional[str] = None,
-        continuous: Optional[bool] = False,
+        continuous: bool = False,
         fields: Optional[dict[str, Any]] = None,
-        global_coefficients: Optional[dict[dict[str, Any]] | GlobalCoefficientUnit] = None,
+        global_coefficients: Optional[dict[dict[str, Any]] | GlobalCoefficientDefinition] = None,
         simulation_volume: Optional[dict[str, Any]] = None,
         project: Optional["Project"] = None,
         input: Optional[ModelInput] = None,
         output: Optional[ModelOutput] = None,
         domain_of_analysis: Optional[DomainOfAnalysis] = None,
+        surface_pp_input: Optional[list] = None,
     ):
         """Sets the properties of a build configuration."""
         self.project = project
-        if boundary_conditions is not None:
+        self.input = ModelInput()
+        if input is not None:
+            self.input = input
+        self.output = ModelOutput()
+        if output is not None:
+            self.output = output
+        if boundary_conditions is not None and self.input.boundary_conditions is None:
             self.input.boundary_conditions = list(boundary_conditions.keys())
         self.build_preset = build_preset
         self.continuous = continuous
@@ -317,28 +326,28 @@ class ModelConfiguration:
             if fields.get("volume"):
                 self.output.volume = [fd.get("name") for fd in fields["volume"]]
 
+        self.domain_of_analysis = domain_of_analysis
         if simulation_volume is not None:
             self.domain_of_analysis = DomainOfAnalysis(
-                length=self._get_doa_axis("X"),
-                width=self._get_doa_axis("Y"),
-                height=self._get_doa_axis("Z"),
+                length=self._get_doa_axis(simulation_volume, "X"),
+                width=self._get_doa_axis(simulation_volume, "Y"),
+                height=self._get_doa_axis(simulation_volume, "Z"),
             )
-        self.domain_of_analysis = domain_of_analysis
 
         if global_coefficients is not None:
             gcs = [
-                GlobalCoefficientUnit(**gc) if isinstance(gc, dict) else gc
+                GlobalCoefficientDefinition(**gc) if isinstance(gc, dict) else gc
                 for gc in global_coefficients
             ]
             self.global_coefficients = gcs
-        if input is not None:
-            self.input = input
-        if output is not None:
-            self.output = output
 
-    def _get_doa_axis(self, rel_pos: str) -> DomainAxisDefinition:
+        self.surface_pp_input = []
+        if surface_pp_input is not None:
+            self.surface_pp_input = surface_pp_input
+
+    def _get_doa_axis(self, sim_vol: dict, rel_pos: str) -> DomainAxisDefinition:
         """Composes a DomainAxisDefinition from raw json."""
-        pos = self.__simulation_volume.get(rel_pos)
+        pos = sim_vol.get(rel_pos)
         return DomainAxisDefinition(position=pos["type"], value=pos["value"], length=pos["length"])
 
     def _set_doa_axis(self, fld: DomainAxisDefinition, param: str) -> dict[str, Any]:
@@ -390,6 +399,7 @@ class ModelConfiguration:
             "surface": surface_fld,
             "surface_input": surface_input_fld,
             "volume": volume_fld,
+            "surface_pp_input": self.surface_pp_input,
         }
 
         simulation_volume = {

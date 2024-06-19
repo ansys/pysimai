@@ -123,7 +123,7 @@ class Project(DataModel):
 
     @property
     def last_model_configuration(self) -> ModelConfiguration:
-        """The last :class:`configuration <ansys.simai.core.data.model_configuration.ModelConfiguration>` that was used for training a model in this project."""
+        """Last :class:`configuration <ansys.simai.core.data.model_configuration.ModelConfiguration>` used for model training in this project."""
         return ModelConfiguration(project=self, **self.fields.get("last_model_configuration"))
 
     def delete(self) -> None:
@@ -150,11 +150,11 @@ class Project(DataModel):
     def verify_gc_formula(
         self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
     ):
-        """Verifies if the Global Coefficient formula is valid."""
+        """Verify whether the syntax of the global coefficient formula is valid."""
 
         if not self.sample:
             raise ProcessingError(
-                f"No sample is set in the project {self.id}. A sample should be set for verifying a Global Coefficients formula."
+                f"No sample is set in the project {self.id}. A sample should be set to verify a global coefficient formula."
             )
 
         sample_metadata = self.sample.fields.get("extracted_metadata")
@@ -178,11 +178,11 @@ class Project(DataModel):
     def compute_gc_formula(
         self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
     ):
-        """Verifies if the Global Coefficient formula is valid."""
+        """Compute the result of a global coefficient formula according to the project sample."""
 
         if not self.sample:
             raise ProcessingError(
-                f"No sample is set in the project {self.id}. A sample should be set for computing the results of a Global Coefficients formula."
+                f"No sample is set for the project {self.id}. A sample should be set for computing the results of a Global Coefficients formula."
             )
 
         sample_metadata = self.sample.fields.get("extracted_metadata")

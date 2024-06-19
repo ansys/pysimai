@@ -206,7 +206,7 @@ def create_mock_geometry():
 
 @pytest.fixture(scope="function")
 def global_coefficient_request_factory(simai_client):
-    """Returns a function to create a Globla Coefficient request object."""
+    """Returns a function to create a global coefficient request object."""
 
     def _factory(request_type="check", **kwargs):
         if "state" not in kwargs.get("data"):

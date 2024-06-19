@@ -38,7 +38,7 @@ class Model(ComputableDataModel):
 
     @property
     def configuration(self) -> ModelConfiguration:
-        """The build configuration of model."""
+        """Build configuration of a model."""
         return ModelConfiguration(
             project=self._client.projects.get(self.fields["project_id"]),
             **self.fields["configuration"],
