@@ -49,7 +49,10 @@ def _upload_training_data_part(id, named_part, client, monitor_callback):
             training_data_part_fields, is_upload_complete=False
         )
         parts = client._api.upload_parts(
-            f"training_data_parts/{training_data_part.id}/part", file, upload_id, monitor_callback
+            f"training_data_parts/{training_data_part.id}/part",
+            file,
+            upload_id,
+            monitor_callback=monitor_callback,
         )
         client._api.complete_training_data_part_upload(training_data_part.id, upload_id, parts)
     return training_data_part
@@ -255,7 +258,10 @@ class TrainingDataDirectory(Directory[TrainingData]):
             Added :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart` object.
         """
         return _upload_training_data_part(
-            get_id_from_identifiable(training_data), file, self._client, monitor_callback
+            get_id_from_identifiable(training_data),
+            file,
+            self._client,
+            monitor_callback,
         )
 
     def upload_folder(
