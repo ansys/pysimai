@@ -231,17 +231,30 @@ class ApiClientMixin:
         Returns:
             List of parts with their IDs and HTTP ETags.
         """
+        print("testtestste")
         part_number = 1
         parts = []
         while True:
             part_data = file.read(part_size)
             if len(part_data) == 0:
                 break
+            print(f"Uploading part {part_number}, sizeof {len(part_data)} bytes")
             logger.debug(f"Uploading part {part_number}, sizeof {len(part_data)} bytes")
-            create_part = self._put(url, json={"part_number": part_number, "upload_id": upload_id})
-            uploaded_part = self._put(create_part["url"], data=part_data, return_json=False)
-            parts.append({"PartNumber": part_number, "ETag": uploaded_part.headers["ETag"]})
-            part_number += 1
-            if monitor_callback is not None:
-                monitor_callback(len(part_data))
+            with open(file.name, "rb") as f:
+                # multipart = MultipartEncoder(file)
+                multipart = MultipartEncoder(
+                    fields={"file": ("", f, "application/octet-stream")}
+                )
+                create_part = self._put(
+                    url, json={"part_number": part_number, "upload_id": upload_id}
+                )
+                uploaded_part = self._put(
+                    create_part["url"], data=multipart, return_json=False
+                )
+                parts.append(
+                    {"PartNumber": part_number, "ETag": uploaded_part.headers["ETag"]}
+                )
+                part_number += 1
+                if monitor_callback is not None:
+                    monitor_callback(len(part_data))
         return parts

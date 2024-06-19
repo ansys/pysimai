@@ -42,16 +42,23 @@ if TYPE_CHECKING:
 
 def _upload_training_data_part(id, named_part, client, monitor_callback):
     with unpack_named_file(named_part) as (file, name, extension):
+        print("file: ", file)
         (training_data_part_fields, upload_id) = client._api.create_training_data_part(
             id, name, extension
         )
         training_data_part = client.training_data_parts._model_from(
             training_data_part_fields, is_upload_complete=False
         )
+        print("ooooooooooooooooooooooooooooooo")
         parts = client._api.upload_parts(
-            f"training_data_parts/{training_data_part.id}/part", file, upload_id, monitor_callback
+            f"training_data_parts/{training_data_part.id}/part",
+            file,
+            upload_id,
+            monitor_callback,
         )
-        client._api.complete_training_data_part_upload(training_data_part.id, upload_id, parts)
+        client._api.complete_training_data_part_upload(
+            training_data_part.id, upload_id, parts
+        )
     return training_data_part
 
 
@@ -87,11 +94,17 @@ class TrainingData(ComputableDataModel):
             SubsetEnum of the subset that the training data belongs to in the given project.
                 (e.g. <SubsetEnum.VALIDATION: 'Validation'>)
         """
-        project_id = get_id_from_identifiable(project, default=self._client._current_project)
-        subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
+        project_id = get_id_from_identifiable(
+            project, default=self._client._current_project
+        )
+        subset_value = self._client._api.get_training_data_subset(
+            project_id, self.id
+        ).get("subset")
         return SubsetEnum(subset_value) if subset_value else None
 
-    def assign_subset(self, project: Identifiable["Project"], subset: SubsetEnum) -> None:
+    def assign_subset(
+        self, project: Identifiable["Project"], subset: SubsetEnum
+    ) -> None:
         """Assign the training data subset in relation to a given project.
 
         Args:
@@ -103,8 +116,12 @@ class TrainingData(ComputableDataModel):
             None
         """
         if subset not in SubsetEnum.__members__.values():
-            raise InvalidArguments("Must be one of: Ignored, Training, Test, Validation.")
-        project_id = get_id_from_identifiable(project, default=self._client._current_project)
+            raise InvalidArguments(
+                "Must be one of: Ignored, Training, Test, Validation."
+            )
+        project_id = get_id_from_identifiable(
+            project, default=self._client._current_project
+        )
         self._client._api.put_training_data_subset(project_id, self.id, subset)
 
     @property
@@ -220,9 +237,13 @@ class TrainingDataDirectory(Directory[TrainingData]):
         Args:
             training_data: ID or :class:`model <TrainingData>` object of the :class:`TrainingData` object.
         """
-        return self._client._api.delete_training_data(get_id_from_identifiable(training_data))
+        return self._client._api.delete_training_data(
+            get_id_from_identifiable(training_data)
+        )
 
-    def create(self, name: str, project: Optional[Identifiable["Project"]] = None) -> TrainingData:
+    def create(
+        self, name: str, project: Optional[Identifiable["Project"]] = None
+    ) -> TrainingData:
         """Create a :class:`TrainingData` object.
 
         Args:
@@ -233,7 +254,9 @@ class TrainingDataDirectory(Directory[TrainingData]):
             Created :class:`TrainingData` object.
         """
         project_id = get_id_from_identifiable(project, required=False)
-        return self._model_from(self._client._api.create_training_data(name, project_id))
+        return self._model_from(
+            self._client._api.create_training_data(name, project_id)
+        )
 
     def upload_part(
         self,
@@ -255,7 +278,10 @@ class TrainingDataDirectory(Directory[TrainingData]):
             Added :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart` object.
         """
         return _upload_training_data_part(
-            get_id_from_identifiable(training_data), file, self._client, monitor_callback
+            get_id_from_identifiable(training_data),
+            file,
+            self._client,
+            monitor_callback,
         )
 
     def upload_folder(
@@ -286,5 +312,6 @@ class TrainingDataDirectory(Directory[TrainingData]):
                 _upload_training_data_part(training_data_id, file, self._client, None)
             )
         if compute:
+            print("attempting to compute ...")
             self._client._api.compute_training_data(training_data_id)
         return uploaded_parts
