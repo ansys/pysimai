@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "ansys-simai-core"
-version = "0.1.6"
+version = "0.1.7"
 description = "A python wrapper for Ansys SimAI"
 authors = [
     {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
@@ -36,7 +36,7 @@ dependencies = [
     "pydantic>=2.5.1,<3",
     "semver>=3.0.2",
     "sseclient-py>=1.8.0,<3",
-    "wakepy>=0.7.2",
+    "wakepy>=0.8.0",
     "tqdm>=4.66.1",
 ]
 
@@ -71,6 +71,7 @@ linting = [
 [tool.pdm.scripts]
 lint = "pre-commit run --all-files"
 test = "pytest --cov=ansys --cov-report=term --cov-report=html:./cov/html tests -vv"
+doc = "sphinx-build doc/source _build/html --color -vW -bhtml"
 
 [project.urls]
 Bugs = "https://github.com/ansys/pysimai/issues"
@@ -172,3 +173,4 @@ source = ["ansys.simai.core"]
 
 [tool.coverage.report]
 show_missing = true
+exclude_also = ["if TYPE_CHECKING:"]

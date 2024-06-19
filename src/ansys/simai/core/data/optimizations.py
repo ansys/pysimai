@@ -186,7 +186,7 @@ class OptimizationDirectory(Directory[Optimization]):
             geometry_parameters = optimization.fields["initial_geometry_parameters"]
             logger.debug("Optimization defined. Starting optimization loop.")
             iterations_results: List[Dict] = []
-            with keep.running() as k:
+            with keep.running(on_fail="warn") as k:
                 if not k.success:
                     logger.info("Failed to get sleep inhibition lock.")
                 while geometry_parameters:
