@@ -19,6 +19,25 @@ GlobalCoefficientDefinition
     :members:
 
 
+DomainAxisDefinition
+--------------------
+
+.. autoclass:: DomainAxisDefinition()
+
+
+DomainOfAnalysis
+--------------------
+
+.. autoclass:: DomainOfAnalysis()
+
+
+ModelConfiguration
+------------------
+
+.. autoclass:: ModelConfiguration()
+    :members:
+
+
 ModelInput
 ----------
 

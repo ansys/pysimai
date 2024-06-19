@@ -274,7 +274,7 @@ class ModelConfiguration:
     output: ModelOutput = field(default_factory=lambda: ModelOutput())
     domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
 
-    def __set_gc(self, gcs: list[tuple | GlobalCoefficientDefinition]):
+    def __set_gc(self, gcs: list[GlobalCoefficientDefinition]):
         verified_gcs = []
 
         for gc in gcs:
