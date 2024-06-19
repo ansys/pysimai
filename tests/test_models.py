@@ -33,7 +33,7 @@ from ansys.simai.core.data.model_configuration import (
     ModelInput,
     ModelOutput,
 )
-from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.models import Model
@@ -418,3 +418,13 @@ def test_doa_tuple():
     )
 
     assert doa_tuple == doa_long
+
+
+def test_exception_compute_global_coefficient():
+    """WHEN a project is not defined
+    THEN an error is raise."""
+
+    model_conf = ModelConfiguration(**MODEL_CONF_RAW)
+
+    with pytest.raises(ProcessingError):
+        model_conf.compute_global_coefficient()
