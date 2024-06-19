@@ -419,7 +419,7 @@ class ModelConfiguration:
         }
 
     def compute_global_coefficient(self):
-        """Computes the results of the formula for all Global Coefficients with respect to the project's sample."""
+        """Computes the results of the formula for all global coefficients with respect to the project's sample."""
 
         if self.project is None:
             raise ProcessingError(

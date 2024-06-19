@@ -31,13 +31,6 @@ DomainOfAnalysis
 .. autoclass:: DomainOfAnalysis()
 
 
-ModelConfiguration
-------------------
-
-.. autoclass:: ModelConfiguration()
-    :members:
-
-
 ModelInput
 ----------
 
