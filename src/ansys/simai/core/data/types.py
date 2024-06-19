@@ -266,5 +266,7 @@ def get_object_from_identifiable(
 
 
 class SubsetEnum(str, Enum):
+    """:obj:`SubsetEnum`: enumeration of possible subsets TrainingData can belong to if any."""
+
     TRAINING = "Training"
     TEST = "Test"

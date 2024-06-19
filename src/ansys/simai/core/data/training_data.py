@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import pathlib
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.types import (
@@ -84,19 +84,21 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            None if subset is unassigned or SubsetEnum of the subset that the training data belongs to in the given project.
+            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which the training belongs to if any, ``None`` otherwise.
                 (e.g. <SubsetEnum.TEST: 'Test'>)
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
         return SubsetEnum(subset_value) if subset_value else None
 
-    def assign_subset(self, project: Identifiable["Project"], subset: Optional[SubsetEnum]) -> None:
+    def assign_subset(
+        self, project: Identifiable["Project"], subset: Optional[Union[SubsetEnum, str]]
+    ) -> None:
         """Assign the training data subset in relation to a given project.
 
         Args:
             project: ID or :class:`model <.projects.Project>`
-            subset: None to unassign or SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training").
+            subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training") or None to unassign.
                 Available options: (Training, Test)
 
         Returns:
@@ -106,11 +108,7 @@ class TrainingData(ComputableDataModel):
             raise InvalidArguments("Must be None or one of: 'Training', 'Test'.")
 
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
-        if subset is None:
-            self._client._api.remove_training_data_from_project(self.id, project_id)
-            self._client._api.add_training_data_to_project(self.id, project_id)
-        else:
-            self._client._api.put_training_data_subset(project_id, self.id, subset)
+        self._client._api.put_training_data_subset(project_id, self.id, subset)
 
     @property
     def extracted_metadata(self) -> Optional[Dict]:
