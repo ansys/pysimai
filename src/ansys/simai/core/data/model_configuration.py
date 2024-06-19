@@ -421,14 +421,14 @@ class ModelConfiguration:
     def compute_global_coefficient(self):
         """Computes the results of the formula for all Global Coefficients with respect to the project's sample."""
 
-        if self.project is not None:
-            return [
-                self.project.compute_gc_formula(
-                    gc.formula, self.input.boundary_conditions, self.output.surface
-                )
-                for gc in self.output.global_coefficients
-            ]
-        else:
+        if self.project is None:
             raise ProcessingError(
                 f"{self.__class__.__name__}: a project must be a defined for computing the global coefficient formula."
             ) from None
+
+        return [
+            self.project.compute_gc_formula(
+                gc.formula, self.input.boundary_conditions, self.output.surface
+            )
+            for gc in self.output.global_coefficients
+        ]
