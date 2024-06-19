@@ -6,7 +6,7 @@ Changelog
 
 New:
 
-- Added :py:class:`DomainOfAnalysis<ansys.simai.core.data.models.DomainOfAnalysis>` class to
+- Added :py:class:`DomainOfAnalysis<ansys.simai.core.data.model_configuration.DomainOfAnalysis>` class to
   help set the domain of analysis on a new model.
 - Add `workspace` option where we previously relied only on the global workspace
 - Add prediction.post.list()
