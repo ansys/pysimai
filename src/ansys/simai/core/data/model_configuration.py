@@ -23,7 +23,7 @@
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, Literal, Optional
 
-from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
@@ -208,6 +208,7 @@ class ModelConfiguration:
         input: the inputs of the model.
         output: the outputs of the model.
         global_coefficients: the Global Coefficients of the model.
+        domain_of_analysis: The Domain of Analysis of the model configuration.
 
     Example:
         Define a new configuration and launch a build.
@@ -296,7 +297,7 @@ class ModelConfiguration:
         build_preset: Optional[str] = None,
         continuous: bool = False,
         fields: Optional[dict[str, Any]] = None,
-        global_coefficients: Optional[dict[dict[str, Any]] | GlobalCoefficientDefinition] = None,
+        global_coefficients: Optional[list[GlobalCoefficientDefinition]] = None,
         simulation_volume: Optional[dict[str, Any]] = None,
         project: Optional["Project"] = None,
         input: Optional[ModelInput] = None,
@@ -420,9 +421,14 @@ class ModelConfiguration:
     def compute_global_coefficient(self):
         """Computes the results of the formula for all Global Coefficients with respect to the project's sample."""
 
-        return [
-            self.project.compute_gc_formula(
-                gc.formula, self.input.boundary_conditions, self.output.surface
-            )
-            for gc in self.output.global_coefficients
-        ]
+        if self.project is not None:
+            return [
+                self.project.compute_gc_formula(
+                    gc.formula, self.input.boundary_conditions, self.output.surface
+                )
+                for gc in self.output.global_coefficients
+            ]
+        else:
+            raise ProcessingError(
+                f"{self.__class__.__name__}: a project must be a defined for computing the global coefficient formula."
+            ) from None
