@@ -5,7 +5,7 @@ Models
 
 .. py:module:: ansys.simai.core.data.models
 
-A collection for classes for building a SimAI model.
+A collection of classes for building a SimAI model.
 Launching a build requires a configuration
 (:py:class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>`)
 which defines the model properties, such as its inputs and outputs,

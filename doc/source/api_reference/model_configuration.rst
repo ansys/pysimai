@@ -1,21 +1,21 @@
 .. _model_configuration:
 
-Model Configuration
+Model configuration
 ===================
 
 .. py:module:: ansys.simai.core.data.model_configuration
 
-A collection for classes for creating a build configuration.
-The configuration defines the model's inputs, outputs, Global
-Coefficient, its duration and its project. The
+This module contains a collection of classes for creating a model configuration.
+The model configuration defines the model's inputs, outputs, Global Coefficients,
+build duration and project. The resulting
 (:py:class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>`)
-object is then used to train a model.
+object is subsequently used to train a model.
 
 
-GlobalCoefficientUnit
----------------------
+GlobalCoefficientDefinition
+---------------------------
 
-.. autoclass:: GlobalCoefficientUnit()
+.. autoclass:: GlobalCoefficientDefinition()
     :members:
 
 
