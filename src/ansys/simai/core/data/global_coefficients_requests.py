@@ -147,7 +147,7 @@ class CheckGlobalCoefficient(GlobalCoefficientRequest):
             logger.debug(f"{self._classname} id {self.id} set status successful")
             self._set_is_over()
         elif state in ERROR_STATES:
-            error_message = f"Verification of formula {target.get('formula')} failed with {data.get('reason', "UNKNOWN ERROR")}"
+            error_message = f"Verification of formula {target.get('formula')} failed with {data.get('reason', 'UNKNOWN ERROR')}"
             self.fields["error"] = error_message
             self._set_has_failed()
             logger.error(error_message)
@@ -182,7 +182,7 @@ class ComputeGlobalCoefficient(GlobalCoefficientRequest):
             self._result = data.get("result").get("value")
             self._set_is_over()
         elif state in ERROR_STATES:
-            error_message = f"Computation of global coefficient {target.get('formula')} failed with {data.get('reason', "UNKNOWN ERROR")}"
+            error_message = f"Computation of global coefficient {target.get('formula')} failed with {data.get('reason', 'UNKNOWN ERROR')}"
             self.fields["error"] = error_message
             self._set_has_failed()
             logger.error(error_message)
