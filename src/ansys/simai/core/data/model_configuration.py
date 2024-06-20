@@ -237,7 +237,7 @@ class ModelConfiguration:
                 surface=["Pressure", "WallShearStress_0"], volume=["Velocity_0", "Pressure"]
             )
 
-            # Define the model coefficient
+            # Define the model coefficients
             global_coefficients = [("max(Pressure)", "maxpress")]
 
             # Set the Domain of Analysis
