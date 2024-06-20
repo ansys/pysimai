@@ -27,7 +27,7 @@ import responses
 
 from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.training_data import TrainingData
-from ansys.simai.core.errors import ApiClientError
+from ansys.simai.core.errors import ApiClientError, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
@@ -263,3 +263,25 @@ def test_last_model_configuration(simai_client):
 
     assert isinstance(project_last_conf, ModelConfiguration)
     assert project_last_conf._to_payload() == last_conf
+
+
+def test_verify_gc_no_sample(simai_client):
+    """WHEN no sample is defined in the project
+    THEN an exception is raised in verify_gc_formula."""
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    with pytest.raises(ProcessingError):
+        project.verify_gc_formula("max(Pressure)")
+
+
+def test_compute_gc_no_sample(simai_client):
+    """WHEN no sample is defined in the project
+    THEN an exception is raised in compute_gc_formula."""
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    with pytest.raises(ProcessingError):
+        project.compute_gc_formula("max(Pressure)")
