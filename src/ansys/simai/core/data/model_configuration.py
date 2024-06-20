@@ -279,10 +279,14 @@ class ModelConfiguration:
 
         for gc in gcs:
             gc_unit = GlobalCoefficientDefinition(*gc) if isinstance(gc, tuple) else gc
-            if self.project is not None:
-                self.project.verify_gc_formula(
-                    gc_unit.formula, self.input.boundary_conditions, self.output.surface
-                )
+            if self.project is None:
+                raise ProcessingError(
+                    f"{self.__class__.__name__}: a project must be defined for setting global coefficients."
+                ) from None
+
+            self.project.verify_gc_formula(
+                gc_unit.formula, self.input.boundary_conditions, self.output.surface
+            )
             verified_gcs.append(gc_unit)
         self.__dict__["global_coefficients"] = verified_gcs
 

@@ -420,11 +420,31 @@ def test_doa_tuple():
     assert doa_tuple == doa_long
 
 
-def test_exception_compute_global_coefficient():
+def test_exception_compute_global_coefficient(simai_client):
     """WHEN a project is not defined
     THEN an error is raise."""
 
-    model_conf = ModelConfiguration(project=None, **MODEL_CONF_RAW)
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+
+    model_conf.project = None
 
     with pytest.raises(ProcessingError):
         model_conf.compute_global_coefficient()
+
+
+def test_exception_setting_global_coefficient():
+    """WHEN a project is not defined
+    THEN an error is raise."""
+
+    with pytest.raises(ProcessingError):
+        ModelConfiguration(project=None, **MODEL_CONF_RAW)
