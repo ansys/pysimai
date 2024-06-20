@@ -306,6 +306,8 @@ class ModelConfiguration:
         surface_pp_input: Optional[list] = None,
     ):
         """Sets the properties of a build configuration."""
+        if surface_pp_input is None:
+            surface_pp_input = []
         self.project = project
         self.input = ModelInput()
         if input is not None:
@@ -317,6 +319,7 @@ class ModelConfiguration:
             self.input.boundary_conditions = list(boundary_conditions.keys())
         self.build_preset = build_preset
         self.continuous = continuous
+        self.surface_pp_input = surface_pp_input
         if fields is not None:
             if fields.get("surface_input"):
                 self.input.surface = [fd.get("name") for fd in fields["surface_input"]]
@@ -326,6 +329,8 @@ class ModelConfiguration:
 
             if fields.get("volume"):
                 self.output.volume = [fd.get("name") for fd in fields["volume"]]
+
+            self.surface_pp_input = fields.get("surface_pp_input", [])
 
         self.domain_of_analysis = domain_of_analysis
         if simulation_volume is not None:
@@ -341,10 +346,6 @@ class ModelConfiguration:
                 for gc in global_coefficients
             ]
             self.global_coefficients = gcs
-
-        self.surface_pp_input = []
-        if surface_pp_input is not None:
-            self.surface_pp_input = surface_pp_input
 
     def _get_doa_axis(self, sim_vol: dict, rel_pos: str) -> DomainAxisDefinition:
         """Composes a DomainAxisDefinition from raw json."""
@@ -400,7 +401,7 @@ class ModelConfiguration:
             "surface": surface_fld,
             "surface_input": surface_input_fld,
             "volume": volume_fld,
-            "surface_pp_input": self.surface_pp_input,
+            "surface_pp_input": self.surface_pp_input if self.surface_pp_input else [],
         }
 
         simulation_volume = {
