@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import logging
-from typing import TYPE_CHECKING, List, NamedTuple, Optional
+from typing import TYPE_CHECKING, Dict, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
@@ -135,7 +135,7 @@ class Project(DataModel):
         tt = self._client._api.is_project_trainable(self.id)
         return IsTrainableInfo(**tt)
 
-    def get_variables(self) -> Optional[dict[str, List[str]]]:
+    def get_variables(self) -> Optional[Dict[str, List[str]]]:
         """Get the available variables for the model's input/output."""
         if not self.sample:
             return None

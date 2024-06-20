@@ -293,13 +293,13 @@ class ModelConfiguration:
 
     def __init__(
         self,
+        project: "Project",
         boundary_conditions: Optional[dict[str, Any]] = None,
         build_preset: Optional[str] = None,
         continuous: bool = False,
         fields: Optional[dict[str, Any]] = None,
         global_coefficients: Optional[list[GlobalCoefficientDefinition]] = None,
         simulation_volume: Optional[dict[str, Any]] = None,
-        project: Optional["Project"] = None,
         input: Optional[ModelInput] = None,
         output: Optional[ModelOutput] = None,
         domain_of_analysis: Optional[DomainOfAnalysis] = None,

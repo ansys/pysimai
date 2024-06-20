@@ -424,7 +424,7 @@ def test_exception_compute_global_coefficient():
     """WHEN a project is not defined
     THEN an error is raise."""
 
-    model_conf = ModelConfiguration(**MODEL_CONF_RAW)
+    model_conf = ModelConfiguration(project=None, **MODEL_CONF_RAW)
 
     with pytest.raises(ProcessingError):
         model_conf.compute_global_coefficient()
