@@ -21,13 +21,15 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 import responses
 
+from ansys.simai.core.data.global_coefficients_requests import CheckGlobalCoefficient
 from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.training_data import TrainingData
-from ansys.simai.core.errors import ApiClientError
+from ansys.simai.core.errors import ApiClientError, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
@@ -100,65 +102,6 @@ def test_project_sample(simai_client):
     project.sample = raw_td["id"]
     assert isinstance(project.sample, TrainingData)
     assert project.sample.id == raw_td["id"]
-
-
-@responses.activate
-def test_last_model_configuration(simai_client):
-    """Test last_configuration property."""
-
-    last_conf = {
-        "boundary_conditions": {"Vx": {}},
-        "build_preset": "debug",
-        "continuous": False,
-        "fields": {
-            "surface": [
-                {
-                    "format": "value",
-                    "keys": None,
-                    "location": "cell",
-                    "name": "WallShearStress_0",
-                    "unit": None,
-                }
-            ],
-            "surface_input": [],
-            "volume": [
-                {
-                    "format": "value",
-                    "keys": None,
-                    "location": "cell",
-                    "name": "Pressure",
-                    "unit": None,
-                }
-            ],
-        },
-        "global_coefficients": [],
-        "simulation_volume": {
-            "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
-            "Y": {"length": 80.0, "type": "absolute", "value": -80},
-            "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
-        },
-    }
-
-    raw_project = {
-        "id": "xX007Xx",
-        "name": "fifi",
-        "sample": None,
-        "last_model_configuration": last_conf,
-    }
-
-    project: Project = simai_client._project_directory._model_from(raw_project)
-
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}/",
-        status=200,
-        json=raw_project,
-    )
-
-    project_last_conf = project.last_model_configuration
-
-    assert isinstance(project_last_conf, ModelConfiguration)
-    assert project_last_conf._to_payload() == last_conf
 
 
 @responses.activate
@@ -270,3 +213,97 @@ def test_get_variables(simai_client, in_sample, vars_out):
 
     var_pool = project.get_variables()
     assert var_pool == vars_out
+
+
+def test_last_model_configuration(simai_client):
+    """Test last_configuration property."""
+
+    last_conf = {
+        "boundary_conditions": {"Vx": {}},
+        "build_preset": "debug",
+        "continuous": False,
+        "fields": {
+            "surface": [
+                {
+                    "format": "value",
+                    "keys": None,
+                    "location": "cell",
+                    "name": "TurbulentViscosity",
+                    "unit": None,
+                }
+            ],
+            "surface_input": [],
+            "surface_pp_input": [],
+            "volume": [
+                {
+                    "format": "value",
+                    "keys": None,
+                    "location": "cell",
+                    "name": "Pressure",
+                    "unit": None,
+                }
+            ],
+        },
+        "global_coefficients": [],
+        "simulation_volume": {
+            "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
+            "Y": {"length": 80.0, "type": "absolute", "value": -80},
+            "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
+        },
+    }
+
+    raw_project = {
+        "id": "xX007Xx",
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+        "last_model_configuration": last_conf,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project_last_conf = project.last_model_configuration
+
+    assert isinstance(project_last_conf, ModelConfiguration)
+    assert project_last_conf._to_payload() == last_conf
+
+
+def test_verify_gc_no_sample(simai_client):
+    """WHEN no sample is defined in the project
+    THEN an exception is raised in verify_gc_formula."""
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    with pytest.raises(ProcessingError):
+        project.verify_gc_formula("max(Pressure)")
+
+
+def test_compute_gc_no_sample(simai_client):
+    """WHEN no sample is defined in the project
+    THEN an exception is raised in compute_gc_formula."""
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    with pytest.raises(ProcessingError):
+        project.compute_gc_formula("max(Pressure)")
+
+
+def fake_wait(gc_class):
+    gc_class._set_is_over()
+
+
+@responses.activate
+@patch.object(CheckGlobalCoefficient, "wait", fake_wait)
+def test_successful_gc_verify(simai_client):
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project.id}/check-formula",
+        status=200,
+    )
+
+    assert project.verify_gc_formula("max(Pressure)") is True

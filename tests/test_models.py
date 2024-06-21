@@ -20,20 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
+from unittest.mock import Mock
 
 import pytest
 import responses
 
-from ansys.simai.core.data.models import (
+from ansys.simai.core.data.model_configuration import (
     DomainAxisDefinition,
     DomainOfAnalysis,
     ModelConfiguration,
+    ModelInput,
+    ModelOutput,
 )
-from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.models import Model
+    from ansys.simai.core.data.projects import Project
 
 
 MODEL_CONF_RAW = {
@@ -58,6 +62,7 @@ MODEL_CONF_RAW = {
             },
         ],
         "surface_input": [],
+        "surface_pp_input": [],
         "volume": [
             {
                 "format": "value",
@@ -71,20 +76,6 @@ MODEL_CONF_RAW = {
                 "keys": None,
                 "location": "cell",
                 "name": "Velocity_0",
-                "unit": None,
-            },
-            {
-                "format": "value",
-                "keys": None,
-                "location": "cell",
-                "name": "Velocity_1",
-                "unit": None,
-            },
-            {
-                "format": "value",
-                "keys": None,
-                "location": "cell",
-                "name": "VolumeFractionWater",
                 "unit": None,
             },
         ],
@@ -116,10 +107,99 @@ MODEL_RAW = {
     "workspaces": [],
 }
 
+METADATA_RAW = {
+    "boundary_conditions": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "name": "Vx",
+                "unit": None,
+                "value": -5.569587230682373,
+            }
+        ]
+    },
+    "surface": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "TurbulentViscosity",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "WallShearStress_0",
+                "unit": None,
+            },
+        ]
+    },
+    "volume": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Velocity_0",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Velocity_1",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "VolumeFractionWater",
+                "unit": None,
+            },
+        ]
+    },
+}
+
+VARS_OUT = {
+    "boundary_conditions": ["Vx"],
+    "surface": ["Pressure", "TurbulentViscosity"],
+    "volume": ["Pressure"],
+}
+
+SAMPLE_RAW = {
+    "extracted_metadata": METADATA_RAW,
+    "id": "DarkKnight",
+    "is_complete": True,
+    "is_deletable": True,
+    "is_in_a_project_being_trained": False,
+    "is_sample_of_a_project": True,
+    "luggage_version": "52.2.2",
+}
+
+create_sse_event = NamedTuple("SSEEvent", [("data", dict)])
+
 
 @responses.activate
-def test_build(simai_client):
-    """WHEN I call launch_build() with a ModelConfiguration
+def test_build_with_last_config(simai_client):
+    """WHEN I call launch_build() with using the last build configuration
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
     ModelConfiguration and its content matches the raw conf.
@@ -132,7 +212,24 @@ def test_build(simai_client):
         status=200,
     )
 
-    in_model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    in_model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
 
     launched_model: Model = simai_client.models.build(in_model_conf)
 
@@ -142,12 +239,83 @@ def test_build(simai_client):
     assert launched_model.configuration._to_payload() == MODEL_CONF_RAW
 
 
+@responses.activate
+def test_build_with_new_config(simai_client):
+    """WHEN I call launch_build() with using a new build configuration
+    THEN I get a Model object, its project_id matches the
+    id of the project, and its configuration is a
+    ModelConfiguration and its content matches the raw conf.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_input = ModelInput(surface=[], boundary_conditions=["Vx"])
+    model_output = ModelOutput(
+        surface=["Pressure", "WallShearStress_0"], volume=["Velocity_0", "Pressure"]
+    )
+    global_coefficients = [("max(Pressure)", "maxpress")]
+    simulation_volume = {
+        "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
+        "Y": {"length": 80.0, "type": "absolute", "value": -80},
+        "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
+    }
+
+    new_conf = ModelConfiguration(
+        project=project,
+        build_preset="debug",
+        continuous=False,
+        input=model_input,
+        output=model_output,
+        global_coefficients=global_coefficients,
+        simulation_volume=simulation_volume,
+    )
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/model",
+        json=MODEL_RAW,
+        status=200,
+    )
+
+    launched_model: Model = simai_client.models.build(new_conf)
+
+    assert isinstance(launched_model.configuration, ModelConfiguration)
+    assert launched_model.project_id == MODEL_RAW["project_id"]
+
+    assert launched_model.configuration._to_payload() == new_conf._to_payload()
+
+
 def test_set_doa(simai_client):
     """WHEN the Domain of Analysis is updated
     THEN the simulation_volume is updated accordingly.
     """
 
-    model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
 
     new_height = {"position": "relative_to_center", "value": 0.5, "length": 15.2}
 
@@ -159,12 +327,22 @@ def test_set_doa(simai_client):
     assert model_conf._to_payload()["simulation_volume"]["Z"]["length"] == new_height["length"]
 
 
-def test_get_doa():
+def test_get_doa(simai_client):
     """WHEN the Domain of Analysis is retrieved
     THEN the parameters of the axes match.
     """
 
-    model_conf = ModelConfiguration(project_id=MODEL_RAW["project_id"], **MODEL_CONF_RAW)
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
 
     doa_length_raw = MODEL_CONF_RAW.get("simulation_volume").get("X")
 
@@ -240,3 +418,33 @@ def test_doa_tuple():
     )
 
     assert doa_tuple == doa_long
+
+
+def test_exception_compute_global_coefficient(simai_client):
+    """WHEN a project is not defined
+    THEN an error is raise."""
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+
+    model_conf.project = None
+
+    with pytest.raises(ProcessingError):
+        model_conf.compute_global_coefficient()
+
+
+def test_exception_setting_global_coefficient():
+    """WHEN a project is not defined
+    THEN an error is raise."""
+
+    with pytest.raises(ProcessingError):
+        ModelConfiguration(project=None, **MODEL_CONF_RAW)
