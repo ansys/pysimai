@@ -21,10 +21,12 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 import responses
 
+from ansys.simai.core.data.global_coefficients_requests import CheckGlobalCoefficient
 from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.errors import ApiClientError, ProcessingError
@@ -285,3 +287,23 @@ def test_compute_gc_no_sample(simai_client):
 
     with pytest.raises(ProcessingError):
         project.compute_gc_formula("max(Pressure)")
+
+
+def fake_wait(gc_class):
+    gc_class._set_is_over()
+
+
+@responses.activate
+@patch.object(CheckGlobalCoefficient, "wait", fake_wait)
+def test_successful_gc_verify(simai_client):
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project.id}/check-formula",
+        status=200,
+    )
+
+    assert project.verify_gc_formula("max(Pressure)") is True

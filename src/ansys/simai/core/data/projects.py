@@ -187,8 +187,6 @@ class Project(DataModel):
 
         sample_metadata = self.sample.fields.get("extracted_metadata")
 
-        sample_metadata = self.sample.fields.get("extracted_metadata")
-
         gc_compute: ComputeGlobalCoefficient = (
             self._client._compute_gc_formula_directory._model_from(
                 data={
