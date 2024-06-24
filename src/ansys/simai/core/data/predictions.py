@@ -185,7 +185,7 @@ class PredictionDirectory(Directory[Prediction]):
             workspace: ID or :class:`model <.workspaces.Workspace>` of the workspace to list the predictions for.
                 This parameter is necessary if no workspace is set for the client.
         """
-        workspace_id = get_id_from_identifiable(workspace, default=self._client.current_workspace)
+        workspace_id = get_id_from_identifiable(workspace, default=self._client._current_workspace)
         raw_predictions = self._client._api.predictions(workspace_id)
         return list(map(self._model_from, raw_predictions))
 
