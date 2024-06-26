@@ -8,7 +8,7 @@ Training
    Training is still experimental and subject to API changes.
 
    Retraining using the last configuration of a project is supported for models created from
-   the release date of v0.1.5 (April 15, 2024) and onwards.
+   the release date of v0.1.5 (April 15, 2024) and on.
 
 Before you can use the solver, you must train the SimAI solution on your prediction
 data. You first upload your prediction data into a global pool of
