@@ -132,6 +132,8 @@ class SSEMixin(ApiClientMixin):
             self.simai_client.optimizations._handle_sse_event(data)
         elif target["type"] == "optimization_trial_run":
             self.simai_client._optimization_trial_run_directory._handle_sse_event(data)
+        elif target["type"] == "model":
+            self.simai_client._model_directory._handle_sse_event(data)
         elif target["type"] == "project":
             if "action" in target:
                 if target["action"] == "check":
