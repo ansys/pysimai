@@ -30,6 +30,7 @@ import pytest
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.geometries import Geometry, GeometryDirectory
+from ansys.simai.core.data.models import Model
 from ansys.simai.core.data.post_processings import (
     PostProcessing,
     PostProcessingDirectory,
@@ -215,5 +216,19 @@ def global_coefficient_request_factory(simai_client):
             return simai_client._check_gc_formula_directory._model_from(**kwargs)
         elif request_type == "compute":
             return simai_client._compute_gc_formula_directory._model_from(**kwargs)
+
+    return _factory
+
+
+@pytest.fixture()
+def model_factory(simai_client) -> Model:
+    """Returns a function to create a :py:class:`Model`."""
+
+    def _factory(**kwargs) -> Model:
+        kwargs.setdefault("id", str(random.random()))
+        kwargs.setdefault("name", kwargs["id"])
+
+        model = simai_client._model_directory._model_from(kwargs)
+        return model
 
     return _factory

@@ -448,3 +448,30 @@ def test_exception_setting_global_coefficient():
 
     with pytest.raises(ProcessingError):
         ModelConfiguration(project=None, **MODEL_CONF_RAW)
+
+
+def test_sse_event_handler(simai_client, model_factory):
+    """WHEN SSE signals successful state,
+    THEN model becomes ready.
+    """
+    model = model_factory(state="processing")
+    updated_record = model.fields.copy()
+    updated_record.update({"state": "successful"})
+    simai_client._model_directory._handle_sse_event(
+        {
+            "type": "job",
+            "status": "successful",
+            "target": {"id": model.id, "project": "o14qpmvy", "type": "model"},
+            "record": {
+                "id": model.id,
+                "state": "successful",
+                "project_id": "o14qpmvy",
+                "workspaces": [],
+                "name": "test",
+                "version": None,
+                "manifest": {},
+                "configuration": {},
+            },
+        }
+    )
+    assert model.is_ready
