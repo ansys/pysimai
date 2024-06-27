@@ -1,6 +1,19 @@
 Changelog
 ---------
 
+0.2.0 (2024-06-28)
+******************
+
+New:
+
+- Model configuration can now be created from scratch and be used in training requests.
+- Subsets can now be assigned to `None`. Options `Ignored` and `Validation` are retired.
+
+Fixes:
+
+- Fixed bug when uploading large files. Large files can now be uploaded.
+- Fixes bug when listing prediction without current_workspace being set.
+
 0.1.7 (2024-04-30)
 ******************
 
