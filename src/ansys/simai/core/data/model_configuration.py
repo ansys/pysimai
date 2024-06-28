@@ -435,5 +435,5 @@ class ModelConfiguration:
             self.project.compute_gc_formula(
                 gc.formula, self.input.boundary_conditions, self.output.surface
             )
-            for gc in self.output.global_coefficients
+            for gc in self.global_coefficients
         ]
