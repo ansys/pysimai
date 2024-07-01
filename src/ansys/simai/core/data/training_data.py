@@ -87,8 +87,9 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which the :class:`TrainingData` belongs to if any, ``None`` otherwise.
-                (e.g. <SubsetEnum.TEST: 'Test'>)
+            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which 
+            the :class:`TrainingData` belongs to if any, ``None`` otherwise.
+            (e.g. <SubsetEnum.TEST: 'Test'>)
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
@@ -97,12 +98,19 @@ class TrainingData(ComputableDataModel):
     def assign_subset(
         self, project: Identifiable["Project"], subset: Optional[Union[SubsetEnum, str]]
     ) -> None:
-        """Assign the training data subset in relation to a given project.
+        """Assign the training data to a subset in relation to a given project.
 
         Args:
             project: ID or :class:`model <.projects.Project>`
             subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training") or None to unassign.
                 Available options: (Training, Test)
+
+                Each subset requires at least one data point.
+                The training subset is used to train the model. The test subset is used for the model
+                evaluation report but is not learned by the model.
+                It is recommended to allocate about 10% of your data to the test subset.
+
+                None allows you to reset the assignment of your training data
 
         Returns:
             None
