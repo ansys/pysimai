@@ -87,8 +87,9 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which the :class:`TrainingData` belongs to if any, ``None`` otherwise.
-                (e.g. <SubsetEnum.TEST: 'Test'>)
+            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which
+            the :class:`TrainingData` belongs to if any, ``None`` otherwise.
+            (e.g. <SubsetEnum.TEST: 'Test'>)
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
