@@ -28,7 +28,7 @@ from ansys.simai.core.api.mixin import ApiClientMixin
 class TrainingDataPartClientMixin(ApiClientMixin):
     def create_training_data_part(
         self, training_data_id: str, name: str, extension: str
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    ) -> Tuple[Dict[str, Any], str]:
         """Create a part under the given training data without uploading the data.
 
         Args:
