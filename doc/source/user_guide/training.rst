@@ -1,22 +1,21 @@
-Training
+Building a model
 ========
 
-.. _training:
+.. _building a model:
 
 .. note::
 
-   Training is still experimental and subject to API changes.
+   Building a model with PySimAI is still experimental and subject to API changes.
 
-   Retraining using the last configuration of a project is supported for models created from
-   the release date of v0.1.5 (April 15, 2024) and on.
+   Rebuilding a model using the last configuration of a project is supported for models created
+   after v0.1.5 (April 15, 2024).
 
-Before you can use the solver, you must train the SimAI solution on your prediction
-data. You first upload your prediction data into a global pool of
-:class:`training data<ansys.simai.core.data.training_data.TrainingData>` instances
+SimAI allows you to build AI models on your simulation data. This first step is to upload your simulation data
+into a global pool of :class:`training data<ansys.simai.core.data.training_data.TrainingData>` instances
 and then assign this data to different :class:`Project<ansys.simai.core.data.projects.Project>`
-instances, which you configure for training your model.
+instances, which you configure in order to build your model.
 
-Train on prediction data
+Building an AI model on your simulation data
 ========================
 
 #. Create a :class:`~ansys.simai.core.client.SimAIClient` instance::
@@ -44,9 +43,6 @@ Train on prediction data
 #. Assign the created training data to your project::
 
      td.add_to_project(project)
-
-Once you have training data in your project, you can use the web app to
-train a model.
 
 Learn more
 ==========
