@@ -15,7 +15,7 @@ into a global pool of :class:`training data<ansys.simai.core.data.training_data.
 and then assign this data to different :class:`Project<ansys.simai.core.data.projects.Project>`
 instances, which you configure in order to build your model.
 
-Building an AI model on your simulation data
+Uploading your simulation data into a new project
 ========================
 
 #. Create a :class:`~ansys.simai.core.client.SimAIClient` instance::
