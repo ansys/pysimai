@@ -282,7 +282,7 @@ def get_object_from_identifiable(
 
 
 class SubsetEnum(str, Enum):
-    IGNORED = "Ignored"
+    """:obj:`SubsetEnum`: enumeration of possible subsets TrainingData can belong to if any."""
+
     TRAINING = "Training"
-    VALIDATION = "Validation"
     TEST = "Test"

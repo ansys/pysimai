@@ -1,6 +1,26 @@
 Changelog
 ---------
 
+0.2.1 (2024-06-28)
+******************
+
+Fixes:
+
+- Fixed bug that was crashing method :py:meth:`ModelConfiguration.compute_global_coefficient()<ansys.simai.core.data.model_configuration.ModelConfiguration.compute_global_coefficient>`. The result of the Global Coefficient formula can now be retrieved.
+
+0.2.0 (2024-06-28)
+******************
+
+New:
+
+- Model configuration can now be created from scratch and be used in training requests.
+- Training-data subsets can now be assigned to `None`. Options `Ignored` and `Validation` are retired.
+
+Fixes:
+
+- Fixed bug when uploading large files. Large files can now be uploaded.
+- Fixed bug when listing prediction without current_workspace being set.
+
 0.1.7 (2024-04-30)
 ******************
 
