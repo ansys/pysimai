@@ -105,12 +105,20 @@ class TrainingData(ComputableDataModel):
             subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training") or None to unassign.
                 Available options: (Training, Test)
 
+                Each new training data added to the project will be set to "None" by default.
+                
+                None allows for resetting the subset assignment of your training data, which will be automatically allocated 
+                in either Test or Training sets upon each model building request. As a rule of thumb, 10% of all data should
+                be allocated to the Test set.
+
+                When wanting to assign a specific subset to your training data, note that:
+                
                 Each subset requires at least one data point.
                 The training subset is used to train the model. The test subset is used for the model
                 evaluation report but is not learned by the model.
                 It is recommended to allocate about 10% of your data to the test subset.
 
-                None allows you to reset the assignment of your training data
+                
 
         Returns:
             None
