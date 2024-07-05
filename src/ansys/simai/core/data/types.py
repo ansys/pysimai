@@ -26,7 +26,18 @@ import pathlib
 from contextlib import contextmanager
 from enum import Enum
 from numbers import Number
-from typing import Any, BinaryIO, Callable, Dict, Generator, List, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    BinaryIO,
+    Callable,
+    Dict,
+    Generator,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 from requests import Response
 
@@ -87,6 +98,11 @@ For uploads, the callback receives the number of bytes written each iteration.
 
 Identifiable = Union[DataModelType, str]
 """Either a model or the string ID of an object of the same type."""
+
+if TYPE_CHECKING:
+    from typing import TypeVar
+
+    D = TypeVar("D", bound=DataModel)
 
 
 def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = None, **kwargs):
@@ -236,9 +252,9 @@ def unpack_named_file(
 
 
 def get_id_from_identifiable(
-    identifiable: Optional[Identifiable] = None,
+    identifiable: Optional[Identifiable["D"]] = None,
     required: bool = True,
-    default: Optional[Identifiable] = None,
+    default: Optional[Identifiable["D"]] = None,
 ) -> Optional[str]:
     if isinstance(identifiable, DataModel):
         return identifiable.id
@@ -266,7 +282,7 @@ def get_object_from_identifiable(
 
 
 class SubsetEnum(str, Enum):
-    IGNORED = "Ignored"
+    """:obj:`SubsetEnum`: enumeration of possible subsets TrainingData can belong to if any."""
+
     TRAINING = "Training"
-    VALIDATION = "Validation"
     TEST = "Test"

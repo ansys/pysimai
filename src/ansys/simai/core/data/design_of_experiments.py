@@ -24,8 +24,11 @@ import io
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Union
 
+from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
+
 if TYPE_CHECKING:
-    import ansys.simai.core.client
+    from ansys.simai.core.client import SimAIClient
+    from ansys.simai.core.data.workspaces import Workspace
 
 
 class DesignOfExperimentsCollection:
@@ -34,7 +37,7 @@ class DesignOfExperimentsCollection:
     This class is accessed through ``client.design_of_experiments``.
     """
 
-    def __init__(self, client: "ansys.simai.core.client.SimAIClient"):
+    def __init__(self, client: "SimAIClient"):
         self._client = client
 
     def download(
@@ -42,6 +45,7 @@ class DesignOfExperimentsCollection:
         file: Optional[Union[str, Path]] = None,
         dir: Optional[Union[str, Path]] = None,
         format: str = "xlsx",
+        workspace: Optional[Identifiable["Workspace"]] = None,
     ) -> None:
         """Download the design of experiments data to the specified file or path.
 
@@ -50,6 +54,8 @@ class DesignOfExperimentsCollection:
             format: Expected format. The default is ``'xlsx'``. Options are ``'xlsx'``
                 and ``'csv'``.
             dir: Optional directory to store the downloaded file, if no file is defined.
+            workspace: Workspace to download the design of experiments from. If not
+                specified, the current workspace is used.
 
         Example:
             .. code-block:: python
@@ -59,17 +65,20 @@ class DesignOfExperimentsCollection:
                 simai = ansys.simai.core.from_config()
                 simai.design_of_experiments.download(file="~/exp_plan.xlsx", format="xlsx")
         """
-        self._client._api.download_design_of_experiments(
-            file, dir, format, self._client.current_workspace.id
-        )
+        workspace_id = get_id_from_identifiable(workspace, default=self._client._current_workspace)
+        self._client._api.download_design_of_experiments(file, dir, format, workspace_id)
 
-    def in_memory(self, format: Optional[str] = "csv") -> io.BytesIO:
+    def in_memory(
+        self, format: Optional[str] = "csv", workspace: Optional[Identifiable["Workspace"]] = None
+    ) -> io.BytesIO:
         """Load the design of experiments data in memory.
 
         Args:
             file: Path of the file to put the content into.
             format: Expected format. The default is ``'csv'``. Options are ``'xlsx'``
                 and ``'csv'``.
+            workspace: Workspace to download the design of experiments from. If not
+                specified, the current workspace is used.
 
         Returns:
             :class:`~io.BytesIO` object containing the design of experiments data.
@@ -80,9 +89,9 @@ class DesignOfExperimentsCollection:
                 import ansys.simai.core
 
                 simai = ansys.simai.core.from_config()
-                data = simai.design_of_experiments.in_memory(format="csv")
+                workspace = simai.workspaces.list()[0]
+                data = simai.design_of_experiments.in_memory(format="csv", workspace=workspace)
                 # Read data with CSV reader, ...
         """
-        return self._client._api.download_design_of_experiments(
-            None, None, format, self._client.current_workspace.id
-        )
+        workspace_id = get_id_from_identifiable(workspace, default=self._client._current_workspace)
+        return self._client._api.download_design_of_experiments(None, None, format, workspace_id)

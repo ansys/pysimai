@@ -20,23 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import asdict, dataclass
-from typing import Any, Dict, List
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
-
-
-@dataclass
-class ModelConfiguration:
-    """The configuration for building a model."""
-
-    boundary_conditions: Dict[str, Any] = None
-    build_preset: str = None
-    continuous: bool = False
-    fields: Dict[str, Any] = None
-    global_coefficients: List[Dict[str, Any]] = None
-    simulation_volume: Dict[str, Any] = None
-    project_id: str = None
+from ansys.simai.core.data.model_configuration import ModelConfiguration
 
 
 class Model(ComputableDataModel):
@@ -52,8 +38,11 @@ class Model(ComputableDataModel):
 
     @property
     def configuration(self) -> ModelConfiguration:
-        """The build configuration of model."""
-        return ModelConfiguration(project_id=self.project_id, **self.fields["configuration"])
+        """Build configuration of a model."""
+        return ModelConfiguration(
+            project=self._client.projects.get(self.fields["project_id"]),
+            **self.fields["configuration"],
+        )
 
 
 class ModelDirectory(Directory[Model]):
@@ -105,17 +94,16 @@ class ModelDirectory(Directory[Model]):
                 b_project = simai.projects.get("project_B")
 
                 # set the id of b_project as the project_id of the configuration
-                builf_conf.project_id = b_project.id
+                build_conf.project = b_project
 
                 new_model = simai.models.build(build_conf)
 
         """
-        build_conf = asdict(configuration)
-        project_id = build_conf.pop("project_id")
+
         return self._model_from(
             self._client._api.launch_build(
-                project_id,
-                build_conf,
+                configuration.project.id,
+                configuration._to_payload(),
                 dismiss_data_with_fields_discrepancies,
                 dismiss_data_with_volume_overflow,
             )

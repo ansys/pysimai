@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import pathlib
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.types import (
@@ -49,7 +49,10 @@ def _upload_training_data_part(id, named_part, client, monitor_callback):
             training_data_part_fields, is_upload_complete=False
         )
         parts = client._api.upload_parts(
-            f"training_data_parts/{training_data_part.id}/part", file, upload_id, monitor_callback
+            f"training_data_parts/{training_data_part.id}/part",
+            file,
+            upload_id,
+            monitor_callback=monitor_callback,
         )
         client._api.complete_training_data_part_upload(training_data_part.id, upload_id, parts)
     return training_data_part
@@ -84,26 +87,29 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            SubsetEnum of the subset that the training data belongs to in the given project.
-                (e.g. <SubsetEnum.VALIDATION: 'Validation'>)
+            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which the :class:`TrainingData` belongs to if any, ``None`` otherwise.
+                (e.g. <SubsetEnum.TEST: 'Test'>)
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
         return SubsetEnum(subset_value) if subset_value else None
 
-    def assign_subset(self, project: Identifiable["Project"], subset: SubsetEnum) -> None:
+    def assign_subset(
+        self, project: Identifiable["Project"], subset: Optional[Union[SubsetEnum, str]]
+    ) -> None:
         """Assign the training data subset in relation to a given project.
 
         Args:
             project: ID or :class:`model <.projects.Project>`
-            subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training").
-                Available options: (Training, Validation, Test, Ignored)
+            subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training") or None to unassign.
+                Available options: (Training, Test)
 
         Returns:
             None
         """
-        if subset not in SubsetEnum.__members__.values():
-            raise InvalidArguments("Must be one of: Ignored, Training, Test, Validation.")
+        if subset is not None and subset not in SubsetEnum.__members__.values():
+            raise InvalidArguments("Must be None or one of: 'Training', 'Test'.")
+
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         self._client._api.put_training_data_subset(project_id, self.id, subset)
 
@@ -255,7 +261,10 @@ class TrainingDataDirectory(Directory[TrainingData]):
             Added :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart` object.
         """
         return _upload_training_data_part(
-            get_id_from_identifiable(training_data), file, self._client, monitor_callback
+            get_id_from_identifiable(training_data),
+            file,
+            self._client,
+            monitor_callback,
         )
 
     def upload_folder(

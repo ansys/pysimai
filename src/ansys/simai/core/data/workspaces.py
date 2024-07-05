@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
 from pathlib import Path
 from pprint import pformat
 from typing import Any, BinaryIO, Dict, List, Optional, Union
@@ -68,7 +69,7 @@ class ModelManifest:
         return self._raw["physical_quantities"]
 
     @property
-    def post_processings(self) -> List[Dict[str, Any]]:
+    def post_processings(self) -> "List[Dict[str, Any]]":
         """Information on the postprocessings available for the model
         and the accepted parameters when relevant.
         """
@@ -92,6 +93,14 @@ class Workspace(DataModel):
 
     @property
     def model(self) -> ModelManifest:
+        """Deprecated alias to :py:attr:`~model_manifest`."""
+        warnings.warn(
+            "workspace.model is deprecated, please use workspace.model_manifest", stacklevel=2
+        )
+        return self.model_manifest
+
+    @property
+    def model_manifest(self) -> ModelManifest:
         """:class:`~ansys.simai.core.data.workspaces.ModelManifest` instance containing
         information about the model associated with the workspace.
         """

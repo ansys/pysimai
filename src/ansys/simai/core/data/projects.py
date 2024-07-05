@@ -20,15 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, List, NamedTuple, Optional
+import logging
+from typing import TYPE_CHECKING, Dict, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
-from ansys.simai.core.data.models import ModelConfiguration
+from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
-from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
+    from ansys.simai.core.data.global_coefficients_requests import (
+        CheckGlobalCoefficient,
+        ComputeGlobalCoefficient,
+    )
     from ansys.simai.core.data.training_data import TrainingData
+
+EXTRA_CALCULETTE_FIELDS = ["Area", "Normals", "Centroids"]
+
+logger = logging.getLogger(__name__)
 
 
 class IsTrainableInfo(NamedTuple):
@@ -114,8 +123,8 @@ class Project(DataModel):
 
     @property
     def last_model_configuration(self) -> ModelConfiguration:
-        """The last :class:`configuration <ansys.simai.core.data.models.ModelConfiguration>` that was used for training a model in this project."""
-        return ModelConfiguration(project_id=self.id, **self.fields.get("last_model_configuration"))
+        """Last :class:`configuration <ansys.simai.core.data.model_configuration.ModelConfiguration>` used for model training in this project."""
+        return ModelConfiguration(project=self, **self.fields.get("last_model_configuration"))
 
     def delete(self) -> None:
         """Delete the project."""
@@ -126,7 +135,7 @@ class Project(DataModel):
         tt = self._client._api.is_project_trainable(self.id)
         return IsTrainableInfo(**tt)
 
-    def get_variables(self) -> dict[str, list[str]] | None:
+    def get_variables(self) -> Optional[Dict[str, List[str]]]:
         """Get the available variables for the model's input/output."""
         if not self.sample:
             return None
@@ -137,6 +146,64 @@ class Project(DataModel):
             local_fields = vals.get("fields", [])
             data[key] = [local_field.get("name") for local_field in local_fields]
         return data
+
+    def verify_gc_formula(
+        self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
+    ):
+        """Verify whether the syntax of the global coefficient formula is valid."""
+
+        if not self.sample:
+            raise ProcessingError(
+                f"No sample is set in the project {self.id}. A sample should be set to verify a global coefficient formula."
+            )
+
+        sample_metadata = self.sample.fields.get("extracted_metadata")
+
+        gc_check: CheckGlobalCoefficient = self._client._check_gc_formula_directory._model_from(
+            data={
+                "id": f"{self.id}-check-{gc_formula}",
+            },
+            project_id=self.id,
+            gc_formula=gc_formula,
+            sample_metadata=sample_metadata,
+            bc=bc,
+            surface_variables=surface_variables,
+        )
+
+        gc_check.run()
+        gc_check.wait()
+
+        return gc_check.is_ready
+
+    def compute_gc_formula(
+        self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
+    ):
+        """Compute the result of a global coefficient formula according to the project sample."""
+
+        if not self.sample:
+            raise ProcessingError(
+                f"No sample is set for the project {self.id}. A sample should be set for computing the results of a Global Coefficients formula."
+            )
+
+        sample_metadata = self.sample.fields.get("extracted_metadata")
+
+        gc_compute: ComputeGlobalCoefficient = (
+            self._client._compute_gc_formula_directory._model_from(
+                data={
+                    "id": f"{self.id}-compute-{gc_formula}",
+                },
+                project_id=self.id,
+                gc_formula=gc_formula,
+                sample_metadata=sample_metadata,
+                bc=bc,
+                surface_variables=surface_variables,
+            )
+        )
+
+        gc_compute.run()
+        gc_compute.wait()
+
+        return gc_compute.result if gc_compute.is_ready else None
 
 
 class ProjectDirectory(Directory[Project]):

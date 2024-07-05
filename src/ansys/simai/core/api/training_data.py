@@ -66,7 +66,9 @@ class TrainingDataClientMixin(ApiClientMixin):
     def get_training_data_subset(self, project_id: str, training_data_id: str) -> Dict[str, Any]:
         return self._get(f"projects/{project_id}/data/{training_data_id}/subset")
 
-    def put_training_data_subset(self, project_id: str, training_data_id: str, subset: str) -> None:
+    def put_training_data_subset(
+        self, project_id: str, training_data_id: str, subset: Optional[str]
+    ) -> None:
         return self._put(
             f"projects/{project_id}/data/{training_data_id}/subset", json={"subset": subset}
         )
