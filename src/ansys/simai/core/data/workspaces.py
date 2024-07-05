@@ -110,7 +110,7 @@ class Workspace(DataModel):
         self._client.current_workspace = self
 
     def download_model_evaluation_report(
-        self, file: Optional[File] = None, dir: Optional[str | Path] = None
+        self, file: Optional[File] = None, dir: Optional[Union[str, Path]] = None
     ) -> Union[None, BinaryIO]:
         """Download the PDF of the model evaluation report for the workspace.
 

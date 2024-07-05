@@ -36,7 +36,7 @@ class DesignOfExperimentsMixin(ApiClientMixin):
     def download_design_of_experiments(
         self,
         file: Optional[File],
-        dir: Optional[str | Path],
+        dir: Optional[Union[str, Path]],
         format: str,
         workspace_id: str,
     ) -> Union[None, BinaryIO]:

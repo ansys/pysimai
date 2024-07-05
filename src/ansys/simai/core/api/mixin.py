@@ -132,7 +132,7 @@ class ApiClientMixin:
         self,
         download_url: str,
         file: Optional[File] = None,
-        dir: Optional[Path | str] = None,
+        dir: Optional[Optional[Union[str, Path]]] = None,
         monitor_callback: Optional[MonitorCallback] = None,
         request_json_body: Optional[Dict[str, Any]] = None,
         request_method: str = "GET",
@@ -156,10 +156,13 @@ class ApiClientMixin:
             None if a file is provided or a ``BytesIO`` object with the file's
             content otherwise.
         """
-        if dir is not None and file is None:
-            parsed_url = urlparse(download_url)
-            filename = os.path.basename(parsed_url.path)
-            file = Path(dir) / filename
+        if dir is not None:
+            if file is None:
+                parsed_url = urlparse(download_url)
+                filename = os.path.basename(parsed_url.path)
+                file = Path(dir) / filename
+            else:
+                file = Path(dir) / file
 
         if file is None:
             output_file = BytesIO()

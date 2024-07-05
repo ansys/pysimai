@@ -22,7 +22,7 @@
 
 import io
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
     import ansys.simai.core.client
@@ -39,8 +39,8 @@ class DesignOfExperimentsCollection:
 
     def download(
         self,
-        file: Optional[str | Path] = None,
-        dir: Optional[str | Path] = None,
+        file: Optional[Union[str, Path]] = None,
+        dir: Optional[Union[str, Path]] = None,
         format: str = "xlsx",
     ) -> None:
         """Download the design of experiments data to the specified file or path.
