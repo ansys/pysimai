@@ -10,10 +10,10 @@ Building a model
    Rebuilding a model using the last configuration of a project is supported for models created
    after v0.1.5 (April 15, 2024).
 
-SimAI allows you to build AI models on your simulation data. This first step is to upload your simulation data
-into a global pool of :class:`training data<ansys.simai.core.data.training_data.TrainingData>` instances
-and then assign this data to different :class:`Project<ansys.simai.core.data.projects.Project>`
-instances, which you configure in order to build your model.
+SimAI allows you to build AI models using past simulation data. This first step to building such models is to upload
+your simulation data into a global pool of :class:`training data<ansys.simai.core.data.training_data.TrainingData>` instances.
+Then, you assign the imported data to different :class:`Project<ansys.simai.core.data.projects.Project>` instances,
+which you will eventually configure in order to build/train your AI model.
 
 Uploading your simulation data into a new project
 =================================================
