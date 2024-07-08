@@ -87,7 +87,7 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which 
+            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which
             the :class:`TrainingData` belongs to if any, ``None`` otherwise.
             (e.g. <SubsetEnum.TEST: 'Test'>)
         """
@@ -106,19 +106,17 @@ class TrainingData(ComputableDataModel):
                 Available options: (Training, Test)
 
                 Each new training data added to the project will be set to "None" by default.
-                
-                None allows for resetting the subset assignment of your training data, which will be automatically allocated 
-                in either Test or Training sets upon each model building request. As a rule of thumb, 10% of all data should
-                be allocated to the Test set.
+
+                None allows for resetting the subset assignment of your training data, which will be automatically allocated
+                in either test or training subsets upon each model building request. As a rule of thumb, 10% of all data should
+                be allocated to the test subset.
 
                 When wanting to assign a specific subset to your training data, note that:
-                
+
                 Each subset requires at least one data point.
                 The training subset is used to train the model. The test subset is used for the model
                 evaluation report but is not learned by the model.
                 It is recommended to allocate about 10% of your data to the test subset.
-
-                
 
         Returns:
             None
