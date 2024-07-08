@@ -1,5 +1,5 @@
 Building a model
-========
+================
 
 .. _building a model:
 
@@ -16,7 +16,7 @@ and then assign this data to different :class:`Project<ansys.simai.core.data.pro
 instances, which you configure in order to build your model.
 
 Uploading your simulation data into a new project
-========================
+=================================================
 
 #. Create a :class:`~ansys.simai.core.client.SimAIClient` instance::
 
@@ -43,6 +43,55 @@ Uploading your simulation data into a new project
 #. Assign the created training data to your project::
 
      td.add_to_project(project)
+
+
+Launching a build
+=================
+
+#.   Import the related modules::
+
+          from ansys.simai.core.data.model_configuration import (
+               DomainOfAnalysis,
+               ModelConfiguration,
+               ModelInput,
+               ModelOutput,
+          )
+
+#.   Set the input (:class:`ModelInput<ansys.simai.core.data.model_configuration.ModelInput>`) and output (:class:`ModelOutput<ansys.simai.core.data.model_configuration.ModelOutput>`) of the model::
+
+          model_input = ModelInput(surface=["wallShearStress"], boundary_conditions=["Vx"])
+
+          model_output = ModelOutput(surface=["alpha.water"], volume=["p", "p_rgh"])
+
+#.   Set the Global Coefficients::
+
+          global_coefficients = [('min("alpha.water")', "minalpha")]
+
+#.   Set the Domain of Analysis as an instance of :class:`DomainOfAnalysis<ansys.simai.core.data.model_configuration.DomainOfAnalysis>`::
+
+          doa = DomainOfAnalysis(
+               length=("relative_to_min", 15.321, 183.847),
+               width=("relative_to_min", 1.034, 12.414),
+               height=("relative_to_min", 2.046, 24.555),
+          )
+
+
+#.   Define a model configuration with a :class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>` instance::
+
+          mdl_conf = ModelConfiguration(
+               project=project,                             # project of the model configuration
+               build_preset="debug",                        # duration of the build
+               continuous=False,                            # continuous training or not
+               input=model_input,                           # model input
+               output=model_output,                         # model output
+               global_coefficients=global_coefficients,     # Global Coefficients
+               domain_of_analysis=doa                       # Domain of Analysis
+          )
+
+#.   Check if the the project is trainable and launch a build::
+
+          if project.is_trainable():
+               new_model = simai.models.build(mdl_conf)
 
 Learn more
 ==========
