@@ -4,7 +4,7 @@
 Model configuration reuse
 =========================
 
-This example demonstrates how to retrieve the latest model configuration 
+This example demonstrates how to retrieve the latest model configuration
 of a project and use it to launch a model build in another project.
 
 """
@@ -37,7 +37,7 @@ training_samples_name = [
 ]
 
 ###############################################################################
-# Retrieve the desired training data samples and associate them with 
+# Retrieve the desired training data samples and associate them with
 # the new project.
 for td_name in training_samples_name:
     td = simai.training_data.get(name=td_name)
@@ -56,7 +56,7 @@ last_build_config = my_project.last_model_configuration
 # If the new project meets the requirements for training, associate
 # the project's ID with the configuration and launch a model build.
 if new_project.is_trainable():
-    # Assign the new project's ID to the configuration to transfer the 
+    # Assign the new project's ID to the configuration to transfer the
     # configuration from the old project to the new one
     last_build_config.project_id = new_project.id
 

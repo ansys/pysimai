@@ -4,7 +4,7 @@
 Subset assignment
 =================
 
-This example demonstrates how to assign a subset 
+This example demonstrates how to assign a subset
 to a training data.
 
 """
@@ -44,4 +44,7 @@ simai.training_data.get(id=training_data_id).assign_subset(project=project_id, s
 # Alternatively, use SubsetEnum to assign a valid enum value to the training data.
 
 from ansys.simai.core.data.types import SubsetEnum
-simai.training_data.get(id=training_data_id).assign_subset(project=project_id, subset=SubsetEnum.TEST)
+
+simai.training_data.get(id=training_data_id).assign_subset(
+    project=project_id, subset=SubsetEnum.TEST
+)

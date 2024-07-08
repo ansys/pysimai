@@ -4,7 +4,7 @@
 List-based subset assignment
 ============================
 
-This example demonstrates how to distribute your dataset between Test 
+This example demonstrates how to distribute your dataset between Test
 and Training subsets using lists.
 
 """
@@ -21,7 +21,7 @@ import ansys.simai.core
 # List the data to be used for the test set.
 
 # CAUTION:
-# All training data that are not included into the following list will be  
+# All training data that are not included into the following list will be
 # assigned the training subset
 TEST_LIST = ["My_td_1", "My_td_2"]
 
