@@ -1,7 +1,7 @@
 Building a model
 ================
 
-.. _building a model:
+.. _building_a_model:
 
 .. note::
 
@@ -88,7 +88,7 @@ Launching a build
                domain_of_analysis=doa                       # Domain of Analysis
           )
 
-#.   Check if the the project is trainable and launch a build::
+#.   Check if the project is trainable and launch a build::
 
           if project.is_trainable():
                new_model = simai.models.build(mdl_conf)
@@ -97,4 +97,4 @@ Learn more
 ==========
 
 For more information on the actions available to you, see :ref:`training_data`,
-:ref:`training_data_parts`, and :ref:`projects`.
+:ref:`training_data_parts`, :ref:`projects`, :ref:`model_configuration`, and :ref:`models`
