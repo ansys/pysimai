@@ -292,6 +292,8 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
     ):
         """Upload a point cloud for this geometry.
 
+        Only the vtp file format is supported
+
         Args:
             file: :obj:`~ansys.simai.core.data.types.NamedFile` to upload.
             monitor_callback: Optional callback for monitoring the progress of the upload.

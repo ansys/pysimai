@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.data.types import APIResponse
