@@ -23,32 +23,29 @@
 from typing import Any, Dict, List, Tuple
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+from ansys.simai.core.data.types import APIResponse
 
 
 class PointCloudClientMixin(ApiClientMixin):
-    def create_point_cloud(self, geometry_id: str, name: str, extension: str) -> Tuple[Dict, str]:
-        """Create an input cloud without pushing the data.
+    def create_point_cloud(self, geometry_id: str, name: str, extension: str) -> APIResponse:
+        """Create a point cloud without pushing the data.
 
         Args:
-            geometry_id: ID of the geometry to assign the input cloud to.
+            geometry_id: ID of the geometry to assign the point cloud to.
             name: Name to give to the geometry.
             extension: Extension to give to the file.
-
-        Returns:
-            Tuple with the info of the input cloud and the URL to upload ID to use for further requests.
         """
         post_data = {"name": name, "file_extension": extension}
-        response = self._post(f"geometries/{geometry_id}/point-cloud", json=post_data)
-        return (response["point_cloud"], response["upload_id"])
+        return self._post(f"geometries/{geometry_id}/point-cloud", json=post_data)
 
     def complete_point_cloud_upload(
         self, point_cloud_id: str, upload_id: str, parts: List[Dict[str, Any]]
     ):
-        """Complete the upload of an point-cloud.
+        """Complete the upload of a point cloud.
 
         Args:
-           point_cloud_id: ID of the input cloud to complete
-           upload_id: ID used to upload the point_cloud
+           point_cloud_id: ID of the point cloud to complete
+           upload_id: ID used to upload the point cloud
            parts: List of the uploaded file parts
         """
         self._post(
@@ -58,7 +55,7 @@ class PointCloudClientMixin(ApiClientMixin):
         )
 
     def delete_point_cloud(self, point_cloud_id: str):
-        """Delete the given input cloud.
+        """Delete the specific point cloud file.
 
         Args:
             point_cloud_id: ID of the input cloud to delete

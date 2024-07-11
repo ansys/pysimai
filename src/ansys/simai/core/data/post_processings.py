@@ -271,7 +271,7 @@ class SurfaceVTP(_PostProcessingVTKExport):
 
 
 class CustomVolumePointCloud(PostProcessing):
-    """Representation of a CustomVolumePointCloud post-processing.
+    """Provides a representation of a CustomVolumePointCloud post-processing.
 
     This class is generated through the :meth:`~PredictionPostProcessings.custom_volume_point_cloud()` method.
     """
@@ -565,7 +565,8 @@ class PredictionPostProcessings:
         """
         if self.prediction.geometry.point_cloud is None:
             raise InvalidOperationError(
-                "A point cloud needs to be attached to the geometry to use the CustomVolumePointCloud postprocessing"
+                """No point cloud file is attached to the geometry.
+Attach the required file to enable CustomVolumePointCloud postprocessing."""
             )
         return self._get_or_run(CustomVolumePointCloud, {}, run)
 

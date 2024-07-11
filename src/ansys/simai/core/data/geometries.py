@@ -77,7 +77,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
     @property
     def point_cloud(self) -> Optional[Dict[str, Any]]:
-        """The attached input cloud file info if any."""
+        """The attached point cloud file information if any."""
         return self.fields.get("point_cloud")
 
     def rename(self, name: str) -> None:
@@ -299,9 +299,9 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
                 object.
         """
         with unpack_named_file(file) as (readable_file, name, extension):
-            (point_cloud_fields, upload_id) = self._client._api.create_point_cloud(
-                self.id, name, extension
-            )
+            response = self._client._api.create_point_cloud(self.id, name, extension)
+            upload_id = response["upload_id"]
+            point_cloud_fields = response["point_cloud"]
             parts = self._client._api.upload_parts(
                 f"point-clouds/{point_cloud_fields['id']}/part",
                 readable_file,
@@ -314,9 +314,9 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             self._fields["point_cloud"] = point_cloud_fields
 
     def delete_point_cloud(self):
-        """Delete the associated input cloud file."""
+        """Delete the associated point cloud file."""
         if not self.point_cloud:
-            raise InvalidOperationError("No input cloud to delete")
+            raise InvalidOperationError("No point cloud file to delete")
         self._client._api.delete_point_cloud(self.point_cloud["id"])
         self._fields["point_cloud"] = None
 
