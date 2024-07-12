@@ -87,8 +87,9 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which the :class:`TrainingData` belongs to if any, ``None`` otherwise.
-                (e.g. <SubsetEnum.TEST: 'Test'>)
+            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which
+            the :class:`TrainingData` belongs to if any, ``None`` otherwise.
+            (e.g. <SubsetEnum.TEST: 'Test'>)
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
@@ -97,12 +98,25 @@ class TrainingData(ComputableDataModel):
     def assign_subset(
         self, project: Identifiable["Project"], subset: Optional[Union[SubsetEnum, str]]
     ) -> None:
-        """Assign the training data subset in relation to a given project.
+        """Assign the training data to a subset in relation to a given project.
 
         Args:
             project: ID or :class:`model <.projects.Project>`
             subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training") or None to unassign.
                 Available options: (Training, Test)
+
+                Each new training data added to the project will be set to "None" by default.
+
+                None allows for resetting the subset assignment of your training data, which will be automatically allocated
+                in either test or training subsets upon each model building request. As a rule of thumb, 10% of all data should
+                be allocated to the test subset.
+
+                When wanting to assign a specific subset to your training data, note that:
+
+                Each subset requires at least one data point.
+                The training subset is used to train the model. The test subset is used for the model
+                evaluation report but is not learned by the model.
+                It is recommended to allocate about 10% of your data to the test subset.
 
         Returns:
             None
