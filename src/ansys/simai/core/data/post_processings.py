@@ -625,7 +625,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
                 post_processing_info = simai.post_processings.info
                 pprint(post_processing_info)
         """
-        return self._client.current_workspace.model.post_processings
+        return self._client.current_workspace.model_manifest.post_processings
 
     def get(self, id: str) -> PostProcessing:
         """Get a specific postprocessing object from the server.
