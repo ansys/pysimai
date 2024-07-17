@@ -22,6 +22,7 @@
 
 import json
 import urllib
+from io import BytesIO
 
 import responses
 
@@ -99,3 +100,28 @@ def test_geometries_run_prediction_no_bc(geometry_factory):
     )
     geometry = geometry_factory(id="geom-0")
     geometry.run_prediction()
+
+
+@responses.activate
+def test_geometries_upload_point_cloud(geometry_factory):
+    responses.add(
+        responses.POST,
+        "https://test.test/geometries/geom-0/point-cloud",
+        json={"point_cloud": {"id": "pc-0"}, "upload_id": "123"},
+        status=200,
+    )
+    responses.add(
+        responses.PUT,
+        "https://test.test/point-clouds/pc-0/part",
+        json={"url": "https://s3.test/pc-0/part"},
+        status=200,
+    )
+    responses.add(
+        responses.PUT, "https://s3.test/pc-0/part", headers={"ETag": "SaladeTomateOignon"}
+    )
+    responses.add(responses.POST, "https://test.test/point-clouds/pc-0/complete", status=204)
+
+    geometry = geometry_factory(id="geom-0")
+    file = BytesIO(b"Hello World")
+    geometry.upload_point_cloud((file, "my-point-cloud.vtp"))
+    assert geometry.point_cloud == {"id": "pc-0"}

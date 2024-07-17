@@ -1,4 +1,4 @@
-# Copyright (C) 2023 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,37 +20,44 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+from ansys.simai.core.data.types import APIResponse
 
 
-class TrainingDataPartClientMixin(ApiClientMixin):
-    def create_training_data_part(
-        self, training_data_id: str, name: str, extension: str
-    ) -> Tuple[Dict[str, Any], str]:
-        """Create a part under the given training data without uploading the data.
+class PointCloudClientMixin(ApiClientMixin):
+    def create_point_cloud(self, geometry_id: str, name: str, extension: str) -> APIResponse:
+        """Create a point cloud without pushing the data.
 
         Args:
-            training_data_id: ID of the parent training data.
-            name: Name of the part to create.
-            extension: Extension of the file or part.
-
-        Returns:
-            Tuple containing the ``TrainingDataPart`` object and the upload ID
-            to use for further requests.
+            geometry_id: ID of the geometry to assign the point cloud to.
+            name: Name to give to the geometry.
+            extension: Extension to give to the file.
         """
         post_data = {"name": name, "file_extension": extension}
-        response = self._post(f"training_data/{training_data_id}/parts/", json=post_data)
-        return (response["training_data_part"], response["upload_id"])
+        return self._post(f"geometries/{geometry_id}/point-cloud", json=post_data)
 
-    def get_training_data_part(self, id: str) -> Dict[str, Any]:
-        return self._get(f"training_data_parts/{id}")
-
-    def complete_training_data_part_upload(
-        self, id: str, upload_id: str, parts: List[Dict[str, Any]]
+    def complete_point_cloud_upload(
+        self, point_cloud_id: str, upload_id: str, parts: List[Dict[str, Any]]
     ):
+        """Complete the upload of a point cloud.
+
+        Args:
+           point_cloud_id: ID of the point cloud to complete
+           upload_id: ID used to upload the point cloud
+           parts: List of the uploaded file parts
+        """
         self._post(
-            f"training_data_parts/{id}/complete",
+            f"point-clouds/{point_cloud_id}/complete",
             json={"upload_id": upload_id, "parts": parts},
+            return_json=False,
         )
+
+    def delete_point_cloud(self, point_cloud_id: str):
+        """Delete the specific point cloud file.
+
+        Args:
+            point_cloud_id: ID of the input cloud to delete
+        """
+        self._delete(f"point-clouds/{point_cloud_id}", return_json=False)

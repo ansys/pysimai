@@ -32,6 +32,7 @@ except Exception:
 import ansys.simai.core.errors
 from ansys.simai.core.client import SimAIClient, from_config
 from ansys.simai.core.data.post_processings import (
+    CustomVolumePointCloud,
     GlobalCoefficients,
     Slice,
     SurfaceEvol,
