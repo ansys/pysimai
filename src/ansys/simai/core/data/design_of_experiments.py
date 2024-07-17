@@ -42,7 +42,8 @@ class DesignOfExperimentsCollection:
 
     def download(
         self,
-        file: Union[str, Path],
+        file: Optional[Union[str, Path]] = None,
+        dir: Optional[Union[str, Path]] = None,
         format: str = "xlsx",
         workspace: Optional[Identifiable["Workspace"]] = None,
     ) -> None:
@@ -52,6 +53,7 @@ class DesignOfExperimentsCollection:
             file: Path of the file to put the content into.
             format: Expected format. The default is ``'xlsx'``. Options are ``'xlsx'``
                 and ``'csv'``.
+            dir: Optional directory to store the downloaded file, if no file is defined.
             workspace: Workspace to download the design of experiments from. If not
                 specified, the current workspace is used.
 
@@ -64,7 +66,7 @@ class DesignOfExperimentsCollection:
                 simai.design_of_experiments.download(file="~/exp_plan.xlsx", format="xlsx")
         """
         workspace_id = get_id_from_identifiable(workspace, default=self._client._current_workspace)
-        self._client._api.download_design_of_experiments(file, format, workspace_id)
+        self._client._api.download_design_of_experiments(file, dir, format, workspace_id)
 
     def in_memory(
         self, format: Optional[str] = "csv", workspace: Optional[Identifiable["Workspace"]] = None
@@ -92,4 +94,4 @@ class DesignOfExperimentsCollection:
                 # Read data with CSV reader, ...
         """
         workspace_id = get_id_from_identifiable(workspace, default=self._client._current_workspace)
-        return self._client._api.download_design_of_experiments(None, format, workspace_id)
+        return self._client._api.download_design_of_experiments(None, None, format, workspace_id)

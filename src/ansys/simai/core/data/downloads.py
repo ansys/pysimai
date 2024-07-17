@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from io import BytesIO
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from ansys.simai.core.data.types import File
@@ -44,13 +45,18 @@ class DownloadableResult:
         self._request_method = request_method
         self._request_json_body = request_json_body
 
-    def download(self, file: File) -> None:
+    def download(
+        self,
+        file: Optional[File],
+        dir: Optional[str | Path] = None,
+    ) -> None:
         """Download the postprocessing data to the specified file or path.
 
         Args:
             file: Binary file-object or path of the file to download the data into.
+            dir: Optional directory to store the downloaded file, if no file is defined.
         """
-        self._download_file(self.url, file)
+        self._download_file(self.url, file, dir=dir)
 
     def in_memory(self) -> BytesIO:
         """Load the postprocessing data in memory.
@@ -60,10 +66,13 @@ class DownloadableResult:
         """
         return self._download_file(self.url)
 
-    def _download_file(self, url: str, file: Optional[File] = None) -> Optional[BytesIO]:
+    def _download_file(
+        self, url: str, file: Optional[File] = None, dir: Optional[str | Path] = None
+    ) -> Optional[BytesIO]:
         return self._client._api.download_file(
             url,
             file,
+            dir=dir,
             request_method=self._request_method,
             request_json_body=self._request_json_body,
         )

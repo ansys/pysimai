@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict, Optional
+from pathlib import Path
+from typing import Any, Dict, Optional, Union
 from urllib.parse import quote
 
 from ansys.simai.core.api.mixin import ApiClientMixin
@@ -94,5 +95,10 @@ class WorkspaceClientMixin(ApiClientMixin):
         """
         return self._delete(f"workspaces/{workspace_id}")
 
-    def download_workspace_model_evaluation_report(self, workspace_id: str, file: Optional[File]):
-        return self.download_file(f"workspaces/{workspace_id}/model-evaluation-report", file)
+    def download_workspace_model_evaluation_report(
+        self,
+        workspace_id: str,
+        dir: Optional[Union[str, Path]],
+        file: Optional[File] = "model_evaluation_report.pdf",
+    ):
+        return self.download_file(f"workspaces/{workspace_id}/model-evaluation-report", file, dir)
