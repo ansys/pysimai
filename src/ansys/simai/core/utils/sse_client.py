@@ -22,7 +22,7 @@
 
 import logging
 import time
-from typing import Callable, Optional
+from typing import Callable, Optional, Generator
 
 import requests
 import sseclient
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 # take an optional last-event-id to be sent in request headers
-EventSourceFactoryType = Callable[[Optional[str]], sseclient.SSEClient]
+EventSourceFactoryType = Callable[[Optional[str]], Generator[bytes, None, None]]
 
 
 class ReconnectingSSERequestsClient:
