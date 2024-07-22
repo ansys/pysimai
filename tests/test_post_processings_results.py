@@ -26,6 +26,7 @@ from io import BytesIO
 import responses
 
 from ansys.simai.core.data.post_processings import (
+    CustomVolumePointCloud,
     DownloadableResult,
     GlobalCoefficients,
     Slice,
@@ -330,6 +331,57 @@ def test_post_processing_result_surface_vtp(simai_client):
     assert isinstance(surface_vtp.data, DownloadableResult)
     # Test a binary download
     binary_io = surface_vtp.data.in_memory()
+    assert isinstance(binary_io, BytesIO)
+    data_line = binary_io.readline()
+    assert data_line.decode("ascii") == "this-is-vtp-binary-data"
+
+    # we have used vtp.data twice, generating 2 hits to the endpoint
+    assert responses.assert_call_count("https://test.test/post-processings/01010101654", 2)
+
+
+@responses.activate
+def test_post_processing_result_point_cloud(simai_client):
+    responses.add(
+        responses.POST,
+        "https://test.test/predictions/7546/post-processings/CustomVolumePointCloud",
+        json={"id": "01010101654", "state": "successful"},
+        status=200,
+    )
+    # Mock request for PP data
+    responses.add(
+        responses.GET,
+        "https://test.test/post-processings/01010101654",
+        json={
+            "data": {"resources": {"vtp": "https://s3.test.test/point_cloud.vtp?key=445461321"}},
+            "id": "01010101654",
+            "location": {},
+            "prediction": "7546",
+            "type": "CustomVolumePointCloud",
+        },
+        status=200,
+    )
+    # Mock request for binary download
+    responses.add(
+        responses.GET,
+        "https://s3.test.test/point_cloud.vtp?key=445461321",
+        body="this-is-vtp-binary-data",
+        content_type="application/octet-stream",
+        status=200,
+    )
+    responses.add(
+        responses.GET,
+        "https://test.test/geometries/4321",
+        json={"id": "4321", "point_cloud": {"id": "2345"}},
+    )
+
+    pred = simai_client._prediction_directory._model_from(
+        {"id": "7546", "state": "successful", "geometry_id": "4321"}
+    )
+    point_cloud = pred.post.custom_volume_point_cloud()
+    assert isinstance(point_cloud, CustomVolumePointCloud)
+    assert isinstance(point_cloud.data, DownloadableResult)
+    # Test a binary download
+    binary_io = point_cloud.data.in_memory()
     assert isinstance(binary_io, BytesIO)
     data_line = binary_io.readline()
     assert data_line.decode("ascii") == "this-is-vtp-binary-data"

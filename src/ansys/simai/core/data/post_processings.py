@@ -31,8 +31,14 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.downloads import DownloadableResult
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
-from ansys.simai.core.errors import InvalidArguments, InvalidServerStateError
-from ansys.simai.core.utils.numerical import convert_axis_and_coordinate_to_plane_eq_coeffs
+from ansys.simai.core.errors import (
+    InvalidArguments,
+    InvalidOperationError,
+    InvalidServerStateError,
+)
+from ansys.simai.core.utils.numerical import (
+    convert_axis_and_coordinate_to_plane_eq_coeffs,
+)
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.predictions import Prediction
@@ -262,6 +268,24 @@ class SurfaceVTP(_PostProcessingVTKExport):
 
     This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
     """
+
+
+class CustomVolumePointCloud(PostProcessing):
+    """Provides a representation of a CustomVolumePointCloud post-processing.
+
+    This class is generated through the :meth:`~PredictionPostProcessings.custom_volume_point_cloud()` method.
+    """
+
+    @property
+    def data(self) -> DownloadableResult:
+        """:class:`DownloadableResult` object that allows access to the custom volume VTP
+        either directly in memory or by download it into a file.
+
+        Accessing this property blocks until the data is ready
+        """
+        self.wait()
+        results = self._get_results(cache=False)
+        return DownloadableResult(results["data"]["resources"]["vtp"], self._client)
 
 
 class PredictionPostProcessings:
@@ -504,6 +528,48 @@ class PredictionPostProcessings:
         """
         return self._get_or_run(VolumeVTU, {}, run)
 
+    def custom_volume_point_cloud(self, run: bool = True) -> Optional[CustomVolumePointCloud]:
+        """Compute or get the result of a predicted volume depending on the geometry's point cloud.
+
+        This is a non-blocking method. It returns the :class:`CustomVolumePointCloud`
+        object without waiting. This object may not have data right away
+        if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be monitored with the ``is_ready`` flag
+        or waited upon with the ``wait()`` method.
+
+        The computation is launched only on first call of this method.
+        Subsequent calls do not relaunch it.
+
+        Args:
+            run: Boolean indicating whether to compute or get the postprocessing.
+                The default is ``True``. If ``False``, the postprocessing is not
+                computed, and ``None`` is returned if it does not exist yet.
+
+        Returns:
+            :class:`CustomVolumePointCloud` object that allows downloading the binary data.
+
+        Examples:
+            Run and download a custom volume point cloud
+
+            .. code-block:: python
+
+                import ansys.simai.core
+
+                simai = ansys.simai.core.from_config()
+                prediction = simai.predictions.list()[0]
+                prediction.geometry.upload_point_cloud("/data/my-point-cloud.vtp")
+                custom_volume = prediction.post.custom_volume_point_cloud().data.download(
+                    "/tmp/simai.vtp"
+                )
+        """
+        if self.prediction.geometry.point_cloud is None:
+            raise InvalidOperationError(
+                """No point cloud file is attached to the geometry.
+Attach the required file to enable CustomVolumePointCloud postprocessing."""
+            )
+        return self._get_or_run(CustomVolumePointCloud, {}, run)
+
     @property
     def _local_post_processings(self):
         """Postprocessings launched by the local session, which are waited upon."""
@@ -519,7 +585,7 @@ class PredictionPostProcessings:
 
     def _get_or_run(
         self, pp_class: Type[PostProcessing], params: Dict[str, Any], run: bool
-    ) -> Optional["PostProcessing"]:
+    ) -> Optional[PostProcessing]:
         """Get the existing postprocessing or run one if it doesn't exist yet.
 
         Args:
@@ -625,7 +691,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
                 post_processing_info = simai.post_processings.info
                 pprint(post_processing_info)
         """
-        return self._client.current_workspace.model.post_processings
+        return self._client.current_workspace.model_manifest.post_processings
 
     def get(self, id: str) -> PostProcessing:
         """Get a specific postprocessing object from the server.
