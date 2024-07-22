@@ -38,9 +38,9 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-import sphinx_gallery
-from sphinx_gallery.sorting import FileNameSortKey
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
+from sphinx_gallery.sorting import FileNameSortKey
+
 from ansys.simai.core import __version__
 
 # -- Project information -----------------------------------------------------
