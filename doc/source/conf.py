@@ -130,6 +130,8 @@ html_logo = pyansys_logo_black
 html_favicon = ansys_favicon
 html_static_path = ["_static"]
 
+suppress_warnings = ["config.cache"]
+
 html_context = {
     "github_user": "ansys",
     "github_repo": "pysimai",
