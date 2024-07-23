@@ -52,6 +52,7 @@ copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 cname = os.getenv("DOCUMENTATION_CNAME", "simai.docs.pyansys.com")
 
 SOURCE_PATH = Path(__file__).parent.resolve().absolute()
+ANSYS_SIMAI_THUMBNAIL = str(os.path.join(SOURCE_PATH, "_static", "ansys_simai.png"))
 
 # -- General configuration ---------------------------------------------------
 
