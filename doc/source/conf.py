@@ -68,7 +68,6 @@ extensions = [
 ]
 # Sphinx Gallery Options
 
-ansys_simai = str(os.path.join(SOURCE_PATH, "_static", "ansys_simai.png"))
 sphinx_gallery_conf = {
     # default png file for thumbnails
     "default_thumb_file": ANSYS_SIMAI_THUMBNAIL,
