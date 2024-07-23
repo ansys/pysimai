@@ -71,7 +71,7 @@ extensions = [
 ansys_simai = str(os.path.join(SOURCE_PATH, "_static", "ansys_simai.png"))
 sphinx_gallery_conf = {
     # default png file for thumbnails
-    "default_thumb_file": ansys_simai,
+    "default_thumb_file": ANSYS_SIMAI_THUMBNAIL,
     # path to your examples scripts
     "examples_dirs": ["examples"],
     # path where to save gallery generated examples
