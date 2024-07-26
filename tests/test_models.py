@@ -478,9 +478,10 @@ def test_sse_event_handler(simai_client, model_factory):
     assert model.is_ready
 
 
-def test_post_process_input(simai_client, model_factory):
+@responses.activate
+def test_post_process_input(simai_client):
     """WHEN ModelConfiguration includes a specified surface_pp_input arg
-    THEN Model? object configuration includes that surface_pp_input
+    THEN Model object configuration includes that exact surface_pp_input
     """
 
     raw_project = {
@@ -497,14 +498,30 @@ def test_post_process_input(simai_client, model_factory):
     )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
+    project.verify_gc_formula = Mock()
+
+    MODEL_CONFIG = MODEL_CONF_RAW.copy()
+    MODEL_CONFIG["fields"]["surface_pp_input"] = [
+        {"keys": None, "name": "Temperature_1", "unit": None, "format": "value", "location": "cell"}
+    ]
+
+    MODEL_REQUEST = MODEL_RAW.copy()
+    MODEL_REQUEST["configuration"] = MODEL_CONFIG
 
     surface_pp_input = PostProcessInput(surface=["Temperature_1"])
 
-    new_conf = ModelConfiguration(
+    config_with_pp_input = ModelConfiguration(
         project=project,
-        build_preset="debug",
-        continuous=False,
+        **MODEL_CONFIG,
         surface_pp_input=surface_pp_input,
     )
 
-    assert new_conf.surface_pp_input == surface_pp_input
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{MODEL_REQUEST['project_id']}/model",
+        json=MODEL_REQUEST,
+        status=200,
+    )
+
+    build_model: Model = simai_client.models.build(config_with_pp_input)
+    assert build_model.configuration.surface_pp_input.surface == surface_pp_input.surface

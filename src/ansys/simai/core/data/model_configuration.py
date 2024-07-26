@@ -250,6 +250,9 @@ class ModelConfiguration:
                 surface=["Pressure", "WallShearStress_0"], volume=["Velocity_0", "Pressure"]
             )
 
+            # Define the surface post-processing input
+            surface_pp_input = PostProcessInput(surface=["Temperature_1"])
+
             # Define the model coefficients
             global_coefficients = [("max(Pressure)", "maxpress")]
 
