@@ -32,6 +32,7 @@ from ansys.simai.core.data.model_configuration import (
     ModelConfiguration,
     ModelInput,
     ModelOutput,
+    PostProcessInput,
 )
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
@@ -475,3 +476,35 @@ def test_sse_event_handler(simai_client, model_factory):
         }
     )
     assert model.is_ready
+
+
+def test_post_process_input(simai_client, model_factory):
+    """WHEN ModelConfiguration includes a specified surface_pp_input arg
+    THEN Model? object configuration includes that surface_pp_input
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    surface_pp_input = PostProcessInput(surface=["Temperature_1"])
+
+    new_conf = ModelConfiguration(
+        project=project,
+        build_preset="debug",
+        continuous=False,
+        surface_pp_input=surface_pp_input,
+    )
+
+    assert new_conf.surface_pp_input == surface_pp_input
