@@ -393,7 +393,7 @@ class ModelConfiguration:
         if self.output.volume is not None:
             if self.output.volume and not sample_metadata.get("volume"):
                 raise ProcessingError(
-                    "The reference sample should have a volume file in order to use volume variables."
+                    "No volume file was found in the reference sample. A volume file is required to use volume variables."
                 ) from None
             volume_fld = [
                 fd
