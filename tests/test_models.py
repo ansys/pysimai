@@ -502,14 +502,9 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
 
     project.verify_gc_formula = Mock()
 
-    model_input = ModelInput(surface=[], boundary_conditions=["Vx"])
-    model_output = ModelOutput(surface=["Pressure", "WallShearStress_0"], volume=["Velocity_0"])
-    global_coefficients = [("max(Pressure)", "maxpress")]
-    simulation_volume = {
-        "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
-        "Y": {"length": 80.0, "type": "absolute", "value": -80},
-        "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
-    }
+    model_input = ModelInput(surface=[], boundary_conditions=[])
+    model_output = ModelOutput(surface=[], volume=["Velocity_0"])
+    global_coefficients = []
 
     model_conf = ModelConfiguration(
         project=project,
@@ -518,7 +513,6 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
         input=model_input,
         output=model_output,
         global_coefficients=global_coefficients,
-        simulation_volume=simulation_volume,
     )
 
     with pytest.raises(ProcessingError):
