@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, NamedTuple
 from unittest.mock import Mock
 
@@ -480,13 +481,13 @@ def test_sse_event_handler(simai_client, model_factory):
 
 @responses.activate
 def test_post_process_input(simai_client):
-    """WHEN ModelConfiguration includes a specified surface_pp_input arg
-    THEN Model object configuration includes that exact surface_pp_input
+    """WHEN ModelConfiguration includes a specified pp_input arg
+    THEN ModelConfiguration object and Model.configuration property return that exact pp_input
     """
 
     raw_project = {
         "id": MODEL_RAW["project_id"],
-        "name": "fifi",
+        "name": "pp_newnew",
         "sample": SAMPLE_RAW,
     }
 
@@ -500,28 +501,40 @@ def test_post_process_input(simai_client):
     project: Project = simai_client._project_directory._model_from(raw_project)
     project.verify_gc_formula = Mock()
 
-    MODEL_CONFIG = MODEL_CONF_RAW.copy()
-    MODEL_CONFIG["fields"]["surface_pp_input"] = [
-        {"keys": None, "name": "Temperature_1", "unit": None, "format": "value", "location": "cell"}
+    pp_input = PostProcessInput(surface=["Temperature_1"])
+
+    model_conf_dict = deepcopy(MODEL_CONF_RAW)
+    model_conf_dict["fields"]["surface_pp_input"] = [
+        {
+            "keys": None,
+            "name": pp_input.surface,
+            "unit": None,
+            "format": "value",
+            "location": "cell",
+        }
     ]
-
-    MODEL_REQUEST = MODEL_RAW.copy()
-    MODEL_REQUEST["configuration"] = MODEL_CONFIG
-
-    surface_pp_input = PostProcessInput(surface=["Temperature_1"])
+    model_request = deepcopy(MODEL_RAW)
+    model_request["configuration"] = model_conf_dict
 
     config_with_pp_input = ModelConfiguration(
         project=project,
-        **MODEL_CONFIG,
-        surface_pp_input=surface_pp_input,
+        **model_conf_dict,
+        pp_input=pp_input,
     )
 
     responses.add(
         responses.POST,
-        f"https://test.test/projects/{MODEL_REQUEST['project_id']}/model",
-        json=MODEL_REQUEST,
+        f"https://test.test/projects/{model_request['project_id']}/model",
+        json=model_request,
         status=200,
     )
 
     build_model: Model = simai_client.models.build(config_with_pp_input)
-    assert build_model.configuration.surface_pp_input.surface == surface_pp_input.surface
+
+    assert config_with_pp_input.pp_input.surface == pp_input.surface
+    assert config_with_pp_input._to_payload()["fields"]["surface_pp_input"] == pp_input.surface
+    assert build_model.configuration.pp_input.surface == pp_input.surface
+    assert (
+        build_model.fields["configuration"]["fields"]["surface_pp_input"]
+        == model_conf_dict["fields"]["surface_pp_input"]
+    )

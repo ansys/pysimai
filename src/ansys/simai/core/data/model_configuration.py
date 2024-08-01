@@ -191,7 +191,7 @@ class ModelOutput:
 
 @dataclass
 class PostProcessInput:
-    """Designates the surface variables to use as post-processing input.
+    """Designates the variables to use as post-processing input.
 
     Args:
         surface: the post-processing input surface variables.
@@ -220,7 +220,7 @@ class ModelConfiguration:
         output: the outputs of the model.
         global_coefficients: the Global Coefficients of the model.
         domain_of_analysis: The Domain of Analysis of the model configuration.
-        surface_pp_input: The surface variable as post-processing input.
+        pp_input: The post-processing input (e.g. a surface variable).
 
     Example:
         Define a new configuration and launch a build.
@@ -251,7 +251,7 @@ class ModelConfiguration:
             )
 
             # Define the surface post-processing input
-            surface_pp_input = PostProcessInput(surface=["Temperature_1"])
+            pp_input = PostProcessInput(surface=["Temperature_1"])
 
             # Define the model coefficients
             global_coefficients = [("max(Pressure)", "maxpress")]
@@ -272,7 +272,7 @@ class ModelConfiguration:
                 output=model_output,
                 global_coefficients=global_coefficients,
                 domain_of_analysis=doa,
-                surface_pp_input=surface_pp_input,
+                pp_input=pp_input,
             )
 
             # Launch a mode build with the new configuration
@@ -290,7 +290,7 @@ class ModelConfiguration:
     input: ModelInput = field(default_factory=lambda: ModelInput())
     output: ModelOutput = field(default_factory=lambda: ModelOutput())
     domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
-    surface_pp_input: PostProcessInput = field(default_factory=lambda: PostProcessInput())
+    pp_input: PostProcessInput = field(default_factory=lambda: PostProcessInput())
 
     def __set_gc(self, gcs: list[GlobalCoefficientDefinition]):
         verified_gcs = []
@@ -325,7 +325,7 @@ class ModelConfiguration:
         input: Optional[ModelInput] = None,
         output: Optional[ModelOutput] = None,
         domain_of_analysis: Optional[DomainOfAnalysis] = None,
-        surface_pp_input: Optional[PostProcessInput] = None,
+        pp_input: Optional[PostProcessInput] = None,
     ):
         """Sets the properties of a build configuration."""
         self.project = project
@@ -335,9 +335,9 @@ class ModelConfiguration:
         self.output = ModelOutput()
         if output is not None:
             self.output = output
-        self.surface_pp_input = PostProcessInput()
-        if surface_pp_input is not None:
-            self.surface_pp_input = surface_pp_input
+        self.pp_input = PostProcessInput()
+        if pp_input is not None:
+            self.pp_input = pp_input
         if boundary_conditions is not None and self.input.boundary_conditions is None:
             self.input.boundary_conditions = list(boundary_conditions.keys())
         self.build_preset = build_preset
@@ -353,9 +353,7 @@ class ModelConfiguration:
                 self.output.volume = [fd.get("name") for fd in fields["volume"]]
 
             if fields.get("surface_pp_input"):
-                self.surface_pp_input.surface = [
-                    fd.get("name") for fd in fields["surface_pp_input"]
-                ]
+                self.pp_input.surface = [fd.get("name") for fd in fields["surface_pp_input"]]
 
         self.domain_of_analysis = domain_of_analysis
         if simulation_volume is not None:
@@ -386,7 +384,7 @@ class ModelConfiguration:
         return {"length": fld.length, "type": fld.position, "value": fld.value}
 
     def _to_payload(self):
-        """Constracts the payload for a build request."""
+        """Constructs the payload for a build request."""
 
         bcs = {}
         if self.input.boundary_conditions is not None:
@@ -421,9 +419,9 @@ class ModelConfiguration:
         gcs = []
         if self.global_coefficients is not None:
             gcs = [asdict(gc) for gc in self.global_coefficients]
-        surface_pp_input_fld = []
-        if self.surface_pp_input.surface is not None:
-            surface_pp_input_fld = self.surface_pp_input.surface
+
+        surface_pp_input_fld = self.pp_input.surface or []
+
         flds = {
             "surface": surface_fld,
             "surface_input": surface_input_fld,
