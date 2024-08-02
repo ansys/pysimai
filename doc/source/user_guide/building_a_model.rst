@@ -13,10 +13,10 @@ Building a model
 SimAI allows you to build AI models using past simulation data. This first step to building such models is to upload
 your simulation data into a global pool of :class:`training data<ansys.simai.core.data.training_data.TrainingData>` instances.
 Then, you assign the imported data to different :class:`Project<ansys.simai.core.data.projects.Project>` instances,
-which you will eventually configure in order to build/train your AI model.
+which you will eventually configure in order to build your AI model.
 
-Uploading your simulation data into a new project
-=================================================
+Create a project and upload data
+--------------------------------
 
 #. Create a :class:`~ansys.simai.core.client.SimAIClient` instance::
 
@@ -29,9 +29,9 @@ Uploading your simulation data into a new project
    If desired, you can create an instance using a configuration file. For more
    information, see :ref:`configuration`.
 
-#. Upload your prediction data by creating a
+#. Create a
    :class:`TrainingData<ansys.simai.core.data.training_data.TrainingData>` instance
-   and then loading your files into it::
+   and upload your simulation data into it::
 
      td = simai.training_data.create("my-first-data")
      td.upload_folder("/path/to/folder/where/files/are/stored")
@@ -40,15 +40,16 @@ Uploading your simulation data into a new project
 
      project = simai.projects.create("my-first-project")
 
-#. Assign the created training data to your project::
+#. Associate the created training data with the created project::
 
      td.add_to_project(project)
 
+Your project is created and your simulation data is associated with it. You can now configure and build your AI model.
 
-Launching a build
-=================
+Configure and build the model
+-----------------------------
 
-#.   Import the related modules::
+#.   Import the modules related to model building::
 
           from ansys.simai.core.data.model_configuration import (
                DomainOfAnalysis,
@@ -57,7 +58,7 @@ Launching a build
                ModelOutput,
           )
 
-#.   Set the input (:class:`ModelInput<ansys.simai.core.data.model_configuration.ModelInput>`) and output (:class:`ModelOutput<ansys.simai.core.data.model_configuration.ModelOutput>`) of the model::
+#.   Set the inputs (:class:`ModelInput<ansys.simai.core.data.model_configuration.ModelInput>`) and outputs (:class:`ModelOutput<ansys.simai.core.data.model_configuration.ModelOutput>`) of the model::
 
           model_input = ModelInput(surface=["wallShearStress"], boundary_conditions=["Vx"])
 
@@ -67,7 +68,7 @@ Launching a build
 
           global_coefficients = [('min("alpha.water")', "minalpha")]
 
-#.   Set the Domain of Analysis as an instance of :class:`DomainOfAnalysis<ansys.simai.core.data.model_configuration.DomainOfAnalysis>`::
+#.   Set the Domain of Analysis of the model using the :class:`DomainOfAnalysis<ansys.simai.core.data.model_configuration.DomainOfAnalysis>` instance::
 
           doa = DomainOfAnalysis(
                length=("relative_to_min", 15.321, 183.847),
@@ -76,7 +77,7 @@ Launching a build
           )
 
 
-#.   Define a model configuration with a :class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>` instance::
+#.   Configure the model using the :class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>` instance::
 
           mdl_conf = ModelConfiguration(
                project=project,                             # project of the model configuration
@@ -88,13 +89,15 @@ Launching a build
                domain_of_analysis=doa                       # Domain of Analysis
           )
 
-#.   Check if the project is trainable and launch a build::
+#.   Verify if the project meets the requirements for training and launch a build::
 
           if project.is_trainable():
                new_model = simai.models.build(mdl_conf)
 
+Your AI model is configured and building.
+
 Learn more
-==========
+----------
 
 For more information on the actions available to you, see :ref:`training_data`,
 :ref:`training_data_parts`, :ref:`projects`, :ref:`model_configuration`, and :ref:`models`
