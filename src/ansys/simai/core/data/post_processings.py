@@ -186,7 +186,7 @@ class GlobalCoefficients(ExportablePostProcessing):
         self.wait()
 
         results = self._get_results()
-        return results["data"]["values"]
+        return {k: float(v) for k, v in results["data"]["values"].items()}
 
 
 class SurfaceEvol(ExportablePostProcessing):
