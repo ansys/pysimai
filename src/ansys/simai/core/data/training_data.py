@@ -87,8 +87,9 @@ class TrainingData(ComputableDataModel):
                 the :class:`~.projects.Project` object for, or its ID.
 
         Returns:
-            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which the :class:`TrainingData` belongs to if any, ``None`` otherwise.
-                (e.g. <SubsetEnum.TEST: 'Test'>)
+            The :obj:`~ansys.simai.core.data.types.SubsetEnum` of the subset to which
+            the :class:`TrainingData` belongs to if any, ``None`` otherwise.
+            (e.g. <SubsetEnum.TEST: 'Test'>)
         """
         project_id = get_id_from_identifiable(project, default=self._client._current_project)
         subset_value = self._client._api.get_training_data_subset(project_id, self.id).get("subset")
@@ -97,12 +98,25 @@ class TrainingData(ComputableDataModel):
     def assign_subset(
         self, project: Identifiable["Project"], subset: Optional[Union[SubsetEnum, str]]
     ) -> None:
-        """Assign the training data subset in relation to a given project.
+        """Assign the training data to a subset in relation to a given project.
 
         Args:
             project: ID or :class:`model <.projects.Project>`
             subset: SubsetEnum attribute (e.g. SubsetEnum.TRAINING) or string value (e.g. "Training") or None to unassign.
                 Available options: (Training, Test)
+
+                Each new training data added to the project will be set to "None" by default.
+
+                None allows for resetting the subset assignment of your training data, which will be automatically allocated
+                in either test or training subsets upon each model building request. As a rule of thumb, 10% of all data should
+                be allocated to the test subset.
+
+                When wanting to assign a specific subset to your training data, note that:
+
+                Each subset requires at least one data point.
+                The training subset is used to train the model. The test subset is used for the model
+                evaluation report but is not learned by the model.
+                It is recommended to allocate about 10% of your data to the test subset.
 
         Returns:
             None
@@ -150,21 +164,18 @@ class TrainingData(ComputableDataModel):
     def upload_folder(
         self,
         folder_path: Path,
-        compute: bool = True,
     ) -> List["TrainingDataPart"]:
         """Upload all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData` instance.
 
-        This method automatically requests computation of the training data
-        once the upload is complete unless specified otherwise.
+        Upon upload completion, SimAI will extract data from each part.
 
         Args:
             folder_path: Path to the folder with the files to upload.
-            compute: Whether to compute the training data after upload. The default is ``True``.
 
         Returns:
             List of uploaded training data parts.
         """
-        return self._directory.upload_folder(self.id, folder_path, compute)
+        return self._directory.upload_folder(self.id, folder_path)
 
     def add_to_project(self, project: Identifiable["Project"]):
         """Add the training data to a :class:`~ansys.simai.core.data.projects.Project` object.
@@ -271,7 +282,6 @@ class TrainingDataDirectory(Directory[TrainingData]):
         self,
         training_data: Identifiable[TrainingData],
         folder_path: Path,
-        compute: bool = True,
     ) -> List["TrainingDataPart"]:
         """Upload all files in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData` object.
 
@@ -281,7 +291,6 @@ class TrainingDataDirectory(Directory[TrainingData]):
         Args:
             training_data: ID or :class:`model <TrainingData>` object of the training data to upload parts to.
             folder_path: Path to the folder that contains the files to upload.
-            compute: Whether to compute the training data after upload. The default is ``True``.
         """
         training_data_id = get_id_from_identifiable(training_data)
         path = pathlib.Path(folder_path)
@@ -294,6 +303,5 @@ class TrainingDataDirectory(Directory[TrainingData]):
             uploaded_parts.append(
                 _upload_training_data_part(training_data_id, file, self._client, None)
             )
-        if compute:
-            self._client._api.compute_training_data(training_data_id)
+        self._client._api.compute_training_data(training_data_id)
         return uploaded_parts

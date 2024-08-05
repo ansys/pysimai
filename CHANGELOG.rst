@@ -1,6 +1,17 @@
 Changelog
 ---------
 
+0.2.2 (2024-07-17)
+******************
+
+New:
+
+- Added support for the postprocessing of custom volume of point cloud. Use :py:meth:`Geometry.upload_point_cloud<ansys.simai.core.data.geometries.Geometry.upload_point_cloud>` to upload a point cloud file on a geometry and run the post processing through :py:meth:`Prediction.post.custom_volume_point_cloud<ansys.simai.core.data.post_processings.PredictionPostProcessings.custom_volume_point_cloud>` to run the postprocessing.
+
+Fix:
+
+- Remove internal uses of deprecated `workspace.model`
+
 0.2.1 (2024-06-28)
 ******************
 

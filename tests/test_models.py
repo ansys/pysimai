@@ -475,3 +475,45 @@ def test_sse_event_handler(simai_client, model_factory):
         }
     )
     assert model.is_ready
+
+
+def test_throw_error_when_volume_is_missing_from_sample(simai_client):
+    """WHEN there is no volume in the extracted_metadata of the reference sample
+    AND the volume variables are set as model output
+    THEN a ProcessingError is thrown.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    raw_project["sample"]["extracted_metadata"].pop("volume")
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_input = ModelInput(surface=[], boundary_conditions=[])
+    model_output = ModelOutput(surface=[], volume=["Velocity_0"])
+    global_coefficients = []
+
+    model_conf = ModelConfiguration(
+        project=project,
+        build_preset="debug",
+        continuous=False,
+        input=model_input,
+        output=model_output,
+        global_coefficients=global_coefficients,
+    )
+
+    with pytest.raises(ProcessingError):
+        model_conf._to_payload()
