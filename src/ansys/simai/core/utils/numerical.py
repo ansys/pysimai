@@ -20,11 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
 import math
 from numbers import Number
 from typing import Any, Optional, Tuple
 
+from ansys.simai.core.errors import SimAIError
+
 DEFAULT_COMPARISON_EPSILON = 10**-6
+
+logger = logging.getLogger(__name__)
 
 
 def is_number(value: Any):
@@ -116,10 +121,12 @@ def validate_tolerance_parameter(tolerance: Optional[Number]):
 
 
 # Recursively go through dict to cast values to float, so that we support NaN and inf
+# Only use if all the values are expected to be numbers
 def cast_values_to_float(data: Any):
     if isinstance(data, dict):
         return {k: cast_values_to_float(v) for k, v in data.items()}
-    elif isinstance(data, str) and data.lower() in ["nan", "inf", "-inf"]:
-        return float(data)
     else:
-        return data
+        try:
+            return float(data)
+        except ValueError as err:
+            raise SimAIError(f"received invalid float value: {data!r}") from err
