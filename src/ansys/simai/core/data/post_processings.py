@@ -37,6 +37,7 @@ from ansys.simai.core.errors import (
     InvalidServerStateError,
 )
 from ansys.simai.core.utils.numerical import (
+    cast_values_to_float,
     convert_axis_and_coordinate_to_plane_eq_coeffs,
 )
 
@@ -186,7 +187,7 @@ class GlobalCoefficients(ExportablePostProcessing):
         self.wait()
 
         results = self._get_results()
-        return {k: float(v) for k, v in results["data"]["values"].items()}
+        return cast_values_to_float(results["data"]["values"])
 
 
 class SurfaceEvol(ExportablePostProcessing):

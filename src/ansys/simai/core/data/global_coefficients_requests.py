@@ -179,7 +179,7 @@ class ComputeGlobalCoefficient(GlobalCoefficientRequest):
             self._set_is_pending()
         elif state == "successful":
             logger.debug(f"{self._classname} id {self.id} set status successful")
-            self._result = {k: float(v) for k, v in data.get("result", {}).get("value", {}).items()}
+            self._result = float(data.get("result", {}).get("value"))
             self._set_is_over()
         elif state in ERROR_STATES:
             error_message = f"Computation of global coefficient {target.get('formula')} failed with {data.get('reason', 'UNKNOWN ERROR')}"

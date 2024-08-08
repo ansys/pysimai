@@ -23,6 +23,7 @@
 import math
 
 from ansys.simai.core.utils.numerical import (
+    cast_values_to_float,
     convert_axis_and_coordinate_to_plane_eq_coeffs,
     is_bigger_or_equal_with_tolerance,
     is_bigger_with_tolerance,
@@ -162,3 +163,11 @@ def test_convert_axis_and_coordinate_to_plane_eq_coeffs():
         1,
         100.5,
     )
+
+
+def test_cast_values_to_float():
+    input = {"convert": "NaN", "also_convert": "-inf", "leave_alone": {"everything": "else"}}
+    output = cast_values_to_float(input)
+    assert math.isnan(output["convert"])
+    assert math.isinf(output["also_convert"])
+    assert output["leave_alone"] == {"everything": "else"}

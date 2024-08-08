@@ -113,3 +113,13 @@ def validate_tolerance_parameter(tolerance: Optional[Number]):
         raise TypeError(f"The tolerance argument must be a number >= 0 (passed {tolerance})")
     if tolerance < 0:
         raise ValueError(f"The tolerance argument must be a number >= 0 (passed {tolerance})")
+
+
+# Recursively go through dict to cast values to float, so that we support NaN and inf
+def cast_values_to_float(data: Any):
+    if isinstance(data, dict):
+        return {k: cast_values_to_float(v) for k, v in data.items()}
+    elif isinstance(data, str) and data.lower() in ["nan", "inf", "-inf"]:
+        return float(data)
+    else:
+        return data
