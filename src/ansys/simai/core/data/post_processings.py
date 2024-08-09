@@ -596,7 +596,7 @@ Attach the required file to enable CustomVolumePointCloud postprocessing."""
                 If ``False``, this method only gets an existing postprocessing.
 
         This is a non-blocking method. It runs (if not already run orrunning) the postprocessing
-        of given type with the given parameters. If ``run=False``, if a preprocessing already
+        of given type with the given parameters. If ``run=False``, if a postprocessing already
         exits, it gets it.
         """
         # FIXME frozenset(params.items()) works as long as there are no
