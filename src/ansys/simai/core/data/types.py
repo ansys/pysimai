@@ -85,7 +85,9 @@ Example:
 """
 
 
-APIResponse = Union[Response, Dict[str, Any], List[Dict[str, Any]]]
+JSON = Union[Dict[str, Any], List[Dict[str, Any]]]
+APIResponse = Union[Response, JSON]
+
 
 MonitorCallback = Callable[[int], None]
 """Callback used to monitor the download or upload of a file.
