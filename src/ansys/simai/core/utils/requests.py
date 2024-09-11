@@ -22,10 +22,11 @@
 
 import logging
 from json.decoder import JSONDecodeError
+from typing import Literal, overload
 
 import requests
 
-from ansys.simai.core.data.types import APIResponse
+from ansys.simai.core.data.types import JSON, APIResponse
 from ansys.simai.core.errors import ApiClientError, NotFoundError
 
 logger = logging.getLogger(__name__)
@@ -74,6 +75,21 @@ def handle_http_errors(response: requests.Response) -> None:
                 ) from e
         else:
             raise ApiClientError(f"{response.status_code}: {response.reason}", response) from e
+
+
+@overload
+def handle_response(response: requests.Response, return_json: Literal[True]) -> JSON:
+    ...
+
+
+@overload
+def handle_response(response: requests.Response, return_json: Literal[False]) -> requests.Response:
+    ...
+
+
+@overload
+def handle_response(response: requests.Response, return_json: bool) -> APIResponse:
+    ...
 
 
 def handle_response(response: requests.Response, return_json: bool = True) -> APIResponse:
