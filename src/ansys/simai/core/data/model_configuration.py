@@ -217,11 +217,11 @@ class ModelConfiguration:
 
                     | *debug*: < 30 min, only 4 dat
 
-                    | *short*: < 24 hours
+                    | *1_day*: < 24 hours
 
-                    | *default*: < 2 days, default value.
+                    | *2_days*: < 2 days, default value.
 
-                    | *long*: < 1 week
+                    | *7_days*: < 1 week
         continuous: indicates if continuous learning is enabled. Default is False.
         input: the inputs of the model.
         output: the outputs of the model.
