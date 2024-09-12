@@ -37,6 +37,7 @@ from ansys.simai.core.errors import (
     InvalidServerStateError,
 )
 from ansys.simai.core.utils.numerical import (
+    cast_values_to_float,
     convert_axis_and_coordinate_to_plane_eq_coeffs,
 )
 
@@ -186,7 +187,7 @@ class GlobalCoefficients(ExportablePostProcessing):
         self.wait()
 
         results = self._get_results()
-        return {k: float(v) for k, v in results["data"]["values"].items()}
+        return cast_values_to_float(results["data"]["values"])
 
 
 class SurfaceEvol(ExportablePostProcessing):
@@ -595,7 +596,7 @@ Attach the required file to enable CustomVolumePointCloud postprocessing."""
                 If ``False``, this method only gets an existing postprocessing.
 
         This is a non-blocking method. It runs (if not already run orrunning) the postprocessing
-        of given type with the given parameters. If ``run=False``, if a preprocessing already
+        of given type with the given parameters. If ``run=False``, if a postprocessing already
         exits, it gets it.
         """
         # FIXME frozenset(params.items()) works as long as there are no

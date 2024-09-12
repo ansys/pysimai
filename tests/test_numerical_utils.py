@@ -22,7 +22,11 @@
 
 import math
 
+import pytest
+
+from ansys.simai.core.errors import SimAIError
 from ansys.simai.core.utils.numerical import (
+    cast_values_to_float,
     convert_axis_and_coordinate_to_plane_eq_coeffs,
     is_bigger_or_equal_with_tolerance,
     is_bigger_with_tolerance,
@@ -162,3 +166,16 @@ def test_convert_axis_and_coordinate_to_plane_eq_coeffs():
         1,
         100.5,
     )
+
+
+def test_cast_values_to_float():
+    input = {"convert": "NaN", "also_convert": "-inf"}
+    output = cast_values_to_float(input)
+    assert math.isnan(output["convert"])
+    assert math.isinf(output["also_convert"])
+
+
+def test_cast_values_to_float_invalid_type_raises():
+    input = {"convert": "woops"}
+    with pytest.raises(SimAIError):
+        cast_values_to_float(input)
