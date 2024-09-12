@@ -181,7 +181,7 @@ def test_get_authentication_configuration(inputs, password, config, expected_out
             client_config = ClientConfig(**config)
         assert ex.value.error_count() == expected_output.get("error_count")
     else:
-        client_config = ClientConfig(**config).dict(exclude_none=True)
+        client_config = ClientConfig(**config).model_dump(exclude_none=True)
         # the config contains many fields, here we only test a subset
         tested_fields = ["organization", "credentials"]
         for f in list(client_config.keys()):

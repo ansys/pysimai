@@ -33,7 +33,6 @@ from pydantic import (
     ValidationInfo,
     field_validator,
     model_validator,
-    validator,
 )
 from pydantic_core import PydanticCustomError
 
@@ -110,11 +109,8 @@ class ClientConfig(BaseModel, extra="allow"):
     no_sse_connection: bool = Field(
         default=False, description="Don't receive live updates from the SimAI API."
     )
-    disable_cache: bool = Field(
-        default=False, description="Don't use cached authentication tokens."
-    )
 
-    @validator("url", pre=True)
+    @field_validator("url", mode="before")
     def clean_url(cls, url):
         if isinstance(url, bytes):
             url = url.decode()
