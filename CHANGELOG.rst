@@ -1,6 +1,22 @@
 Changelog
 ---------
 
+0.2.3 (2024-08-21)
+******************
+
+New:
+
+- Added :py:class:`PostProcessInput<ansys.simai.core.data.model_configuration.PostProcessInput>` class to define post processing input fields.
+- Added support for NaN and Inf for Global Coefficients and Post Processings.
+
+Fixes:
+
+- Removed compute argument from :py:meth:`TrainingData.upload_folder()<ansys.simai.core.data.training_data.TrainingData.upload_folder>`
+- Fixed Model Configuration to raise a ProcessingError when volume field is missing from a sample specifying volume output.
+- Removed wakepy error mode success (deprecated) during optimization.
+- Renamed TrainingData method compute() to :py:meth:`TrainingData.extract_data()<ansys.simai.core.data.training_data.TrainingData.extract_data>`.
+- Updated documentation of :py:meth:`GeometryDirectory.upload()<ansys.simai.core.data.geometries.GeometryDirectory.upload>`: the ``workspace_id`` argument was moved to ``workspace`` but never updated.
+
 0.2.2 (2024-07-17)
 ******************
 

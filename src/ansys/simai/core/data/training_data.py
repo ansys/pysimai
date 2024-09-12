@@ -132,12 +132,13 @@ class TrainingData(ComputableDataModel):
         """Metadata extracted from the training data."""
         return self.fields["extracted_metadata"]
 
-    def compute(self) -> None:
-        """Compute or recompute the training data.
+    def extract_data(self) -> None:
+        """Extract or reextract the data from a training data.
 
-        Training data should be computed once all its parts have been fully uploaded.
+        Data should be extracted from a training data once all its parts have been fully uploaded.
+        This is done automatically when using :meth:`TrainingDataDirectory.upload_folder` to create training data.
 
-        Training data can only be recomputed if computation previously failed or if new data has been added.
+        Data can only be reextracted from a training data if the extraction previously failed or if new files have been added.
         """
         self._client._api.compute_training_data(self.id)
 

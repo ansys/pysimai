@@ -49,3 +49,8 @@ ModelConfiguration
 .. autoclass:: ModelConfiguration()
     :members:
 
+PostProcessInput
+-----------------
+
+.. autoclass:: PostProcessInput()
+    :members:
