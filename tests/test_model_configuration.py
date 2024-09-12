@@ -23,7 +23,7 @@
 
 import pytest
 
-from ansys.simai.core.data.model_configuration import ModelConfiguration
+from ansys.simai.core.data.model_configuration import ModelConfiguration, SupportedBuildPresets
 from ansys.simai.core.errors import InvalidArguments
 
 
@@ -38,8 +38,10 @@ def test_build_preset_error(simai_client):
 
     project = simai_client._project_directory._model_from(raw_project)
 
-    with pytest.raises(InvalidArguments):
+    with pytest.raises(InvalidArguments) as excinfo:
         ModelConfiguration(
             project=project,
-            build_preset="not_valid",
+            build_preset="not_valid_value",
         )
+
+        assert f"{list(SupportedBuildPresets)}" in excinfo.value
