@@ -198,7 +198,7 @@ class _AuthTokensRetriever:
             with open(self.cache_file_path + "~", "w") as f:
                 f.write(auth.model_dump_json())
             # rename is atomic
-            os.rename(self.cache_file_path + "~", self.cache_file_path)
+            os.replace(self.cache_file_path + "~", self.cache_file_path)
         self._schedule_auth_refresh(auth.refresh_expires_in)
         return auth
 
