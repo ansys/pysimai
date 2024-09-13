@@ -46,8 +46,8 @@ DEFAULT_TOKENS = {
 
 
 @responses.activate
-def test_request_auth_tokens_direct_grant(mocker, tmpdir):
-    default_params = {"client_id": "sdk", "grant_type": "password", "scope": "openid"}
+def test_request_auth_tokens_direct_grant_bad_credentials_raises(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
     responses.add(
         responses.POST,
         "http://myauthserver.com/protocol/openid-connect/token",
@@ -58,34 +58,107 @@ def test_request_auth_tokens_direct_grant(mocker, tmpdir):
         status=401,
         match=[
             urlencoded_params_matcher(
-                dict({"username": "macron", "password": "explosion"}, **default_params)
+                {
+                    "username": "macron",
+                    "password": "explosion",
+                    "client_id": "sdk",
+                    "grant_type": "password",
+                    "scope": "openid",
+                }
             )
         ],
     )
-    responses.add(
-        responses.POST,
-        "http://myauthserver.com/protocol/openid-connect/token",
-        json=DEFAULT_TOKENS,
-        status=200,
-        match=[urlencoded_params_matcher(dict({"username": "timmy"}, **default_params))],
-    )
-    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
     tokens_retriever = _AuthTokensRetriever(
         credentials=None,
         session=requests.Session(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="rando",
     )
-
-    with pytest.raises(SimAIError):
+    with pytest.raises(SimAIError, match="Invalid user credentials"):
         tokens_retriever.credentials = Credentials(username="macron", password="explosion")
         tokens_retriever.get_tokens()
 
+
+@responses.activate
+def test_request_auth_tokens_direct_grant(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
+    responses.add(
+        responses.POST,
+        "http://myauthserver.com/protocol/openid-connect/token",
+        json=DEFAULT_TOKENS,
+        status=200,
+        match=[
+            urlencoded_params_matcher(
+                {
+                    "username": "timmy",
+                    "client_id": "sdk",
+                    "grant_type": "password",
+                    "scope": "openid",
+                }
+            )
+        ],
+    )
+    tokens_retriever = _AuthTokensRetriever(
+        credentials=None,
+        session=requests.Session(),
+        realm_url="http://myauthserver.com",
+        auth_cache_hash="rando",
+    )
     tokens_retriever.credentials = Credentials(username="timmy", password="")
-    tokens_retriever.cache_file_path += "tests-2"
     tokens = tokens_retriever.get_tokens()
     assert tokens.refresh_token == DEFAULT_TOKENS["refresh_token"]
     assert tokens.access_token == DEFAULT_TOKENS["access_token"]
+
+
+@responses.activate
+def test_token_refresh_failure_triggers_reauth(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
+    resps_refresh = responses.add(
+        responses.POST,
+        "http://myauthserver.com/protocol/openid-connect/token",
+        status=418,
+        match=[
+            urlencoded_params_matcher(
+                {"client_id": "sdk", "grant_type": "refresh_token", "refresh_token": "revoked"}
+            )
+        ],
+    )
+    resps_direct_grant = responses.add(
+        responses.POST,
+        "http://myauthserver.com/protocol/openid-connect/token",
+        json=DEFAULT_TOKENS,
+        status=200,
+        match=[
+            urlencoded_params_matcher(
+                {
+                    "username": "timmy",
+                    "client_id": "sdk",
+                    "grant_type": "password",
+                    "scope": "openid",
+                }
+            )
+        ],
+    )
+    with open(tmpdir / "tokens-rando.json", "w") as f:
+        f.write(
+            _AuthTokens(
+                access_token="",
+                expires_in=0,
+                refresh_expires_in=999,
+                refresh_token="revoked",
+            ).model_dump_json()
+        )
+    tokens_retriever = _AuthTokensRetriever(
+        credentials=Credentials(username="timmy", password=""),
+        session=requests.Session(),
+        realm_url="http://myauthserver.com",
+        auth_cache_hash="rando",
+    )
+    tokens = tokens_retriever.get_tokens()
+    assert tokens.refresh_token == DEFAULT_TOKENS["refresh_token"]
+    assert tokens.access_token == DEFAULT_TOKENS["access_token"]
+    assert resps_refresh.call_count == 1
+    assert resps_direct_grant.call_count == 1
 
 
 @responses.activate

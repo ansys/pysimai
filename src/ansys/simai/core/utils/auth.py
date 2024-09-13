@@ -59,7 +59,7 @@ class _AuthTokens(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def check_card_number_omitted(cls, data: Any) -> dict:
+    def expires_in_to_datetime(cls, data: Any) -> dict:
         assert isinstance(data, dict)
         if "expiration" not in data:
             # We want and store "expiration" but API responses contain "expires_in"
