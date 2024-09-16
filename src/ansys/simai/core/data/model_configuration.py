@@ -28,6 +28,13 @@ from ansys.simai.core.errors import InvalidArguments, ProcessingError
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
 
+SupportedBuildPresets = {
+    "debug": "debug",
+    "1_day": "short",
+    "2_days": "default",
+    "7_days": "long",
+}
+
 
 @dataclass
 class DomainAxisDefinition:
@@ -210,11 +217,11 @@ class ModelConfiguration:
 
                     | *debug*: < 30 min, only 4 dat
 
-                    | *short*: < 24 hours
+                    | *1_day*: < 24 hours
 
-                    | *default*: < 2 days, default value.
+                    | *2_days*: < 2 days, default value.
 
-                    | *long*: < 1 week
+                    | *7_days*: < 1 week
         continuous: indicates if continuous learning is enabled. Default is False.
         input: the inputs of the model.
         output: the outputs of the model.
@@ -280,12 +287,6 @@ class ModelConfiguration:
     """
 
     project: "Optional[Project]" = None
-    build_preset: Literal[
-        "debug",
-        "short",
-        "default",
-        "long",
-    ] = "default"
     continuous: bool = False
     input: ModelInput = field(default_factory=lambda: ModelInput())
     output: ModelOutput = field(default_factory=lambda: ModelOutput())
@@ -313,11 +314,26 @@ class ModelConfiguration:
 
     global_coefficients: list[GlobalCoefficientDefinition] = property(__get_gc, __set_gc)
 
+    def __validate_build_preset(self, val: str):
+        if val not in SupportedBuildPresets:
+            raise InvalidArguments(
+                f"Invalid value for build_preset, build_preset should be one of {list(SupportedBuildPresets.keys())}"
+            )
+
+    def __set_build_preset(self, val: str):
+        self.__validate_build_preset(val)
+        self.__dict__["build_preset"] = val
+
+    def __get_build_preset(self):
+        return self.__dict__.get("build_preset")
+
+    build_preset = property(__get_build_preset, __set_build_preset)
+
     def __init__(
         self,
         project: "Project",
         boundary_conditions: Optional[dict[str, Any]] = None,
-        build_preset: Optional[str] = None,
+        build_preset: Optional[str] = "debug",
         continuous: bool = False,
         fields: Optional[dict[str, Any]] = None,
         global_coefficients: Optional[list[GlobalCoefficientDefinition]] = None,
@@ -441,7 +457,7 @@ class ModelConfiguration:
 
         return {
             "boundary_conditions": bcs,
-            "build_preset": self.build_preset,
+            "build_preset": SupportedBuildPresets[self.build_preset],
             "continuous": self.continuous,
             "fields": flds,
             "global_coefficients": gcs,
@@ -462,3 +478,5 @@ class ModelConfiguration:
             )
             for gc in self.global_coefficients
         ]
+
+    del __set_build_preset, __get_build_preset
