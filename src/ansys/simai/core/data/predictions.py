@@ -28,11 +28,13 @@ from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.post_processings import PredictionPostProcessings
 from ansys.simai.core.data.types import (
     BoundaryConditions,
+    ConfidenceEnum,
     Identifiable,
     build_boundary_conditions,
     get_id_from_identifiable,
 )
 from ansys.simai.core.data.workspaces import Workspace
+from ansys.simai.core.errors import InvalidArguments
 
 logger = logging.getLogger(__name__)
 
@@ -86,13 +88,28 @@ class Prediction(ComputableDataModel):
         return self._post_processings
 
     @property
-    def confidence_score(self) -> str:
+    def confidence_score(self) -> ConfidenceEnum:
         """Confidence score, which is either ``high`` or ``low``.
 
         This method blocks until the confidence score is computed.
         """
         self.wait()
-        return self.fields["confidence_score"]
+        confidence_score = self.fields["confidence_score"]
+        if confidence_score is not None and confidence_score not in [
+            e.value for e in ConfidenceEnum
+        ]:
+            raise InvalidArguments("Must be None or one of: 'high', 'low'.")
+        return confidence_score
+
+    @property
+    def raw_confidence_score(self) -> float:
+        """Raw confidence score, a float.
+
+        This method blocks until the confidence score is computed.
+        """
+        self.wait()
+        raw_score = self.fields["raw_confidence_score"]
+        return round(raw_score, 2) if isinstance(raw_score, float) else raw_score
 
     def delete(self) -> None:
         """Remove a prediction from the server."""
