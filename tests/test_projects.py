@@ -22,7 +22,6 @@
 
 from typing import TYPE_CHECKING
 from unittest.mock import patch
-from urllib.parse import urlencode
 
 import pytest
 import responses
@@ -77,25 +76,7 @@ def test_project_list_training_data(simai_client):
         status=200,
     )
 
-    assert [data.id for data in project.training_data()] == ["first", "second"]
-
-
-@responses.activate
-def test_project_list_training_data_with_filters(simai_client):
-    project: Project = simai_client._project_directory._model_from({"id": "0011", "name": "riri"})
-
-    responses.add(
-        responses.GET,
-        "https://test.test/projects/0011/data",
-        match=[
-            responses.matchers.query_string_matcher(
-                urlencode({"filter[]": {"field": "name", "operator": "EQ", "value": "thingo"}})
-            )
-        ],
-        json=[{"id": "hello", "name": "thingo"}],
-        status=200,
-    )
-    assert [data.id for data in project.training_data(filters={"name": "thingo"})] == ["hello"]
+    assert [data.id for data in project.data] == ["first", "second"]
 
 
 @responses.activate

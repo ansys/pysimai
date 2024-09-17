@@ -27,7 +27,6 @@ from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
-from ansys.simai.core.utils.filter_endpoints import to_raw_filters
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.global_coefficients_requests import (
@@ -35,7 +34,6 @@ if TYPE_CHECKING:
         ComputeGlobalCoefficient,
     )
     from ansys.simai.core.data.training_data import TrainingData
-    from ansys.simai.core.utils.filter_endpoints import Filters
 
 EXTRA_CALCULETTE_FIELDS = ["Area", "Normals", "Centroids"]
 
@@ -101,10 +99,10 @@ class Project(DataModel):
         self._client._api.update_project(self.id, name=new_name)
         self.reload()
 
-    def training_data(self, filters: Optional["Filters"] = None) -> List["TrainingData"]:
+    @property
+    def data(self) -> List["TrainingData"]:
         """List of all :class:`~ansys.simai.core.data.training_data.TrainingData` instances in the project."""
-        raw_filters = to_raw_filters(filters)
-        raw_td_list = self._client._api.iter_training_data_in_project(self.id, filters=raw_filters)
+        raw_td_list = self._client._api.iter_training_data_in_project(self.id)
         return [
             self._client.training_data._model_from(training_data) for training_data in raw_td_list
         ]
