@@ -78,18 +78,17 @@ def handle_http_errors(response: requests.Response) -> None:
 
 
 @overload
-def handle_response(response: requests.Response, return_json: Literal[True]) -> JSON:
-    ...
+def handle_response(response: requests.Response, return_json: Literal[True]) -> JSON: ...
 
 
 @overload
-def handle_response(response: requests.Response, return_json: Literal[False]) -> requests.Response:
-    ...
+def handle_response(
+    response: requests.Response, return_json: Literal[False]
+) -> requests.Response: ...
 
 
 @overload
-def handle_response(response: requests.Response, return_json: bool) -> APIResponse:
-    ...
+def handle_response(response: requests.Response, return_json: bool) -> APIResponse: ...
 
 
 def handle_response(response: requests.Response, return_json: bool = True) -> APIResponse:

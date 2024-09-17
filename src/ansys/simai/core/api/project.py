@@ -20,10 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict, Iterator
-from urllib.parse import quote
+from typing import TYPE_CHECKING, Any, Dict, Iterator, Union
+from urllib.parse import quote, urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+
+if TYPE_CHECKING:
+    from ansys.simai.core.utils.filter_endpoints import RawFilters
 
 
 class ProjectClientMixin(ApiClientMixin):
@@ -50,8 +53,13 @@ class ProjectClientMixin(ApiClientMixin):
         request_json["name"] = name
         self._patch(f"projects/{project_id}", json=request_json, return_json=False)
 
-    def iter_training_data_in_project(self, project_id: str) -> Iterator[Dict[str, Any]]:
+    def iter_training_data_in_project(
+        self, project_id: str, filters: Union["RawFilters", None]
+    ) -> Iterator[Dict[str, Any]]:
         next_page = f"projects/{project_id}/data"
+        query = urlencode([("filter[]", f) for f in (filters or [])])
+        if query:
+            next_page += f"?{query}"
         while next_page:
             page_request = self._get(next_page, return_json=False)
             next_page = page_request.links.get("next", {}).get("url")
