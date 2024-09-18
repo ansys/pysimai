@@ -183,11 +183,9 @@ class Range:
         ):
             return False
         # if max, value <= max
-        if self.max is not None and not is_smaller_or_equal_with_tolerance(
+        return self.max is None or is_smaller_or_equal_with_tolerance(
             value, self.max, tolerance=self.tolerance
-        ):
-            return False
-        return True
+        )
 
 
 class _HollowRange(Range):
@@ -206,11 +204,9 @@ class _HollowRange(Range):
     def match_value(self, value: float):
         if not super().match_value(value):
             return False
-        if self.excluded_value is not None and is_equal_with_tolerance(
+        return self.excluded_value is None or not is_equal_with_tolerance(
             value, self.excluded_value, tolerance=self.tolerance
-        ):
-            return False
-        return True
+        )
 
 
 @contextmanager
