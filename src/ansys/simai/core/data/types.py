@@ -24,7 +24,7 @@ import io
 import os
 import pathlib
 from contextlib import contextmanager
-from enum import StrEnum
+from enum import Enum
 from numbers import Number
 from typing import (
     TYPE_CHECKING,
@@ -283,7 +283,7 @@ def get_object_from_identifiable(
         raise InvalidArguments(f"Argument {identifiable} is neither a data model nor an ID string.")
 
 
-class SubsetEnum(StrEnum):
+class SubsetEnum(str, Enum):
     """:obj:`SubsetEnum`: enumeration of possible subsets TrainingData can belong to if any."""
 
     TRAINING = "Training"
