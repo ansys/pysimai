@@ -62,7 +62,7 @@ class _AuthTokens(BaseModel):
     def expires_in_to_datetime(cls, data: Any) -> dict:
         assert isinstance(data, dict)
         if "expiration" not in data:
-            # We want and store "expiration" but API responses contain "expires_in"
+            # We want to store "expiration" but API responses contains "expires_in"
             now = datetime.now(timezone.utc)
             data["expiration"] = now + timedelta(seconds=int(data["expires_in"]))
             data["refresh_expiration"] = now + timedelta(seconds=int(data["refresh_expires_in"]))
@@ -86,7 +86,7 @@ class _AuthTokens(BaseModel):
 
 
 class _AuthTokensRetriever:
-    """Class who's sole purpose is ``get_tokens()``.
+    """Retrieve tokens via ``get_tokens()``.
     It handles caching and the various auth token sources.
     """
 
@@ -170,7 +170,7 @@ class _AuthTokensRetriever:
     def _schedule_auth_refresh(self, refresh_expires_in: float):
         """Schedule authentication refresh to avoids refresh token expiring if the client is idle for a long time."""
         if refresh_expires_in <= self.REFRESH_BUFFER:
-            # if the refresh token expires this soon it means we are reaching max sso session lifespan
+            # Skip scheduling: refresh token too close to expiration (max SSO session nearly reached)
             return
         self.refresh_timer.cancel()
         self.refresh_timer = threading.Timer(
