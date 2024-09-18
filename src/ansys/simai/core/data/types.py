@@ -288,10 +288,3 @@ class SubsetEnum(StrEnum):
 
     TRAINING = "Training"
     TEST = "Test"
-
-
-class ConfidenceEnum(StrEnum):
-    """:obj:`ConfidenceEnum`: enumeration of possible confidence scores."""
-
-    HIGH = "high"
-    LOW = "low"

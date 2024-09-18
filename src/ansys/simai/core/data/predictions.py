@@ -28,13 +28,11 @@ from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.post_processings import PredictionPostProcessings
 from ansys.simai.core.data.types import (
     BoundaryConditions,
-    ConfidenceEnum,
     Identifiable,
     build_boundary_conditions,
     get_id_from_identifiable,
 )
 from ansys.simai.core.data.workspaces import Workspace
-from ansys.simai.core.errors import InvalidArguments
 
 logger = logging.getLogger(__name__)
 
@@ -88,21 +86,19 @@ class Prediction(ComputableDataModel):
         return self._post_processings
 
     @property
-    def confidence_score(self) -> ConfidenceEnum:
+    def confidence_score(self) -> Optional[str]:
         """Confidence score, which is either ``high`` or ``low``.
 
         This method blocks until the confidence score is computed.
         """
         self.wait()
         confidence_score = self.fields["confidence_score"]
-        if confidence_score is not None and confidence_score not in [
-            e.value for e in ConfidenceEnum
-        ]:
-            raise InvalidArguments("Must be None or one of: 'high', 'low'.")
+        if confidence_score is not None and confidence_score not in ["high", "low"]:
+            raise ValueError("Must be None or one of: 'high', 'low'.")
         return confidence_score
 
     @property
-    def raw_confidence_score(self) -> float:
+    def raw_confidence_score(self) -> Optional[float]:
         """Raw confidence score, a float.
 
         This method blocks until the confidence score is computed.

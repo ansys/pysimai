@@ -24,7 +24,6 @@ import pytest
 import responses
 
 from ansys.simai.core.data.geometries import Geometry
-from ansys.simai.core.errors import InvalidArguments
 
 
 def test_prediction_failure(simai_client):
@@ -206,6 +205,6 @@ def test_confidence_score(prediction_factory):
     assert prediction.confidence_score == "high"
     assert prediction.raw_confidence_score == 0.94
     assert empty_prediction.confidence_score == empty_prediction.raw_confidence_score is None
-    with pytest.raises(InvalidArguments) as exc:
+    with pytest.raises(ValueError) as exc:
         assert bad_prediction.confidence_score
     assert str(exc.value) == "Must be None or one of: 'high', 'low'."
