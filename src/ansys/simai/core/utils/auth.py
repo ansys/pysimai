@@ -32,6 +32,7 @@ from typing import Any, ClassVar, Optional
 from urllib.parse import urljoin
 
 import requests
+from filelock import FileLock
 from pydantic import BaseModel, ValidationError, computed_field, model_validator
 from requests.auth import AuthBase
 from requests.models import PreparedRequest
@@ -117,7 +118,7 @@ class _AuthTokensRetriever:
         return None
 
     def _request_token_direct_grant(self) -> "_AuthTokens":
-        logger.debug("Getting authentication tokens.")
+        logger.debug("request authentication tokens via direct grant")
         assert self.credentials
         request_params = {
             "client_id": "sdk",
@@ -130,6 +131,7 @@ class _AuthTokensRetriever:
         )
 
     def _request_token_device_auth(self) -> "_AuthTokens":
+        logger.debug("request authentication tokens via device auth")
         auth_codes = handle_response(
             self.session.post(self.device_auth_url, data={"client_id": "sdk", "scope": "openid"})
         )
@@ -137,7 +139,10 @@ class _AuthTokensRetriever:
             f"Go to {auth_codes['verification_uri']} and enter the code {auth_codes['user_code']}"
         )
         webbrowser.open(auth_codes["verification_uri_complete"])
+        # loop will exit when auth server returns "400 Device code is expired"
         while True:
+            # polling can't be faster or auth server returns HTTP 400 Slow down
+            time.sleep(5)
             validation = self.session.post(
                 self.token_url,
                 headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -149,8 +154,6 @@ class _AuthTokensRetriever:
             )
             if b"authorization_pending" not in validation.content:
                 return _AuthTokens(**handle_response(validation))
-            # polling can't be faster or auth server returns HTTP 400 Slow down
-            time.sleep(5)
 
     def _refresh_auth_token(self, refresh_token: str) -> Optional[_AuthTokens]:
         logger.debug("Refreshing authentication tokens.")
@@ -180,21 +183,23 @@ class _AuthTokensRetriever:
         self.refresh_timer.start()
 
     def get_tokens(self, force_refresh=False) -> _AuthTokens:
-        cache_is_outdated = False
         auth = self._get_token_from_cache()
-        if auth:
-            if auth.is_refresh_token_expired():
+        if auth and not auth.is_token_expired() and not force_refresh:
+            # fast path: avoid locking the tokens, return early
+            self._schedule_auth_refresh(auth.refresh_expires_in)
+            return auth
+        with FileLock(self.cache_file_path + ".lock", timeout=600):
+            # slow path: tokens are locked, will get refreshed
+            auth = self._get_token_from_cache()  # might have changed while we waited the lock
+            if auth and auth.is_refresh_token_expired():
                 auth = None
-            elif force_refresh or auth.is_token_expired():
+            if auth and (force_refresh or auth.is_token_expired()):
                 auth = self._refresh_auth_token(auth.refresh_token)
-                cache_is_outdated = True
-        if auth is None:
-            if self.credentials:
-                auth = self._request_token_direct_grant()
-            else:
-                auth = self._request_token_device_auth()
-            cache_is_outdated = True
-        if cache_is_outdated and self.cache_file_path:
+            if auth is None:
+                if self.credentials:
+                    auth = self._request_token_direct_grant()
+                else:
+                    auth = self._request_token_device_auth()
             with open(self.cache_file_path + "~", "w") as f:
                 f.write(auth.model_dump_json())
             # rename is atomic
@@ -219,7 +224,9 @@ class Authenticator(AuthBase):
         self.tokens_retriever = _AuthTokensRetriever(
             config.credentials, session, auth_hash, self._realm_url
         )
-        self.tokens_retriever.get_tokens()  # start fetching/refreshing auth tokens
+        self.tokens_retriever.get_tokens(
+            force_refresh=True
+        )  # start fetching/refreshing auth tokens
 
     def __call__(self, request: PreparedRequest) -> PreparedRequest:
         """Call to prepare the requests.

@@ -38,6 +38,7 @@ dependencies = [
     "sseclient-py>=1.8.0,<3",
     "wakepy>=0.8.0",
     "tqdm>=4.66.1",
+    "filelock>=3.10.7",
 ]
 
 [project.module]
