@@ -179,13 +179,13 @@ class _AuthTokensRetriever:
         self.refresh_timer.daemon = True
         self.refresh_timer.start()
 
-    def get_tokens(self, fresh_token=False) -> _AuthTokens:
+    def get_tokens(self, force_refresh=False) -> _AuthTokens:
         cache_is_outdated = False
         auth = self._get_token_from_cache()
         if auth:
             if auth.is_refresh_token_expired():
                 auth = None
-            elif fresh_token or auth.is_token_expired():
+            elif force_refresh or auth.is_token_expired():
                 auth = self._refresh_auth_token(auth.refresh_token)
                 cache_is_outdated = True
         if auth is None:
@@ -241,7 +241,7 @@ class Authenticator(AuthBase):
             is_request_multipart_data = "multipart/form_data" in request.headers.get(
                 "Content-Type", ""
             )
-            auth = self.tokens_retriever.get_tokens(fresh_token=is_request_multipart_data)
+            auth = self.tokens_retriever.get_tokens(force_refresh=is_request_multipart_data)
             request.headers["Authorization"] = f"Bearer {auth.access_token}"
             request.headers["X-Org"] = self._organization_name
         return request
