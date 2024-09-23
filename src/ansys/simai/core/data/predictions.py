@@ -93,8 +93,8 @@ class Prediction(ComputableDataModel):
         """
         self.wait()
         confidence_score = self.fields["confidence_score"]
-        if confidence_score is not None and confidence_score not in ["high", "low"]:
-            raise ValueError("Must be None or one of: 'high', 'low'.")
+        if confidence_score not in ["high", "low", None]:
+            raise ValueError("Must be None or one of: 'high', 'low', None.")
         return confidence_score
 
     @property
@@ -104,8 +104,7 @@ class Prediction(ComputableDataModel):
         This method blocks until the confidence score is computed.
         """
         self.wait()
-        raw_score = self.fields["raw_confidence_score"]
-        return round(raw_score, 2) if isinstance(raw_score, float) else raw_score
+        return self.fields["raw_confidence_score"]
 
     def delete(self) -> None:
         """Remove a prediction from the server."""
