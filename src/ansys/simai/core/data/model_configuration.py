@@ -440,7 +440,13 @@ class ModelConfiguration:
         if self.global_coefficients is not None:
             gcs = [asdict(gc) for gc in self.global_coefficients]
 
-        surface_pp_input_fld = self.pp_input.surface or []
+        surface_pp_input_fld = []
+        if self.pp_input.surface is not None:
+            surface_pp_input_fld = [
+                fd
+                for fd in sample_metadata.get("surface").get("fields")
+                if fd.get("name") in self.pp_input.surface
+            ]
 
         flds = {
             "surface": surface_fld,

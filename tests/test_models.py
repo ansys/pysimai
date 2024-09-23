@@ -550,7 +550,7 @@ def test_post_process_input(simai_client):
     model_conf_dict["fields"]["surface_pp_input"] = [
         {
             "keys": None,
-            "name": pp_input.surface,
+            "name": "TurbulentViscosity",
             "unit": None,
             "format": "value",
             "location": "cell",
@@ -575,7 +575,10 @@ def test_post_process_input(simai_client):
     build_model: Model = simai_client.models.build(config_with_pp_input)
 
     assert config_with_pp_input.pp_input.surface == pp_input.surface
-    assert config_with_pp_input._to_payload()["fields"]["surface_pp_input"] == pp_input.surface
+    assert (
+        config_with_pp_input._to_payload()["fields"]["surface_pp_input"]
+        == model_conf_dict["fields"]["surface_pp_input"]
+    )
     assert build_model.configuration.pp_input.surface == pp_input.surface
     assert (
         build_model.fields["configuration"]["fields"]["surface_pp_input"]
