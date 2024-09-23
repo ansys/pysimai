@@ -26,7 +26,7 @@ from urllib.parse import urlencode
 from ansys.simai.core.api.mixin import ApiClientMixin
 
 if TYPE_CHECKING:
-    from ansys.simai.core.utils.filter_endpoints import RawFilters
+    from ansys.simai.core.data.types import RawFilters
 
 
 class TrainingDataClientMixin(ApiClientMixin):

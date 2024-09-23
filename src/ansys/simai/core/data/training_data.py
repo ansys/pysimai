@@ -25,21 +25,21 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.types import (
+    Filters,
     Identifiable,
     MonitorCallback,
     NamedFile,
     Path,
     SubsetEnum,
     get_id_from_identifiable,
+    to_raw_filters,
     unpack_named_file,
 )
 from ansys.simai.core.errors import InvalidArguments
-from ansys.simai.core.utils.filter_endpoints import to_raw_filters
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
     from ansys.simai.core.data.training_data_parts import TrainingDataPart
-    from ansys.simai.core.utils.filter_endpoints import Filters
 
 
 def _upload_training_data_part(id, named_part, client, monitor_callback):
@@ -219,8 +219,11 @@ class TrainingDataDirectory(Directory[TrainingData]):
 
     _data_model = TrainingData
 
-    def list(self, filters: Optional["Filters"] = None) -> List[TrainingData]:
+    def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
         """List all :class:`TrainingData` objects on the server.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
 
         Returns:
             List of all :class:`TrainingData` objects on the server.

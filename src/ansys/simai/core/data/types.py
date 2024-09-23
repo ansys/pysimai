@@ -34,8 +34,10 @@ from typing import (
     Dict,
     Generator,
     List,
+    Literal,
     Optional,
     Tuple,
+    TypedDict,
     Union,
 )
 
@@ -284,3 +286,31 @@ class SubsetEnum(str, Enum):
 
     TRAINING = "Training"
     TEST = "Test"
+
+
+class RawSingleFilter(TypedDict):
+    field: str
+    operator: "FilterOperator"
+    value: Any
+
+
+FilterOperator = Literal["EQ", "LIKE", "IN", "GT", "GTE", "LT", "LTE"]
+RawFilters = list[RawSingleFilter]
+Filters = Union[dict[str, Any], list[tuple[str, FilterOperator, Any]], RawFilters]
+"""
+Filters type for ``list()`` endpoints that support them.
+
+The simplified ``Filters`` syntax (only for ``EQ`` filters) is: ``{"name": "my-experiment"}``.
+The full syntax is: ``[("name", "LIKE", "%thingy%"), ("size", "GT", 9000)]``.
+In both cases, the conditions are ``AND`` together.
+"""
+
+
+def to_raw_filters(filters: Optional["Filters"]) -> Optional["RawFilters"]:
+    match filters:
+        case dict():
+            return [{"field": k, "operator": "EQ", "value": v} for k, v in filters.items()]
+        case [dict(), *_]:
+            return filters
+        case [tuple() | list(), *_]:
+            return [{"field": fld, "operator": op, "value": val} for fld, op, val in filters]
