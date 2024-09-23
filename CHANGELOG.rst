@@ -11,7 +11,7 @@ New:
 - `build_preset` option in :py:class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>` can now be one of `debug`, `1_day`, `2_days`, `7_days`.
 - Model Evaluation Report data (csv file) can now be downloaded with :py:meth:`download_mer_data<ansys.simai.core.data.workspaces.Workspace.download_mer_data>`.
 - Typing improvements; introducing `JSON` type is introduced and `APIResponse` type is updated to include `JSON` type.
-- New property :py:meth:`<ansys.simai.core.data.predictions.Prediction.raw_confidence_score>` is added to :py:class:`<ansys.simai.core.data.predictions.Prediction>`, which returns the raw confidence score.
+- New property :py:meth:`Prediction.raw_confidence_score<ansys.simai.core.data.predictions.Prediction.raw_confidence_score>` is added to :py:class:`Prediction<ansys.simai.core.data.predictions.Prediction>`, which returns the raw confidence score.
 
 Fix:
 
