@@ -86,13 +86,25 @@ class Prediction(ComputableDataModel):
         return self._post_processings
 
     @property
-    def confidence_score(self) -> str:
+    def confidence_score(self) -> Optional[str]:
         """Confidence score, which is either ``high`` or ``low``.
 
         This method blocks until the confidence score is computed.
         """
         self.wait()
-        return self.fields["confidence_score"]
+        confidence_score = self.fields["confidence_score"]
+        if confidence_score not in ["high", "low", None]:
+            raise ValueError("Must be None or one of: 'high', 'low', None.")
+        return confidence_score
+
+    @property
+    def raw_confidence_score(self) -> Optional[float]:
+        """Raw confidence score, a float.
+
+        This method blocks until the confidence score is computed.
+        """
+        self.wait()
+        return self.fields["raw_confidence_score"]
 
     def delete(self) -> None:
         """Remove a prediction from the server."""
