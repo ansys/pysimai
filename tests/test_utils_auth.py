@@ -22,8 +22,11 @@
 #
 # ruff: noqa: S105, S106
 
+import copy
 import json
 import time
+from datetime import datetime, timezone
+from math import ceil
 
 import pytest
 import requests
@@ -31,27 +34,23 @@ import responses
 from responses.matchers import urlencoded_params_matcher
 
 from ansys.simai.core.errors import SimAIError
-from ansys.simai.core.utils.auth import (
-    Authenticator,
-    _AuthTokens,
-    _get_cached_or_request_device_auth,
-)
+from ansys.simai.core.utils.auth import Authenticator, _AuthTokens, _AuthTokensRetriever
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
 
 DEFAULT_TOKENS = {
     "access_token": "check",
-    "expires_in": 6,
+    "expires_in": 60,
     "refresh_expires_in": 1800,
     "refresh_token": "kaboom",
 }
 
 
 @responses.activate
-def test_request_auth_tokens_direct_grant():
-    default_params = {"client_id": "sdk", "grant_type": "password", "scope": "openid"}
+def test_request_auth_tokens_direct_grant_bad_credentials_raises(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
     responses.add(
         responses.POST,
-        "http://myauthserver.com/",
+        "http://myauthserver.com/protocol/openid-connect/token",
         json={
             "error": "invalid_grant",
             "error_description": "Invalid user credentials",
@@ -59,36 +58,107 @@ def test_request_auth_tokens_direct_grant():
         status=401,
         match=[
             urlencoded_params_matcher(
-                dict({"username": "macron", "password": "explosion"}, **default_params)
+                {
+                    "username": "macron",
+                    "password": "explosion",
+                    "client_id": "sdk",
+                    "grant_type": "password",
+                    "scope": "openid",
+                }
             )
         ],
     )
+    tokens_retriever = _AuthTokensRetriever(
+        credentials=None,
+        session=requests.Session(),
+        realm_url="http://myauthserver.com",
+        auth_cache_hash="rando",
+    )
+    with pytest.raises(SimAIError, match="Invalid user credentials"):
+        tokens_retriever.credentials = Credentials(username="macron", password="explosion")
+        tokens_retriever.get_tokens()
 
-    with pytest.raises(SimAIError):
-        _AuthTokens.from_request_direct_grant(
-            session=requests.Session(),
-            token_url="http://myauthserver.com/",
-            creds=Credentials(username="macron", password="explosion"),
-        )
 
+@responses.activate
+def test_request_auth_tokens_direct_grant(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
     responses.add(
         responses.POST,
-        "http://myauthserver.com/",
+        "http://myauthserver.com/protocol/openid-connect/token",
         json=DEFAULT_TOKENS,
         status=200,
-        match=[urlencoded_params_matcher(dict({"username": "timmy"}, **default_params))],
+        match=[
+            urlencoded_params_matcher(
+                {
+                    "username": "timmy",
+                    "client_id": "sdk",
+                    "grant_type": "password",
+                    "scope": "openid",
+                }
+            )
+        ],
     )
-
-    tokens = _AuthTokens.from_request_direct_grant(
+    tokens_retriever = _AuthTokensRetriever(
+        credentials=None,
         session=requests.Session(),
-        token_url="http://myauthserver.com/",
-        creds=Credentials(username="timmy", password=""),
+        realm_url="http://myauthserver.com",
+        auth_cache_hash="rando",
     )
-    tokens_dict = tokens.dict()
-    tokens_dict.pop("cache_file")
-    tokens_dict.pop("expiration")
-    tokens_dict.pop("refresh_expiration")
-    assert tokens_dict == DEFAULT_TOKENS
+    tokens_retriever.credentials = Credentials(username="timmy", password="")
+    tokens = tokens_retriever.get_tokens()
+    assert tokens.refresh_token == DEFAULT_TOKENS["refresh_token"]
+    assert tokens.access_token == DEFAULT_TOKENS["access_token"]
+
+
+@responses.activate
+def test_token_refresh_failure_triggers_reauth(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
+    resps_refresh = responses.add(
+        responses.POST,
+        "http://myauthserver.com/protocol/openid-connect/token",
+        status=418,
+        match=[
+            urlencoded_params_matcher(
+                {"client_id": "sdk", "grant_type": "refresh_token", "refresh_token": "revoked"}
+            )
+        ],
+    )
+    resps_direct_grant = responses.add(
+        responses.POST,
+        "http://myauthserver.com/protocol/openid-connect/token",
+        json=DEFAULT_TOKENS,
+        status=200,
+        match=[
+            urlencoded_params_matcher(
+                {
+                    "username": "timmy",
+                    "client_id": "sdk",
+                    "grant_type": "password",
+                    "scope": "openid",
+                }
+            )
+        ],
+    )
+    with open(tmpdir / "tokens-rando.json", "w") as f:
+        f.write(
+            _AuthTokens(
+                access_token="",
+                expires_in=0,
+                refresh_expires_in=999,
+                refresh_token="revoked",
+            ).model_dump_json()
+        )
+    tokens_retriever = _AuthTokensRetriever(
+        credentials=Credentials(username="timmy", password=""),
+        session=requests.Session(),
+        realm_url="http://myauthserver.com",
+        auth_cache_hash="rando",
+    )
+    tokens = tokens_retriever.get_tokens()
+    assert tokens.refresh_token == DEFAULT_TOKENS["refresh_token"]
+    assert tokens.access_token == DEFAULT_TOKENS["access_token"]
+    assert resps_refresh.call_count == 1
+    assert resps_direct_grant.call_count == 1
 
 
 @responses.activate
@@ -99,24 +169,25 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir):
     AND requests a device auth flow if the token is invalid
     """
     webbrowser_open = mocker.patch("webbrowser.open")
-    mocker.patch("ansys.simai.core.utils.files.get_cache_dir", return_value=tmpdir)
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
     refresh_token = "spaghetti"
     device_code = "foxtrot uniform charlie kilo"
-    token_url = "http://myauthserver.com/get-token"
-    device_auth_url = "http://myauthserver.com/device-auth"
-
+    realm_url = "http://myauthserver.com/my-realm"
+    token_retriever = _AuthTokensRetriever(
+        credentials=None, session=requests.Session(), realm_url=realm_url, auth_cache_hash="lol"
+    )
     fake_cache = _AuthTokens(
         access_token="",
-        expires_in="0",
-        refresh_expires_in="999",
+        expires_in=0,
+        refresh_expires_in=999,
         refresh_token=refresh_token,
     )
     with open(tmpdir / "tokens-lol.json", "w") as f:
-        json.dump(fake_cache.json(), f)
+        json.dump(fake_cache.model_dump_json(), f)
 
     responses.add(  # error when app tries to use invalidated cached token
         responses.POST,
-        token_url,
+        token_retriever.token_url,
         json={"poop": "Ur token down the drain"},
         status=418,
         match=[
@@ -131,7 +202,7 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir):
     )
     responses.add(  # device-auth flow start
         responses.POST,
-        device_auth_url,
+        token_retriever.device_auth_url,
         json={
             "verification_uri": "nope",
             "user_code": "abcdefg",
@@ -143,7 +214,7 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir):
     )
     responses.add(  # device-auth flow end
         responses.POST,
-        token_url,
+        token_retriever.token_url,
         json=DEFAULT_TOKENS,
         status=200,
         match=[
@@ -156,54 +227,37 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir):
             )
         ],
     )
-    tokens = _get_cached_or_request_device_auth(
-        session=requests.Session(),
-        device_auth_url=device_auth_url,
-        token_url=token_url,
-        auth_cache_hash="lol",
-    )
+
+    tokens = token_retriever.get_tokens()
     webbrowser_open.assert_called_with("nope?code=abcdefg")
-    tokens_dict = tokens.dict()
-    tokens_dict.pop("cache_file")
-    tokens_dict.pop("expiration")
-    tokens_dict.pop("refresh_expiration")
-    assert tokens_dict == DEFAULT_TOKENS
+    assert tokens.access_token == DEFAULT_TOKENS["access_token"]
+    assert tokens.refresh_token == DEFAULT_TOKENS["refresh_token"]
+    assert ceil(tokens.expires_in) == DEFAULT_TOKENS["expires_in"]
+    assert ceil(tokens.refresh_expires_in) == DEFAULT_TOKENS["refresh_expires_in"]
 
 
 @responses.activate
-def test_refresh_auth_tokens():
-    tokens_dict = DEFAULT_TOKENS.copy()
-    tokens_dict["refresh_token"] = "kabam"
-    final_tokens = _AuthTokens(**tokens_dict, cache_file=None)
+def test_refresh_auth_tokens(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
+    base_token = copy.deepcopy(DEFAULT_TOKENS)
+    base_token["refresh_token"] = "kabam"
+    final_token = copy.deepcopy(base_token)
+    final_token["access_token"] = "new tok"
 
-    responses.add(
-        responses.POST,
-        "http://myauthserver.com/",
-        json={
-            "error": "invalid_grant",
-            "error_description": "Invalid user credentials",
-        },
-        status=401,
-        match=[
-            urlencoded_params_matcher(
-                {
-                    "client_id": "sdk",
-                    "grant_type": "refresh_token",
-                    "refresh_token": "gabuzomeu",
-                }
-            )
-        ],
+    expired_token = _AuthTokens.model_validate(copy.deepcopy(base_token))
+    expired_token.expiration = datetime(year=1970, month=1, day=1, tzinfo=timezone.utc)
+    token_retriever = _AuthTokensRetriever(
+        credentials=None,
+        session=requests.Session(),
+        realm_url="http://myauthserver.com",
+        auth_cache_hash="popo",
     )
-
-    with pytest.raises(SimAIError):
-        final_tokens.refresh(requests.Session(), "http://myauthserver.com/")
-
-    tokens_dict["access_token"] = "new_tok"
+    token_retriever._get_token_from_cache = lambda: expired_token
 
     responses.add(
         responses.POST,
-        "http://myauthserver.com/",
-        json=tokens_dict,
+        "http://myauthserver.com/protocol/openid-connect/token",
+        json=final_token,
         status=200,
         match=[
             urlencoded_params_matcher(
@@ -216,20 +270,17 @@ def test_refresh_auth_tokens():
         ],
     )
 
-    final_tokens = final_tokens.refresh(requests.Session(), "http://myauthserver.com/").dict()
-    # Remove extra vars we don't want to check from the result
-    final_tokens.pop("cache_file")
-    final_tokens.pop("expiration")
-    final_tokens.pop("refresh_expiration")
-    assert final_tokens == tokens_dict
+    fetched_token = token_retriever.get_tokens()
+    assert fetched_token.access_token == final_token["access_token"]
+    assert fetched_token.refresh_token == final_token["refresh_token"]
 
 
 @responses.activate
-def test_authenticator_automatically_refreshes_auth_before_requests_if_needed():
+def test_authenticator_automatically_refreshes_auth_before_requests_if_needed(mocker, tmpdir):
     with responses.RequestsMock(assert_all_requests_are_fired=True) as rsps:
         # Authentication request
-        auth_tokens = DEFAULT_TOKENS.copy()
-        auth_tokens["expires_in"] = 6
+        auth_tokens = copy.deepcopy(DEFAULT_TOKENS)
+        auth_tokens["expires_in"] = 1
         auth_tokens["refresh_expires_in"] = 1800
         rsps.add(
             responses.POST,
@@ -249,7 +300,7 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed():
             ],
         )
         # Token refresh request
-        refresh_tokens = DEFAULT_TOKENS.copy()
+        refresh_tokens = copy.deepcopy(DEFAULT_TOKENS)
         refresh_tokens["access_token"] = "check 1 2"
         refresh_tokens["refresh_token"] = "megazaur"
         rsps.add(
@@ -268,90 +319,84 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed():
             ],
         )
 
+        mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
+        mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
         auth = Authenticator(
             ClientConfig(
                 url="https://simai.ansys.com",
                 organization="13_monkeys",
                 credentials=Credentials(username="timmy", password="key"),
-                disable_cache=True,
             ),
             requests.Session(),
         )
-        request = requests.Request("GET", "https://simai.ansys.com/v2/models", auth=auth).prepare()
-        assert request.headers.get("Authorization") == "Bearer check"
-        assert request.headers.get("X-Org") == "13_monkeys"
-
-        time.sleep(2)
 
         request = requests.Request("GET", "https://simai.ansys.com/v2/models", auth=auth).prepare()
-
         assert request.headers.get("Authorization") == "Bearer check 1 2"
         assert request.headers.get("X-Org") == "13_monkeys"
 
 
 @responses.activate
-def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires():
-    with responses.RequestsMock(assert_all_requests_are_fired=True) as rsps:
-        # Authentication request
-        auth_tokens = DEFAULT_TOKENS.copy()
-        auth_tokens["access_token"] = "monkey-see"
-        auth_tokens["expires_in"] = 1
-        auth_tokens["refresh_expires_in"] = 31
-        rsps.add(
-            responses.POST,
-            "https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
-            json=auth_tokens,
-            status=200,
-            match=[
-                urlencoded_params_matcher(
-                    {
-                        "client_id": "sdk",
-                        "grant_type": "password",
-                        "scope": "openid",
-                        "username": "timmy",
-                        "password": "key",
-                    }
-                )
-            ],
-        )
-        # Token refresh request
-        refreshed_tokens = DEFAULT_TOKENS.copy()
-        refreshed_tokens["access_token"] = "TFou"
-        rsps.add(
-            responses.POST,
-            "https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
-            json=refreshed_tokens,
-            status=200,
-            match=[
-                urlencoded_params_matcher(
-                    {
-                        "client_id": "sdk",
-                        "grant_type": "refresh_token",
-                        "refresh_token": "kaboom",
-                    }
-                )
-            ],
-        )
+def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
 
-        auth = Authenticator(
-            ClientConfig(
-                url="https://simai.ansys.com",
-                organization="14_monkeys",
-                credentials=Credentials(username="timmy", password="key"),
-                disable_cache=True,
-            ),
-            requests.Session(),
-        )
-        request = requests.Request("GET", "https://simai.ansys.com/v2/models", auth=auth).prepare()
-        assert request.headers.get("Authorization") == "Bearer TFou"
-        assert request.headers.get("X-Org") == "14_monkeys"
-
-        time.sleep(2)
-        # Refresh should have been called automatically by now, if it didn't test will fail
+    auth_tokens = copy.deepcopy(DEFAULT_TOKENS)
+    auth_tokens["access_token"] = "monkey-see"
+    auth_tokens["expires_in"] = _AuthTokens.EXPIRATION_BUFFER - 1
+    auth_tokens["refresh_expires_in"] = _AuthTokensRetriever.REFRESH_BUFFER + 1
+    resps_direct_grant = responses.add(
+        responses.POST,
+        "https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
+        json=auth_tokens,
+        status=200,
+        match=[
+            urlencoded_params_matcher(
+                {
+                    "client_id": "sdk",
+                    "grant_type": "password",
+                    "scope": "openid",
+                    "username": "timmy",
+                    "password": "key",
+                }
+            )
+        ],
+    )
+    # Token refresh request
+    refreshed_tokens = DEFAULT_TOKENS.copy()
+    refreshed_tokens["access_token"] = "TFou"
+    resps_refresh = responses.add(
+        responses.POST,
+        "https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
+        json=refreshed_tokens,
+        status=200,
+        match=[
+            urlencoded_params_matcher(
+                {
+                    "client_id": "sdk",
+                    "grant_type": "refresh_token",
+                    "refresh_token": "kaboom",
+                }
+            )
+        ],
+    )
+    Authenticator(
+        ClientConfig(
+            url="https://simai.ansys.com",
+            organization="14_monkeys",
+            credentials=Credentials(username="timmy", password="key"),
+        ),
+        requests.Session(),
+    )
+    assert resps_direct_grant.call_count == 1
+    assert resps_refresh.call_count == 0
+    time.sleep(2)
+    # Tokens are automatically refreshed so refresh token doesn't expire'
+    assert resps_direct_grant.call_count == 1
+    assert resps_refresh.call_count == 1
 
 
 @responses.activate
-def test_requests_outside_user_api_are_not_authentified():
+def test_requests_outside_user_api_are_not_authentified(mocker, tmpdir):
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
     with responses.RequestsMock(assert_all_requests_are_fired=True) as rsps:
         # Authentication request
         keycloak_response_json = DEFAULT_TOKENS.copy()
@@ -367,7 +412,6 @@ def test_requests_outside_user_api_are_not_authentified():
                 url="https://simai.ansys.com",
                 organization="Justice",
                 credentials={"username": "timmy", "password": "D.A.N.C.E"},
-                disable_cache=True,
             ),
             requests.Session(),
         )

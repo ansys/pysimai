@@ -52,11 +52,11 @@ def file_path_to_obj_file(file_path: "Path", mode: str) -> IO[Any]:
 def get_cache_dir() -> pathlib.Path:
     system = platform.system()
     if system == "Windows":
-        cache_dir = pathlib.Path(os.getenv("APPDATA", "~")) / "Ansys/cache"
+        cache_dir = pathlib.Path(os.getenv("APPDATA", "~")) / "Ansys" / "cache" / "pysimai"
     elif system == "Linux":
-        cache_dir = pathlib.Path(os.getenv("XDG_CACHE_HOME", "~/.cache")) / "ansys"
+        cache_dir = pathlib.Path(os.getenv("XDG_CACHE_HOME", "~/.cache")) / "ansys" / "pysimai"
     elif system == "Darwin":
-        cache_dir = pathlib.Path("~/Library/Caches/Ansys")
+        cache_dir = pathlib.Path("~/Library/Caches/Ansys/pysimai")
     else:
         raise RuntimeError(f"Unknown OS: {system}")
     cache_dir = cache_dir.expanduser()

@@ -37,7 +37,8 @@ from ansys.simai.core.utils.files import get_cache_dir
 def test_get_cache_dir_linux(tmpdir, monkeypatch):
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmpdir))
     cache_dir = get_cache_dir()
-    assert cache_dir.absolute() == (Path(tmpdir).absolute() / "ansys")
+    expected_cache_dir = Path(tmpdir).absolute() / "ansys" / "pysimai"
+    assert cache_dir.absolute() == expected_cache_dir
     old_file = cache_dir / "old"
     new_file = cache_dir / "new"
     new_file.touch()
