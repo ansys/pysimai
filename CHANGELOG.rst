@@ -1,6 +1,22 @@
 Changelog
 ---------
 
+0.2.4 (2024-09-23)
+******************
+
+New:
+
+- Auth tokens are now cached in file system and get re-authenticated in a parallel fashion.
+- Invalid refresh token now triggers a reauth instead of crashing.
+- `build_preset` option in :py:class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>` can now be one of `debug`, `1_day`, `2_days`, `7_days`.
+- Model Evaluation Report data (csv file) can now be downloaded with :py:meth:`download_mer_data<ansys.simai.core.data.workspaces.Workspace.download_mer_data>`.
+- Typing improvements; introducing `JSON` type is introduced and `APIResponse` type is updated to include `JSON` type.
+- New property :py:meth:`<ansys.simai.core.data.predictions.Prediction.raw_confidence_score>` is added to :py:class:`<ansys.simai.core.data.predictions.Prediction>`, which returns the raw confidence score.
+
+Fix:
+
+- Fixed the error where :py:meth:`data<ansys.simai.core.data.post_processings.GlobalCoefficients.data>` was not in coordinance with the BE response. :py:meth:`data<ansys.simai.core.data.post_processings.GlobalCoefficients.data>` now runs without errors.
+
 0.2.3 (2024-08-21)
 ******************
 
