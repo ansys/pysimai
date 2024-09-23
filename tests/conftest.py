@@ -117,6 +117,8 @@ def prediction_factory(simai_client) -> Prediction:
             kwargs["geometry_id"] = geometry.id
         kwargs.setdefault("boundary_conditions", {"Vx": 10.01, "Vy": 0.0009})
         kwargs.setdefault("state", "successful")
+        kwargs.setdefault("confidence_score", None)
+        kwargs.setdefault("raw_confidence_score", None)
         prediction = simai_client._prediction_directory._model_from(kwargs)
         if post_processings is not None:
             # If we passed post-processings as parameter,

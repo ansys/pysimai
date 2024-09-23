@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import pytest
 import responses
 
 from ansys.simai.core.data.geometries import Geometry
@@ -190,3 +191,21 @@ def test_run_no_bc(simai_client, geometry_factory):
     )
     geometry = geometry_factory(id="geom-0")
     simai_client.predictions.run(geometry.id)
+
+
+@responses.activate
+def test_confidence_score(prediction_factory):
+    """WHEN accessing a Prediction's confidence score properties
+    THEN the corresponding values are returned
+    """
+    prediction = prediction_factory(confidence_score="high", raw_confidence_score=0.94107)
+    empty_prediction = prediction_factory()
+    bad_prediction = prediction_factory(confidence_score="abysmal")
+
+    assert prediction.confidence_score == "high"
+    assert prediction.raw_confidence_score == 0.94107
+    assert empty_prediction.confidence_score is None
+    assert empty_prediction.raw_confidence_score is None
+    with pytest.raises(ValueError) as exc:
+        assert bad_prediction.confidence_score
+    assert str(exc.value) == "Must be None or one of: 'high', 'low', None."
