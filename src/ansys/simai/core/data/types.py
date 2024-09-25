@@ -307,10 +307,10 @@ In both cases, the conditions are ``AND`` together.
 
 
 def to_raw_filters(filters: Optional["Filters"]) -> Optional["RawFilters"]:
-    match filters:
-        case dict():
-            return [{"field": k, "operator": "EQ", "value": v} for k, v in filters.items()]
-        case [dict(), *_]:
+    if isinstance(filters, dict):
+        return [{"field": k, "operator": "EQ", "value": v} for k, v in filters.items()]
+    if isinstance(filters, list) and len(filters) > 0:
+        if isinstance(filters[0], dict):
             return filters
-        case [tuple() | list(), *_]:
+        if isinstance(filters[0], (tuple, list)):
             return [{"field": fld, "operator": op, "value": val} for fld, op, val in filters]
