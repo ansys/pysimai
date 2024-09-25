@@ -33,6 +33,7 @@ from ansys.simai.core.data.types import (
     get_id_from_identifiable,
     get_object_from_identifiable,
     is_boundary_conditions,
+    to_raw_filters,
     unpack_named_file,
 )
 
@@ -228,3 +229,32 @@ def test_get_object_from_identifiable():
 
     assert get_object_from_identifiable(test_model, directory) == test_model
     assert get_object_from_identifiable("yo", directory) == test_model
+
+
+@pytest.mark.parametrize(
+    ("filters", "expected_raw_filters"),
+    [
+        (
+            {"name": "paul", "production_capacity": "6e34Kg"},
+            [
+                {"field": "name", "operator": "EQ", "value": "paul"},
+                {"field": "production_capacity", "operator": "EQ", "value": "6e34Kg"},
+            ],
+        ),
+        (
+            [("name", "EQ", "paul"), ("production_capacity", "GTE", 10**10)],
+            [
+                {"field": "name", "operator": "EQ", "value": "paul"},
+                {"field": "production_capacity", "operator": "GTE", "value": 10**10},
+            ],
+        ),
+        (
+            [{"field": "nofield", "operator": "GTE", "value": 9000}],
+            [{"field": "nofield", "operator": "GTE", "value": 9000}],
+        ),
+    ],
+    ids=["simple_filters", "complex_filters", "raw_filters"],
+)
+def test_to_raw_filters(filters, expected_raw_filters):
+    filters = to_raw_filters(filters)
+    assert filters == expected_raw_filters

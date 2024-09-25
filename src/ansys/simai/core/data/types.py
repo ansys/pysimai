@@ -34,8 +34,10 @@ from typing import (
     Dict,
     Generator,
     List,
+    Literal,
     Optional,
     Tuple,
+    TypedDict,
     Union,
 )
 
@@ -183,11 +185,9 @@ class Range:
         ):
             return False
         # if max, value <= max
-        if self.max is not None and not is_smaller_or_equal_with_tolerance(
+        return self.max is None or is_smaller_or_equal_with_tolerance(
             value, self.max, tolerance=self.tolerance
-        ):
-            return False
-        return True
+        )
 
 
 class _HollowRange(Range):
@@ -206,11 +206,9 @@ class _HollowRange(Range):
     def match_value(self, value: float):
         if not super().match_value(value):
             return False
-        if self.excluded_value is not None and is_equal_with_tolerance(
+        return self.excluded_value is None or not is_equal_with_tolerance(
             value, self.excluded_value, tolerance=self.tolerance
-        ):
-            return False
-        return True
+        )
 
 
 @contextmanager
@@ -288,3 +286,31 @@ class SubsetEnum(str, Enum):
 
     TRAINING = "Training"
     TEST = "Test"
+
+
+class RawSingleFilter(TypedDict):
+    field: str
+    operator: "FilterOperator"
+    value: Any
+
+
+FilterOperator = Literal["EQ", "LIKE", "IN", "GT", "GTE", "LT", "LTE"]
+RawFilters = list[RawSingleFilter]
+Filters = Union[dict[str, Any], list[tuple[str, FilterOperator, Any]], RawFilters]
+"""
+Filters type for ``list()`` endpoints that support them.
+
+The simplified ``Filters`` syntax (only for ``EQ`` filters) is: ``{"name": "my-experiment"}``.
+The full syntax is: ``[("name", "LIKE", "%thingy%"), ("size", "GT", 9000)]``.
+In both cases, the conditions are ``AND`` together.
+"""
+
+
+def to_raw_filters(filters: Optional["Filters"]) -> Optional["RawFilters"]:
+    if isinstance(filters, dict):
+        return [{"field": k, "operator": "EQ", "value": v} for k, v in filters.items()]
+    if isinstance(filters, list) and len(filters) > 0:
+        if isinstance(filters[0], dict):
+            return filters
+        if isinstance(filters[0], (tuple, list)):
+            return [{"field": fld, "operator": op, "value": val} for fld, op, val in filters]

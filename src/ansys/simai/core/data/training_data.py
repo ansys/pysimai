@@ -25,12 +25,14 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.types import (
+    Filters,
     Identifiable,
     MonitorCallback,
     NamedFile,
     Path,
     SubsetEnum,
     get_id_from_identifiable,
+    to_raw_filters,
     unpack_named_file,
 )
 from ansys.simai.core.errors import InvalidArguments
@@ -217,15 +219,19 @@ class TrainingDataDirectory(Directory[TrainingData]):
 
     _data_model = TrainingData
 
-    def list(self) -> List[TrainingData]:
+    def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
         """List all :class:`TrainingData` objects on the server.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
 
         Returns:
             List of all :class:`TrainingData` objects on the server.
         """
+        raw_filters = to_raw_filters(filters)
         return [
             self._model_from(training_data)
-            for training_data in self._client._api.iter_training_data()
+            for training_data in self._client._api.iter_training_data(filters=raw_filters)
         ]
 
     def get(self, id) -> TrainingData:

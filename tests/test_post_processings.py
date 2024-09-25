@@ -251,7 +251,7 @@ def test_post_processing_list(simai_client):
 
     pps = simai_client.post_processings.list()
     assert len(pps) == 3
-    assert ["1", "2", "3"] == [pp.id for pp in pps]
+    assert [pp.id for pp in pps] == ["1", "2", "3"]
 
 
 @responses.activate
