@@ -443,8 +443,7 @@ class ModelConfiguration:
 
         surface_pp_input_fld = []
         if self.pp_input.surface is not None:
-            sample_surface = dict_get(sample_metadata, "surface", {})
-            suface_fields = dict_get(sample_surface, "fields", default=[])
+            suface_fields = dict_get(sample_metadata, "surface", "fields", default=[])
             surface_pp_input_fld = [
                 fd for fd in suface_fields if fd.get("name") in self.pp_input.surface
             ]

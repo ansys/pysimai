@@ -39,6 +39,5 @@ def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Any]] = No
 def dict_get(obj: dict, *keys: str, default=None):
     """Get the requested key of the dictionary or opt to the default."""
     for k in keys:
-        if k:
-            obj = obj.get(k, {}) or {}
+        obj = obj.get(k, {}) or {}
     return obj or default
