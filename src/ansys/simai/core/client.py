@@ -261,8 +261,8 @@ class SimAIClient:
 
     @property
     def models(self):
-        """Representation of all workspaces on the server.
-        For more information, see :ref:`workspaces`.
+        """Representation of all models on the server.
+        For more information, see :ref:`models`.
         """
         return self._model_directory
 
