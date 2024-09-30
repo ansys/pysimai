@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.simai.core.api.design_of_experiments import DesignOfExperimentsMixin
 from ansys.simai.core.api.geometry import GeometryClientMixin
 from ansys.simai.core.api.optimization import OptimizationClientMixin
 from ansys.simai.core.api.point_cloud import PointCloudClientMixin
@@ -34,7 +33,6 @@ from ansys.simai.core.api.workspace import WorkspaceClientMixin
 
 
 class ApiClient(
-    DesignOfExperimentsMixin,
     GeometryClientMixin,
     PointCloudClientMixin,
     OptimizationClientMixin,
