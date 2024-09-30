@@ -135,7 +135,7 @@ def test_sse_event_prediction_success(sse_mixin, prediction_factory):
     assert pred.is_pending
     # Mock a SSE success event
     updated_record = pred.fields.copy()
-    updated_record.update({"state": "successful", "confidence_score": "abysmal"})
+    updated_record.update({"state": "successful", "confidence_score": "high"})
     sse_mixin._handle_sse_event(
         create_sse_event(
             f'{{"target": {{"id": "{pred.id}", "type": "prediction"}}, "type": "job", "record": {json.dumps(updated_record)}}}'
@@ -143,7 +143,7 @@ def test_sse_event_prediction_success(sse_mixin, prediction_factory):
     )
     assert not pred.is_pending
     assert pred.is_ready
-    assert pred.confidence_score == "abysmal"
+    assert pred.confidence_score == "high"
 
 
 def test_sse_event_update_prediction_failure(sse_mixin, prediction_factory):
