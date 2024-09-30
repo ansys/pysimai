@@ -131,7 +131,7 @@ class Workspace(DataModel):
         return self._client._api.download_workspace_model_evaluation_report(self.id, file)
 
     def download_mer_data(self, file: Optional[File] = None) -> Union[None, BinaryIO]:
-        """Download the the names, subsets and plotting data of the files used in the AI model and MER for the workspace.
+        """Download the names, subsets and plotting data of the files used in the AI model and MER for the workspace.
 
         Args:
             file: Binary file-object or the path of the file to put the content into.
