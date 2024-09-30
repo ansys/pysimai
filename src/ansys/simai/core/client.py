@@ -28,7 +28,6 @@ from semver.version import Version
 
 from ansys.simai.core import __version__
 from ansys.simai.core.api.client import ApiClient
-from ansys.simai.core.data.design_of_experiments import DesignOfExperimentsCollection
 from ansys.simai.core.data.geometries import GeometryDirectory
 from ansys.simai.core.data.global_coefficients_requests import (
     CheckGlobalCoefficientDirectory,
@@ -86,7 +85,6 @@ class SimAIClient:
         self._api = api_client_class(simai_client=self, config=config)
         self._check_gc_formula_directory = CheckGlobalCoefficientDirectory(client=self)
         self._compute_gc_formula_directory = ComputeGlobalCoefficientDirectory(client=self)
-        self._doe_collection = DesignOfExperimentsCollection(client=self)
         self._geometry_directory = GeometryDirectory(client=self)
         self._optimization_directory = OptimizationDirectory(client=self)
         self._optimization_trial_run_directory = OptimizationTrialRunDirectory(client=self)
@@ -244,13 +242,6 @@ class SimAIClient:
         For more information, see :ref:`projects`.
         """
         return self._project_directory
-
-    @property
-    def design_of_experiments(self):
-        """Methods for exporting design of experiments.
-        For more information, see :ref:`design_of_experiments`.
-        """
-        return self._doe_collection
 
     @property
     def workspaces(self):
