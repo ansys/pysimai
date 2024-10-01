@@ -160,7 +160,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D"]
+"tests/*" = ["D", "INP001"]
 "src/ansys/simai/core/{api,utils}/*" = ["D102"]
 
 [tool.ruff.lint.pydocstyle]

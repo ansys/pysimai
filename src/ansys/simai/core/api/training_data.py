@@ -20,9 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict, Iterable, Optional
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional
+from urllib.parse import urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+
+if TYPE_CHECKING:
+    from ansys.simai.core.data.types import RawFilters
 
 
 class TrainingDataClientMixin(ApiClientMixin):
@@ -32,8 +36,11 @@ class TrainingDataClientMixin(ApiClientMixin):
     def get_training_data(self, id: str) -> Dict[str, Any]:
         return self._get(f"training_data/{id}")
 
-    def iter_training_data(self) -> Iterable[Dict[str, Any]]:
+    def iter_training_data(self, filters: Optional["RawFilters"]) -> Iterable[Dict[str, Any]]:
         next_page = "training_data"
+        query = urlencode([("filter[]", f) for f in (filters or [])])
+        if query:
+            next_page += f"?{query}"
         while next_page:
             page_request = self._get(next_page, return_json=False)
             next_page = page_request.links.get("next", {}).get("url")
