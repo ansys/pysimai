@@ -24,6 +24,7 @@ from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, Literal, Optional
 
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
+from ansys.simai.core.utils.misc import dict_get
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
@@ -440,7 +441,12 @@ class ModelConfiguration:
         if self.global_coefficients is not None:
             gcs = [asdict(gc) for gc in self.global_coefficients]
 
-        surface_pp_input_fld = self.pp_input.surface or []
+        surface_pp_input_fld = []
+        if self.pp_input.surface is not None:
+            suface_fields = dict_get(sample_metadata, "surface", "fields", default=[])
+            surface_pp_input_fld = [
+                fd for fd in suface_fields if fd.get("name") in self.pp_input.surface
+            ]
 
         flds = {
             "surface": surface_fld,

@@ -34,3 +34,10 @@ def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Any]] = No
     if not bc:
         raise ValueError("No boundary condition was specified.")
     return bc
+
+
+def dict_get(obj: dict, *keys: str, default=None):
+    """Get the requested key of the dictionary or opt to the default."""
+    for k in keys:
+        obj = obj.get(k, {}) or {}
+    return obj or default
