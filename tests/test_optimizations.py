@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+# ruff: noqa: E731
 
 import pytest
 
@@ -31,8 +31,7 @@ def test_geometry_generation_fn_invalid_signature(simai_client):
     """WHEN a geometry_generation_fn signature does not match geometry_parameters keys
     THEN an InvalidArgument error is raised."""
 
-    def my_geometry_generation_function(param_a):
-        return "test_geometry/param_{param_a}.vtp"
+    my_geometry_generation_function = lambda param_a: f"test_geometry/param_{param_a}.vtp"
 
     geometry_parameters = {
         "param_a": {"bounds": (-12.5, 12.5)},
@@ -54,9 +53,9 @@ def test_check_geometry_generation_fn_valid_signature():
     """WHEN geometry_generation_fn signature matches geometry_parameters keys
     THEN check passes"""
 
-    def my_geometry_generation_function(param_c, param_d):
-        return "test_geometry/param_{param_c}_{param_d}.vtp"
-
+    my_geometry_generation_function = (
+        lambda param_c, param_d: f"test_geometry/param_{param_c}_{param_d}.vtp"
+    )
     geometry_parameters = {"param_c": {"bounds": (-12.5, 12.5)}, "param_d": {"choices": (0.1, 1.0)}}
 
     _check_geometry_generation_fn_signature(my_geometry_generation_function, geometry_parameters)
