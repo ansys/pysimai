@@ -29,10 +29,10 @@ class OptimizationClientMixin(ApiClientMixin):
     def define_optimization(self, workspace_id: str, optimization_parameters: Dict):
         return self._post(f"workspaces/{workspace_id}/optimizations", json=optimization_parameters)
 
-    def run_optimization_trial(self, optimization_id: str, geometry_parameters: Dict):
+    def run_optimization_trial(self, optimization_id: str, optimization_parameters: Dict):
         return self._post(
             f"optimizations/{optimization_id}/trial-runs",
-            json=geometry_parameters,
+            json=optimization_parameters,
         )
 
     def run_automorphism_trial(self, optimization_id: str):

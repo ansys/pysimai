@@ -43,12 +43,8 @@ logger = logging.getLogger(__name__)
 class Optimization(ComputableDataModel):
     """Provides the local representation of an optimization definition object."""
 
-    def _try(
-        self, geometry: Identifiable[Geometry], geometry_parameters: Dict
-    ) -> "OptimizationTrialRun":
-        return self._client._optimization_trial_run_directory._try(
-            self.id, geometry, geometry_parameters
-        )
+    def _try(self, geometry: Identifiable[Geometry], configuration: Dict) -> "OptimizationTrialRun":
+        return self._client._optimization_trial_run_directory._try(self.id, geometry, configuration)
 
 
 class OptimizationTrialRun(ComputableDataModel):
@@ -86,10 +82,9 @@ class OptimizationDirectory(Directory[Optimization]):
         """
         return self._model_from(self._client._api.get_optimization(optimization_id))
 
-    def run(
+    def run_parametric(
         self,
         geometry_generation_fn: Callable[..., NamedFile],
-        optimization_type: str,
         geometry_parameters: Dict,
         boundary_conditions: Dict[str, float],
         n_iters: int,
@@ -105,7 +100,6 @@ class OptimizationDirectory(Directory[Optimization]):
             geometry_generation_fn: Function to call to generate a new geometry
                 with the generated parameters. This parameter should return a
                 :obj:`~ansys.simai.core.data.types.NamedFile` object.
-            optimization_type: parametric or non_parametric
             geometry_parameters: Name of the geometry parameters and their bounds or possible values (choices).
             boundary_conditions: Values of the boundary conditions to perform the optimization at.
                 The values should map to existing boundary conditions in your project/workspace.
@@ -113,7 +107,7 @@ class OptimizationDirectory(Directory[Optimization]):
                 The global coefficients should map to existing coefficients in your project/workspace.
             maximize: List of global coefficients to maximize.
                 The global coefficients should map to existing coefficients in your project/workspace.
-            outcome_constraints: (parametric only) List of strings representing a linear inequality constraint
+            outcome_constraints: List of strings representing a linear inequality constraint
                 on a global coefficient. The outcome constraint should be in the form ``gc >= x``,
                 where:
 
@@ -155,7 +149,6 @@ class OptimizationDirectory(Directory[Optimization]):
                     "param_a": {"bounds": (-12.5, 12.5)},
                     "param_b": {"choices": (0, 1)},
                 },
-                optimization_type="parametric",
                 minimize=["TotalForceX"],
                 boundary_conditions={"VelocityX": 10.5},
                 outcome_constraints=["TotalForceX <= 10"],
@@ -177,15 +170,15 @@ class OptimizationDirectory(Directory[Optimization]):
         optimization_parameters = {
             "boundary_conditions": boundary_conditions,
             "geometry_generation": {
-                "type": optimization_type,
-                "details": geometry_parameters,
+                "type": "parametric",
+                "details": {
+                    "geometry_parameters": geometry_parameters,
+                    "outcome_constraints": outcome_constraints or [],
+                },
             },
             "n_iters": n_iters,
             "objective": objective,
         }
-        if optimization_type == "parametric":
-            optimization_parameters["outcome_constraints"] = outcome_constraints or []
-
         with tqdm(total=n_iters, disable=not show_progress) as progress_bar:
             progress_bar.set_description("Creating optimization definition.")
             optimization = self._model_from(
@@ -197,6 +190,9 @@ class OptimizationDirectory(Directory[Optimization]):
             iterations_results: List[Dict] = []
             with keep.running(on_fail="warn"):
                 while geometry_parameters:
+                    optimization_parameters["geometry_generation"]["details"][
+                        "geometry_parameters"
+                    ] = dict(geometry_parameters)
                     logger.debug(f"Generating geometry with parameters {geometry_parameters}.")
                     progress_bar.set_description("Generating geometry.")
                     # TODO: Somehow keep session alive for long geometry generation
@@ -211,7 +207,10 @@ class OptimizationDirectory(Directory[Optimization]):
                     )
                     logger.debug("Running trial.")
                     progress_bar.set_description("Running trial.")
-                    trial_run = optimization._try(geometry, geometry_parameters)
+                    optimization_parameters["geometry_generation"]["details"][
+                        "geometry_id"
+                    ] = get_id_from_identifiable(geometry)
+                    trial_run = optimization._try(geometry, optimization_parameters)
                     trial_run.wait()
                     iteration_result = {
                         "parameters": geometry_parameters,
@@ -229,6 +228,87 @@ class OptimizationDirectory(Directory[Optimization]):
                 progress_bar.set_description("Optimization complete.")
             return iterations_results
 
+    def run_non_parametric(
+        self,
+        geometry: Identifiable[Geometry],
+        boundary_conditions: Dict[str, float],
+        n_iters: int,
+        box_bounds_list: List[List[float]],
+        symmetries: List[str],
+        workspace: Optional[Identifiable[Workspace]] = None,
+        minimize: Optional[List[str]] = None,
+        maximize: Optional[List[str]] = None,
+        show_progress: bool = False,
+    ) -> List[Dict]:
+        """Run non-parametric optimization to automatically generate geometries.
+
+        Args:
+            geometry: Geometry object or id to automorph
+            boundary_conditions: Values of the boundary conditions to perform the optimization at.
+                The values should map to existing boundary conditions in your project/workspace.
+            n_iters: Number of iterations of the optimization loop.
+            box_bounds_list: list of the bounds of the different boxes that will define the locations
+                of the geometry to optimize.
+                The format is [
+                    [box1_xmin, box1_xmax, box1_ymin, box1_ymax, box1_zmin, box1_zmax],
+                    [box2_xmin, box2_xmax, box2_ymin, box2_ymax, box2_zmin, box2_zmax],
+                    ...
+                    ]
+            symmetries: list of symmetry axes
+            minimize: List of global coefficients to minimize.
+                The global coefficients should map to existing coefficients in your project/workspace.
+            maximize: List of global coefficients to maximize.
+                The global coefficients should map to existing coefficients in your project/workspace.
+            show_progress: Whether to print progress on stdout.
+            workspace: Workspace to run the optimization in. If a workspace is
+                not specified, the default is the configured workspace.
+        """
+        workspace_id = get_id_from_identifiable(workspace, True, self._client._current_workspace)
+        original_geometry = get_object_from_identifiable(geometry, self._client.workspaces)
+        if not minimize and not maximize:
+            raise InvalidArguments("No global coefficient to optimize.")
+        objective = {}
+        if minimize:
+            for global_coefficient in minimize:
+                objective[global_coefficient] = {"minimize": True}
+        if maximize:
+            for global_coefficient in maximize:
+                objective[global_coefficient] = {"minimize": False}
+        automorphism_configuration = {
+            "boundary_conditions": boundary_conditions,
+            "geometry_generation": {
+                "type": "non_parametric",
+                "details": {
+                    "geometry_id": original_geometry.id,
+                    "box_bounds_list": box_bounds_list,
+                    "symmetries": symmetries,
+                },
+            },
+            "n_iters": n_iters,
+            "objective": objective,
+        }
+        with tqdm(total=n_iters, disable=not show_progress) as progress_bar:
+            progress_bar.set_description("Creating non-parametric optimization definition.")
+            optimization = self._model_from(
+                self._client._api.define_optimization(workspace_id, automorphism_configuration)
+            )
+            optimization.wait()
+            geometry_parameters = optimization.fields["initial_geometry_parameters"]
+            logger.debug("Optimization defined. Starting optimization loop.")
+            iterations_results: List[Dict] = []
+            with keep.running(on_fail="warn"):
+                while geometry_parameters:
+                    logger.debug(
+                        f"Generating geometry with automorphism configuration: {automorphism_configuration}."
+                    )
+                    logger.debug("Running trial.")
+                    progress_bar.set_description("Running trial.")
+                    trial_run = optimization._try(geometry, automorphism_configuration)
+                    trial_run.wait()
+                    logger.debug("Optimization complete.")
+                    progress_bar.set_description("Optimization complete.")
+                return iterations_results
+
 
 # Undocumented for now, users don't really need to interact with it
 class OptimizationTrialRunDirectory(Directory[OptimizationTrialRun]):
@@ -242,21 +322,26 @@ class OptimizationTrialRunDirectory(Directory[OptimizationTrialRun]):
         self,
         optimization: Identifiable[Optimization],
         geometry: Identifiable[Geometry] = None,
-        geometry_parameters: Dict = None,
+        optimization_parameters: Dict = None,
     ) -> OptimizationTrialRun:
-        optimization_instance = get_object_from_identifiable(optimization)
-        if optimization_instance.parameters.get("type") == "parametric":
-            if geometry is None or geometry_parameters is None:
+        optimization_instance = get_object_from_identifiable(
+            optimization, self._client._optimization_directory
+        )
+        optimization_type = optimization_instance._fields["parameters"]["geometry_generation"].get(
+            "type"
+        )
+        if optimization_type == "parametric":
+            if geometry is None or optimization_parameters is None:
                 raise InvalidArguments(
-                    "Geometry and geometry_parameters must be specified for parametric optimization"
+                    "Geometry and optimization_parameters must be specified for parametric optimization"
                 )
-            geometry_id = get_id_from_identifiable(geometry)
             return self._model_from(
                 self._client._api.run_optimization_trial(
-                    optimization_instance.id, geometry_id, geometry_parameters
+                    optimization_instance.id,
+                    {"parameters": {"parameters": optimization_parameters}},
                 )
             )
-        elif optimization_instance.parameters.get("type") == "non_parametric":
+        elif optimization_type == "non_parametric":
             return self._model_from(
                 self._client._api.run_automorphism_trial(optimization_instance.id)
             )
