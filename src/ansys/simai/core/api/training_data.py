@@ -46,8 +46,10 @@ class TrainingDataClientMixin(ApiClientMixin):
             next_page = page_request.links.get("next", {}).get("url")
             yield from page_request.json()
 
-    def create_training_data(self, name: str, project_id: Optional[str] = None) -> Dict[str, Any]:
-        args = {"name": name}
+    def create_training_data(
+        self, name: str, service: str, project_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        args = {"name": name, "platform": service}
         if project_id:
             args["project"] = project_id
         return self._post(

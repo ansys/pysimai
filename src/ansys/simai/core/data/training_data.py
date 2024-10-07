@@ -257,7 +257,9 @@ class TrainingDataDirectory(Directory[TrainingData]):
             Created :class:`TrainingData` object.
         """
         project_id = get_id_from_identifiable(project, required=False)
-        return self._model_from(self._client._api.create_training_data(name, project_id))
+        return self._model_from(
+            self._client._api.create_training_data(name, self._client.service, project_id)
+        )
 
     def upload_part(
         self,

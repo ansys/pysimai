@@ -60,7 +60,7 @@ from ansys.simai.core.utils.typing import steal_kwargs_type
 logger = logging.getLogger(__name__)
 
 
-class SimAIClient:
+class CoreClient:
     """Provides the client for communicating with the SimAI API.
 
     For keyword arguments, see the :class:`~ansys.simai.core.utils.configuration.ClientConfig` class.
@@ -272,7 +272,7 @@ class SimAIClient:
         profile: str = "default",
         path: Optional[Path] = None,
         **kwargs,
-    ) -> "SimAIClient":
+    ) -> "CoreClient":
         """Initializes a SimAI client by reading a configuration file.
 
         You can provide the path of the configuration file to load. If no path is
@@ -355,4 +355,32 @@ class SimAIClient:
                     logger.warning(warn_template % "available")
 
 
+class SimAIClient(CoreClient):
+    """."""
+
+    def __init__(self, **kw):
+        self.__platform = "simai"
+        super().__init__(**kw)
+
+    @property
+    def service(self):
+        """The service of the object."""
+        return self.__platform
+
+
+class GeomAIClient(CoreClient):
+    """."""
+
+    def __init__(self, **kw):
+        self.__platform = "geomai"
+        super().__init__(**kw)
+
+    @property
+    def service(self):
+        """The service of the object."""
+        return self.__platform
+
+
 from_config = SimAIClient.from_config
+
+geomAI = GeomAIClient.from_config
