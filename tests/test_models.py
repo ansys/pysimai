@@ -35,7 +35,7 @@ from ansys.simai.core.data.model_configuration import (
     ModelOutput,
     PostProcessInput,
 )
-from ansys.simai.core.errors import InvalidArguments, ProcessingError
+from ansys.simai.core.errors import ApiClientError, InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.models import Model
@@ -584,3 +584,67 @@ def test_post_process_input(simai_client):
         build_model.fields["configuration"]["fields"]["surface_pp_input"]
         == model_conf_dict["fields"]["surface_pp_input"]
     )
+
+
+@responses.activate
+def test_failed_build_with_resolution(simai_client):
+    """WHEN I call launch_build() with using a new build configuration
+    THEN I get a Model object, its project_id matches the
+    id of the project, and its configuration is a
+    ModelConfiguration and its content matches the raw conf.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    lgth = ("relative_to_max", 5, 8.1)
+    wdth = ("relative_to_max", 5, 8.1)
+    hght = ("absolute", -4.5, 0.1)
+
+    doa = DomainOfAnalysis(
+        length=lgth,
+        width=wdth,
+        height=hght,
+    )
+
+    new_conf = ModelConfiguration(
+        project=project,
+        build_preset="debug",
+        domain_of_analysis=doa,
+    )
+    response_json = {
+        "status": "Conflict",
+        "errors": {
+            "fields_discrepancies": [
+                {
+                    "id": "2a324",
+                    "name": "td-987",
+                    "msg": "Missing fields: p (volume), p_rgh (volume)",
+                }
+            ]
+        },
+        "resolution": "This is a resolution.",
+    }
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/model",
+        json=response_json,
+        status=409,
+    )
+
+    with pytest.raises(ApiClientError) as e:
+        simai_client.models.build(new_conf)
+    assert "This is a resolution." in str(e.value)

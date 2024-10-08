@@ -70,7 +70,7 @@ def handle_http_errors(response: requests.Response) -> None:
                 raise NotFoundError(f"{message}", response) from e
             else:
                 raise ApiClientError(
-                    f"{response.status_code} {message}",
+                    f"{response.status_code} {message}. {json_response.get('resolution', '')}",
                     response,
                 ) from e
         else:
