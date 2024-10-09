@@ -631,7 +631,7 @@ def test_failed_build_with_resolution(simai_client):
                 {
                     "id": "2a324",
                     "name": "td-987",
-                    "msg": "Missing fields: p (volume), p_rgh (volume)",
+                    "message": "Missing fields: p (volume), p_rgh (volume)",
                 }
             ]
         },
