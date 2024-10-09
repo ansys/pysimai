@@ -313,7 +313,7 @@ def to_raw_filters(filters: Optional["Filters"]) -> Optional["RawFilters"]:
         return tt
     if isinstance(filters, list) and len(filters) > 0:
         if isinstance(filters[0], dict):
-            return [json.dupms(a_filter) for a_filter in filters]
+            return [json.dumps(a_filter) for a_filter in filters]
         if isinstance(filters[0], (tuple, list)):
             return [
                 json.dumps({"field": fld, "operator": op, "value": val}) for fld, op, val in filters
