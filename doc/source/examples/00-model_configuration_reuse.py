@@ -1,5 +1,4 @@
-"""
-.. _ref_model_configuration_reuse:
+""".. _ref_model_configuration_reuse:
 
 Model configuration reuse
 =========================
@@ -42,7 +41,7 @@ training_samples_name = [
 for td_name in training_samples_name:
     filt = {"name": td_name}
     td = simai.training_data.list(filters=filt)
-    td[0].add_to_project("project")
+    td[0].add_to_project(new_project)
 
 ###############################################################################
 # Select a model configuration and associate it with the newly created project
