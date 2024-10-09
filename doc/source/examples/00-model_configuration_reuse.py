@@ -40,8 +40,9 @@ training_samples_name = [
 # Retrieve the desired training data samples and associate them with
 # the new project.
 for td_name in training_samples_name:
-    td = simai.training_data.get(name=td_name)
-    td.add_to_project("project")
+    filt = {"name": td_name}
+    td = simai.training_data.list(filters=filt)
+    td[0].add_to_project("project")
 
 ###############################################################################
 # Select a model configuration and associate it with the newly created project
