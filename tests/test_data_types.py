@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json
 import pathlib
 from io import BytesIO
 
@@ -258,4 +257,4 @@ def test_get_object_from_identifiable():
 )
 def test_to_raw_filters(filters, expected_raw_filters):
     filters = to_raw_filters(filters)
-    assert filters == [json.dumps(exp_filter) for exp_filter in expected_raw_filters]
+    assert filters == expected_raw_filters

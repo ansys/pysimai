@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import io
-import json
 import os
 import pathlib
 from contextlib import contextmanager
@@ -309,12 +308,10 @@ In both cases, the conditions are ``AND`` together.
 
 def to_raw_filters(filters: Optional["Filters"]) -> Optional["RawFilters"]:
     if isinstance(filters, dict):
-        tt = [json.dumps({"field": k, "operator": "EQ", "value": v}) for k, v in filters.items()]
+        tt = [{"field": k, "operator": "EQ", "value": v} for k, v in filters.items()]
         return tt
     if isinstance(filters, list) and len(filters) > 0:
         if isinstance(filters[0], dict):
-            return [json.dumps(a_filter) for a_filter in filters]
+            return filters
         if isinstance(filters[0], (tuple, list)):
-            return [
-                json.dumps({"field": fld, "operator": op, "value": val}) for fld, op, val in filters
-            ]
+            return [{"field": fld, "operator": op, "value": val} for fld, op, val in filters]

@@ -72,11 +72,17 @@ def test_training_data_list_with_filters(simai_client):
                     [
                         (
                             "filter[]",
-                            json.dumps({"field": "name", "operator": "EQ", "value": "thingo"}),
+                            json.dumps(
+                                {"field": "name", "operator": "EQ", "value": "thingo"},
+                                separators=(",", ":"),
+                            ),
                         ),
                         (
                             "filter[]",
-                            json.dumps({"field": "size", "operator": "LT", "value": 10000}),
+                            json.dumps(
+                                {"field": "size", "operator": "LT", "value": 10000},
+                                separators=(",", ":"),
+                            ),
                         ),
                     ]
                 )

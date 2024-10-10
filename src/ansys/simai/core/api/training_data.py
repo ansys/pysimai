@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional
 from urllib.parse import urlencode
 
@@ -38,7 +39,9 @@ class TrainingDataClientMixin(ApiClientMixin):
 
     def iter_training_data(self, filters: Optional["RawFilters"]) -> Iterable[Dict[str, Any]]:
         next_page = "training_data"
-        query = urlencode([("filter[]", f) for f in (filters or [])])
+        query = urlencode(
+            [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
+        )
         if query:
             next_page += f"?{query}"
         while next_page:
