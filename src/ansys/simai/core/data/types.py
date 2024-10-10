@@ -308,8 +308,7 @@ In both cases, the conditions are ``AND`` together.
 
 def to_raw_filters(filters: Optional["Filters"]) -> Optional["RawFilters"]:
     if isinstance(filters, dict):
-        tt = [{"field": k, "operator": "EQ", "value": v} for k, v in filters.items()]
-        return tt
+        return [{"field": k, "operator": "EQ", "value": v} for k, v in filters.items()]
     if isinstance(filters, list) and len(filters) > 0:
         if isinstance(filters[0], dict):
             return filters
