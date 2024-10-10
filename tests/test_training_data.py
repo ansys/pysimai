@@ -70,8 +70,20 @@ def test_training_data_list_with_filters(simai_client):
             responses.matchers.query_string_matcher(
                 urlencode(
                     [
-                        ("filter[]", {"field": "name", "operator": "EQ", "value": "thingo"}),
-                        ("filter[]", {"field": "size", "operator": "LT", "value": 10000}),
+                        (
+                            "filter[]",
+                            json.dumps(
+                                {"field": "name", "operator": "EQ", "value": "thingo"},
+                                separators=(",", ":"),
+                            ),
+                        ),
+                        (
+                            "filter[]",
+                            json.dumps(
+                                {"field": "size", "operator": "LT", "value": 10000},
+                                separators=(",", ":"),
+                            ),
+                        ),
                     ]
                 )
             )
