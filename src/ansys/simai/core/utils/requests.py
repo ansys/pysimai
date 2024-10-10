@@ -69,8 +69,11 @@ def handle_http_errors(response: requests.Response) -> None:
             if response.status_code == 404:
                 raise NotFoundError(f"{message}", response) from e
             else:
+                error_message = f"{response.status_code} {message}"
+                if resolution := json_response.get("resolution", ""):
+                    error_message += f"\n{resolution}"
                 raise ApiClientError(
-                    f"{response.status_code} {message}",
+                    error_message,
                     response,
                 ) from e
         else:
