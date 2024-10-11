@@ -25,12 +25,14 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.types import (
+    Filters,
     Identifiable,
     MonitorCallback,
     NamedFile,
     Path,
     SubsetEnum,
     get_id_from_identifiable,
+    to_raw_filters,
     unpack_named_file,
 )
 from ansys.simai.core.errors import InvalidArguments
@@ -132,12 +134,13 @@ class TrainingData(ComputableDataModel):
         """Metadata extracted from the training data."""
         return self.fields["extracted_metadata"]
 
-    def compute(self) -> None:
-        """Compute or recompute the training data.
+    def extract_data(self) -> None:
+        """Extract or reextract the data from a training data.
 
-        Training data should be computed once all its parts have been fully uploaded.
+        Data should be extracted from a training data once all its parts have been fully uploaded.
+        This is done automatically when using :meth:`TrainingDataDirectory.upload_folder` to create training data.
 
-        Training data can only be recomputed if computation previously failed or if new data has been added.
+        Data can only be reextracted from a training data if the extraction previously failed or if new files have been added.
         """
         self._client._api.compute_training_data(self.id)
 
@@ -164,21 +167,18 @@ class TrainingData(ComputableDataModel):
     def upload_folder(
         self,
         folder_path: Path,
-        compute: bool = True,
     ) -> List["TrainingDataPart"]:
         """Upload all the parts contained in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData` instance.
 
-        This method automatically requests computation of the training data
-        once the upload is complete unless specified otherwise.
+        Upon upload completion, SimAI will extract data from each part.
 
         Args:
             folder_path: Path to the folder with the files to upload.
-            compute: Whether to compute the training data after upload. The default is ``True``.
 
         Returns:
             List of uploaded training data parts.
         """
-        return self._directory.upload_folder(self.id, folder_path, compute)
+        return self._directory.upload_folder(self.id, folder_path)
 
     def add_to_project(self, project: Identifiable["Project"]):
         """Add the training data to a :class:`~ansys.simai.core.data.projects.Project` object.
@@ -219,15 +219,19 @@ class TrainingDataDirectory(Directory[TrainingData]):
 
     _data_model = TrainingData
 
-    def list(self) -> List[TrainingData]:
+    def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
         """List all :class:`TrainingData` objects on the server.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
 
         Returns:
             List of all :class:`TrainingData` objects on the server.
         """
+        raw_filters = to_raw_filters(filters)
         return [
             self._model_from(training_data)
-            for training_data in self._client._api.iter_training_data()
+            for training_data in self._client._api.iter_training_data(filters=raw_filters)
         ]
 
     def get(self, id) -> TrainingData:
@@ -285,7 +289,6 @@ class TrainingDataDirectory(Directory[TrainingData]):
         self,
         training_data: Identifiable[TrainingData],
         folder_path: Path,
-        compute: bool = True,
     ) -> List["TrainingDataPart"]:
         """Upload all files in a folder to a :class:`~ansys.simai.core.data.training_data.TrainingData` object.
 
@@ -295,7 +298,6 @@ class TrainingDataDirectory(Directory[TrainingData]):
         Args:
             training_data: ID or :class:`model <TrainingData>` object of the training data to upload parts to.
             folder_path: Path to the folder that contains the files to upload.
-            compute: Whether to compute the training data after upload. The default is ``True``.
         """
         training_data_id = get_id_from_identifiable(training_data)
         path = pathlib.Path(folder_path)
@@ -308,6 +310,5 @@ class TrainingDataDirectory(Directory[TrainingData]):
             uploaded_parts.append(
                 _upload_training_data_part(training_data_id, file, self._client, None)
             )
-        if compute:
-            self._client._api.compute_training_data(training_data_id)
+        self._client._api.compute_training_data(training_data_id)
         return uploaded_parts

@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+from inspect import signature
 from typing import Callable, Dict, List, Optional, Tuple
 
 from tqdm import tqdm
@@ -161,6 +162,7 @@ class OptimizationDirectory(Directory[Optimization]):
             print(results)
         """
         workspace_id = get_id_from_identifiable(workspace, True, self._client._current_workspace)
+        _check_geometry_generation_fn_signature(geometry_generation_fn, geometry_parameters)
         if not minimize and not maximize:
             raise InvalidArguments("No global coefficient to optimize.")
         objective = {}
@@ -186,9 +188,7 @@ class OptimizationDirectory(Directory[Optimization]):
             geometry_parameters = optimization.fields["initial_geometry_parameters"]
             logger.debug("Optimization defined. Starting optimization loop.")
             iterations_results: List[Dict] = []
-            with keep.running(on_fail="warn") as k:
-                if not k.success:
-                    logger.info("Failed to get sleep inhibition lock.")
+            with keep.running(on_fail="warn"):
                 while geometry_parameters:
                     logger.debug(f"Generating geometry with parameters {geometry_parameters}.")
                     progress_bar.set_description("Generating geometry.")
@@ -221,6 +221,14 @@ class OptimizationDirectory(Directory[Optimization]):
                 logger.debug("Optimization complete.")
                 progress_bar.set_description("Optimization complete.")
             return iterations_results
+
+
+def _check_geometry_generation_fn_signature(geometry_generation_fn, geometry_parameters):
+    geometry_generation_fn_args = signature(geometry_generation_fn).parameters
+    if geometry_generation_fn_args.keys() != geometry_parameters.keys():
+        raise InvalidArguments(
+            f"geometry_generation_fn requires the following signature: {list(geometry_parameters.keys())}, but got: {list(geometry_generation_fn_args.keys())}"
+        )
 
 
 # Undocumented for now, users don't really need to interact with it

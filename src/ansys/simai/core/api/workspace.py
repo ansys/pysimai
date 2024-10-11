@@ -96,3 +96,6 @@ class WorkspaceClientMixin(ApiClientMixin):
 
     def download_workspace_model_evaluation_report(self, workspace_id: str, file: Optional[File]):
         return self.download_file(f"workspaces/{workspace_id}/model-evaluation-report", file)
+
+    def download_workspace_mer_data(self, workspace_id: str, file: Optional[File]):
+        return self.download_file(f"workspaces/{workspace_id}/mer-data", file)

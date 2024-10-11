@@ -1,6 +1,38 @@
 Changelog
 ---------
 
+0.2.4 (2024-09-23)
+******************
+
+New:
+
+- Auth tokens are now cached in file system and get re-authenticated in a parallel fashion.
+- Invalid refresh token now triggers a reauth instead of crashing.
+- `build_preset` option in :py:class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>` can now be one of `debug`, `1_day`, `2_days`, `7_days`.
+- Model Evaluation Report data (csv file) can now be downloaded with :py:meth:`download_mer_data<ansys.simai.core.data.workspaces.Workspace.download_mer_data>`.
+- Typing improvements; introducing `JSON` type is introduced and `APIResponse` type is updated to include `JSON` type.
+- New property :py:meth:`Prediction.raw_confidence_score<ansys.simai.core.data.predictions.Prediction.raw_confidence_score>` is added to :py:class:`Prediction<ansys.simai.core.data.predictions.Prediction>`, which returns the raw confidence score.
+
+Fix:
+
+- Fixed the error where :py:meth:`data<ansys.simai.core.data.post_processings.GlobalCoefficients.data>` was not in coordinance with the BE response. :py:meth:`data<ansys.simai.core.data.post_processings.GlobalCoefficients.data>` now runs without errors.
+
+0.2.3 (2024-08-21)
+******************
+
+New:
+
+- Added :py:class:`PostProcessInput<ansys.simai.core.data.model_configuration.PostProcessInput>` class to define post processing input fields.
+- Added support for NaN and Inf for Global Coefficients and Post Processings.
+
+Fixes:
+
+- Removed compute argument from :py:meth:`TrainingData.upload_folder()<ansys.simai.core.data.training_data.TrainingData.upload_folder>`
+- Fixed Model Configuration to raise a ProcessingError when volume field is missing from a sample specifying volume output.
+- Removed wakepy error mode success (deprecated) during optimization.
+- Renamed TrainingData method compute() to :py:meth:`TrainingData.extract_data()<ansys.simai.core.data.training_data.TrainingData.extract_data>`.
+- Updated documentation of :py:meth:`GeometryDirectory.upload()<ansys.simai.core.data.geometries.GeometryDirectory.upload>`: the ``workspace_id`` argument was moved to ``workspace`` but never updated.
+
 0.2.2 (2024-07-17)
 ******************
 

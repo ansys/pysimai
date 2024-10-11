@@ -130,6 +130,17 @@ class Workspace(DataModel):
         """
         return self._client._api.download_workspace_model_evaluation_report(self.id, file)
 
+    def download_mer_data(self, file: Optional[File] = None) -> Union[None, BinaryIO]:
+        """Download the names, subsets and plotting data of the files used in the AI model and MER for the workspace.
+
+        Args:
+            file: Binary file-object or the path of the file to put the content into.
+
+        Returns:
+            ``None`` if a file is specified or a binary file-object otherwise.
+        """
+        return self._client._api.download_workspace_mer_data(self.id, file)
+
 
 class WorkspaceDirectory(Directory[Workspace]):
     """Provides a collection of methods related to workspaces.

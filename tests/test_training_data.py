@@ -22,6 +22,7 @@
 
 import json
 from typing import TYPE_CHECKING
+from urllib.parse import urlencode
 
 import pytest
 import responses
@@ -58,6 +59,45 @@ def test_training_data_list(simai_client):
     assert len(td) == 2
     assert td[0].id == "one"
     assert td[1].id == "two"
+
+
+@responses.activate
+def test_training_data_list_with_filters(simai_client):
+    resps_lst = responses.add(
+        responses.GET,
+        "https://test.test/training_data",
+        match=[
+            responses.matchers.query_string_matcher(
+                urlencode(
+                    [
+                        (
+                            "filter[]",
+                            json.dumps(
+                                {"field": "name", "operator": "EQ", "value": "thingo"},
+                                separators=(",", ":"),
+                            ),
+                        ),
+                        (
+                            "filter[]",
+                            json.dumps(
+                                {"field": "size", "operator": "LT", "value": 10000},
+                                separators=(",", ":"),
+                            ),
+                        ),
+                    ]
+                )
+            )
+        ],
+        headers={
+            "X-Pagination": json.dumps({"total_pages": 1}),
+        },
+        json=[{"id": "one"}],
+        status=200,
+    )
+
+    td = simai_client.training_data.list(filters=[("name", "EQ", "thingo"), ("size", "LT", 10000)])
+    assert len(td) == 1
+    assert resps_lst.call_count == 1
 
 
 @responses.activate

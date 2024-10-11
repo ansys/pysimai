@@ -24,9 +24,17 @@ from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, Literal, Optional
 
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
+from ansys.simai.core.utils.misc import dict_get
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
+
+SupportedBuildPresets = {
+    "debug": "debug",
+    "1_day": "short",
+    "2_days": "default",
+    "7_days": "long",
+}
 
 
 @dataclass
@@ -190,6 +198,17 @@ class ModelOutput:
 
 
 @dataclass
+class PostProcessInput:
+    """Designates the variables to use as post-processing input.
+
+    Args:
+        surface: the post-processing input surface variables.
+    """
+
+    surface: list[str] = None
+
+
+@dataclass
 class ModelConfiguration:
     """Configures the build of a model.
 
@@ -199,16 +218,17 @@ class ModelConfiguration:
 
                     | *debug*: < 30 min, only 4 dat
 
-                    | *short*: < 24 hours
+                    | *1_day*: < 24 hours
 
-                    | *default*: < 2 days, default value.
+                    | *2_days*: < 2 days, default value.
 
-                    | *long*: < 1 week
+                    | *7_days*: < 1 week
         continuous: indicates if continuous learning is enabled. Default is False.
         input: the inputs of the model.
         output: the outputs of the model.
         global_coefficients: the Global Coefficients of the model.
         domain_of_analysis: The Domain of Analysis of the model configuration.
+        pp_input: The post-processing input (e.g. a surface variable).
 
     Example:
         Define a new configuration and launch a build.
@@ -222,6 +242,7 @@ class ModelConfiguration:
                 ModelConfiguration,
                 ModelInput,
                 ModelOutput,
+                PostProcessInput,
             )
 
             simai = asc.from_config()
@@ -236,6 +257,9 @@ class ModelConfiguration:
             model_output = ModelOutput(
                 surface=["Pressure", "WallShearStress_0"], volume=["Velocity_0", "Pressure"]
             )
+
+            # Define the surface post-processing input
+            pp_input = PostProcessInput(surface=["Temperature_1"])
 
             # Define the model coefficients
             global_coefficients = [("max(Pressure)", "maxpress")]
@@ -256,6 +280,7 @@ class ModelConfiguration:
                 output=model_output,
                 global_coefficients=global_coefficients,
                 domain_of_analysis=doa,
+                pp_input=pp_input,
             )
 
             # Launch a mode build with the new configuration
@@ -263,16 +288,11 @@ class ModelConfiguration:
     """
 
     project: "Optional[Project]" = None
-    build_preset: Literal[
-        "debug",
-        "short",
-        "default",
-        "long",
-    ] = "default"
     continuous: bool = False
     input: ModelInput = field(default_factory=lambda: ModelInput())
     output: ModelOutput = field(default_factory=lambda: ModelOutput())
     domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
+    pp_input: PostProcessInput = field(default_factory=lambda: PostProcessInput())
 
     def __set_gc(self, gcs: list[GlobalCoefficientDefinition]):
         verified_gcs = []
@@ -295,11 +315,26 @@ class ModelConfiguration:
 
     global_coefficients: list[GlobalCoefficientDefinition] = property(__get_gc, __set_gc)
 
+    def __validate_build_preset(self, val: str):
+        if val not in SupportedBuildPresets:
+            raise InvalidArguments(
+                f"Invalid value for build_preset, build_preset should be one of {list(SupportedBuildPresets.keys())}"
+            )
+
+    def __set_build_preset(self, val: str):
+        self.__validate_build_preset(val)
+        self.__dict__["build_preset"] = val
+
+    def __get_build_preset(self):
+        return self.__dict__.get("build_preset")
+
+    build_preset = property(__get_build_preset, __set_build_preset)
+
     def __init__(
         self,
         project: "Project",
         boundary_conditions: Optional[dict[str, Any]] = None,
-        build_preset: Optional[str] = None,
+        build_preset: Optional[str] = "debug",
         continuous: bool = False,
         fields: Optional[dict[str, Any]] = None,
         global_coefficients: Optional[list[GlobalCoefficientDefinition]] = None,
@@ -307,11 +342,9 @@ class ModelConfiguration:
         input: Optional[ModelInput] = None,
         output: Optional[ModelOutput] = None,
         domain_of_analysis: Optional[DomainOfAnalysis] = None,
-        surface_pp_input: Optional[list] = None,
+        pp_input: Optional[PostProcessInput] = None,
     ):
         """Sets the properties of a build configuration."""
-        if surface_pp_input is None:
-            surface_pp_input = []
         self.project = project
         self.input = ModelInput()
         if input is not None:
@@ -319,11 +352,13 @@ class ModelConfiguration:
         self.output = ModelOutput()
         if output is not None:
             self.output = output
+        self.pp_input = PostProcessInput()
+        if pp_input is not None:
+            self.pp_input = pp_input
         if boundary_conditions is not None and self.input.boundary_conditions is None:
             self.input.boundary_conditions = list(boundary_conditions.keys())
         self.build_preset = build_preset
         self.continuous = continuous
-        self.surface_pp_input = surface_pp_input
         if fields is not None:
             if fields.get("surface_input"):
                 self.input.surface = [fd.get("name") for fd in fields["surface_input"]]
@@ -334,7 +369,8 @@ class ModelConfiguration:
             if fields.get("volume"):
                 self.output.volume = [fd.get("name") for fd in fields["volume"]]
 
-            self.surface_pp_input = fields.get("surface_pp_input", [])
+            if fields.get("surface_pp_input"):
+                self.pp_input.surface = [fd.get("name") for fd in fields["surface_pp_input"]]
 
         self.domain_of_analysis = domain_of_analysis
         if simulation_volume is not None:
@@ -365,7 +401,7 @@ class ModelConfiguration:
         return {"length": fld.length, "type": fld.position, "value": fld.value}
 
     def _to_payload(self):
-        """Constracts the payload for a build request."""
+        """Constructs the payload for a build request."""
 
         bcs = {}
         if self.input.boundary_conditions is not None:
@@ -390,10 +426,14 @@ class ModelConfiguration:
             ]
 
         volume_fld = []
-        if self.output.volume is not None:
+        if self.output.volume:
+            if not sample_metadata.get("volume"):
+                raise ProcessingError(
+                    "No volume file was found in the reference sample. A volume file is required to use volume variables."
+                ) from None
             volume_fld = [
                 fd
-                for fd in sample_metadata.get("volume").get("fields")
+                for fd in sample_metadata["volume"].get("fields")
                 if fd.get("name") in self.output.volume
             ]
 
@@ -401,11 +441,18 @@ class ModelConfiguration:
         if self.global_coefficients is not None:
             gcs = [asdict(gc) for gc in self.global_coefficients]
 
+        surface_pp_input_fld = []
+        if self.pp_input.surface is not None:
+            suface_fields = dict_get(sample_metadata, "surface", "fields", default=[])
+            surface_pp_input_fld = [
+                fd for fd in suface_fields if fd.get("name") in self.pp_input.surface
+            ]
+
         flds = {
             "surface": surface_fld,
             "surface_input": surface_input_fld,
             "volume": volume_fld,
-            "surface_pp_input": self.surface_pp_input if self.surface_pp_input else [],
+            "surface_pp_input": surface_pp_input_fld,
         }
 
         simulation_volume = {
@@ -416,7 +463,7 @@ class ModelConfiguration:
 
         return {
             "boundary_conditions": bcs,
-            "build_preset": self.build_preset,
+            "build_preset": SupportedBuildPresets[self.build_preset],
             "continuous": self.continuous,
             "fields": flds,
             "global_coefficients": gcs,
@@ -437,3 +484,5 @@ class ModelConfiguration:
             )
             for gc in self.global_coefficients
         ]
+
+    del __set_build_preset, __get_build_preset

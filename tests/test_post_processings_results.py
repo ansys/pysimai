@@ -62,14 +62,18 @@ def test_post_processing_result_global_coefficients(simai_client):
                             "X": 4.441544089820862,
                             "Y": 0.32894839148911376,
                             "Z": 14.442021446988662,
-                        }
+                        },
+                        "type": "base",
+                        "unit": {"N": 1},
                     },
                     "WallShearStress": {
                         "data": {
                             "X": -0.6887743615741067,
                             "Y": 0.08958696618025093,
                             "Z": 0.0741612935822976,
-                        }
+                        },
+                        "type": "base",
+                        "unit": {"N": 1},
                     },
                 }
             },
@@ -88,6 +92,7 @@ def test_post_processing_result_global_coefficients(simai_client):
     assert isinstance(global_coefficients.data, dict)
     assert len(global_coefficients.data) == 2
     assert global_coefficients.data["IsoStaticPressureForce"]["data"]["X"] == 4.441544089820862
+    assert global_coefficients.data["IsoStaticPressureForce"]["type"] == "base"
 
     # check despite 2 access to global_coefficients.data, only 1 call to API endpoint
     assert responses.assert_call_count("https://test.test/post-processings/7167", 1)

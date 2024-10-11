@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, NamedTuple
 from unittest.mock import Mock
 
@@ -32,8 +33,9 @@ from ansys.simai.core.data.model_configuration import (
     ModelConfiguration,
     ModelInput,
     ModelOutput,
+    PostProcessInput,
 )
-from ansys.simai.core.errors import InvalidArguments, ProcessingError
+from ansys.simai.core.errors import ApiClientError, InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.models import Model
@@ -475,3 +477,174 @@ def test_sse_event_handler(simai_client, model_factory):
         }
     )
     assert model.is_ready
+
+
+def test_throw_error_when_volume_is_missing_from_sample(simai_client):
+    """WHEN there is no volume in the extracted_metadata of the reference sample
+    AND the volume variables are set as model output
+    THEN a ProcessingError is thrown.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    raw_project["sample"]["extracted_metadata"].pop("volume")
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    model_input = ModelInput(surface=[], boundary_conditions=[])
+    model_output = ModelOutput(surface=[], volume=["Velocity_0"])
+    global_coefficients = []
+
+    model_conf = ModelConfiguration(
+        project=project,
+        build_preset="debug",
+        continuous=False,
+        input=model_input,
+        output=model_output,
+        global_coefficients=global_coefficients,
+    )
+
+    with pytest.raises(ProcessingError):
+        model_conf._to_payload()
+
+
+@responses.activate
+def test_post_process_input(simai_client):
+    """WHEN ModelConfiguration includes a specified pp_input arg
+    THEN ModelConfiguration object and Model.configuration property return that exact pp_input
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "pp_newnew",
+        "sample": SAMPLE_RAW,
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+    project.verify_gc_formula = Mock()
+
+    pp_input = PostProcessInput(surface=["Temperature_1"])
+
+    model_conf_dict = deepcopy(MODEL_CONF_RAW)
+    model_conf_dict["fields"].pop("volume")
+    model_conf_dict["fields"]["surface_pp_input"] = [
+        {
+            "keys": None,
+            "name": "TurbulentViscosity",
+            "unit": None,
+            "format": "value",
+            "location": "cell",
+        }
+    ]
+    model_request = deepcopy(MODEL_RAW)
+    model_request["configuration"] = model_conf_dict
+
+    config_with_pp_input = ModelConfiguration(
+        project=project,
+        **model_conf_dict,
+        pp_input=pp_input,
+    )
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{model_request['project_id']}/model",
+        json=model_request,
+        status=200,
+    )
+
+    build_model: Model = simai_client.models.build(config_with_pp_input)
+
+    assert config_with_pp_input.pp_input.surface == pp_input.surface
+    assert (
+        config_with_pp_input._to_payload()["fields"]["surface_pp_input"]
+        == model_conf_dict["fields"]["surface_pp_input"]
+    )
+    assert build_model.configuration.pp_input.surface == pp_input.surface
+    assert (
+        build_model.fields["configuration"]["fields"]["surface_pp_input"]
+        == model_conf_dict["fields"]["surface_pp_input"]
+    )
+
+
+@responses.activate
+def test_failed_build_with_resolution(simai_client):
+    """WHEN I call launch_build() with using a new build configuration
+    THEN I get a Model object, its project_id matches the
+    id of the project, and its configuration is a
+    ModelConfiguration and its content matches the raw conf.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    lgth = ("relative_to_max", 5, 8.1)
+    wdth = ("relative_to_max", 5, 8.1)
+    hght = ("absolute", -4.5, 0.1)
+
+    doa = DomainOfAnalysis(
+        length=lgth,
+        width=wdth,
+        height=hght,
+    )
+
+    new_conf = ModelConfiguration(
+        project=project,
+        build_preset="debug",
+        domain_of_analysis=doa,
+    )
+    response_json = {
+        "status": "Conflict",
+        "errors": {
+            "fields_discrepancies": [
+                {
+                    "id": "2a324",
+                    "name": "td-987",
+                    "message": "Missing fields: p (volume), p_rgh (volume)",
+                }
+            ]
+        },
+        "resolution": "This is a resolution.",
+    }
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/model",
+        json=response_json,
+        status=409,
+    )
+
+    with pytest.raises(ApiClientError) as e:
+        simai_client.models.build(new_conf)
+    assert "This is a resolution." in str(e.value)

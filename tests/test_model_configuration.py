@@ -1,4 +1,4 @@
-# Copyright (C) 2023 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,24 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import getpass
-from typing import Any, Dict, Optional
+
+import pytest
+
+from ansys.simai.core.data.model_configuration import ModelConfiguration, SupportedBuildPresets
+from ansys.simai.core.errors import InvalidArguments
 
 
-def prompt_for_input(name: str, hide_input: Optional[bool] = False):
-    return input(f"{name}:") if not hide_input else getpass.getpass(f"{name}:")
+def test_build_preset_error(simai_client):
+    """WHEN build_preset gets a non-supported value
+    THEN an InvalidArgument is raised."""
 
+    raw_project = {
+        "id": "xX007Xx",
+        "name": "fifi",
+    }
 
-def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Any]] = None, **kwargs):
-    bc = boundary_conditions if boundary_conditions else {}
-    bc.update(**kwargs)
-    if not bc:
-        raise ValueError("No boundary condition was specified.")
-    return bc
+    project = simai_client._project_directory._model_from(raw_project)
 
+    with pytest.raises(InvalidArguments) as excinfo:
+        ModelConfiguration(
+            project=project,
+            build_preset="not_valid_value",
+        )
 
-def dict_get(obj: dict, *keys: str, default=None):
-    """Get the requested key of the dictionary or opt to the default."""
-    for k in keys:
-        obj = obj.get(k, {}) or {}
-    return obj or default
+        assert f"{list(SupportedBuildPresets)}" in excinfo.value

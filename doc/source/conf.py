@@ -114,9 +114,11 @@ add_module_names = False
 nitpicky = True
 
 nitpick_ignore_regex = {
-    (r"py:obj", "ansys.simai.core.data.base.DataModelType"),
-    (r"py:class", "_io.BytesIO"),
-    (r"py:class", "pydantic_core._pydantic_core.Url"),
+    ("py:obj", "ansys.simai.core.data.base.DataModelType"),
+    ("py:class", "_io.BytesIO"),
+    ("py:class", "pydantic_core._pydantic_core.Url"),
+    ("py:class", "pydantic_core._pydantic_core.Annotated"),
+    ("py:class", "pydantic.networks.UrlConstraints"),
 }
 
 source_suffix = ".rst"

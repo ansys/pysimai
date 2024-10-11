@@ -491,7 +491,7 @@ class GeometryDirectory(Directory[Geometry]):
                 For more information, see the :class:`~ansys.simai.core.data.types.NamedFile` class.
             metadata: Optional metadata to add to the geometry's simple key-value store.
                 Lists and nested objects are not supported.
-            workspace_id: ID or :class:`model <.workspaces.Workspace>` of the workspace to
+            workspace: ID or :class:`model <.workspaces.Workspace>` of the workspace to
                 upload the geometry to. This parameter is only necessary if no workspace
                 is set for the client.
             monitor_callback: Optional callback for monitoring the progress of the download.
@@ -501,15 +501,16 @@ class GeometryDirectory(Directory[Geometry]):
         Returns:
             Created :py:class:`Geometry` object.
         """
-        workspace_id = get_id_from_identifiable(workspace, default=self._client._current_workspace)
-        workspace = self._client.workspaces.get(workspace_id)
+        workspace = get_object_from_identifiable(
+            workspace, self._client.workspaces, default=self._client._current_workspace
+        )
         with unpack_named_file(file) as (readable_file, name, extension):
             if extension not in workspace.model_manifest.geometry["accepted_file_formats"]:
                 raise InvalidArguments(
                     f"Got a file with {extension} extension but expected one of : {workspace.model_manifest.geometry['accepted_file_formats']}"
                 )
             (geometry_fields, upload_id) = self._client._api.create_geometry(
-                workspace_id, name, extension, metadata
+                workspace.id, name, extension, metadata
             )
             geometry = self._model_from(geometry_fields, is_upload_complete=False)
             parts = self._client._api.upload_parts(

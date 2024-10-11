@@ -8,3 +8,16 @@ https_proxy
 [Pp]ostprocessing
 PySimAI
 zipfile
+TrainingData
+CheckGlobalCoefficient
+CheckGlobalCoefficientDirectory
+ComputeGlobalCoefficient
+ComputeGlobalCoefficientDirectory
+TrialRuns
+GlobalCoefficientDefinition
+DomainAxisDefinition
+DomainOfAnalysis
+ModelConfiguration
+ModelConfiguration
+ModelManifest
+ModelOutput

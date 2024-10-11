@@ -1,4 +1,4 @@
-# Copyright (C) 2023 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,28 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.simai.core.api.geometry import GeometryClientMixin
-from ansys.simai.core.api.optimization import OptimizationClientMixin
-from ansys.simai.core.api.point_cloud import PointCloudClientMixin
-from ansys.simai.core.api.post_processing import PostProcessingClientMixin
-from ansys.simai.core.api.prediction import PredictionClientMixin
-from ansys.simai.core.api.project import ProjectClientMixin
-from ansys.simai.core.api.sse import SSEMixin
-from ansys.simai.core.api.training_data import TrainingDataClientMixin
-from ansys.simai.core.api.training_data_part import TrainingDataPartClientMixin
-from ansys.simai.core.api.workspace import WorkspaceClientMixin
+from typing import TYPE_CHECKING
+
+import responses
+
+if TYPE_CHECKING:
+    from ansys.simai.core.data.workspaces import Workspace
 
 
-class ApiClient(
-    GeometryClientMixin,
-    PointCloudClientMixin,
-    OptimizationClientMixin,
-    PostProcessingClientMixin,
-    ProjectClientMixin,
-    PredictionClientMixin,
-    SSEMixin,
-    TrainingDataClientMixin,
-    TrainingDataPartClientMixin,
-    WorkspaceClientMixin,
-):
-    """Provides the low-level client that handles direct communication with the server."""
+@responses.activate
+def test_workspace_download_mer_data(simai_client):
+    """WHEN downloading mer csv file
+    THEN the content of the file matches the content of the response.
+    """
+
+    workspace: Workspace = simai_client._workspace_directory._model_from(
+        {"id": "0011", "name": "riri"}
+    )
+    responses.add(
+        responses.GET,
+        f"https://test.test/workspaces/{workspace.id}/mer-data",
+        body=b"mer-data-geometries",
+        status=200,
+    )
+
+    in_memory = workspace.download_mer_data()
+    data_in_file = in_memory.readline()
+    assert data_in_file.decode("ascii") == "mer-data-geometries"

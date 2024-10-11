@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "ansys-simai-core"
-version = "0.2.2"
+version = "0.2.4"
 description = "A python wrapper for Ansys SimAI"
 authors = [
     {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
@@ -38,6 +38,7 @@ dependencies = [
     "sseclient-py>=1.8.0,<3",
     "wakepy>=0.8.0",
     "tqdm>=4.66.1",
+    "filelock>=3.10.7",
 ]
 
 [project.module]
@@ -160,7 +161,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D"]
+"tests/*" = ["D", "INP001"]
 "src/ansys/simai/core/{api,utils}/*" = ["D102"]
 "doc/source/examples/*" = ["D", "INP001", "T", "E402"]
 
