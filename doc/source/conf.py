@@ -36,8 +36,10 @@
 #
 import os
 from datetime import datetime
+from pathlib import Path
 
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
+from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.simai.core import __version__
 
@@ -48,6 +50,9 @@ author = "ANSYS, Inc."
 release = version = __version__
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 cname = os.getenv("DOCUMENTATION_CNAME", "simai.docs.pyansys.com")
+
+SOURCE_PATH = Path(__file__).parent.resolve().absolute()
+ANSYS_SIMAI_THUMBNAIL = str(os.path.join(SOURCE_PATH, "_static", "ansys_simai.png"))
 
 # -- General configuration ---------------------------------------------------
 
@@ -60,8 +65,22 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinxcontrib.autodoc_pydantic",
+    "sphinx_gallery.gen_gallery",
 ]
+# Sphinx Gallery Options
 
+sphinx_gallery_conf = {
+    # default png file for thumbnails
+    "default_thumb_file": ANSYS_SIMAI_THUMBNAIL,
+    # path to your examples scripts
+    "examples_dirs": ["examples"],
+    # path where to save gallery generated examples
+    "gallery_dirs": ["_examples"],
+    # Remove the "Download all examples" button from the top level gallery
+    "download_all_examples": False,
+    # Sort gallery example by file name instead of number of lines (default)
+    "within_subsection_order": FileNameSortKey,
+}
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
 }
@@ -112,6 +131,8 @@ html_short_title = html_title = "simai"
 html_logo = pyansys_logo_black
 html_favicon = ansys_favicon
 html_static_path = ["_static"]
+
+suppress_warnings = ["config.cache"]
 
 html_context = {
     "github_user": "ansys",

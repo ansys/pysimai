@@ -61,6 +61,7 @@ doc = [
     "sphinx>=7.2.0",
     "autodoc-pydantic>=2.0.0",
     "ansys-sphinx-theme>=0.12.5",
+    "sphinx-gallery",
     "blacken-docs>=1.16.0"
 ]
 linting = [
@@ -162,6 +163,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "INP001"]
 "src/ansys/simai/core/{api,utils}/*" = ["D102"]
+"doc/source/examples/*" = ["D", "INP001", "T", "E402"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
