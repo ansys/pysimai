@@ -18,21 +18,22 @@ Model
     :members:
     :inherited-members:
 
-TrialRuns
-=========
+..
+   TrialRuns
+   =========
 
-Trial runs are a single step of the optimization process.
+   Trial runs are a single step of the optimization process.
 
-Directory
----------
+   Directory
+   ---------
 
-.. autoclass:: OptimizationTrialRunDirectory()
-    :members:
+   .. autoclass:: __OptimizationTrialRunDirectory()
+       :members:
 
 
-Model
------
+   Model
+   -----
 
-.. autoclass:: OptimizationTrialRun()
-    :members:
-    :inherited-members:
+   .. autoclass:: __OptimizationTrialRun()
+       :members:
+       :inherited-members:
