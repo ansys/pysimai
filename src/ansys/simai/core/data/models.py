@@ -23,6 +23,7 @@
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
+from ansys.simai.core.data.types import get_id_from_identifiable
 
 
 class Model(ComputableDataModel):
@@ -108,3 +109,20 @@ class ModelDirectory(Directory[Model]):
                 dismiss_data_with_volume_overflow,
             )
         )
+
+    def cancel(self, configuration: ModelConfiguration):
+        """Cancel an ongoing build given its configuration.
+
+        Args:
+            configuration: a ModelConfiguration containing the project whose build to cancel
+
+        Example:
+        Use an existing configuration to cancel a requested new build in the same project
+
+        .. code-block:: python
+
+            simai.models.cancel(build_conf)
+        """
+
+        project_id = get_id_from_identifiable(configuration.project)
+        self._client._api.cancel_build(project_id)

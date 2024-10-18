@@ -648,3 +648,29 @@ def test_failed_build_with_resolution(simai_client):
     with pytest.raises(ApiClientError) as e:
         simai_client.models.build(new_conf)
     assert "This is a resolution." in str(e.value)
+
+
+@responses.activate
+def test_cancel_existing_build(simai_client):
+    """WHEN I call cancel_build() with an existing configuration
+    THEN the api endpoint is called and returns the success message
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+    project.verify_gc_formula = Mock()
+
+    in_model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project.id}/cancel-training",
+        status=200,
+    )
+    simai_client.models.cancel(in_model_conf)
+
+    assert len(responses.calls) == 1
