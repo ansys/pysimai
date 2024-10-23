@@ -114,17 +114,17 @@ class ModelDirectory(Directory[Model]):
         """Cancel an ongoing build given the model.
 
         Args:
-            model: a model object or model id whose ongoing build to cancel
+            model: a model object whose ongoing build to cancel.
 
+        Returns:
+            ``True`` if ``is_being_trained=False`` in JSON response after successful cancellation.
+
+        Example:
         .. code-block:: python
 
-            simai.models.cancel_build(new_model)
+            build_cancelled = simai.models.cancel_build(new_model)
         """
 
         model_object = get_object_from_identifiable(model, self._client.models)
         response = self._client._api.cancel_build(model_object.project_id)
-        return (
-            "Build cancelled"
-            if not response.get("is_being_trained")
-            else "Build cancellation unsuccessful, training in progress"
-        )
+        return not response.get("is_being_trained")

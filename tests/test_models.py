@@ -666,4 +666,4 @@ def test_cancel_existing_build(simai_client, model_factory):
     response = simai_client.models.cancel_build(new_model)
 
     assert len(responses.calls) == 1
-    assert response == "Build cancelled"
+    assert response is True
