@@ -129,4 +129,4 @@ class ProjectClientMixin(ApiClientMixin):
             project_id: ID of the project.
         """
 
-        return self._post(f"projects/{project_id}/cancel-training", return_json=False)
+        return self._post(f"projects/{project_id}/cancel-training", return_json=True)

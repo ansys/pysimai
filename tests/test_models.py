@@ -651,26 +651,19 @@ def test_failed_build_with_resolution(simai_client):
 
 
 @responses.activate
-def test_cancel_existing_build(simai_client):
-    """WHEN I call cancel_build() with an existing configuration
+def test_cancel_existing_build(simai_client, model_factory):
+    """WHEN I call cancel_build() with an existing model
     THEN the api endpoint is called and returns the success message
     """
 
-    raw_project = {
-        "id": MODEL_RAW["project_id"],
-        "name": "fifi",
-        "sample": SAMPLE_RAW,
-    }
-
-    project: Project = simai_client._project_directory._model_from(raw_project)
-    project.verify_gc_formula = Mock()
-
-    in_model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    new_model = model_factory(project_id="e45y123")
     responses.add(
         responses.POST,
-        f"https://test.test/projects/{project.id}/cancel-training",
+        f"https://test.test/projects/{new_model.project_id}/cancel-training",
+        json={"id": "e45y123", "is_being_trained": False},
         status=200,
     )
-    simai_client.models.cancel(in_model_conf)
+    response = simai_client.models.cancel_build(new_model)
 
     assert len(responses.calls) == 1
+    assert response == "Build cancelled"

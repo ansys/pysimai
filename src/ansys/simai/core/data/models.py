@@ -23,7 +23,7 @@
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
-from ansys.simai.core.data.types import get_id_from_identifiable
+from ansys.simai.core.data.types import Identifiable, get_object_from_identifiable
 
 
 class Model(ComputableDataModel):
@@ -110,19 +110,21 @@ class ModelDirectory(Directory[Model]):
             )
         )
 
-    def cancel(self, configuration: ModelConfiguration):
-        """Cancel an ongoing build given its configuration.
+    def cancel_build(self, model: Identifiable[Model]):
+        """Cancel an ongoing build given the model.
 
         Args:
-            configuration: a ModelConfiguration containing the project whose build to cancel
-
-        Example:
-        Use an existing configuration to cancel a requested new build in the same project
+            model: a model object or model id whose ongoing build to cancel
 
         .. code-block:: python
 
-            simai.models.cancel(build_conf)
+            simai.models.cancel_build(new_model)
         """
 
-        project_id = get_id_from_identifiable(configuration.project)
-        self._client._api.cancel_build(project_id)
+        model_object = get_object_from_identifiable(model, self._client.models)
+        response = self._client._api.cancel_build(model_object.project_id)
+        return (
+            "Build cancelled"
+            if not response.get("is_being_trained")
+            else "Build cancellation unsuccessful, training in progress"
+        )
