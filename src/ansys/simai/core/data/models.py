@@ -23,7 +23,6 @@
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
-from ansys.simai.core.data.types import Identifiable, get_object_from_identifiable
 
 
 class Model(ComputableDataModel):
@@ -109,22 +108,3 @@ class ModelDirectory(Directory[Model]):
                 dismiss_data_with_volume_overflow,
             )
         )
-
-    def cancel_build(self, model: Identifiable[Model]):
-        """Cancel an ongoing build given the model.
-
-        Args:
-            model: a model object whose ongoing build to cancel.
-
-        Returns:
-            ``True`` if ``is_being_trained=False`` in JSON response after successful cancellation.
-
-        Example:
-        .. code-block:: python
-
-            build_cancelled = simai.models.cancel_build(new_model)
-        """
-
-        model_object = get_object_from_identifiable(model, self._client.models)
-        response = self._client._api.cancel_build(model_object.project_id)
-        return not response.get("is_being_trained")

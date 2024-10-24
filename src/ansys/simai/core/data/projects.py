@@ -255,3 +255,21 @@ class ProjectDirectory(Directory[Project]):
             project: ID or :class:`model <Project>` of the project.
         """
         self._client._api.delete_project(get_id_from_identifiable(project))
+
+    def cancel_build(self, project: Identifiable[Project]):
+        """Cancel an ongoing build if one exists.
+
+        Args:
+            project: ID or :class:`model <Project>` of the project.
+
+        Returns:
+            ``True`` if ``is_being_trained=False`` in the JSON response.
+
+        Example:
+        .. code-block:: python
+
+            build_cancelled = simai.projects.cancel_build(project)
+        """
+
+        response = self._client._api.cancel_build(get_id_from_identifiable(project))
+        return not response.get("is_being_trained")

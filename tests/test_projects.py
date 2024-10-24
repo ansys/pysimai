@@ -307,3 +307,22 @@ def test_successful_gc_verify(simai_client):
     )
 
     assert project.verify_gc_formula("max(Pressure)") is True
+
+
+@responses.activate
+def test_cancel_existing_build(simai_client):
+    """WHEN I call cancel_build() with an existing project
+    THEN the api endpoint is called and returns the success message
+    """
+
+    project = simai_client._project_directory._model_from({"id": "e45y123", "name": "proj"})
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project.id}/cancel-training",
+        json={"id": "e45y123", "is_being_trained": False},
+        status=200,
+    )
+    response = simai_client.projects.cancel_build(project.id)
+
+    assert len(responses.calls) == 1
+    assert response is True
