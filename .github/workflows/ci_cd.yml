@@ -29,6 +29,8 @@ jobs:
     name: "Documentation style"
     runs-on: ubuntu-latest
     steps:
+      - name: Install rst2html
+        run: sudo apt-get update && sudo apt-get install -y python-docutils
       - uses: ansys/actions/doc-style@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
