@@ -205,6 +205,14 @@ class Project(DataModel):
 
         return gc_compute.result if gc_compute.is_ready else None
 
+    def cancel_training(self):
+        """Cancel training if there is one in progress."""
+
+        project_response = self._client._api.get_project(self.id)
+        if project_response.get("is_being_trained") is False:
+            raise ProcessingError("No training in progress for this project.")
+        self._client._api.cancel_build(self.id)
+
 
 class ProjectDirectory(Directory[Project]):
     """Provides a collection of methods related to projects.
@@ -263,7 +271,7 @@ class ProjectDirectory(Directory[Project]):
             project: ID or :class:`model <Project>` of the project.
 
         Returns:
-            ``True`` if ``is_being_trained=False`` in the JSON response.
+            ``True`` if an ongoing build was successfully cancelled and ``False`` otherwise.
 
         Example:
         .. code-block:: python
@@ -271,5 +279,10 @@ class ProjectDirectory(Directory[Project]):
             build_cancelled = simai.projects.cancel_build(project)
         """
 
-        response = self._client._api.cancel_build(get_id_from_identifiable(project))
-        return not response.get("is_being_trained")
+        project_id = get_id_from_identifiable(project)
+        project_response = self._client._api.get_project(project_id)
+        if not project_response.get("is_being_trained"):
+            return False
+        cancel_response = self._client._api.cancel_build(project_id)
+
+        return not cancel_response.get("is_being_trained")
