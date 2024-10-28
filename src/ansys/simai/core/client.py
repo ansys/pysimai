@@ -294,7 +294,7 @@ class SimAIClient:
 
                 import ansys.simai.core
 
-                simai = ansys.simai.core_from_config()
+                simai = ansys.simai.core.from_config()
 
         Note:
             The default paths are only supported on Unix systems.
