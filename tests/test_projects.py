@@ -316,7 +316,7 @@ def test_cancel_build(simai_client):
     AND False otherwise
     """
 
-    project = simai_client._project_directory._model_from({"id": "e45y123", "name": "proj"})
+    project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
     responses.add(
         responses.GET,
@@ -331,10 +331,8 @@ def test_cancel_build(simai_client):
         json={"id": "e45y123", "is_being_trained": False},
         status=200,
     )
-    successful_cancellation = simai_client.projects.cancel_build(project.id)
 
-    assert len(responses.calls) == 2
-    assert successful_cancellation is True
+    assert simai_client.projects.cancel_build(project.id)
 
     responses.add(
         responses.GET,
@@ -342,18 +340,17 @@ def test_cancel_build(simai_client):
         json={"id": "e45y123", "is_being_trained": False},
         status=200,
     )
-    failed_cancellation = simai_client.projects.cancel_build(project.id)
 
-    assert failed_cancellation is False
+    assert not simai_client.projects.cancel_build(project.id)
 
 
 @responses.activate
 def test_cancel_active_training(simai_client):
     """WHEN I call cancel_training() from a project with active training
-    THEN it succeeds
+    THEN it returns True
     """
 
-    project = simai_client._project_directory._model_from({"id": "e45y123", "name": "proj"})
+    project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
     responses.add(
         responses.GET,
@@ -365,21 +362,9 @@ def test_cancel_active_training(simai_client):
     responses.add(
         responses.POST,
         f"https://test.test/projects/{project.id}/cancel-training",
-        json={"id": "e45y123", "is_being_trained": False},
+        json={"id": "e45y123"},
         status=200,
     )
-
-    project.cancel_training()
-    assert len(responses.calls) == 2
-
-
-@responses.activate
-def test_cancel_inactive_training(simai_client):
-    """WHEN I call cancel_training() from a project with inactive training
-    THEN an exception is raised
-    """
-
-    project = simai_client._project_directory._model_from({"id": "e45y123", "name": "proj"})
 
     responses.add(
         responses.GET,
@@ -388,6 +373,24 @@ def test_cancel_inactive_training(simai_client):
         status=200,
     )
 
-    with pytest.raises(ProcessingError):
-        project.cancel_training()
+    assert project.cancel_training()
+    assert len(responses.calls) == 3
+
+
+@responses.activate
+def test_cancel_inactive_training(simai_client):
+    """WHEN I call cancel_training() from a project with inactive training
+    THEN it returns False
+    """
+
+    project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{project.id}",
+        json={"id": "e45y123", "is_being_trained": False},
+        status=200,
+    )
+
+    assert not project.cancel_training()
     assert len(responses.calls) == 1

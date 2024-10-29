@@ -208,10 +208,12 @@ class Project(DataModel):
     def cancel_training(self):
         """Cancel training if there is one in progress."""
 
-        project_response = self._client._api.get_project(self.id)
-        if project_response.get("is_being_trained") is False:
-            raise ProcessingError("No training in progress for this project.")
+        self.reload()
+        if self.fields.get("is_being_trained") is False:
+            return False
         self._client._api.cancel_build(self.id)
+        self.reload()
+        return not self.fields.get("is_being_trained")
 
 
 class ProjectDirectory(Directory[Project]):
