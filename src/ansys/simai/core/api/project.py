@@ -121,3 +121,12 @@ class ProjectClientMixin(ApiClientMixin):
             json=calculette_payload,
             return_json=False,
         )
+
+    def cancel_build(self, project_id: str):
+        """Cancels an existing model build if it exists.
+
+        Args:
+            project_id: ID of the project.
+        """
+
+        return self._post(f"projects/{project_id}/cancel-training", return_json=True)
