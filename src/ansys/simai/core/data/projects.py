@@ -205,15 +205,13 @@ class Project(DataModel):
 
         return gc_compute.result if gc_compute.is_ready else None
 
-    def cancel_training(self):
-        """Cancel training if there is one in progress."""
+    def cancel_build(self):
+        """Cancels a build if there is one pending."""
 
         self.reload()
         if self.fields.get("is_being_trained") is False:
-            return False
+            raise ProcessingError("No build pending for this project.")
         self._client._api.cancel_build(self.id)
-        self.reload()
-        return not self.fields.get("is_being_trained")
 
 
 class ProjectDirectory(Directory[Project]):
@@ -267,24 +265,14 @@ class ProjectDirectory(Directory[Project]):
         self._client._api.delete_project(get_id_from_identifiable(project))
 
     def cancel_build(self, project: Identifiable[Project]):
-        """Cancel an ongoing build if one exists.
+        """Cancel a build if one is in progress.
 
         Args:
             project: ID or :class:`model <Project>` of the project.
-
-        Returns:
-            ``True`` if an ongoing build was successfully cancelled and ``False`` otherwise.
-
-        Example:
-        .. code-block:: python
-
-            build_cancelled = simai.projects.cancel_build(project)
         """
 
         project_id = get_id_from_identifiable(project)
         project_response = self._client._api.get_project(project_id)
-        if not project_response.get("is_being_trained"):
-            return False
-        cancel_response = self._client._api.cancel_build(project_id)
-
-        return not cancel_response.get("is_being_trained")
+        if project_response.get("is_being_trained") is False:
+            raise ProcessingError("No build pending for this project.")
+        self._client._api.cancel_build(project_id)

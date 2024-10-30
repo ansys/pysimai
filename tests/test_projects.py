@@ -310,10 +310,10 @@ def test_successful_gc_verify(simai_client):
 
 
 @responses.activate
-def test_cancel_build(simai_client):
-    """WHEN I call cancel_build() for a specified project id
-    THEN it returns True if there is a build in progress
-    AND False otherwise
+def test_cancel_build_for_specified_project_id(simai_client):
+    """WHEN I call projects.cancel_build() for a specified project id
+    THEN it returns None if there is an build in progress
+    AND raises a ProcessingError otherwise
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
@@ -332,7 +332,7 @@ def test_cancel_build(simai_client):
         status=200,
     )
 
-    assert simai_client.projects.cancel_build(project.id)
+    simai_client.projects.cancel_build(project.id)
 
     responses.add(
         responses.GET,
@@ -341,13 +341,15 @@ def test_cancel_build(simai_client):
         status=200,
     )
 
-    assert not simai_client.projects.cancel_build(project.id)
+    with pytest.raises(ProcessingError) as excinfo:
+        simai_client.projects.cancel_build(project.id)
+        assert "No build pending for this project" in excinfo.value
 
 
 @responses.activate
-def test_cancel_active_training(simai_client):
-    """WHEN I call cancel_training() from a project with active training
-    THEN it returns True
+def test_cancel_active_build_from_project(simai_client):
+    """WHEN I call cancel_build() from a project with an active build
+    THEN returns None
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
@@ -366,21 +368,14 @@ def test_cancel_active_training(simai_client):
         status=200,
     )
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
-        json={"id": "e45y123", "is_being_trained": False},
-        status=200,
-    )
-
-    assert project.cancel_training()
-    assert len(responses.calls) == 3
+    project.cancel_build()
+    assert len(responses.calls) == 2
 
 
 @responses.activate
-def test_cancel_inactive_training(simai_client):
-    """WHEN I call cancel_training() from a project with inactive training
-    THEN it returns False
+def test_cancel_inactive_build_from_project(simai_client):
+    """WHEN I call cancel_build() from a project with an inactive build
+    THEN it raises a ProcessingError
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
@@ -392,5 +387,7 @@ def test_cancel_inactive_training(simai_client):
         status=200,
     )
 
-    assert not project.cancel_training()
+    with pytest.raises(ProcessingError) as excinfo:
+        project.cancel_build()
+        assert "No build pending for this project" in excinfo.value
     assert len(responses.calls) == 1
