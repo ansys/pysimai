@@ -289,10 +289,7 @@ class ModelConfiguration:
 
     project: "Optional[Project]" = None
     continuous: bool = False
-    input: ModelInput = field(default_factory=lambda: ModelInput())
-    output: ModelOutput = field(default_factory=lambda: ModelOutput())
     domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
-    pp_input: PostProcessInput = field(default_factory=lambda: PostProcessInput())
 
     def __set_gc(self, gcs: list[GlobalCoefficientDefinition]):
         verified_gcs = []
@@ -329,6 +326,72 @@ class ModelConfiguration:
         return self.__dict__.get("build_preset")
 
     build_preset = property(__get_build_preset, __set_build_preset)
+
+    def __validate_variables(self, vars_to_validate: list[str], var_type: str):
+        sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        var_fields = dict_get(sample_metadata, var_type, "fields", default=[])
+        var_fields_name = {fd.get("name") for fd in var_fields}
+        unknown_variables = set(vars_to_validate) - var_fields_name
+        if unknown_variables:
+            raise ProcessingError(
+                f"{self.__class__.__name__}: {var_type} variables {', '.join(unknown_variables)} do not exist in the reference sample."
+            ) from None
+
+    def __validate_surface_variables(self, vars_to_validate: list[str]):
+        sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        if not sample_metadata.get("volume"):
+            raise ProcessingError(
+                "No volume file was found in the reference sample. A volume file is required to use volume variables."
+            ) from None
+        self.__validate_variables(vars_to_validate, "surface")
+
+    def __validate_volume_variables(self, vars_to_validate: list[str]):
+        sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        if not sample_metadata.get("volume"):
+            raise ProcessingError(
+                "No volume file was found in the reference sample. A volume file is required to use volume variables."
+            ) from None
+        self.__validate_variables(vars_to_validate, "volume")
+
+    def __set_input(self, model_input: ModelInput):
+        if not model_input:
+            model_input = ModelInput()
+        if model_input.surface:
+            self.__validate_surface_variables(model_input.surface)
+        self.__dict__["input"] = model_input
+
+    def __get_input(self):
+        return self.__dict__.get("input")
+
+    input = property(__get_input, __set_input)
+
+    def __set_output(self, model_output: ModelOutput):
+        if not model_output:
+            model_output = ModelOutput()
+        if model_output.surface:
+            self.__validate_surface_variables(model_output.surface)
+
+        if model_output.volume:
+            self.__validate_volume_variables(model_output.volume)
+
+        self.__dict__["output"] = model_output
+
+    def __get_output(self):
+        return self.__dict__.get("output")
+
+    output = property(__get_output, __set_output)
+
+    def __set_pp_input(self, pp_input: PostProcessInput):
+        if not pp_input:
+            pp_input = PostProcessInput()
+        if pp_input.surface:
+            self.__validate_surface_variables(pp_input.surface)
+        self.__dict__["pp_input"] = pp_input
+
+    def __get_pp_input(self):
+        return self.__dict__.get("pp_input")
+
+    pp_input = property(__get_pp_input, __set_pp_input)
 
     def __init__(
         self,
@@ -408,34 +471,22 @@ class ModelConfiguration:
             bcs = {bc_name: {} for bc_name in self.input.boundary_conditions}
 
         sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        surface_fields = dict_get(sample_metadata, "surface", "fields", default=[])
+        volume_fields = dict_get(sample_metadata, "volume", "fields", default=[])
 
         surface_input_fld = []
         if self.input.surface is not None:
             surface_input_fld = [
-                fd
-                for fd in sample_metadata.get("surface").get("fields")
-                if fd.get("name") in self.input.surface
+                fd for fd in surface_fields if fd.get("name") in self.input.surface
             ]
 
         surface_fld = []
         if self.output.surface is not None:
-            surface_fld = [
-                fd
-                for fd in sample_metadata.get("surface").get("fields")
-                if fd.get("name") in self.output.surface
-            ]
+            surface_fld = [fd for fd in surface_fields if fd.get("name") in self.output.surface]
 
         volume_fld = []
         if self.output.volume:
-            if not sample_metadata.get("volume"):
-                raise ProcessingError(
-                    "No volume file was found in the reference sample. A volume file is required to use volume variables."
-                ) from None
-            volume_fld = [
-                fd
-                for fd in sample_metadata["volume"].get("fields")
-                if fd.get("name") in self.output.volume
-            ]
+            volume_fld = [fd for fd in volume_fields if fd.get("name") in self.output.volume]
 
         gcs = []
         if self.global_coefficients is not None:
@@ -443,9 +494,8 @@ class ModelConfiguration:
 
         surface_pp_input_fld = []
         if self.pp_input.surface is not None:
-            suface_fields = dict_get(sample_metadata, "surface", "fields", default=[])
             surface_pp_input_fld = [
-                fd for fd in suface_fields if fd.get("name") in self.pp_input.surface
+                fd for fd in surface_fields if fd.get("name") in self.pp_input.surface
             ]
 
         flds = {
