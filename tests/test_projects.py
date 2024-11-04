@@ -307,3 +307,87 @@ def test_successful_gc_verify(simai_client):
     )
 
     assert project.verify_gc_formula("max(Pressure)") is True
+
+
+@responses.activate
+def test_cancel_build_for_specified_project_id(simai_client):
+    """WHEN I call projects.cancel_build() for a specified project id
+    THEN it returns None if there is an build in progress
+    AND raises a ProcessingError otherwise
+    """
+
+    project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{project.id}",
+        json={"id": "e45y123", "is_being_trained": True},
+        status=200,
+    )
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project.id}/cancel-training",
+        json={"id": "e45y123", "is_being_trained": False},
+        status=200,
+    )
+
+    simai_client.projects.cancel_build(project.id)
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{project.id}",
+        json={"id": "e45y123", "is_being_trained": False},
+        status=200,
+    )
+
+    with pytest.raises(ProcessingError) as excinfo:
+        simai_client.projects.cancel_build(project.id)
+        assert "No build pending for this project" in excinfo.value
+
+
+@responses.activate
+def test_cancel_active_build_from_project(simai_client):
+    """WHEN I call cancel_build() from a project with an active build
+    THEN returns None
+    """
+
+    project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{project.id}",
+        json={"id": "e45y123", "is_being_trained": True},
+        status=200,
+    )
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project.id}/cancel-training",
+        json={"id": "e45y123"},
+        status=200,
+    )
+
+    project.cancel_build()
+    assert len(responses.calls) == 2
+
+
+@responses.activate
+def test_cancel_inactive_build_from_project(simai_client):
+    """WHEN I call cancel_build() from a project with an inactive build
+    THEN it raises a ProcessingError
+    """
+
+    project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{project.id}",
+        json={"id": "e45y123", "is_being_trained": False},
+        status=200,
+    )
+
+    with pytest.raises(ProcessingError) as excinfo:
+        project.cancel_build()
+        assert "No build pending for this project" in excinfo.value
+    assert len(responses.calls) == 1
