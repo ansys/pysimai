@@ -152,7 +152,7 @@ class WorkspaceDirectory(Directory[Workspace]):
 
             import ansys.simai.core
 
-            simai = ansys.simai.core_from_config()
+            simai = ansys.simai.core.from_config()
             simai.workspaces.list()
     """
 
