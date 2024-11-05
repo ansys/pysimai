@@ -74,7 +74,7 @@ class SimAIClient:
             )
     """
 
-    @steal_kwargs_type(ClientConfig)
+    @steal_kwargs_type(ClientConfig, ignore_self=True)
     def __init__(self, **kwargs):
         try:
             config = ClientConfig(**kwargs)
