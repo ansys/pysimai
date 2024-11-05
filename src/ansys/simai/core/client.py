@@ -54,7 +54,7 @@ from ansys.simai.core.errors import (
 )
 from ansys.simai.core.utils.config_file import get_config
 from ansys.simai.core.utils.configuration import ClientConfig
-from ansys.simai.core.utils.typing import steal_kwargs_type
+from ansys.simai.core.utils.typing import steal_kwargs_type_on_method
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class SimAIClient:
             )
     """
 
-    @steal_kwargs_type(ClientConfig, ignore_self=True)
+    @steal_kwargs_type_on_method(ClientConfig)
     def __init__(self, **kwargs):
         try:
             config = ClientConfig(**kwargs)
