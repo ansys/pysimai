@@ -21,9 +21,14 @@
 # SOFTWARE.
 # ruff: noqa: E731
 
-import pytest
+import json
+import threading
 
-from ansys.simai.core.data.optimizations import _check_geometry_generation_fn_signature
+import pytest
+import responses
+import sseclient
+
+from ansys.simai.core.data.optimizations import _validate_geometry_generation_fn_signature
 from ansys.simai.core.errors import InvalidArguments
 
 
@@ -39,7 +44,7 @@ def test_geometry_generation_fn_invalid_signature(simai_client):
     }
 
     with pytest.raises(InvalidArguments) as exc:
-        simai_client.optimizations.run(
+        simai_client.optimizations.run_parametric(
             geometry_generation_fn=my_geometry_generation_function,
             geometry_parameters=geometry_parameters,
             boundary_conditions={"abc": 3.0},
@@ -49,7 +54,7 @@ def test_geometry_generation_fn_invalid_signature(simai_client):
     assert "geometry_generation_fn requires the following signature" in str(exc.value)
 
 
-def test_check_geometry_generation_fn_valid_signature():
+def test_validate_geometry_generation_fn_valid_signature():
     """WHEN geometry_generation_fn signature matches geometry_parameters keys
     THEN check passes"""
 
@@ -58,4 +63,176 @@ def test_check_geometry_generation_fn_valid_signature():
     )
     geometry_parameters = {"param_c": {"bounds": (-12.5, 12.5)}, "param_d": {"choices": (0.1, 1.0)}}
 
-    _check_geometry_generation_fn_signature(my_geometry_generation_function, geometry_parameters)
+    _validate_geometry_generation_fn_signature(my_geometry_generation_function, geometry_parameters)
+
+
+@responses.activate
+def test_run_parametric_optimization(simai_client, mocker):
+    workspace_id = "insert_cool_reference"
+    mocker.patch("ansys.simai.core.data.optimizations._validate_geometry_generation_fn_signature")
+    geometry_upload = mocker.patch.object(simai_client.geometries, "upload")
+    geometry_upload.return_value = simai_client.geometries._model_from({"id": "geomx"})
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/workspaces/{workspace_id}/optimizations",
+        status=202,
+        json={"id": "wow", "state": "requested", "trial_runs": []},
+    )
+    responses.add(
+        responses.POST,
+        "https://test.test/optimizations/wow/trial-runs",
+        status=202,
+        json={"id": "wow1", "state": "requested"},
+    )
+    responses.add(
+        responses.POST,
+        "https://test.test/optimizations/wow/trial-runs",
+        status=202,
+        json={"id": "wow2", "state": "requested"},
+    )
+    responses.add(
+        responses.POST,
+        "https://test.test/optimizations/wow/trial-runs",
+        status=202,
+        json={"id": "wow3", "state": "requested"},
+    )
+    threading.Timer(
+        0.1,
+        simai_client._api._handle_sse_event,
+        args=[
+            sseclient.Event(
+                data=json.dumps(
+                    {
+                        "type": "job",
+                        "status": "successful",
+                        "record": {
+                            "id": "wow",
+                            "state": "successful",
+                            "initial_geometry_parameters": {"a": 1},
+                        },
+                        "target": {"type": "optimization", "id": "wow"},
+                    }
+                )
+            )
+        ],
+    ).start()
+    for i in range(1, 4):
+        threading.Timer(
+            i / 10 + 0.1,
+            simai_client._api._handle_sse_event,
+            args=[
+                sseclient.Event(
+                    data=json.dumps(
+                        {
+                            "type": "job",
+                            "status": "successful",
+                            "record": {
+                                "id": f"wow{i}",
+                                "state": "successful",
+                                "is_feasible": "true",
+                                "outcome_values": i,
+                                "next_geometry_parameters": {"a": i + 1} if i != 3 else None,
+                            },
+                            "target": {"type": "optimization_trial_run", "id": f"wow{i}"},
+                        }
+                    )
+                )
+            ],
+        ).start()
+    geometry_generation_fn = mocker.stub(name="geometry_gen")
+    results = simai_client.optimizations.run_parametric(
+        geometry_generation_fn=geometry_generation_fn,
+        geometry_parameters={
+            "a": {"bounds": (-12.5, 12.5)},
+        },
+        minimize=["TotalForceX"],
+        boundary_conditions={"VelocityX": 10.5},
+        outcome_constraints=["TotalForceX <= 10"],
+        n_iters=3,
+        workspace=workspace_id,
+    )
+    assert results == [{"objective": i, "parameters": {"a": i}} for i in range(1, 4)]
+
+
+@responses.activate
+def test_run_non_parametric_optimization(simai_client, geometry_factory):
+    workspace_id = "insert_cool_reference"
+    geometry = geometry_factory(workspace_id=workspace_id)
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/workspaces/{workspace_id}/optimizations",
+        status=202,
+        json={"id": "wow", "state": "requested", "trial_runs": []},
+    )
+    responses.add(
+        responses.POST,
+        "https://test.test/optimizations/wow/trial-runs",
+        status=202,
+        json={"id": "wow1", "state": "requested"},
+    )
+    responses.add(
+        responses.POST,
+        "https://test.test/optimizations/wow/trial-runs",
+        status=202,
+        json={"id": "wow2", "state": "requested"},
+    )
+    responses.add(
+        responses.POST,
+        "https://test.test/optimizations/wow/trial-runs",
+        status=202,
+        json={"id": "wow3", "state": "requested"},
+    )
+    threading.Timer(
+        0.1,
+        simai_client._api._handle_sse_event,
+        args=[
+            sseclient.Event(
+                data=json.dumps(
+                    {
+                        "type": "job",
+                        "status": "successful",
+                        "record": {
+                            "id": "wow",
+                            "state": "successful",
+                            "initial_geometry_parameters": None,
+                        },
+                        "target": {"type": "optimization", "id": "wow"},
+                    }
+                )
+            )
+        ],
+    ).start()
+    for i in range(1, 4):
+        threading.Timer(
+            i / 10 + 0.1,
+            simai_client._api._handle_sse_event,
+            args=[
+                sseclient.Event(
+                    data=json.dumps(
+                        {
+                            "type": "job",
+                            "status": "successful",
+                            "record": {
+                                "id": f"wow{i}",
+                                "state": "successful",
+                                "is_feasible": "true",
+                                "outcome_values": i,
+                                "next_geometry_parameters": None,
+                            },
+                            "target": {"type": "optimization_trial_run", "id": f"wow{i}"},
+                        }
+                    )
+                )
+            ],
+        ).start()
+    results = simai_client.optimizations.run_non_parametric(
+        geometry=geometry,
+        bounding_boxes=[[1, 1, 1, 1, 1, 1]],
+        symmetries=["x", "y", "z"],
+        minimize=["TotalForceX"],
+        boundary_conditions={"VelocityX": 10.5},
+        n_iters=3,
+    )
+    assert results == [{"objective": i} for i in range(1, 4)]

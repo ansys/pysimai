@@ -36,7 +36,7 @@ from ansys.simai.core.data.global_coefficients_requests import (
 from ansys.simai.core.data.models import ModelDirectory
 from ansys.simai.core.data.optimizations import (
     OptimizationDirectory,
-    OptimizationTrialRunDirectory,
+    _OptimizationTrialRunDirectory,
 )
 from ansys.simai.core.data.post_processings import PostProcessingDirectory
 from ansys.simai.core.data.predictions import PredictionDirectory
@@ -87,7 +87,7 @@ class SimAIClient:
         self._compute_gc_formula_directory = ComputeGlobalCoefficientDirectory(client=self)
         self._geometry_directory = GeometryDirectory(client=self)
         self._optimization_directory = OptimizationDirectory(client=self)
-        self._optimization_trial_run_directory = OptimizationTrialRunDirectory(client=self)
+        self._optimization_trial_run_directory = _OptimizationTrialRunDirectory(client=self)
         self._post_processing_directory = PostProcessingDirectory(client=self)
         self._project_directory = ProjectDirectory(client=self)
         self._model_directory = ModelDirectory(client=self)

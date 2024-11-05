@@ -89,7 +89,7 @@ New:
 
 Fixes:
 
-- The method :py:meth:`Optimization.run()<ansys.simai.core.data.optimizations.OptimizationDirectory.run>` now raises an exception if no workspace is provided and none is configured.
+- The method `Optimization.run()<ansys.simai.core.data.optimizations.OptimizationDirectory.run>` now raises an exception if no workspace is provided and none is configured.
 - Fix RecursionError on authentication refresh
 
 0.1.5 (2024-04-15)
