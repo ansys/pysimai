@@ -169,7 +169,7 @@ class OptimizationDirectory(Directory[Optimization]):
                 },
                 minimize=["TotalForceX"],
                 boundary_conditions={"VelocityX": 10.5},
-                outcome_constraints=["TotalForceX <= 10"],
+                outcome_constraints=["TotalForceY <= 10"],
                 n_iters=100,
             )
 
