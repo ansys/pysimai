@@ -266,8 +266,6 @@ class OptimizationDirectory(Directory[Optimization]):
             maximize: List of global coefficients to maximize.
                 The global coefficients should map to existing coefficients in your project/workspace.
             show_progress: Whether to print progress on stdout.
-            workspace: Workspace to run the optimization in. If a workspace is
-                not specified, the default is the configured workspace.
 
         Warning:
             This feature is in beta. Results are not guaranteed.
