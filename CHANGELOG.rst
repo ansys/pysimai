@@ -1,6 +1,13 @@
 Changelog
 ---------
 
+Unreleased
+**********
+
+Fixes:
+
+- Type hints on ``SimAIClient`` off by one
+
 0.2.5 (2024-11-05)
 ******************
 
