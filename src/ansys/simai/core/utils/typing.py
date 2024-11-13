@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, Any, Callable, ParamSpec, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
 if TYPE_CHECKING:
-    from typing_extensions import Concatenate
+    from typing_extensions import Concatenate, ParamSpec
 
     P = ParamSpec("P")
     T = TypeVar("T")
