@@ -743,7 +743,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
 
                 import ansys.simai.core
 
-                simai = ansys.simai.core_from_config()
+                simai = ansys.simai.core.from_config()
                 prediction = simai.predictions.list()[0]
                 post_processings = simai.post_processings.list(
                     ansys.simai.core.SurfaceEvol, prediction.id
@@ -794,7 +794,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
 
                 import ansys.simai.core
 
-                simai = ansys.simai.core_from_config()
+                simai = ansys.simai.core.from_config()
                 prediction = simai.predictions.list()[0]
                 simai.post_processings.run(
                     ansys.simai.core.Slice, prediction, {"axis": "x", coordinate: 50}

@@ -20,21 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, ParamSpec, TypeVar
+    from typing_extensions import Concatenate, ParamSpec
 
     P = ParamSpec("P")
     T = TypeVar("T")
 
 
-def steal_kwargs_type(
+def steal_kwargs_type_on_method(
     original_fn: "Callable[P, Any]",
-) -> "Callable[[Callable], Callable[P, T]]":
-    """Return the casted original function, with the kwargs type stolen from original_fn."""
+) -> "Callable[[Callable], Callable[Concatenate[Any, P], T]]":
+    """Takes type hints from ``original_fn`` and apply them to the decorated method.
+    The ``self`` argument of the method is typed ``Any``.
+    """
 
-    def return_func(func: "Callable[..., T]") -> "Callable[P, T]":
-        return cast("Callable[P, T]", func)
+    def return_func(func: "Callable[..., T]") -> "Callable[Concatenate[Any, P], T]":
+        return cast("Callable[Concatenate[Any, P], T]", func)
 
     return return_func

@@ -36,7 +36,7 @@ from ansys.simai.core.data.global_coefficients_requests import (
 from ansys.simai.core.data.models import ModelDirectory
 from ansys.simai.core.data.optimizations import (
     OptimizationDirectory,
-    OptimizationTrialRunDirectory,
+    _OptimizationTrialRunDirectory,
 )
 from ansys.simai.core.data.post_processings import PostProcessingDirectory
 from ansys.simai.core.data.predictions import PredictionDirectory
@@ -54,7 +54,7 @@ from ansys.simai.core.errors import (
 )
 from ansys.simai.core.utils.config_file import get_config
 from ansys.simai.core.utils.configuration import ClientConfig
-from ansys.simai.core.utils.typing import steal_kwargs_type
+from ansys.simai.core.utils.typing import steal_kwargs_type_on_method
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class SimAIClient:
             )
     """
 
-    @steal_kwargs_type(ClientConfig)
+    @steal_kwargs_type_on_method(ClientConfig)
     def __init__(self, **kwargs):
         try:
             config = ClientConfig(**kwargs)
@@ -87,7 +87,7 @@ class SimAIClient:
         self._compute_gc_formula_directory = ComputeGlobalCoefficientDirectory(client=self)
         self._geometry_directory = GeometryDirectory(client=self)
         self._optimization_directory = OptimizationDirectory(client=self)
-        self._optimization_trial_run_directory = OptimizationTrialRunDirectory(client=self)
+        self._optimization_trial_run_directory = _OptimizationTrialRunDirectory(client=self)
         self._post_processing_directory = PostProcessingDirectory(client=self)
         self._project_directory = ProjectDirectory(client=self)
         self._model_directory = ModelDirectory(client=self)
@@ -294,7 +294,7 @@ class SimAIClient:
 
                 import ansys.simai.core
 
-                simai = ansys.simai.core_from_config()
+                simai = ansys.simai.core.from_config()
 
         Note:
             The default paths are only supported on Unix systems.

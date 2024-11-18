@@ -205,6 +205,14 @@ class Project(DataModel):
 
         return gc_compute.result if gc_compute.is_ready else None
 
+    def cancel_build(self):
+        """Cancels a build if there is one pending."""
+
+        self.reload()
+        if self.fields.get("is_being_trained") is False:
+            raise ProcessingError("No build pending for this project.")
+        self._client._api.cancel_build(self.id)
+
 
 class ProjectDirectory(Directory[Project]):
     """Provides a collection of methods related to projects.
@@ -255,3 +263,16 @@ class ProjectDirectory(Directory[Project]):
             project: ID or :class:`model <Project>` of the project.
         """
         self._client._api.delete_project(get_id_from_identifiable(project))
+
+    def cancel_build(self, project: Identifiable[Project]):
+        """Cancel a build if one is in progress.
+
+        Args:
+            project: ID or :class:`model <Project>` of the project.
+        """
+
+        project_id = get_id_from_identifiable(project)
+        project_response = self._client._api.get_project(project_id)
+        if project_response.get("is_being_trained") is False:
+            raise ProcessingError("No build pending for this project.")
+        self._client._api.cancel_build(project_id)
