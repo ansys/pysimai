@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import functools
 from pathlib import Path
 
 import pytest
@@ -46,13 +45,13 @@ def test_client_version_auto_warn(caplog, mocker):
     THEN a warning is printed
     """
     mocker.patch(
-        "ansys.simai.core.client.SimAIClient._check_for_new_version",
-        functools.partialmethod(SimAIClient._check_for_new_version, current_version="1.1.0"),
+        "ansys.simai.core.client.__version__",
+        "1.1.0",
     )
     responses.add(
         responses.GET,
-        "https://test.test/info/ansys.simai.core/version",
-        json={"version": "1.1.1"},
+        "https://pypi.org/pypi/ansys-simai-core/json",
+        json={"info": {"version": "1.1.1"}},
         status=200,
     )
     SimAIClient(
@@ -62,7 +61,7 @@ def test_client_version_auto_warn(caplog, mocker):
         no_sse_connection=True,
         skip_version_check=False,
     )
-    assert "A new version of ansys.simai.core is available" in caplog.text
+    assert "A new version of ansys-simai-core is available" in caplog.text
 
 
 @responses.activate
@@ -71,13 +70,14 @@ def test_client_version_auto_error(caplog, mocker):
     THEN an exception is raised
     """
     mocker.patch(
-        "ansys.simai.core.client.SimAIClient._check_for_new_version",
-        functools.partialmethod(SimAIClient._check_for_new_version, current_version="1.0.9-rc8"),
+        "ansys.simai.core.client.__version__",
+        "1.0.9-rc8",
     )
+
     responses.add(
         responses.GET,
-        "https://test.test/info/ansys.simai.core/version",
-        json={"version": "1.9.0"},
+        "https://pypi.org/pypi/ansys-simai-core/json",
+        json={"info": {"version": "1.9.0"}},
         status=200,
     )
     with pytest.raises(err.SimAIError) as exc:
@@ -88,4 +88,4 @@ def test_client_version_auto_error(caplog, mocker):
             no_sse_connection=True,
             skip_version_check=False,
         )
-    assert "A new version of ansys.simai.core is required" in str(exc.value)
+    assert "A new version of ansys-simai-core is required" in str(exc.value)
