@@ -66,6 +66,6 @@ def warn_package_outdated(package: str, current_version: str, latest_version: st
                 version_current.major < version_latest.major
                 or version_current.minor < version_latest.minor
             ):
-                raise SimAIError(warn_template % "required")
+                logger.critical(warn_template % "required")
             else:
                 logger.warning(warn_template % "available")
