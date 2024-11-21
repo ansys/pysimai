@@ -26,8 +26,6 @@ from typing import Any, Dict, Optional
 
 from semver.version import Version
 
-from ansys.simai.core.errors import SimAIError
-
 logger = logging.getLogger(__name__)
 
 
@@ -50,7 +48,7 @@ def dict_get(obj: dict, *keys: str, default=None):
     return obj or default
 
 
-def warn_package_outdated(package: str, current_version: str, latest_version: str):
+def notify_if_package_outdated(package: str, current_version: str, latest_version: str):
     try:
         version_current = Version.parse(current_version)
         version_latest = Version.parse(latest_version)

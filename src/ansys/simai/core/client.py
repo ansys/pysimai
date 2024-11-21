@@ -53,7 +53,7 @@ from ansys.simai.core.errors import (
 )
 from ansys.simai.core.utils.config_file import get_config
 from ansys.simai.core.utils.configuration import ClientConfig
-from ansys.simai.core.utils.misc import warn_package_outdated
+from ansys.simai.core.utils.misc import notify_if_package_outdated
 from ansys.simai.core.utils.typing import steal_kwargs_type_on_method
 
 logger = logging.getLogger(__name__)
@@ -332,7 +332,7 @@ class SimAIClient:
         except (SimAIError, KeyError) as e:
             logger.debug(f"Could not query package version on pypi: {e}")
             return None
-        warn_package_outdated("ansys-simai-core", __version__, latest_version)
+        notify_if_package_outdated("ansys-simai-core", __version__, latest_version)
 
 
 from_config = SimAIClient.from_config

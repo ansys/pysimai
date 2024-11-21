@@ -41,21 +41,14 @@ def test_client_creation_invalid_config():
 
 @pytest.mark.parametrize(
     "local_ver,latest_ver,expected",
-
     [
         ("1.1.0", "1.1.1", "available."),
         ("1.0.9-rc8", "1.0.9", "available."),
         ("1.0.9", "1.9.0", "required."),
-     ]
+    ],
 )
 @responses.activate
-def test_client_version_auto_warn(
-    caplog,
-    mocker,
-    local_ver,
-    latest_ver,
-    expected
-):
+def test_client_version_auto_warn(caplog, mocker, local_ver, latest_ver, expected):
     """WHEN the SDK version is slightly outdated compared to what the API responds
     THEN a warning is printed
     """
