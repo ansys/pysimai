@@ -88,11 +88,10 @@ class ClientConfig(BaseModel, extra="allow"):
     "Name of the organization(/company) that the user belongs to."
     workspace: Optional[str] = None
     "Name of the workspace to use by default."
-    project: Optional[str] = Field(
-        None, description="Name of the project to use by default."
-    )
+    project: Optional[str] = None
+    "Name of the project to use by default."
     credentials: Optional[Credentials] = Field(
-        None,
+        default=None,
         validate_default=True,
     )
     "Authenticate via username/password instead of the device authorization code."
@@ -107,9 +106,9 @@ class ClientConfig(BaseModel, extra="allow"):
     Custom TLS CA certificate configuration. Possible values:
 
     * ``None``: use secure defaults
-    * ``"system"``: uses system CA certificates
+    * ``"system"``: uses system CA certificates (python >= 3.10)
     * A ``PathLike`` object: use a custom CA
-    * ``"unsecure-none"``: no TLS validation
+    * ``"unsecure-none"``: no TLS certificate validation
     """
 
     @field_validator("url", mode="before")

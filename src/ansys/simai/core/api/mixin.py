@@ -22,6 +22,7 @@
 
 import logging
 import os
+import ssl
 from io import BytesIO
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Optional, Union
@@ -29,6 +30,7 @@ from urllib.parse import urljoin
 from urllib.request import getproxies
 
 import requests
+import requests.adapters
 from requests.adapters import HTTPAdapter, Retry
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
@@ -43,11 +45,26 @@ from ansys.simai.core.utils.requests import handle_response
 logger = logging.getLogger(__name__)
 
 
+class TruststoreAdapter(HTTPAdapter):
+    def init_poolmanager(self, *a, **kw):
+        import truststore
+
+        ctx = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        return super().init_poolmanager(*a, **kw, ssl_context=ctx)
+
+
 class ApiClientMixin:
     """Provides the core that all mixins and the API client are built on."""
 
     def __init__(self, *args, config: ClientConfig):  # noqa: D107
         self._session = requests.Session()
+        match config.tls_ca_bundle:
+            case "system":
+                self._session.mount("https://", TruststoreAdapter())
+            case "unsecure-none":
+                self._session.verify = False
+            case os.PathLike():
+                self._session.verify = str(config.tls_ca_bundle)
 
         retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
         self._session.mount("http", HTTPAdapter(max_retries=retries))
