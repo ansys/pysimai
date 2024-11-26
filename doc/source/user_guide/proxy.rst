@@ -32,17 +32,17 @@ Because your web browser uses a special
 `proxy auto-configuration <https://en.wikipedia.org/wiki/Proxy_auto-config>`_ file, the
 proxy is not trusted by your computer.
 
-To fix the issue:
+There are multiple ways to fix this issue:
 
-1. Extract the certificates used by your company-configured browser on ``https://simai.ansys.com``.
-2. Set the ``REQUESTS_CA_BUNDLE`` environment variable:
+1. Try ``tls_ca_bundle="system"`` (see :ref:`configuration`).
+2. Extract the CA certificate from your web browser:
 
-   .. code:: python
+    a. Extract the certificates used by your company-configured browser on ``https://simai.ansys.com``.
+    b. Set ``tls_ca_bundle`` (or the ``REQUESTS_CA_BUNDLE`` environment variable):
 
-     import os
-     from pathlib import Path
+       .. code-block:: TOML
 
-     os.environ["REQUESTS_CA_BUNDLE"] = Path(
-         "~/Downloads/ansys-simai-chain.pem"
-     ).expanduser()
-     client = ansys.simai.core.from_config()
+         [default]
+         organization = "company"
+         tls_ca_bundle = "/home/username/Documents/my_company_proxy_ca_bundle.pem"
+3. As a temporary last resort, one can use ``tls_ca_bundle="unsecure-none"`` (contact your IT department)
