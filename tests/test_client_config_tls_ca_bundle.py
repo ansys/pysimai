@@ -39,7 +39,8 @@ from ansys.simai.core import SimAIClient
 # SETUP
 #
 @pytest.fixture(scope="module")
-def tls_root_certificate(tmp_path):
+def tls_root_certificate(tmp_path_factory):
+    tmp_path = tmp_path_factory.mktemp("tls_root_certificate")
     # Create CA key and certificate
     subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", tmp_path / "ca_key.pem", "-out", tmp_path / "test_ca.pem", "-days", "3650", "-subj", "/CN=Test CA"], check=False)  # fmt: skip # noqa: S607, S603
     # Create server key and certificate
@@ -74,10 +75,10 @@ def https_server(tls_root_certificate):
         httpd.socket,
         server_side=True,
     )
-    server_thread = threading.Thread(target=httpd.serve_forever)
+    server_thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     server_thread.start()
-
-    return "https://localhost:48219"
+    yield "https://localhost:48219"
+    httpd.shutdown()
 
 
 BASE_CLT_ARGS = {
@@ -97,18 +98,18 @@ def test_client_without_config_tls_ca_bundle(tls_root_certificate, https_server)
     clt = SimAIClient(**BASE_CLT_ARGS)
     # By default, the self-signed test CA is not accepted
     with pytest.raises(err.ConnectionError):
-        clt._api._get("https://localhost:48219")
+        clt._api._get(https_server)
     # One can use REQUESTS_CA_BUNDLE
-    with patch.dict(os.environ, {"REQUESTS_CA_BUNDLE": tls_root_certificate["ca"]}):
-        clt._api._get("https://localhost:48219", return_json=False)
+    with patch.dict(os.environ, {"REQUESTS_CA_BUNDLE": str(tls_root_certificate["ca"])}):
+        clt._api._get(https_server, return_json=False)
 
 
-@pytest.mark.skipIf(sys.version_info < (3, 10), "Requires Python 3.10+")
+@pytest.mark.skipif(sys.version_info < (3, 10), reason='"system" requires Python >= 3.10')
 def test_client_config_tls_ca_bundle_system(tls_root_certificate, https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="system")
     # The system CA rejects the test CA by default
     with pytest.raises(err.ConnectionError):
-        clt._api._get("https://localhost:48219")
+        clt._api._get(https_server)
 
     # If the host system trusts the test CA, pysimai trusts it !
     @contextlib.contextmanager
@@ -119,20 +120,22 @@ def test_client_config_tls_ca_bundle_system(tls_root_certificate, https_server):
     with patch(
         "truststore._api._configure_context", side_effect=load_test_ca_as_truststore_system_ca
     ):
-        clt._api._get("https://localhost:48219", return_json=False)
+        clt._api._get(https_server, return_json=False)
 
 
-@pytest.mark.skipIf(sys.version_info >= (3, 10), "Requires Python < 3.10")
-def test_client_config_tls_ca_bundle_system_on_usupported_python_version(tls_root_certificate, https_server):
+@pytest.mark.skipif(
+    sys.version_info >= (3, 10), reason="The error is only raised for python < 3.10"
+)
+def test_client_config_tls_ca_bundle_system_on_usupported_python_version():
     with pytest.raises(err.ConfigurationError, match="python >= 3.10"):
         SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="system")
 
 
 def test_client_config_tls_ca_bundle_unsecure_none(https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="unsecure-none")
-    clt._api._get("https://localhost:48219", return_json=False)
+    clt._api._get(https_server, return_json=False)
 
 
 def test_client_config_tls_ca_bundle_path(tls_root_certificate, https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle=tls_root_certificate["ca"])
-    clt._api._get("https://localhost:48219", return_json=False)
+    clt._api._get(https_server, return_json=False)

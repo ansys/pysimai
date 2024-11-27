@@ -62,13 +62,12 @@ class ApiClientMixin:
 
     def __init__(self, *args, config: ClientConfig):  # noqa: D107
         self._session = requests.Session()
-        match config.tls_ca_bundle:
-            case "system":
-                self._session.mount("https://", TruststoreAdapter())
-            case "unsecure-none":
-                self._session.verify = False
-            case os.PathLike():
-                self._session.verify = str(config.tls_ca_bundle)
+        if config.tls_ca_bundle == "system":
+            self._session.mount("https://", TruststoreAdapter())
+        elif config.tls_ca_bundle == "unsecure-none":
+            self._session.verify = False
+        elif isinstance(config.tls_ca_bundle, os.PathLike):
+            self._session.verify = str(config.tls_ca_bundle)
 
         retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
         self._session.mount("http", HTTPAdapter(max_retries=retries))
