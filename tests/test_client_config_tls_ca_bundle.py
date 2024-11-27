@@ -122,6 +122,12 @@ def test_client_config_tls_ca_bundle_system(tls_root_certificate, https_server):
         clt._api._get("https://localhost:48219", return_json=False)
 
 
+@pytest.mark.skipIf(sys.version_info >= (3, 10), "Requires Python < 3.10")
+def test_client_config_tls_ca_bundle_system_on_usupported_python_version(tls_root_certificate, https_server):
+    with pytest.raises(err.ConfigurationError, match="python >= 3.10"):
+        SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="system")
+
+
 def test_client_config_tls_ca_bundle_unsecure_none(https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="unsecure-none")
     clt._api._get("https://localhost:48219", return_json=False)

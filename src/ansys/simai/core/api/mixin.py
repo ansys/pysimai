@@ -23,6 +23,7 @@
 import logging
 import os
 import ssl
+import sys
 from io import BytesIO
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Optional, Union
@@ -36,7 +37,7 @@ from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
 from ansys.simai.core import __version__
 from ansys.simai.core.data.types import APIResponse, File, MonitorCallback
-from ansys.simai.core.errors import ConnectionError
+from ansys.simai.core.errors import ConfigurationError, ConnectionError
 from ansys.simai.core.utils.auth import Authenticator
 from ansys.simai.core.utils.configuration import ClientConfig
 from ansys.simai.core.utils.files import file_path_to_obj_file
@@ -47,6 +48,9 @@ logger = logging.getLogger(__name__)
 
 class TruststoreAdapter(HTTPAdapter):
     def init_poolmanager(self, *a, **kw):
+        if sys.version_info < (3, 10):
+            raise ConfigurationError("The system CA store can only be used with python >= 3.10")
+
         import truststore
 
         ctx = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
