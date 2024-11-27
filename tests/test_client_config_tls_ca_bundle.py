@@ -104,7 +104,10 @@ def test_client_without_config_tls_ca_bundle(tls_root_certificate, https_server)
         clt._api._get(https_server, return_json=False)
 
 
-@pytest.mark.skipif(sys.version_info < (3, 10), reason='"system" requires Python >= 3.10')
+@pytest.mark.skipif(
+    sys.version_info < (3, 11),
+    reason='"system" requires Python >= 3.10, "patch" is broken in python 3.10',
+)
 def test_client_config_tls_ca_bundle_system(tls_root_certificate, https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="system")
     # The system CA rejects the test CA by default
