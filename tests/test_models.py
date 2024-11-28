@@ -485,10 +485,12 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
     THEN a ProcessingError is thrown.
     """
 
+    sample_raw = deepcopy(SAMPLE_RAW)
+
     raw_project = {
         "id": MODEL_RAW["project_id"],
         "name": "fifi",
-        "sample": SAMPLE_RAW,
+        "sample": sample_raw,
     }
 
     raw_project["sample"]["extracted_metadata"].pop("volume")
@@ -508,17 +510,15 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
     model_output = ModelOutput(surface=[], volume=["Velocity_0"])
     global_coefficients = []
 
-    model_conf = ModelConfiguration(
-        project=project,
-        build_preset="debug",
-        continuous=False,
-        input=model_input,
-        output=model_output,
-        global_coefficients=global_coefficients,
-    )
-
     with pytest.raises(ProcessingError):
-        model_conf._to_payload()
+        _ = ModelConfiguration(
+            project=project,
+            build_preset="debug",
+            continuous=False,
+            input=model_input,
+            output=model_output,
+            global_coefficients=global_coefficients,
+        )
 
 
 @responses.activate
@@ -543,7 +543,7 @@ def test_post_process_input(simai_client):
     project: Project = simai_client._project_directory._model_from(raw_project)
     project.verify_gc_formula = Mock()
 
-    pp_input = PostProcessInput(surface=["Temperature_1"])
+    pp_input = PostProcessInput(surface=["TurbulentViscosity"])
 
     model_conf_dict = deepcopy(MODEL_CONF_RAW)
     model_conf_dict["fields"].pop("volume")
@@ -648,3 +648,37 @@ def test_failed_build_with_resolution(simai_client):
     with pytest.raises(ApiClientError) as e:
         simai_client.models.build(new_conf)
     assert "This is a resolution." in str(e.value)
+
+
+@responses.activate
+def test_throw_error_when_unknown_variables(simai_client):
+    """WHEN input/output/pp_input variables are not found in the reference sample
+    THEN a ProcessingError is raised.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "pp_newnew",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    mdl_config = ModelConfiguration(project=project)
+
+    unknown_vars = ["abc1", "abc2"]
+
+    with pytest.raises(ProcessingError) as e:
+        mdl_config.input = ModelInput(surface=unknown_vars)
+    for ukn_var in unknown_vars:
+        assert ukn_var in str(e.value)
+
+    with pytest.raises(ProcessingError) as e:
+        mdl_config.output = ModelOutput(surface=unknown_vars)
+    for ukn_var in unknown_vars:
+        assert ukn_var in str(e.value)
+
+    with pytest.raises(ProcessingError) as e:
+        mdl_config.output = ModelOutput(volume=unknown_vars)
+    for ukn_var in unknown_vars:
+        assert ukn_var in str(e.value)
