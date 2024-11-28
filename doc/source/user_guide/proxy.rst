@@ -34,8 +34,8 @@ proxy is not trusted by your computer.
 
 There are multiple ways to fix this issue:
 
-1. Try ``tls_ca_bundle="system"`` (see :ref:`configuration`).
-2. Extract the CA certificate from your web browser:
+1. Try ``tls_ca_bundle="system"`` (requires ``python>=3.10``, see :ref:`configuration`).
+2. Extract the required CA certificate:
 
     a. Extract the certificates used by your company-configured browser on ``https://simai.ansys.com``.
     b. Set ``tls_ca_bundle`` (or the ``REQUESTS_CA_BUNDLE`` environment variable):
@@ -45,4 +45,4 @@ There are multiple ways to fix this issue:
          [default]
          organization = "company"
          tls_ca_bundle = "/home/username/Documents/my_company_proxy_ca_bundle.pem"
-3. As a temporary last resort, one can use ``tls_ca_bundle="unsecure-none"`` (contact your IT department)
+3. As a temporary last resort, one can use ``tls_ca_bundle="unsecure-none"`` (contact your IT department).
