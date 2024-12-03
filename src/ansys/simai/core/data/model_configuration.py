@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Any, Literal, Optional
+from typing import TYPE_CHECKING, Any, List, Literal, Optional
 
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
 from ansys.simai.core.utils.misc import dict_get
@@ -223,7 +223,7 @@ class ModelConfiguration:
                     | *2_days*: < 2 days, default value.
 
                     | *7_days*: < 1 week
-        continuous: indicates if continuous learning is enabled. Default is False.
+        build_on_top: indicates if build_on_top learning is enabled. Default is False.
         input: the inputs of the model.
         output: the outputs of the model.
         global_coefficients: the Global Coefficients of the model.
@@ -275,7 +275,7 @@ class ModelConfiguration:
             new_conf = ModelConfiguration(
                 project=aero_dyn_project,
                 build_preset="debug",
-                continuous=False,
+                build_on_top=False,
                 input=model_input,
                 output=model_output,
                 global_coefficients=global_coefficients,
@@ -283,12 +283,12 @@ class ModelConfiguration:
                 pp_input=pp_input,
             )
 
-            # Launch a mode build with the new configuration
+            # Launch a model build with the new configuration
             new_model = simai.models.build(new_conf)
     """
 
     project: "Optional[Project]" = None
-    continuous: bool = False
+    build_on_top: bool = False
     input: ModelInput = field(default_factory=lambda: ModelInput())
     output: ModelOutput = field(default_factory=lambda: ModelOutput())
     domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
@@ -335,7 +335,7 @@ class ModelConfiguration:
         project: "Project",
         boundary_conditions: Optional[dict[str, Any]] = None,
         build_preset: Optional[str] = "debug",
-        continuous: bool = False,
+        build_on_top: bool = False,
         fields: Optional[dict[str, Any]] = None,
         global_coefficients: Optional[list[GlobalCoefficientDefinition]] = None,
         simulation_volume: Optional[dict[str, Any]] = None,
@@ -358,7 +358,7 @@ class ModelConfiguration:
         if boundary_conditions is not None and self.input.boundary_conditions is None:
             self.input.boundary_conditions = list(boundary_conditions.keys())
         self.build_preset = build_preset
-        self.continuous = continuous
+        self.build_on_top = build_on_top
         if fields is not None:
             if fields.get("surface_input"):
                 self.input.surface = [fd.get("name") for fd in fields["surface_input"]]
@@ -464,13 +464,24 @@ class ModelConfiguration:
         return {
             "boundary_conditions": bcs,
             "build_preset": SupportedBuildPresets[self.build_preset],
-            "continuous": self.continuous,
+            "continuous": self.build_on_top,
             "fields": flds,
             "global_coefficients": gcs,
             "simulation_volume": simulation_volume,
         }
 
-    def compute_global_coefficient(self):
+    @classmethod
+    def _from_payload(cls, **kwargs) -> "ModelConfiguration":
+        # Retrieve SDK version of build preset from API version of build preset
+        build_preset = next(
+            (k for k, v in SupportedBuildPresets.items() if v == kwargs.get("build_preset")), None
+        )
+        kwargs["build_preset"] = build_preset
+        if build_on_top := kwargs.pop("continuous", None):
+            kwargs["build_on_top"] = build_on_top
+        return ModelConfiguration(**kwargs)
+
+    def compute_global_coefficient(self) -> List[float]:
         """Computes the results of the formula for all global coefficients with respect to the project's sample."""
 
         if self.project is None:
