@@ -1,6 +1,33 @@
 Changelog
 ---------
 
+Unreleased
+**********
+
+Fixes:
+
+- Type hints on ``SimAIClient`` off by one
+
+0.2.5 (2024-11-05)
+******************
+
+New:
+
+- Allow users to cancel build with :py:meth:`Project.cancel_build()<ansys.simai.core.data.projects.Project.cancel_build>`
+- Filter training data in :py:meth:`simai.training_data.list()<ansys.simai.core.data.training_data.TrainingDataDirectory.list>`
+- Added experimental :py:meth:`Optimization.run_non_parametric()<ansys.simai.core.data.optimizations.OptimizationDirectory.run_non_parametric>`
+- Added an example section to the documentation
+
+Changes:
+
+- `Optimization.run()` is now :py:meth:`Optimization.run()<ansys.simai.core.data.optimizations.OptimizationDirectory.run_parametric>` and checks that the generation function has a suitable signature
+- Remove deprecated design of experiments feature
+- Resolution steps are now printed upon error if any
+
+Fixes:
+
+- Correct payload for surface post-processing inputs on model build
+
 0.2.4 (2024-09-23)
 ******************
 
@@ -89,7 +116,7 @@ New:
 
 Fixes:
 
-- The method :py:meth:`Optimization.run()<ansys.simai.core.data.optimizations.OptimizationDirectory.run>` now raises an exception if no workspace is provided and none is configured.
+- The method `Optimization.run()<ansys.simai.core.data.optimizations.OptimizationDirectory.run>` now raises an exception if no workspace is provided and none is configured.
 - Fix RecursionError on authentication refresh
 
 0.1.5 (2024-04-15)

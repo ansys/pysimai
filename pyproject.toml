@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "ansys-simai-core"
-version = "0.2.4"
+version = "0.2.5"
 description = "A python wrapper for Ansys SimAI"
 authors = [
     {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
@@ -39,10 +39,9 @@ dependencies = [
     "wakepy>=0.8.0",
     "tqdm>=4.66.1",
     "filelock>=3.10.7",
+    "typing_extensions>=4.12.0",
+    "truststore>=0.10.0; python_version >= '3.10'",
 ]
-
-[project.module]
-name = "ansys.simai.core"
 
 [tool.flit.module]
 name = "ansys.simai.core"

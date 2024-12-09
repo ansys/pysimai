@@ -226,12 +226,18 @@ def test_build_with_last_config(simai_client):
         json=raw_project,
         status=200,
     )
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
     project.verify_gc_formula = Mock()
 
-    in_model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    in_model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     launched_model: Model = simai_client.models.build(in_model_conf)
 
@@ -261,6 +267,12 @@ def test_build_with_new_config(simai_client):
         json=raw_project,
         status=200,
     )
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
@@ -280,7 +292,7 @@ def test_build_with_new_config(simai_client):
     new_conf = ModelConfiguration(
         project=project,
         build_preset="debug",
-        continuous=False,
+        build_on_top=False,
         input=model_input,
         output=model_output,
         global_coefficients=global_coefficients,
@@ -317,7 +329,7 @@ def test_set_doa(simai_client):
 
     project.verify_gc_formula = Mock()
 
-    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     new_height = {"position": "relative_to_center", "value": 0.5, "length": 15.2}
 
@@ -344,7 +356,7 @@ def test_get_doa(simai_client):
 
     project.verify_gc_formula = Mock()
 
-    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     doa_length_raw = MODEL_CONF_RAW.get("simulation_volume").get("X")
 
@@ -436,7 +448,7 @@ def test_exception_compute_global_coefficient(simai_client):
 
     project.verify_gc_formula = Mock()
 
-    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     model_conf.project = None
 
@@ -449,7 +461,7 @@ def test_exception_setting_global_coefficient():
     THEN an error is raise."""
 
     with pytest.raises(ProcessingError):
-        ModelConfiguration(project=None, **MODEL_CONF_RAW)
+        ModelConfiguration._from_payload(project=None, **MODEL_CONF_RAW)
 
 
 def test_sse_event_handler(simai_client, model_factory):
@@ -511,7 +523,7 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
     global_coefficients = []
 
     with pytest.raises(ProcessingError):
-        _ = ModelConfiguration(
+        _ = ModelConfiguration._from_payload(
             project=project,
             build_preset="debug",
             continuous=False,
@@ -539,6 +551,12 @@ def test_post_process_input(simai_client):
         json=raw_project,
         status=200,
     )
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
     project.verify_gc_formula = Mock()
@@ -559,7 +577,7 @@ def test_post_process_input(simai_client):
     model_request = deepcopy(MODEL_RAW)
     model_request["configuration"] = model_conf_dict
 
-    config_with_pp_input = ModelConfiguration(
+    config_with_pp_input = ModelConfiguration._from_payload(
         project=project,
         **model_conf_dict,
         pp_input=pp_input,
@@ -606,6 +624,12 @@ def test_failed_build_with_resolution(simai_client):
         json=raw_project,
         status=200,
     )
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
@@ -619,7 +643,7 @@ def test_failed_build_with_resolution(simai_client):
         height=hght,
     )
 
-    new_conf = ModelConfiguration(
+    new_conf = ModelConfiguration._from_payload(
         project=project,
         build_preset="debug",
         domain_of_analysis=doa,

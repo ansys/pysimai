@@ -23,6 +23,7 @@
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
+from ansys.simai.core.errors import InvalidArguments
 
 
 class Model(ComputableDataModel):
@@ -39,7 +40,7 @@ class Model(ComputableDataModel):
     @property
     def configuration(self) -> ModelConfiguration:
         """Build configuration of a model."""
-        return ModelConfiguration(
+        return ModelConfiguration._from_payload(
             project=self._client.projects.get(self.fields["project_id"]),
             **self.fields["configuration"],
         )
@@ -99,6 +100,12 @@ class ModelDirectory(Directory[Model]):
                 new_model = simai.models.build(build_conf)
 
         """
+        if not configuration.project:
+            raise InvalidArguments("The model configuration does not have a project set")
+
+        is_trainable = configuration.project.is_trainable()
+        if not is_trainable:
+            raise InvalidArguments(f"Cannot train model because: {is_trainable.reason}")
 
         return self._model_from(
             self._client._api.launch_build(

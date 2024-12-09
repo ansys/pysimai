@@ -22,7 +22,8 @@
 
 import hashlib
 import logging
-from typing import Optional
+from os import PathLike
+from typing import Literal, Optional, Union
 from urllib.parse import urlparse, urlunparse
 
 from pydantic import (
@@ -79,36 +80,36 @@ class Credentials(BaseModel, extra="forbid"):
 
 
 class ClientConfig(BaseModel, extra="allow"):
-    interactive: Optional[bool] = Field(
-        default=True, description="If True, it enables interaction with the terminal."
-    )
-    url: HttpUrl = Field(
-        default=HttpUrl("https://api.simai.ansys.com/v2/"),
-        description="URL to the SimAI API.",
-    )
-    organization: str = Field(
-        default=None,
-        validate_default=True,
-        description="Name of the organization(/company) that the user belongs to.",
-    )
+    interactive: Optional[bool] = True
+    "If True, it enables interaction with the terminal."
+    url: HttpUrl = HttpUrl("https://api.simai.ansys.com/v2/")
+    "URL to the SimAI API."
+    organization: str = Field(None, validate_default=True)
+    "Name of the organization(/company) that the user belongs to."
+    workspace: Optional[str] = None
+    "Name of the workspace to use by default."
+    project: Optional[str] = None
+    "Name of the project to use by default."
     credentials: Optional[Credentials] = Field(
         default=None,
         validate_default=True,
-        description="Authenticate via username/password instead of the device authorization code.",
     )
-    workspace: Optional[str] = Field(
-        default=None, description="Name of the workspace to use by default."
-    )
-    project: Optional[str] = Field(
-        default=None, description="Name of the project to use by default."
-    )
-    https_proxy: Optional[AnyHttpUrl] = Field(
-        default=None, description="URL of the HTTPS proxy to use."
-    )
-    skip_version_check: bool = Field(default=False, description="Skip checking for updates.")
-    no_sse_connection: bool = Field(
-        default=False, description="Don't receive live updates from the SimAI API."
-    )
+    "Authenticate via username/password instead of the device authorization code."
+    skip_version_check: bool = False
+    "Skip checking for updates."
+    no_sse_connection: bool = False
+    "Don't receive live updates from the SimAI API."
+    https_proxy: Optional[AnyHttpUrl] = None
+    "URL of the HTTPS proxy to use."
+    tls_ca_bundle: Union[Literal["system", "unsecure-none"], PathLike, None] = None
+    """
+    Custom TLS CA certificate configuration. Possible values:
+
+    * ``None``: use secure defaults
+    * ``"system"``: uses system CA certificates (python >= 3.10)
+    * A ``PathLike`` object: use a custom CA
+    * ``"unsecure-none"``: no TLS certificate validation
+    """
 
     @field_validator("url", mode="before")
     def clean_url(cls, url):

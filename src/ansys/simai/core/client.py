@@ -24,7 +24,6 @@ import logging
 from typing import List, Optional
 
 from pydantic import ValidationError
-from semver.version import Version
 
 from ansys.simai.core import __version__
 from ansys.simai.core.api.client import ApiClient
@@ -36,7 +35,7 @@ from ansys.simai.core.data.global_coefficients_requests import (
 from ansys.simai.core.data.models import ModelDirectory
 from ansys.simai.core.data.optimizations import (
     OptimizationDirectory,
-    OptimizationTrialRunDirectory,
+    _OptimizationTrialRunDirectory,
 )
 from ansys.simai.core.data.post_processings import PostProcessingDirectory
 from ansys.simai.core.data.predictions import PredictionDirectory
@@ -54,7 +53,8 @@ from ansys.simai.core.errors import (
 )
 from ansys.simai.core.utils.config_file import get_config
 from ansys.simai.core.utils.configuration import ClientConfig
-from ansys.simai.core.utils.typing import steal_kwargs_type
+from ansys.simai.core.utils.misc import notify_if_package_outdated
+from ansys.simai.core.utils.typing import steal_kwargs_type_on_method
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class SimAIClient:
             )
     """
 
-    @steal_kwargs_type(ClientConfig)
+    @steal_kwargs_type_on_method(ClientConfig)
     def __init__(self, **kwargs):
         try:
             config = ClientConfig(**kwargs)
@@ -87,7 +87,7 @@ class SimAIClient:
         self._compute_gc_formula_directory = ComputeGlobalCoefficientDirectory(client=self)
         self._geometry_directory = GeometryDirectory(client=self)
         self._optimization_directory = OptimizationDirectory(client=self)
-        self._optimization_trial_run_directory = OptimizationTrialRunDirectory(client=self)
+        self._optimization_trial_run_directory = _OptimizationTrialRunDirectory(client=self)
         self._post_processing_directory = PostProcessingDirectory(client=self)
         self._project_directory = ProjectDirectory(client=self)
         self._model_directory = ModelDirectory(client=self)
@@ -324,26 +324,15 @@ class SimAIClient:
                 raise errors[0]
             raise MultipleErrors(errors)
 
-    def _check_for_new_version(self, client_name="ansys.simai.core", current_version=__version__):
+    def _check_for_new_version(self) -> None:
         try:
-            latest_version = self._api._get(f"info/{client_name}/version")["version"]
-            version_current = Version.parse(current_version)
-            version_latest = Version.parse(latest_version)
-        except (SimAIError, ValueError):
-            pass
-        else:
-            if version_current < version_latest:
-                warn_template = (
-                    f"A new version of {client_name} is %s. "
-                    "Upgrade to get new features and ensure compatibility with the server."
-                )
-                if (
-                    version_current.major < version_latest.major
-                    or version_current.minor < version_latest.minor
-                ):
-                    raise SimAIError(warn_template % "required")
-                else:
-                    logger.warning(warn_template % "available")
+            latest_version = self._api._get("https://pypi.org/pypi/ansys-simai-core/json")["info"][
+                "version"
+            ]
+        except (SimAIError, KeyError) as e:
+            logger.debug(f"Could not query package version on pypi: {e}")
+            return None
+        notify_if_package_outdated("ansys-simai-core", __version__, latest_version)
 
 
 from_config = SimAIClient.from_config
