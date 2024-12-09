@@ -339,9 +339,9 @@ class ModelConfiguration:
 
     def __validate_surface_variables(self, vars_to_validate: list[str]):
         sample_metadata = self.project.sample.fields.get("extracted_metadata")
-        if not sample_metadata.get("volume"):
+        if not sample_metadata.get("surface"):
             raise ProcessingError(
-                "No volume file was found in the reference sample. A volume file is required to use volume variables."
+                "No surface field is found in the reference sample. A surface field is required to use surface variables."
             ) from None
         self.__validate_variables(vars_to_validate, "surface")
 
@@ -349,13 +349,15 @@ class ModelConfiguration:
         sample_metadata = self.project.sample.fields.get("extracted_metadata")
         if not sample_metadata.get("volume"):
             raise ProcessingError(
-                "No volume file was found in the reference sample. A volume file is required to use volume variables."
+                "No volume field is found in the reference sample. A volume field is required to use volume variables."
             ) from None
         self.__validate_variables(vars_to_validate, "volume")
 
     def __set_input(self, model_input: ModelInput):
         if not model_input:
-            model_input = ModelInput()
+            raise InvalidArguments(
+                "Invalid value for input; input should be an instance of ModelInput."
+            )
         if model_input.surface:
             self.__validate_surface_variables(model_input.surface)
         self.__dict__["input"] = model_input
@@ -367,7 +369,9 @@ class ModelConfiguration:
 
     def __set_output(self, model_output: ModelOutput):
         if not model_output:
-            model_output = ModelOutput()
+            raise InvalidArguments(
+                "Invalid value for output; output should be an instance of ModelOutput."
+            )
         if model_output.surface:
             self.__validate_surface_variables(model_output.surface)
 
