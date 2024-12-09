@@ -92,7 +92,7 @@ class DomainAxisDefinition:
         if val < 0 and self.position != "absolute":
             raise InvalidArguments(
                 f"{self.__class__.__name__}: 'value' must be a positive number when the position is not 'absolute'.",
-            ) from None
+            )
 
     def __set_length(self, lgth: float):
         self.__validate_length(lgth)
@@ -105,7 +105,7 @@ class DomainAxisDefinition:
         if not lgth > 0:
             raise InvalidArguments(
                 f"{self.__class__.__name__}: 'length' must be a positive number.",
-            ) from None
+            )
 
     position: Literal["relative_to_min", "relative_to_max", "relative_to_center", "absolute"]
     value: float = property(__get_value, __set_value)
@@ -299,7 +299,7 @@ class ModelConfiguration:
             if self.project is None:
                 raise ProcessingError(
                     f"{self.__class__.__name__}: a project must be defined for setting global coefficients."
-                ) from None
+                )
 
             self.project.verify_gc_formula(
                 gc_unit.formula, self.input.boundary_conditions, self.output.surface
@@ -335,14 +335,14 @@ class ModelConfiguration:
         if unknown_variables:
             raise ProcessingError(
                 f"{self.__class__.__name__}: {var_type} variables {', '.join(unknown_variables)} do not exist in the reference sample."
-            ) from None
+            )
 
     def __validate_surface_variables(self, vars_to_validate: list[str]):
         sample_metadata = self.project.sample.fields.get("extracted_metadata")
         if not sample_metadata.get("surface"):
             raise ProcessingError(
                 "No surface field is found in the reference sample. A surface field is required to use surface variables."
-            ) from None
+            )
         self.__validate_variables(vars_to_validate, "surface")
 
     def __validate_volume_variables(self, vars_to_validate: list[str]):
@@ -350,7 +350,7 @@ class ModelConfiguration:
         if not sample_metadata.get("volume"):
             raise ProcessingError(
                 "No volume field is found in the reference sample. A volume field is required to use volume variables."
-            ) from None
+            )
         self.__validate_variables(vars_to_validate, "volume")
 
     def __set_input(self, model_input: ModelInput):
@@ -541,7 +541,7 @@ class ModelConfiguration:
         if self.project is None:
             raise ProcessingError(
                 f"{self.__class__.__name__}: a project must be a defined for computing the global coefficient formula."
-            ) from None
+            )
 
         return [
             self.project.compute_gc_formula(
