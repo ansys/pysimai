@@ -52,7 +52,7 @@ Content
 
 You write the configuration file in `TOML <https://toml.io/>`_.
 From this file, you can pass parameters for configuring
-the :class:`~ansys.simai.core.client.SimAIClient` instance.
+the :class:`~ansys.simai.core.client.SimAIClient` instance (see :ref:`configuration`).
 
 
 Example
@@ -68,18 +68,6 @@ Example
    password = "hunter12"
    totp_enabled = true
 
-
-Proxy
-"""""
-
-If your network is situated behind a proxy, you must add its address
-in a ``https_proxy`` key in the ``[default]`` block:
-
-.. code-block:: TOML
-
-   [default]
-   organization = "company"
-   https_proxy = "http://company_proxy_host:3128" # replacing host and port by the real value
 
 Profiles
 --------

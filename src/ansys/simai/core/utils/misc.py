@@ -21,7 +21,12 @@
 # SOFTWARE.
 
 import getpass
+import logging
 from typing import Any, Dict, Optional
+
+from semver.version import Version
+
+logger = logging.getLogger(__name__)
 
 
 def prompt_for_input(name: str, hide_input: Optional[bool] = False):
@@ -41,3 +46,24 @@ def dict_get(obj: dict, *keys: str, default=None):
     for k in keys:
         obj = obj.get(k, {}) or {}
     return obj or default
+
+
+def notify_if_package_outdated(package: str, current_version: str, latest_version: str):
+    try:
+        version_current = Version.parse(current_version)
+        version_latest = Version.parse(latest_version)
+    except ValueError as e:
+        logger.debug(f"Could not parse package version: {e}")
+    else:
+        if version_current < version_latest:
+            warn_template = (
+                f"A new version of {package} is %s. "
+                "Upgrade to get new features and ensure compatibility with the server."
+            )
+            if (
+                version_current.major < version_latest.major
+                or version_current.minor < version_latest.minor
+            ):
+                logger.critical(warn_template % "required")
+            else:
+                logger.warning(warn_template % "available")

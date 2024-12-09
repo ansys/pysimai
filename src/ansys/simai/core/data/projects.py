@@ -27,6 +27,7 @@ from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
+from ansys.simai.core.utils.numerical import cast_values_to_float
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.global_coefficients_requests import (
@@ -124,16 +125,18 @@ class Project(DataModel):
     @property
     def last_model_configuration(self) -> ModelConfiguration:
         """Last :class:`configuration <ansys.simai.core.data.model_configuration.ModelConfiguration>` used for model training in this project."""
-        return ModelConfiguration(project=self, **self.fields.get("last_model_configuration"))
+        return ModelConfiguration._from_payload(
+            project=self, **self.fields.get("last_model_configuration")
+        )
+
+    def is_trainable(self) -> IsTrainableInfo:
+        """Check if the project meets the prerequisites to be trained."""
+        tt = self._client._api.is_project_trainable(self.id)
+        return IsTrainableInfo(**tt)
 
     def delete(self) -> None:
         """Delete the project."""
         self._client._api.delete_project(self.id)
-
-    def is_trainable(self) -> bool:
-        """Check if the project meets the prerequisites to be trained."""
-        tt = self._client._api.is_project_trainable(self.id)
-        return IsTrainableInfo(**tt)
 
     def get_variables(self) -> Optional[Dict[str, List[str]]]:
         """Get the available variables for the model's input/output."""
@@ -177,7 +180,7 @@ class Project(DataModel):
 
     def compute_gc_formula(
         self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
-    ):
+    ) -> float:
         """Compute the result of a global coefficient formula according to the project sample."""
 
         if not self.sample:
@@ -203,7 +206,7 @@ class Project(DataModel):
         gc_compute.run()
         gc_compute.wait()
 
-        return gc_compute.result if gc_compute.is_ready else None
+        return cast_values_to_float(gc_compute.result["value"])
 
     def cancel_build(self):
         """Cancels a build if there is one pending."""

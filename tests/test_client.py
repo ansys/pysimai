@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import functools
 from pathlib import Path
 
 import pytest
@@ -40,19 +39,27 @@ def test_client_creation_invalid_config():
         SimAIClient.from_config(path=Path(__file__).resolve())
 
 
+@pytest.mark.parametrize(
+    "local_ver,latest_ver,expected",
+    [
+        ("1.1.0", "1.1.1", "available."),
+        ("1.0.9-rc8", "1.0.9", "available."),
+        ("1.0.9", "1.9.0", "required."),
+    ],
+)
 @responses.activate
-def test_client_version_auto_warn(caplog, mocker):
+def test_client_version_auto_warn(caplog, mocker, local_ver, latest_ver, expected):
     """WHEN the SDK version is slightly outdated compared to what the API responds
     THEN a warning is printed
     """
     mocker.patch(
-        "ansys.simai.core.client.SimAIClient._check_for_new_version",
-        functools.partialmethod(SimAIClient._check_for_new_version, current_version="1.1.0"),
+        "ansys.simai.core.client.__version__",
+        local_ver,
     )
     responses.add(
         responses.GET,
-        "https://test.test/info/ansys.simai.core/version",
-        json={"version": "1.1.1"},
+        "https://pypi.org/pypi/ansys-simai-core/json",
+        json={"info": {"version": latest_ver}},
         status=200,
     )
     SimAIClient(
@@ -62,30 +69,4 @@ def test_client_version_auto_warn(caplog, mocker):
         no_sse_connection=True,
         skip_version_check=False,
     )
-    assert "A new version of ansys.simai.core is available" in caplog.text
-
-
-@responses.activate
-def test_client_version_auto_error(caplog, mocker):
-    """WHEN the SDK version is grossly outdated compared to what the API responds
-    THEN an exception is raised
-    """
-    mocker.patch(
-        "ansys.simai.core.client.SimAIClient._check_for_new_version",
-        functools.partialmethod(SimAIClient._check_for_new_version, current_version="1.0.9-rc8"),
-    )
-    responses.add(
-        responses.GET,
-        "https://test.test/info/ansys.simai.core/version",
-        json={"version": "1.9.0"},
-        status=200,
-    )
-    with pytest.raises(err.SimAIError) as exc:
-        SimAIClient(
-            url="https://test.test",
-            organization="dummy",
-            _disable_authentication=True,
-            no_sse_connection=True,
-            skip_version_check=False,
-        )
-    assert "A new version of ansys.simai.core is required" in str(exc.value)
+    assert f"A new version of ansys-simai-core is {expected}" in caplog.text

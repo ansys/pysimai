@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Any, Literal, Optional
+from typing import TYPE_CHECKING, Any, List, Literal, Optional
 
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
 from ansys.simai.core.utils.misc import dict_get
@@ -92,7 +92,7 @@ class DomainAxisDefinition:
         if val < 0 and self.position != "absolute":
             raise InvalidArguments(
                 f"{self.__class__.__name__}: 'value' must be a positive number when the position is not 'absolute'.",
-            ) from None
+            )
 
     def __set_length(self, lgth: float):
         self.__validate_length(lgth)
@@ -105,7 +105,7 @@ class DomainAxisDefinition:
         if not lgth > 0:
             raise InvalidArguments(
                 f"{self.__class__.__name__}: 'length' must be a positive number.",
-            ) from None
+            )
 
     position: Literal["relative_to_min", "relative_to_max", "relative_to_center", "absolute"]
     value: float = property(__get_value, __set_value)
@@ -223,7 +223,7 @@ class ModelConfiguration:
                     | *2_days*: < 2 days, default value.
 
                     | *7_days*: < 1 week
-        continuous: indicates if continuous learning is enabled. Default is False.
+        build_on_top: indicates if build_on_top learning is enabled. Default is False.
         input: the inputs of the model.
         output: the outputs of the model.
         global_coefficients: the Global Coefficients of the model.
@@ -275,7 +275,7 @@ class ModelConfiguration:
             new_conf = ModelConfiguration(
                 project=aero_dyn_project,
                 build_preset="debug",
-                continuous=False,
+                build_on_top=False,
                 input=model_input,
                 output=model_output,
                 global_coefficients=global_coefficients,
@@ -283,16 +283,13 @@ class ModelConfiguration:
                 pp_input=pp_input,
             )
 
-            # Launch a mode build with the new configuration
+            # Launch a model build with the new configuration
             new_model = simai.models.build(new_conf)
     """
 
     project: "Optional[Project]" = None
-    continuous: bool = False
-    input: ModelInput = field(default_factory=lambda: ModelInput())
-    output: ModelOutput = field(default_factory=lambda: ModelOutput())
+    build_on_top: bool = False
     domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
-    pp_input: PostProcessInput = field(default_factory=lambda: PostProcessInput())
 
     def __set_gc(self, gcs: list[GlobalCoefficientDefinition]):
         verified_gcs = []
@@ -302,7 +299,7 @@ class ModelConfiguration:
             if self.project is None:
                 raise ProcessingError(
                     f"{self.__class__.__name__}: a project must be defined for setting global coefficients."
-                ) from None
+                )
 
             self.project.verify_gc_formula(
                 gc_unit.formula, self.input.boundary_conditions, self.output.surface
@@ -330,12 +327,82 @@ class ModelConfiguration:
 
     build_preset = property(__get_build_preset, __set_build_preset)
 
+    def __validate_variables(self, vars_to_validate: list[str], var_type: str):
+        sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        var_fields = dict_get(sample_metadata, var_type, "fields", default=[])
+        var_fields_name = {fd.get("name") for fd in var_fields}
+        unknown_variables = set(vars_to_validate) - var_fields_name
+        if unknown_variables:
+            raise ProcessingError(
+                f"{self.__class__.__name__}: {var_type} variables {', '.join(unknown_variables)} do not exist in the reference sample."
+            )
+
+    def __validate_surface_variables(self, vars_to_validate: list[str]):
+        sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        if not sample_metadata.get("surface"):
+            raise ProcessingError(
+                "No surface field is found in the reference sample. A surface field is required to use surface variables."
+            )
+        self.__validate_variables(vars_to_validate, "surface")
+
+    def __validate_volume_variables(self, vars_to_validate: list[str]):
+        sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        if not sample_metadata.get("volume"):
+            raise ProcessingError(
+                "No volume field is found in the reference sample. A volume field is required to use volume variables."
+            )
+        self.__validate_variables(vars_to_validate, "volume")
+
+    def __set_input(self, model_input: ModelInput):
+        if not model_input:
+            raise InvalidArguments(
+                "Invalid value for input; input should be an instance of ModelInput."
+            )
+        if model_input.surface:
+            self.__validate_surface_variables(model_input.surface)
+        self.__dict__["input"] = model_input
+
+    def __get_input(self):
+        return self.__dict__.get("input")
+
+    input = property(__get_input, __set_input)
+
+    def __set_output(self, model_output: ModelOutput):
+        if not model_output:
+            raise InvalidArguments(
+                "Invalid value for output; output should be an instance of ModelOutput."
+            )
+        if model_output.surface:
+            self.__validate_surface_variables(model_output.surface)
+
+        if model_output.volume:
+            self.__validate_volume_variables(model_output.volume)
+
+        self.__dict__["output"] = model_output
+
+    def __get_output(self):
+        return self.__dict__.get("output")
+
+    output = property(__get_output, __set_output)
+
+    def __set_pp_input(self, pp_input: PostProcessInput):
+        if not pp_input:
+            pp_input = PostProcessInput()
+        if pp_input.surface:
+            self.__validate_surface_variables(pp_input.surface)
+        self.__dict__["pp_input"] = pp_input
+
+    def __get_pp_input(self):
+        return self.__dict__.get("pp_input")
+
+    pp_input = property(__get_pp_input, __set_pp_input)
+
     def __init__(
         self,
         project: "Project",
         boundary_conditions: Optional[dict[str, Any]] = None,
         build_preset: Optional[str] = "debug",
-        continuous: bool = False,
+        build_on_top: bool = False,
         fields: Optional[dict[str, Any]] = None,
         global_coefficients: Optional[list[GlobalCoefficientDefinition]] = None,
         simulation_volume: Optional[dict[str, Any]] = None,
@@ -358,7 +425,7 @@ class ModelConfiguration:
         if boundary_conditions is not None and self.input.boundary_conditions is None:
             self.input.boundary_conditions = list(boundary_conditions.keys())
         self.build_preset = build_preset
-        self.continuous = continuous
+        self.build_on_top = build_on_top
         if fields is not None:
             if fields.get("surface_input"):
                 self.input.surface = [fd.get("name") for fd in fields["surface_input"]]
@@ -408,34 +475,22 @@ class ModelConfiguration:
             bcs = {bc_name: {} for bc_name in self.input.boundary_conditions}
 
         sample_metadata = self.project.sample.fields.get("extracted_metadata")
+        surface_fields = dict_get(sample_metadata, "surface", "fields", default=[])
+        volume_fields = dict_get(sample_metadata, "volume", "fields", default=[])
 
         surface_input_fld = []
         if self.input.surface is not None:
             surface_input_fld = [
-                fd
-                for fd in sample_metadata.get("surface").get("fields")
-                if fd.get("name") in self.input.surface
+                fd for fd in surface_fields if fd.get("name") in self.input.surface
             ]
 
         surface_fld = []
         if self.output.surface is not None:
-            surface_fld = [
-                fd
-                for fd in sample_metadata.get("surface").get("fields")
-                if fd.get("name") in self.output.surface
-            ]
+            surface_fld = [fd for fd in surface_fields if fd.get("name") in self.output.surface]
 
         volume_fld = []
         if self.output.volume:
-            if not sample_metadata.get("volume"):
-                raise ProcessingError(
-                    "No volume file was found in the reference sample. A volume file is required to use volume variables."
-                ) from None
-            volume_fld = [
-                fd
-                for fd in sample_metadata["volume"].get("fields")
-                if fd.get("name") in self.output.volume
-            ]
+            volume_fld = [fd for fd in volume_fields if fd.get("name") in self.output.volume]
 
         gcs = []
         if self.global_coefficients is not None:
@@ -443,9 +498,8 @@ class ModelConfiguration:
 
         surface_pp_input_fld = []
         if self.pp_input.surface is not None:
-            suface_fields = dict_get(sample_metadata, "surface", "fields", default=[])
             surface_pp_input_fld = [
-                fd for fd in suface_fields if fd.get("name") in self.pp_input.surface
+                fd for fd in surface_fields if fd.get("name") in self.pp_input.surface
             ]
 
         flds = {
@@ -464,19 +518,30 @@ class ModelConfiguration:
         return {
             "boundary_conditions": bcs,
             "build_preset": SupportedBuildPresets[self.build_preset],
-            "continuous": self.continuous,
+            "continuous": self.build_on_top,
             "fields": flds,
             "global_coefficients": gcs,
             "simulation_volume": simulation_volume,
         }
 
-    def compute_global_coefficient(self):
+    @classmethod
+    def _from_payload(cls, **kwargs) -> "ModelConfiguration":
+        # Retrieve SDK version of build preset from API version of build preset
+        build_preset = next(
+            (k for k, v in SupportedBuildPresets.items() if v == kwargs.get("build_preset")), None
+        )
+        kwargs["build_preset"] = build_preset
+        if build_on_top := kwargs.pop("continuous", None):
+            kwargs["build_on_top"] = build_on_top
+        return ModelConfiguration(**kwargs)
+
+    def compute_global_coefficient(self) -> List[float]:
         """Computes the results of the formula for all global coefficients with respect to the project's sample."""
 
         if self.project is None:
             raise ProcessingError(
                 f"{self.__class__.__name__}: a project must be a defined for computing the global coefficient formula."
-            ) from None
+            )
 
         return [
             self.project.compute_gc_formula(

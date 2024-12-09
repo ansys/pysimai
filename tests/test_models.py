@@ -226,12 +226,18 @@ def test_build_with_last_config(simai_client):
         json=raw_project,
         status=200,
     )
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
     project.verify_gc_formula = Mock()
 
-    in_model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    in_model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     launched_model: Model = simai_client.models.build(in_model_conf)
 
@@ -261,6 +267,12 @@ def test_build_with_new_config(simai_client):
         json=raw_project,
         status=200,
     )
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
@@ -280,7 +292,7 @@ def test_build_with_new_config(simai_client):
     new_conf = ModelConfiguration(
         project=project,
         build_preset="debug",
-        continuous=False,
+        build_on_top=False,
         input=model_input,
         output=model_output,
         global_coefficients=global_coefficients,
@@ -317,7 +329,7 @@ def test_set_doa(simai_client):
 
     project.verify_gc_formula = Mock()
 
-    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     new_height = {"position": "relative_to_center", "value": 0.5, "length": 15.2}
 
@@ -344,7 +356,7 @@ def test_get_doa(simai_client):
 
     project.verify_gc_formula = Mock()
 
-    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     doa_length_raw = MODEL_CONF_RAW.get("simulation_volume").get("X")
 
@@ -436,7 +448,7 @@ def test_exception_compute_global_coefficient(simai_client):
 
     project.verify_gc_formula = Mock()
 
-    model_conf = ModelConfiguration(project=project, **MODEL_CONF_RAW)
+    model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     model_conf.project = None
 
@@ -449,7 +461,7 @@ def test_exception_setting_global_coefficient():
     THEN an error is raise."""
 
     with pytest.raises(ProcessingError):
-        ModelConfiguration(project=None, **MODEL_CONF_RAW)
+        ModelConfiguration._from_payload(project=None, **MODEL_CONF_RAW)
 
 
 def test_sse_event_handler(simai_client, model_factory):
@@ -485,10 +497,12 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
     THEN a ProcessingError is thrown.
     """
 
+    sample_raw = deepcopy(SAMPLE_RAW)
+
     raw_project = {
         "id": MODEL_RAW["project_id"],
         "name": "fifi",
-        "sample": SAMPLE_RAW,
+        "sample": sample_raw,
     }
 
     raw_project["sample"]["extracted_metadata"].pop("volume")
@@ -508,17 +522,15 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
     model_output = ModelOutput(surface=[], volume=["Velocity_0"])
     global_coefficients = []
 
-    model_conf = ModelConfiguration(
-        project=project,
-        build_preset="debug",
-        continuous=False,
-        input=model_input,
-        output=model_output,
-        global_coefficients=global_coefficients,
-    )
-
     with pytest.raises(ProcessingError):
-        model_conf._to_payload()
+        _ = ModelConfiguration._from_payload(
+            project=project,
+            build_preset="debug",
+            continuous=False,
+            input=model_input,
+            output=model_output,
+            global_coefficients=global_coefficients,
+        )
 
 
 @responses.activate
@@ -539,11 +551,17 @@ def test_post_process_input(simai_client):
         json=raw_project,
         status=200,
     )
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
     project.verify_gc_formula = Mock()
 
-    pp_input = PostProcessInput(surface=["Temperature_1"])
+    pp_input = PostProcessInput(surface=["TurbulentViscosity"])
 
     model_conf_dict = deepcopy(MODEL_CONF_RAW)
     model_conf_dict["fields"].pop("volume")
@@ -559,7 +577,7 @@ def test_post_process_input(simai_client):
     model_request = deepcopy(MODEL_RAW)
     model_request["configuration"] = model_conf_dict
 
-    config_with_pp_input = ModelConfiguration(
+    config_with_pp_input = ModelConfiguration._from_payload(
         project=project,
         **model_conf_dict,
         pp_input=pp_input,
@@ -606,6 +624,12 @@ def test_failed_build_with_resolution(simai_client):
         json=raw_project,
         status=200,
     )
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
@@ -619,7 +643,7 @@ def test_failed_build_with_resolution(simai_client):
         height=hght,
     )
 
-    new_conf = ModelConfiguration(
+    new_conf = ModelConfiguration._from_payload(
         project=project,
         build_preset="debug",
         domain_of_analysis=doa,
@@ -648,3 +672,37 @@ def test_failed_build_with_resolution(simai_client):
     with pytest.raises(ApiClientError) as e:
         simai_client.models.build(new_conf)
     assert "This is a resolution." in str(e.value)
+
+
+@responses.activate
+def test_throw_error_when_unknown_variables(simai_client):
+    """WHEN input/output/pp_input variables are not found in the reference sample
+    THEN a ProcessingError is raised.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "pp_newnew",
+        "sample": SAMPLE_RAW,
+    }
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    mdl_config = ModelConfiguration(project=project)
+
+    unknown_vars = ["abc1", "abc2"]
+
+    with pytest.raises(ProcessingError) as e:
+        mdl_config.input = ModelInput(surface=unknown_vars)
+    for ukn_var in unknown_vars:
+        assert ukn_var in str(e.value)
+
+    with pytest.raises(ProcessingError) as e:
+        mdl_config.output = ModelOutput(surface=unknown_vars)
+    for ukn_var in unknown_vars:
+        assert ukn_var in str(e.value)
+
+    with pytest.raises(ProcessingError) as e:
+        mdl_config.output = ModelOutput(volume=unknown_vars)
+    for ukn_var in unknown_vars:
+        assert ukn_var in str(e.value)

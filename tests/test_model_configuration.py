@@ -45,3 +45,41 @@ def test_build_preset_error(simai_client):
         )
 
         assert f"{list(SupportedBuildPresets)}" in excinfo.value
+
+
+def test_model_input_not_none(simai_client):
+    """WHEN ModelConfiguration.input gets a None value
+    THEN an InvalidArgument is raised."""
+
+    raw_project = {
+        "id": "xX007Xx",
+        "name": "fifi",
+    }
+
+    project = simai_client._project_directory._model_from(raw_project)
+
+    bld_conf = ModelConfiguration(
+        project=project,
+    )
+
+    with pytest.raises(InvalidArguments):
+        bld_conf.input = None
+
+
+def test_model_output_not_none(simai_client):
+    """WHEN ModelConfiguration.input gets a None value
+    THEN an InvalidArgument is raised."""
+
+    raw_project = {
+        "id": "xX007Xx",
+        "name": "fifi",
+    }
+
+    project = simai_client._project_directory._model_from(raw_project)
+
+    bld_conf = ModelConfiguration(
+        project=project,
+    )
+
+    with pytest.raises(InvalidArguments):
+        bld_conf.output = None

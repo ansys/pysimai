@@ -5,7 +5,7 @@
 groups = ["default", "doc", "linting", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:f468459c4c870aaff4722a0c872be718af9d9b6dacb6dad5dae0134b0826abbf"
+content_hash = "sha256:53567da81d0f9c7e5545bc0330d4ebe0ddffe60732da514f1ad5b227da1d97c1"
 
 [[metadata.targets]]
 requires_python = "~=3.9"
@@ -1370,6 +1370,18 @@ dependencies = [
 files = [
     {file = "tqdm-4.67.0-py3-none-any.whl", hash = "sha256:0cd8af9d56911acab92182e88d763100d4788bdf421d251616040cc4d44863be"},
     {file = "tqdm-4.67.0.tar.gz", hash = "sha256:fe5a6f95e6fe0b9755e9469b77b9c3cf850048224ecaa8293d7d2d31f97d869a"},
+]
+
+[[package]]
+name = "truststore"
+version = "0.10.0"
+requires_python = ">=3.10"
+summary = "Verify certificates using native system trust stores"
+groups = ["default"]
+marker = "python_version >= \"3.10\""
+files = [
+    {file = "truststore-0.10.0-py3-none-any.whl", hash = "sha256:b3798548e421ffe2ca2a6217cca49e7a17baf40b72d86a5505dc7d701e77d15b"},
+    {file = "truststore-0.10.0.tar.gz", hash = "sha256:5da347c665714fdfbd46f738c823fe9f0d8775e41ac5fb94f325749091187896"},
 ]
 
 [[package]]
