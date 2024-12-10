@@ -159,8 +159,8 @@ PDM commands can help you build or publish the package
 
 .. code:: bash
 
-    pdm build
-    pdm publish
+   pdm build
+   pdm publish
 
 
 .. LINKS AND REFERENCES

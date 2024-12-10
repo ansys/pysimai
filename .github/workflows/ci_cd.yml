@@ -61,16 +61,20 @@ jobs:
     steps:
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: pdm install --dev
-      - name: Generate test requirements
-        run: mkdir requirements && pdm export -G test --no-default -o requirements/requirements_tests.txt
-      - uses: ansys/actions/tests-pytest@v8
-        with:
-          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
-          checkout: false
-          python-version: ${{ matrix.python-version }}
+      - name: run tests
+        run: pdm run pytest --cov=ansys --cov-report=term --cov-report=html:.cov/html
+      # - name: Generate test requirements
+      #   run: mkdir requirements && pdm export -G test --no-default -o requirements/requirements_tests.txt
+      # - uses: ansys/actions/tests-pytest@v8
+      #   with:
+      #     pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
+      #     checkout: false
+      #     python-version: ${{ matrix.python-version }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         if: matrix.python-version ==  ${{ env.MAIN_PYTHON_VERSION }} && matrix.os == 'ubuntu-latest'
