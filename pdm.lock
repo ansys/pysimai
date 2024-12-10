@@ -3,7 +3,7 @@
 
 [metadata]
 groups = ["default", "doc", "linting", "test"]
-strategy = ["cross_platform", "inherit_metadata"]
+strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
 content_hash = "sha256:53567da81d0f9c7e5545bc0330d4ebe0ddffe60732da514f1ad5b227da1d97c1"
 
