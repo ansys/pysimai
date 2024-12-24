@@ -480,7 +480,7 @@ class PredictionPostProcessings:
                 The default is ``True``. If ``False``, the postprocessing is not
                 computed, and ``None`` is returned if it does not exist yet.
             pp_location: the post-processing data location. It can be one of
-                :class:`PPSurfaceLocation`, otherwise a nvalidArgument error
+                :class:`PPSurfaceLocation`, otherwise an InvalidArgument error
                 is raised. Default is PPSurfaceLocation.ON_CELLS.
 
         Returns:
