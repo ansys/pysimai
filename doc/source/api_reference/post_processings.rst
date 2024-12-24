@@ -56,6 +56,14 @@ Available postprocessings
     :members:
 
 
+.. autoclass:: PostProcessingOnCells()
+    :members:
+
+
+.. autoclass:: PostProcessingAsLearnt()
+    :members:
+
+
 .. autoclass:: VolumeVTU()
     :members:
 
@@ -68,4 +76,7 @@ Helpers
 -------
 
 .. autoclass:: DownloadableResult()
+    :members:
+
+.. autoclass:: PPSurfaceLocation()
     :members:
