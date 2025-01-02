@@ -193,16 +193,16 @@ class GlobalCoefficients(ExportablePostProcessing):
         }
 
 
-class SurfaceEvol(ExportablePostProcessing):
-    """Provides the representation of the ``SurfaceEvol`` object.
+class SurfaceEvolution(ExportablePostProcessing):
+    """Provides the representation of the ``SurfaceEvolution`` object.
 
-    This class is generated through :meth:`PredictionPostProcessings.surface_evol()`
+    This class is generated through :meth:`PredictionPostProcessings.surface_evolution()`
     """
 
     @property
     def data(self) -> DownloadableResult:
         """:class:`DownloadableResult` object that allows access to the
-        ``SurfaceEvol`` JSON data, both directly in memory any by downloading it
+        ``SurfaceEvolution`` JSON data, both directly in memory any by downloading it
         into a file.
 
         Accessing this property blocks until the data is ready.
@@ -212,11 +212,16 @@ class SurfaceEvol(ExportablePostProcessing):
         return DownloadableResult(results["data"]["resources"]["json"], self._client)
 
     def as_dict(self) -> Dict[str, Any]:
-        """Download the SurfaceEvol JSON data and load it as a Python dictionary.
+        """Download the SurfaceEvolution JSON data and load it as a Python dictionary.
 
         Accessing this help method blocks until the data is ready.
         """
         return json.load(self.data.in_memory())
+
+    @classmethod
+    def _api_name(cls) -> str:
+        # Name of the postprocessing in API calls. Overriding because the endpoint is SurfaceEvol not SurfaceEvolution
+        return "SurfaceEvol"
 
 
 class Slice(PostProcessing):
@@ -340,10 +345,12 @@ class PredictionPostProcessings:
         """
         return self._get_or_run(GlobalCoefficients, {}, run)
 
-    def surface_evol(self, axis: str, delta: float, run: bool = True) -> Optional[SurfaceEvol]:
-        """Compute or get the SurfaceEvol for specific parameters.
+    def surface_evolution(
+        self, axis: str, delta: float, run: bool = True
+    ) -> Optional[SurfaceEvolution]:
+        """Compute or get the SurfaceEvolution for specific parameters.
 
-        This is a non-blocking method. It returns the ``SurfaceEvol``
+        This is a non-blocking method. It returns the ``SurfaceEvolution``
         object without waiting. This object may not have data right away
         if computation is still in progress. Data is filled
         asynchronously once the computation is finished.
@@ -355,21 +362,21 @@ class PredictionPostProcessings:
         same parameters do not relaunch it.
 
         Args:
-            axis: Axis to compute the surface evol for.
+            axis: Axis to compute the surface evolution for.
             delta: Increment of the abscissa in meters.
             run: Boolean indicating whether to compute or get the postprocessing.
                 The default is ``True``. If ``False``, the postprocessing is not
                 computed, and ``None`` is returned if it does not exist yet.
 
         Returns:
-            ``SurfaceEvol`` that allows access to the values.
+            ``SurfaceEvolution`` that allows access to the values.
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
         """
         if axis not in ["x", "y", "z"]:
             raise TypeError("Axis must be x, y, or z.")
         if not isinstance(delta, numbers.Number) or not (delta > 0):
             raise TypeError(f"Delta must be a positive number (got: {delta}).")
-        return self._get_or_run(SurfaceEvol, {"axis": axis, "delta": delta}, run)
+        return self._get_or_run(SurfaceEvolution, {"axis": axis, "delta": delta}, run)
 
     def slice(
         self, axis: str, coordinate: float, format: str = "png", run: bool = True
@@ -603,7 +610,7 @@ Attach the required file to enable CustomVolumePointCloud postprocessing."""
         exits, it gets it.
         """
         # FIXME frozenset(params.items()) works as long as there are no
-        # collision between params (axis and delta for surface evol, param for slice)
+        # collision between params (axis and delta for surface evolution, param for slice)
         # but will be broken if a new type of postprocessings can have
         # two params with the same value.
         params_frozen = frozenset(params.items())
@@ -746,7 +753,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
                 simai = ansys.simai.core.from_config()
                 prediction = simai.predictions.list()[0]
                 post_processings = simai.post_processings.list(
-                    ansys.simai.core.SurfaceEvol, prediction.id
+                    ansys.simai.core.SurfaceEvolution, prediction.id
                 )
         """
         pp_type_str = post_processing_type._api_name() if post_processing_type else None

@@ -26,7 +26,12 @@ import math
 import pytest
 import responses
 
-from ansys.simai.core.data.post_processings import GlobalCoefficients, Slice, SurfaceEvol, VolumeVTU
+from ansys.simai.core.data.post_processings import (
+    GlobalCoefficients,
+    Slice,
+    SurfaceEvolution,
+    VolumeVTU,
+)
 from ansys.simai.core.errors import ApiClientError
 
 
@@ -97,8 +102,8 @@ def test_post_processing_vtu(prediction_factory):
 
 
 @responses.activate
-def test_post_processing_surface_evol(prediction_factory):
-    """WHEN Running a SurfaceEvol post-processing on a prediction
+def test_post_processing_surface_evolution(prediction_factory):
+    """WHEN Running a SurfaceEvolution post-processing on a prediction
     THEN a POST request is made on the post-processings/SurfaceEvol endpoint
     AND on subsequent access, the endpoint is not called
     """
@@ -119,28 +124,28 @@ def test_post_processing_surface_evol(prediction_factory):
         callback=request_callback,
     )
 
-    surface_evol = pred.post.surface_evol(axis="x", delta=5)
-    assert isinstance(surface_evol, SurfaceEvol)
-    assert surface_evol.id == "7894"
+    surface_evolution = pred.post.surface_evolution(axis="x", delta=5)
+    assert isinstance(surface_evolution, SurfaceEvolution)
+    assert surface_evolution.id == "7894"
 
-    surface_evol = pred.post.surface_evol(axis="y", delta=9.5)
-    assert isinstance(surface_evol, SurfaceEvol)
-    assert surface_evol.id == "1111"
+    surface_evolution = pred.post.surface_evolution(axis="y", delta=9.5)
+    assert isinstance(surface_evolution, SurfaceEvolution)
+    assert surface_evolution.id == "1111"
 
     # call the post-processings with same parameters again
-    surface_evol = pred.post.surface_evol(axis="x", delta=5)
-    assert surface_evol.id == "7894"
+    surface_evolution = pred.post.surface_evolution(axis="x", delta=5)
+    assert surface_evolution.id == "7894"
 
-    surface_evol = pred.post.surface_evol(axis="y", delta=9.5)
-    assert surface_evol.id == "1111"
+    surface_evolution = pred.post.surface_evolution(axis="y", delta=9.5)
+    assert surface_evolution.id == "1111"
 
     # Check the URL has been called exactly twice, only once by parameter set
     assert len(responses.calls) == 2
 
 
 @responses.activate
-def test_post_processing_surface_evol_parameters_values(prediction_factory):
-    """WHEN Running a SurfaceEvol post-processing with good parameters,
+def test_post_processing_surface_evolution_parameters_values(prediction_factory):
+    """WHEN Running a SurfaceEvolution post-processing with good parameters,
     THEN a POST request is made on the post-processings/SurfaceEvol endpoint
     AND a PostProcessing object is returned
     """
@@ -152,40 +157,40 @@ def test_post_processing_surface_evol_parameters_values(prediction_factory):
         status=200,
     )
 
-    surface_evol = pred.post.surface_evol(axis="x", delta=5)
-    assert isinstance(surface_evol, SurfaceEvol)
-    surface_evol = pred.post.surface_evol(axis="y", delta=5)
-    assert isinstance(surface_evol, SurfaceEvol)
-    surface_evol = pred.post.surface_evol(axis="z", delta=5)
-    assert isinstance(surface_evol, SurfaceEvol)
-    surface_evol = pred.post.surface_evol(axis="x", delta=1)
-    assert isinstance(surface_evol, SurfaceEvol)
-    surface_evol = pred.post.surface_evol(axis="x", delta=100)
-    assert isinstance(surface_evol, SurfaceEvol)
-    surface_evol = pred.post.surface_evol(axis="x", delta=0.0001)
-    assert isinstance(surface_evol, SurfaceEvol)
+    surface_evolution = pred.post.surface_evolution(axis="x", delta=5)
+    assert isinstance(surface_evolution, SurfaceEvolution)
+    surface_evolution = pred.post.surface_evolution(axis="y", delta=5)
+    assert isinstance(surface_evolution, SurfaceEvolution)
+    surface_evolution = pred.post.surface_evolution(axis="z", delta=5)
+    assert isinstance(surface_evolution, SurfaceEvolution)
+    surface_evolution = pred.post.surface_evolution(axis="x", delta=1)
+    assert isinstance(surface_evolution, SurfaceEvolution)
+    surface_evolution = pred.post.surface_evolution(axis="x", delta=100)
+    assert isinstance(surface_evolution, SurfaceEvolution)
+    surface_evolution = pred.post.surface_evolution(axis="x", delta=0.0001)
+    assert isinstance(surface_evolution, SurfaceEvolution)
 
 
 @responses.activate
-def test_post_processing_surface_evol_with_wrong_parameters(prediction_factory):
-    """WHEN Running a SurfaceEvol PP with missing or wrong parameters,
+def test_post_processing_surface_evolution_with_wrong_parameters(prediction_factory):
+    """WHEN Running a SurfaceEvolution PP with missing or wrong parameters,
     THEN a TypeError exception is raised
     """
     pred = prediction_factory()
     with pytest.raises(TypeError):
-        pred.post.surface_evol()
+        pred.post.surface_evolution()
     with pytest.raises(TypeError):
-        pred.post.surface_evol(axis="x")
+        pred.post.surface_evolution(axis="x")
     with pytest.raises(TypeError):
-        pred.post.surface_evol(delta=5)
+        pred.post.surface_evolution(delta=5)
     with pytest.raises(TypeError):
-        pred.post.surface_evol(axis="y", delta=-10)
+        pred.post.surface_evolution(axis="y", delta=-10)
     with pytest.raises(TypeError):
-        pred.post.surface_evol(axis="y", delta="10")
+        pred.post.surface_evolution(axis="y", delta="10")
     with pytest.raises(TypeError):
-        pred.post.surface_evol(axis="b", delta=10)
+        pred.post.surface_evolution(axis="b", delta=10)
     with pytest.raises(TypeError):
-        pred.post.surface_evol(plane=[1, 2, 3, 4])
+        pred.post.surface_evolution(plane=[1, 2, 3, 4])
 
 
 @responses.activate
@@ -272,7 +277,7 @@ def test_post_processing_request_failure_raises_exception(prediction_factory):
         status=400,
     )
     with pytest.raises(ApiClientError):
-        pred.post.surface_evol(axis="x", delta=45)
+        pred.post.surface_evolution(axis="x", delta=45)
 
 
 @responses.activate
@@ -306,7 +311,7 @@ def test_post_processing_get(simai_client):
     responses.add(
         responses.GET,
         "https://test.test/post-processings/0002",
-        json={"id": "0002", "type": "SurfaceEvol"},
+        json={"id": "0002", "type": "SurfaceEvolution"},
         status=200,
     )
     responses.add(
@@ -327,7 +332,7 @@ def test_post_processing_get(simai_client):
     )
     assert isinstance(
         simai_client._post_processing_directory.get("0002"),
-        SurfaceEvol,
+        SurfaceEvolution,
     )
     assert isinstance(simai_client._post_processing_directory.get("0003"), Slice)
     assert isinstance(simai_client._post_processing_directory.get("0004"), VolumeVTU)

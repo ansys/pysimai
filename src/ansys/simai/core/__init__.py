@@ -35,7 +35,7 @@ from ansys.simai.core.data.post_processings import (
     CustomVolumePointCloud,
     GlobalCoefficients,
     Slice,
-    SurfaceEvol,
+    SurfaceEvolution,
     SurfaceVTP,
     VolumeVTU,
 )

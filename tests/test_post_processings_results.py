@@ -30,7 +30,7 @@ from ansys.simai.core.data.post_processings import (
     DownloadableResult,
     GlobalCoefficients,
     Slice,
-    SurfaceEvol,
+    SurfaceEvolution,
     SurfaceVTP,
     VolumeVTU,
 )
@@ -99,8 +99,8 @@ def test_post_processing_result_global_coefficients(simai_client):
 
 
 @responses.activate
-def test_post_processing_result_surface_evol(simai_client):
-    """WHEN Running a SurfaceEvol post-processing on a prediction and calling its .data field,
+def test_post_processing_result_surface_evolution(simai_client):
+    """WHEN Running a SurfaceEvolution post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a dictionary containing the expected data
     ALSO multiple accesses to .data don't call the endpoint multiple times
@@ -179,15 +179,15 @@ def test_post_processing_result_surface_evol(simai_client):
     )
 
     pred = simai_client._prediction_directory._model_from({"id": "r26g04j8", "state": "successful"})
-    surface_evol = pred.post.surface_evol(axis="x", delta=5)
+    surface_evolution = pred.post.surface_evolution(axis="x", delta=5)
 
-    assert isinstance(surface_evol, SurfaceEvol)
-    assert isinstance(surface_evol.data, DownloadableResult)
-    surface_evol_dict = surface_evol.as_dict()
-    assert len(surface_evol_dict) == 3
-    assert surface_evol_dict["WallShearStress"]["data"]["X"][0] == 107167.4091582841
+    assert isinstance(surface_evolution, SurfaceEvolution)
+    assert isinstance(surface_evolution.data, DownloadableResult)
+    surface_evolution_dict = surface_evolution.as_dict()
+    assert len(surface_evolution_dict) == 3
+    assert surface_evolution_dict["WallShearStress"]["data"]["X"][0] == 107167.4091582841
 
-    # we have used surface_evol.data twice, generating 2 hits to the endpoint
+    # we have used surface_evolution.data twice, generating 2 hits to the endpoint
     assert responses.assert_call_count("https://test.test/post-processings/4c7r4c", 2)
 
 

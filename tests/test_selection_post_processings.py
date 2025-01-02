@@ -26,7 +26,7 @@ import responses
 from ansys.simai.core.data.post_processings import (
     GlobalCoefficients,
     Slice,
-    SurfaceEvol,
+    SurfaceEvolution,
     SurfaceVTP,
     VolumeVTU,
 )
@@ -79,10 +79,10 @@ def test_selection_post_processing_global_coefficients(test_selection):
 
 
 @responses.activate
-def test_selection_post_processing_surface_evol(test_selection):
-    """WHEN I call post.post.surface_evol() on a selection
+def test_selection_post_processing_surface_evolution(test_selection):
+    """WHEN I call post.post.surface_evolution() on a selection
     THEN the /SurfaceEvol endpoint is called for each prediction in the selection
-    AND I get a list of SurfaceEvol objects in return
+    AND I get a list of SurfaceEvolution objects in return
     """
     assert len(test_selection.points) == 2
 
@@ -93,11 +93,11 @@ def test_selection_post_processing_surface_evol(test_selection):
             json={"id": f"se{num}", "state": "successful"},
             status=200,
         )
-    post_processings = test_selection.post.surface_evol(axis="x", delta=0.02)
+    post_processings = test_selection.post.surface_evolution(axis="x", delta=0.02)
     assert isinstance(post_processings, ExportablePPList)
     assert len(post_processings) == 2
     for pp in post_processings:
-        assert isinstance(pp, SurfaceEvol)
+        assert isinstance(pp, SurfaceEvolution)
 
 
 @responses.activate
