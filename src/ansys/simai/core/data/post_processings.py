@@ -310,6 +310,10 @@ class PPSurfaceLocation(Enum):
     ON_CELLS = PostProcessingOnCells
 
 
+SurfacePpOutputs = Union[PostProcessingOnCells, PostProcessingAsLearnt]
+"""Collection of surface post-processing outputs."""
+
+
 class CustomVolumePointCloud(PostProcessing):
     """Provides a representation of a CustomVolumePointCloud post-processing.
 
@@ -463,7 +467,7 @@ class PredictionPostProcessings:
 
     def surface_vtp(
         self, run: bool = True, pp_location: PPSurfaceLocation = PPSurfaceLocation.ON_CELLS
-    ) -> Optional[_SurfaceVTP]:
+    ) -> Optional[SurfacePpOutputs]:
         """Compute or get the result of the prediction's surface in VTP format.
 
         This is a non-blocking method. It returns the ``PostProcessingVTP``

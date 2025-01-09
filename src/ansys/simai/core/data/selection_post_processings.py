@@ -28,8 +28,8 @@ from ansys.simai.core.data.post_processings import (
     PPSurfaceLocation,
     Slice,
     SurfaceEvol,
+    SurfacePpOutputs,
     VolumeVTU,
-    _SurfaceVTP,
 )
 
 if TYPE_CHECKING:
@@ -147,7 +147,7 @@ class SelectionPostProcessingsMethods:
 
     def surface_vtp(
         self, pp_location: PPSurfaceLocation = PPSurfaceLocation.ON_CELLS
-    ) -> PPList[_SurfaceVTP]:
+    ) -> PPList[SurfacePpOutputs]:
         """Compute or get the result of each prediction's surface in the VTP format.
 
         This is a non-blocking method. It returns a
