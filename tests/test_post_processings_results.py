@@ -35,8 +35,8 @@ from ansys.simai.core.data.post_processings import (
     PPSurfaceLocation,
     Slice,
     SurfaceEvol,
-    SurfaceVTP,
     VolumeVTU,
+    _SurfaceVTP,
 )
 from ansys.simai.core.errors import InvalidArguments
 
@@ -337,7 +337,7 @@ def test_post_processing_result_surface_vtp(simai_client):
 
     pred = simai_client._prediction_directory._model_from({"id": "7546", "state": "successful"})
     surface_vtp = pred.post.surface_vtp()
-    assert isinstance(surface_vtp, SurfaceVTP)
+    assert isinstance(surface_vtp, _SurfaceVTP)
     assert isinstance(surface_vtp.data, DownloadableResult)
     # Test a binary download
     binary_io = surface_vtp.data.in_memory()
@@ -404,7 +404,7 @@ def test_error_in_wrong_location_in_post_processing_surface_vtp(simai_client):
 
     pred = simai_client._prediction_directory._model_from({"id": "7546", "state": "successful"})
 
-    class TestClass(SurfaceVTP):
+    class TestClass(_SurfaceVTP):
         pass
 
     with pytest.raises(InvalidArguments) as ex:

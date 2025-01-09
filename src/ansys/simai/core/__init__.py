@@ -34,8 +34,9 @@ from ansys.simai.core.client import SimAIClient, from_config
 from ansys.simai.core.data.post_processings import (
     CustomVolumePointCloud,
     GlobalCoefficients,
+    PostProcessingAsLearnt,
+    PostProcessingOnCells,
     Slice,
     SurfaceEvol,
-    SurfaceVTP,
     VolumeVTU,
 )

@@ -29,8 +29,8 @@ from ansys.simai.core.data.post_processings import (
     PPSurfaceLocation,
     Slice,
     SurfaceEvol,
-    SurfaceVTP,
     VolumeVTU,
+    _SurfaceVTP,
 )
 from ansys.simai.core.data.selection_post_processings import ExportablePPList, PPList
 from ansys.simai.core.data.selections import Selection
@@ -180,7 +180,7 @@ def test_selection_post_processing_surface_vtp(test_selection):
     assert isinstance(post_processings, PPList)
     assert len(post_processings) == 2
     for pp in post_processings:
-        assert isinstance(pp, SurfaceVTP)
+        assert isinstance(pp, _SurfaceVTP)
 
 
 @responses.activate

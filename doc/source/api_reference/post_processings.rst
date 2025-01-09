@@ -52,10 +52,6 @@ Available postprocessings
     :members:
 
 
-.. autoclass:: SurfaceVTP()
-    :members:
-
-
 .. autoclass:: PostProcessingOnCells()
     :members:
 

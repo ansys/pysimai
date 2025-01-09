@@ -28,8 +28,8 @@ from ansys.simai.core.data.post_processings import (
     PPSurfaceLocation,
     Slice,
     SurfaceEvol,
-    SurfaceVTP,
     VolumeVTU,
+    _SurfaceVTP,
 )
 
 if TYPE_CHECKING:
@@ -147,12 +147,13 @@ class SelectionPostProcessingsMethods:
 
     def surface_vtp(
         self, pp_location: PPSurfaceLocation = PPSurfaceLocation.ON_CELLS
-    ) -> PPList[SurfaceVTP]:
+    ) -> PPList[_SurfaceVTP]:
         """Compute or get the result of each prediction's surface in the VTP format.
 
         This is a non-blocking method. It returns a
         :py:class:`~ansys.simai.core.data.lists.PPList` instance of
-        :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP`
+        :py:class:`~ansys.simai.core.data.post_processings.PostProcessingOnCells` or
+        :py:class:`~ansys.simai.core.data.post_processings.PostProcessingAsLearnt`,
         objects without waiting. Those ``PostProcessing`` objects may not have
         data right away if the computation is still in progress. Data is filled
         asynchronously once the computation is finished.
@@ -170,7 +171,8 @@ class SelectionPostProcessingsMethods:
 
         Returns:
             :py:class:`~ansys.simai.core.data.lists.PPList` instance of
-            :py:class:`~ansys.simai.core.data.post_processings.SurfaceVTP` objects.
+            :py:class:`~ansys.simai.core.data.post_processings.PostProcessingOnCells` or
+            :py:class:`~ansys.simai.core.data.post_processings.PostProcessingAsLearnt` objects.
         """
         return PPList(
             selection=self._selection, post=lambda pred: pred.post.surface_vtp(True, pp_location)

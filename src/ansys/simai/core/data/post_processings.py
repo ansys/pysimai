@@ -268,14 +268,15 @@ class VolumeVTU(_PostProcessingVTKExport):
     """
 
 
-class SurfaceVTP(_PostProcessingVTKExport):
-    """Provides for exporting the surface of the prediction in VTP format.
+class _SurfaceVTP(_PostProcessingVTKExport):
+    """Exports the surface of the prediction in VTP format.
 
-    This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
+    This is the parent class for surface post-processings which are generated through
+    the :meth:`~PredictionPostProcessings.surface_vtp()` method.
     """
 
 
-class PostProcessingOnCells(SurfaceVTP):
+class PostProcessingOnCells(_SurfaceVTP):
     """Decodes the server response for the on-cells prediction of the surface in VTP format.
 
     This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
@@ -286,7 +287,7 @@ class PostProcessingOnCells(SurfaceVTP):
         return "SurfaceVTP"
 
 
-class PostProcessingAsLearnt(SurfaceVTP):
+class PostProcessingAsLearnt(_SurfaceVTP):
     """Decodes the server response for the as-learnt prediction of the surface in VTP format.
 
     This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
@@ -462,7 +463,7 @@ class PredictionPostProcessings:
 
     def surface_vtp(
         self, run: bool = True, pp_location: PPSurfaceLocation = PPSurfaceLocation.ON_CELLS
-    ) -> Optional[SurfaceVTP]:
+    ) -> Optional[_SurfaceVTP]:
         """Compute or get the result of the prediction's surface in VTP format.
 
         This is a non-blocking method. It returns the ``PostProcessingVTP``
@@ -484,7 +485,8 @@ class PredictionPostProcessings:
                 is raised. Default is PPSurfaceLocation.ON_CELLS.
 
         Returns:
-            :class:`SurfaceVTP` object that allows downloading the binary data.
+            :class:`PostProcessingOnCells` or :class:`PostProcessingAsLearnt` objects
+            that allows downloading the binary data.
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
 
         Examples:
