@@ -75,11 +75,11 @@ class.
 You can use the :meth:`~ansys.simai.core.data.lists.ExportablePPList.export()`
 method to export results in batch for exportable postprocessings
 (:py:class:`~ansys.simai.core.data.post_processings.GlobalCoefficients`
-and :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol` instances):
+and :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvolution` instances):
 
 .. code-block:: python
 
-    selection.post.surface_evol(axis="x", delta=13.5).export("xlsx").download(
+    selection.post.surface_evolution(axis="x", delta=13.5).export("xlsx").download(
         "/path/to/file.xlsx"
     )
 

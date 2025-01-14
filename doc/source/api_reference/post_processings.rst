@@ -43,7 +43,7 @@ Available postprocessings
     :inherited-members: PostProcessing
 
 
-.. autoclass:: SurfaceEvol()
+.. autoclass:: SurfaceEvolution()
     :members:
     :inherited-members: PostProcessing
 

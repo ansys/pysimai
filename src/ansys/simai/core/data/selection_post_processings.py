@@ -26,7 +26,7 @@ from ansys.simai.core.data.lists import ExportablePPList, PPList
 from ansys.simai.core.data.post_processings import (
     GlobalCoefficients,
     Slice,
-    SurfaceEvol,
+    SurfaceEvolution,
     SurfaceVTP,
     VolumeVTU,
 )
@@ -66,12 +66,12 @@ class SelectionPostProcessingsMethods:
             selection=self._selection, post=lambda pred: pred.post.global_coefficients()
         )
 
-    def surface_evol(self, axis: str, delta: float) -> ExportablePPList[SurfaceEvol]:
-        """Compute or get the SurfaceEvol of the predictions for specific parameters.
+    def surface_evolution(self, axis: str, delta: float) -> ExportablePPList[SurfaceEvolution]:
+        """Compute or get the SurfaceEvolution of the predictions for specific parameters.
 
         This is a non-blocking method. It returns an
         :py:class:`~ansys.simai.core.data.lists.ExportablePPList` instance
-        of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol`
+        of :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvolution`
         objects without waiting. Those ``PostProcessing`` objects may not have
         data right away if the computation is still in progress. Data is filled
         asynchronously once the computation is finished.
@@ -82,16 +82,16 @@ class SelectionPostProcessingsMethods:
         Subsequent calls with the same parameters do not relaunch it.
 
         Args:
-            axis: Axis to compute the the SurfaceEvol on.
+            axis: Axis to compute the the SurfaceEvolution on.
             delta: Increment of the abscissa in meters.
 
         Returns:
             :py:class:`~ansys.simai.core.data.lists.ExportablePPList` instance of
-            :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvol` objects.
+            :py:class:`~ansys.simai.core.data.post_processings.SurfaceEvolution` objects.
         """
         return ExportablePPList(
             selection=self._selection,
-            post=lambda pred: pred.post.surface_evol(axis, delta),
+            post=lambda pred: pred.post.surface_evolution(axis, delta),
         )
 
     def slice(self, axis: str, coordinate: float) -> PPList[Slice]:

@@ -73,13 +73,13 @@ def test_post_processing_export_global_coefficients(simai_client):
 
 
 @responses.activate
-def test_post_processing_export_surface_evol_excel(simai_client):
-    """WHEN I call export() on a SurfaceEvol post-processing
+def test_post_processing_export_surface_evolution_excel(simai_client):
+    """WHEN I call export() on a SurfaceEvolution post-processing
     THEN I get a DownloadableResult object allowing me to download the content.
     """
 
     pp = simai_client._post_processing_directory._model_from(
-        {"id": "mozeu", "type": "SurfaceEvol", "state": "successful"}
+        {"id": "mozeu", "type": "SurfaceEvolution", "state": "successful"}
     )
 
     def request_callback(request):

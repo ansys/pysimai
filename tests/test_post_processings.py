@@ -165,7 +165,7 @@ def test_post_processing_dont_run_does_not_exist_locally_with_params(
         status=200,
     )
 
-    pp = pred.post.surface_evol(axis="x", delta=0.5, run=False)
+    pp = pred.post.surface_evolution(axis="x", delta=0.5, run=False)
     assert pp.id == "0002"
 
 

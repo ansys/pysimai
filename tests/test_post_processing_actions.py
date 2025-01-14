@@ -85,10 +85,10 @@ def test_post_processing_global_coefficients_delete(prediction_factory):
 
 
 @responses.activate
-def test_post_processing_surface_evol_delete(prediction_factory):
-    """WHEN deleting a SurfaceEvol post-processing from a prediction
+def test_post_processing_surface_evolution_delete(prediction_factory):
+    """WHEN deleting a SurfaceEvolution post-processing from a prediction
     THEN there is a call to the DELETE endpoint
-    ALSO a new call to pred.post.surface_evol() re-runs the post-processing
+    ALSO a new call to pred.post.surface_evolution() re-runs the post-processing
     """
     pred = prediction_factory()
     responses.add(
@@ -119,10 +119,10 @@ def test_post_processing_surface_evol_delete(prediction_factory):
         status=204,
     )
 
-    surface_evol = pred.post.surface_evol(axis="y", delta=9.5)
-    assert surface_evol.id == "im-the-first-one"
+    surface_evolution = pred.post.surface_evolution(axis="y", delta=9.5)
+    assert surface_evolution.id == "im-the-first-one"
 
-    surface_evol.delete()
+    surface_evolution.delete()
 
-    surface_evol = pred.post.surface_evol(axis="y", delta=9.5)
-    assert surface_evol.id == "im-the-second-one"
+    surface_evolution = pred.post.surface_evolution(axis="y", delta=9.5)
+    assert surface_evolution.id == "im-the-second-one"
