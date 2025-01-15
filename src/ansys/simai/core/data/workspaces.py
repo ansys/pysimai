@@ -43,11 +43,6 @@ class ModelManifest:
         return self._raw["model_name"]
 
     @property
-    def version(self) -> str:
-        """Version of the software running the model."""
-        return self._raw["coreml_version"]
-
-    @property
     def description(self) -> str:
         """Short description of the model."""
         return self._raw["description"]
