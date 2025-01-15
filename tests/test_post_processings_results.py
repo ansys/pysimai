@@ -23,22 +23,18 @@
 import json
 from io import BytesIO
 
-import pytest
 import responses
 
 from ansys.simai.core.data.post_processings import (
     CustomVolumePointCloud,
     DownloadableResult,
     GlobalCoefficients,
-    PostProcessingAsLearnt,
-    PostProcessingOnCells,
-    PPSurfaceLocation,
     Slice,
     SurfaceEvol,
+    SurfaceVTP,
+    SurfaceVTPTDLocation,
     VolumeVTU,
-    _SurfaceVTP,
 )
-from ansys.simai.core.errors import InvalidArguments
 
 
 @responses.activate
@@ -337,7 +333,7 @@ def test_post_processing_result_surface_vtp(simai_client):
 
     pred = simai_client._prediction_directory._model_from({"id": "7546", "state": "successful"})
     surface_vtp = pred.post.surface_vtp()
-    assert isinstance(surface_vtp, _SurfaceVTP)
+    assert isinstance(surface_vtp, SurfaceVTP)
     assert isinstance(surface_vtp.data, DownloadableResult)
     # Test a binary download
     binary_io = surface_vtp.data.in_memory()
@@ -350,12 +346,12 @@ def test_post_processing_result_surface_vtp(simai_client):
 
 
 @responses.activate
-def test_post_processing_result_surface_vtp_predict_as_learnt(simai_client):
+def test_post_processing_result_surface_vtp_td_location(simai_client):
     """WHEN Running a surface_vtp post-processing on a prediction
     WITH predict-as-learnt option (location is PPSurfaceLocation.AS_LEARNT)
     AND calling its .data field,
     THEN a GET request is made on the post-processings/SurfaceVTPTDLocation endpoint
-    AND the returned instance is of type PostProcessingAsLearnt.
+    AND the returned instance is of type SurfaceVTPTDLocation.
     """
     # Mock request for PP creation
     responses.add(
@@ -366,58 +362,11 @@ def test_post_processing_result_surface_vtp_predict_as_learnt(simai_client):
     )
 
     pred = simai_client._prediction_directory._model_from({"id": "7546", "state": "successful"})
-    surface_vtp = pred.post.surface_vtp(pp_location=PPSurfaceLocation.AS_LEARNT)
+    surface_vtp = pred.post.surface_vtp_td_location()
     assert responses.assert_call_count(
         "https://test.test/predictions/7546/post-processings/SurfaceVTPTDLocation", 1
     )
-    assert isinstance(surface_vtp, PostProcessingAsLearnt)
-
-
-@responses.activate
-def test_post_processing_result_surface_vtp_predict_on_cells(simai_client):
-    """WHEN Running a surface_vtp post-processing on a prediction
-    WITH predict-on-cells option (location is PPSurfaceLocation.ON_CELLS)
-    THEN a GET request is made on the post-processings/SurfaceVTP endpoint
-    AND the returned instance is of type PostProcessingOnCells.
-    """
-    # Mock request for PP creation
-    responses.add(
-        responses.POST,
-        "https://test.test/predictions/7546/post-processings/SurfaceVTP",
-        json={"id": "01010101654", "state": "successful"},
-        status=200,
-    )
-
-    pred = simai_client._prediction_directory._model_from({"id": "7546", "state": "successful"})
-    surface_vtp = pred.post.surface_vtp(pp_location=PPSurfaceLocation.ON_CELLS)
-    assert responses.assert_call_count(
-        "https://test.test/predictions/7546/post-processings/SurfaceVTP", 1
-    )
-    assert isinstance(surface_vtp, PostProcessingOnCells)
-
-
-def test_error_in_wrong_location_in_post_processing_surface_vtp(simai_client):
-    """WHEN Running a surface_vtp post-processing on a prediction
-    WITH wrong pp_location,
-    THEN an InvalidArguments error is raised.
-    """
-
-    pred = simai_client._prediction_directory._model_from({"id": "7546", "state": "successful"})
-
-    class TestClass(_SurfaceVTP):
-        pass
-
-    with pytest.raises(InvalidArguments) as ex:
-        _ = pred.post.surface_vtp(pp_location=TestClass)
-        assert list(PPSurfaceLocation) in ex.value
-
-    with pytest.raises(InvalidArguments) as ex:
-        _ = pred.post.surface_vtp(pp_location="a_string")
-        assert list(PPSurfaceLocation) in ex.value
-
-    with pytest.raises(InvalidArguments) as ex:
-        _ = pred.post.surface_vtp(pp_location=str)
-        assert list(PPSurfaceLocation) in ex.value
+    assert isinstance(surface_vtp, SurfaceVTPTDLocation)
 
 
 @responses.activate

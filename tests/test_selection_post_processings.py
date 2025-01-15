@@ -25,12 +25,11 @@ import responses
 
 from ansys.simai.core.data.post_processings import (
     GlobalCoefficients,
-    PostProcessingAsLearnt,
-    PPSurfaceLocation,
     Slice,
     SurfaceEvol,
+    SurfaceVTP,
+    SurfaceVTPTDLocation,
     VolumeVTU,
-    _SurfaceVTP,
 )
 from ansys.simai.core.data.selection_post_processings import ExportablePPList, PPList
 from ansys.simai.core.data.selections import Selection
@@ -180,14 +179,14 @@ def test_selection_post_processing_surface_vtp(test_selection):
     assert isinstance(post_processings, PPList)
     assert len(post_processings) == 2
     for pp in post_processings:
-        assert isinstance(pp, _SurfaceVTP)
+        assert isinstance(pp, SurfaceVTP)
 
 
 @responses.activate
-def test_selection_post_processing_surface_vtp_predict_as_learnt(test_selection):
+def test_selection_post_processing_surface_vtp_td_location(test_selection):
     """WHEN I call post.post.surface_vtp() on a selection
     THEN the /SurfaceVTPTDLocation endpoint is called for each prediction in the selection
-    AND I get a list of PostProcessingVTUExport objects in return
+    AND I get a list of SurfaceVTPTDLocation objects in return
     """
     assert len(test_selection.points) == 2
 
@@ -203,11 +202,11 @@ def test_selection_post_processing_surface_vtp_predict_as_learnt(test_selection)
         json={"id": "vtu02", "status": "queued"},
         status=200,
     )
-    post_processings = test_selection.post.surface_vtp(pp_location=PPSurfaceLocation.AS_LEARNT)
+    post_processings = test_selection.post.surface_vtp_td_location()
     assert isinstance(post_processings, PPList)
     assert len(post_processings) == 2
     for pp in post_processings:
-        assert isinstance(pp, PostProcessingAsLearnt)
+        assert isinstance(pp, SurfaceVTPTDLocation)
 
 
 @responses.activate

@@ -52,11 +52,11 @@ Available postprocessings
     :members:
 
 
-.. autoclass:: PostProcessingOnCells()
+.. autoclass:: SurfaceVTP()
     :members:
 
 
-.. autoclass:: PostProcessingAsLearnt()
+.. autoclass:: SurfaceVTPTDLocation()
     :members:
 
 
@@ -72,7 +72,4 @@ Helpers
 -------
 
 .. autoclass:: DownloadableResult()
-    :members:
-
-.. autoclass:: PPSurfaceLocation()
     :members:

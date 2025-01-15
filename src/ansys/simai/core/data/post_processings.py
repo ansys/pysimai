@@ -25,7 +25,6 @@ import logging
 import numbers
 import sys
 from abc import ABC, abstractmethod
-from enum import Enum
 from inspect import cleandoc
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
@@ -268,50 +267,19 @@ class VolumeVTU(_PostProcessingVTKExport):
     """
 
 
-class _SurfaceVTP(_PostProcessingVTKExport):
-    """Exports the surface of the prediction in VTP format.
+class SurfaceVTP(_PostProcessingVTKExport):
+    """Exports the surface of the prediction in VTP format associating all data with cells.
 
     This is the parent class for surface post-processings which are generated through
     the :meth:`~PredictionPostProcessings.surface_vtp()` method.
     """
 
 
-class PostProcessingOnCells(_SurfaceVTP):
-    """Decodes the server response for the on-cells prediction of the surface in VTP format.
+class SurfaceVTPTDLocation(_PostProcessingVTKExport):
+    """Exports the surface of the prediction in VTP format keeping the original data association.
 
-    This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
+    This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp_td_location()` method.
     """
-
-    @classmethod
-    def _api_name(cls):
-        return "SurfaceVTP"
-
-
-class PostProcessingAsLearnt(_SurfaceVTP):
-    """Decodes the server response for the as-learnt prediction of the surface in VTP format.
-
-    This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
-    """
-
-    @classmethod
-    def _api_name(cls):
-        return "SurfaceVTPTDLocation"
-
-
-class PPSurfaceLocation(Enum):
-    """Enumerates the post-processing options on the data location.
-
-    Args:
-        ON_CELLS: identifies that the post-processing should run on cell data.
-        AS_LEARNT: identifies that the post-processing should run on the data as they are learnt.
-    """
-
-    AS_LEARNT = PostProcessingAsLearnt
-    ON_CELLS = PostProcessingOnCells
-
-
-SurfacePpOutputs = Union[PostProcessingOnCells, PostProcessingAsLearnt]
-"""Collection of surface post-processing outputs."""
 
 
 class CustomVolumePointCloud(PostProcessing):
@@ -466,11 +434,15 @@ class PredictionPostProcessings:
         return self._get_or_run(Slice, {"plane": plane, "output_format": format}, run)
 
     def surface_vtp(
-        self, run: bool = True, pp_location: PPSurfaceLocation = PPSurfaceLocation.ON_CELLS
-    ) -> Optional[SurfacePpOutputs]:
+        self,
+        run: bool = True,
+    ) -> Optional[SurfaceVTP]:
         """Compute or get the result of the prediction's surface in VTP format.
 
-        This is a non-blocking method. It returns the ``PostProcessingVTP``
+        This method associates all data with cells; if a variable is originally
+        associated with points in the sample, it would be now associated with cells.
+
+        It is a non-blocking method. It returns the ``PostProcessingVTP``
         object without waiting. This object may not have data right away
         if the computation is still in progress. Data is filled
         asynchronously once the computation is finished.
@@ -484,41 +456,21 @@ class PredictionPostProcessings:
             run: Boolean indicating whether to compute or get the postprocessing.
                 The default is ``True``. If ``False``, the postprocessing is not
                 computed, and ``None`` is returned if it does not exist yet.
-            pp_location: the post-processing data location. It can be one of
-                :class:`PPSurfaceLocation`, otherwise an InvalidArgument error
-                is raised. Default is PPSurfaceLocation.ON_CELLS.
 
         Returns:
-            :class:`PostProcessingOnCells` or :class:`PostProcessingAsLearnt` objects
-            that allows downloading the binary data.
+            :class:`SurfaceVTP` objects that allow downloading the binary data.
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
 
         Examples:
-            Run and download a surface VTP for data location on cells (predict on cells).
+            Run and download a surface VTP with data associated with cells.
 
             .. code-block:: python
 
                 import ansys.simai.core
-                from ansys.simai.core.data.post_processings import PPSurfaceLocation
 
                 simai = ansys.simai.core.from_config()
                 prediction = simai.predictions.list()[0]
-                surface_vtp = prediction.post.surface_vtp(
-                    pp_location=PPSurfaceLocation.ON_CELLS
-                ).data.download("/tmp/simai.vtp")
-
-            Run and download a surface VTP with data location as it is learnt (predict as learnt).
-
-            .. code-block:: python
-
-                import ansys.simai.core
-                from ansys.simai.core.data.post_processings import PPSurfaceLocation
-
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
-                surface_vtp = prediction.post.surface_vtp(
-                    pp_location=PPSurfaceLocation.AS_LEARNT
-                ).data.download("/tmp/simai.vtp")
+                surface_vtp = prediction.post.surface_vtp().data.download("/tmp/simai.vtp")
 
             Run a surface VTP with data location on cells, and open a plot using PyVista.
 
@@ -538,9 +490,65 @@ class PredictionPostProcessings:
                     surface_vtp = pyvista.read(temp_vtp_file.name)
                     surface_vtp.plot()
         """
-        if not isinstance(pp_location, PPSurfaceLocation):
-            raise InvalidArguments(f"pp_location should be one of {PPSurfaceLocation}")
-        return self._get_or_run(pp_location.value, {}, run)
+        return self._get_or_run(SurfaceVTP, {}, run)
+
+    def surface_vtp_td_location(
+        self,
+        run: bool = True,
+    ) -> Optional[SurfaceVTPTDLocation]:
+        """Compute or get the result of the prediction's surface in VTP format .
+
+        This method keeps the original data association as they are in the sample.
+
+        It is a non-blocking method. It returns the ``PostProcessingVTP``
+        object without waiting. This object may not have data right away
+        if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be monitored with the ``is_ready`` flag
+        or waited upon with the ``wait()`` method.
+
+        The computation is launched only on first call of this method.
+        Subsequent calls do not relaunch it.
+
+        Args:
+            run: Boolean indicating whether to compute or get the postprocessing.
+                The default is ``True``. If ``False``, the postprocessing is not
+                computed, and ``None`` is returned if it does not exist yet.
+
+        Returns:
+            :class:`SurfaceVTPTDLocation` objects that allow downloading the binary data.
+            Returns ``None`` if ``run=False`` and the postprocessing does not exist.
+
+        Examples:
+            Run and download a surface VTP.
+
+            .. code-block:: python
+
+                import ansys.simai.core
+
+                simai = ansys.simai.core.from_config()
+                prediction = simai.predictions.list()[0]
+                surface_vtp = prediction.post.surface_vtp_td_location().data.download("/tmp/simai.vtp")
+
+            Run a surface VTP with data location on cells, and open a plot using PyVista.
+
+            .. code-block:: python
+
+                import ansys.simai.core
+                import pyvista
+                import tempfile
+
+                simai = ansys.simai.core.from_config()
+                prediction = simai.predictions.list()[0]
+                surface_vtp_data = prediction.post.surface_vtp_td_location().data
+                # I don't want to save the file locally but pyvista doesn't read file-objects
+                # Using temporary file as a workaround but a real path can be used instead
+                with tempfile.NamedTemporaryFile(suffix=".vtp") as temp_vtp_file:
+                    surface_vtp_data.download(temp_vtp_file.name)
+                    surface_vtp = pyvista.read(temp_vtp_file.name)
+                    surface_vtp.plot()
+        """
+        return self._get_or_run(SurfaceVTPTDLocation, {}, run)
 
     def volume_vtu(self, run: bool = True) -> Optional[VolumeVTU]:
         """Compute or get the result of the prediction's volume in VTU format.
