@@ -270,8 +270,7 @@ class VolumeVTU(_PostProcessingVTKExport):
 class SurfaceVTP(_PostProcessingVTKExport):
     """Exports the surface of the prediction in VTP format associating all data with cells.
 
-    This is the parent class for surface post-processings which are generated through
-    the :meth:`~PredictionPostProcessings.surface_vtp()` method.
+    This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
     """
 
 
@@ -433,10 +432,7 @@ class PredictionPostProcessings:
         plane = convert_axis_and_coordinate_to_plane_eq_coeffs(axis, coordinate)
         return self._get_or_run(Slice, {"plane": plane, "output_format": format}, run)
 
-    def surface_vtp(
-        self,
-        run: bool = True,
-    ) -> Optional[SurfaceVTP]:
+    def surface_vtp(self, run: bool = True) -> Optional[SurfaceVTP]:
         """Compute or get the result of the prediction's surface in VTP format.
 
         This method associates all data with cells; if a variable is originally
@@ -458,7 +454,7 @@ class PredictionPostProcessings:
                 computed, and ``None`` is returned if it does not exist yet.
 
         Returns:
-            :class:`SurfaceVTP` objects that allow downloading the binary data.
+            :class:`SurfaceVTP` object that allows downloading the binary data.
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
 
         Examples:
@@ -472,7 +468,7 @@ class PredictionPostProcessings:
                 prediction = simai.predictions.list()[0]
                 surface_vtp = prediction.post.surface_vtp().data.download("/tmp/simai.vtp")
 
-            Run a surface VTP with data location on cells, and open a plot using PyVista.
+            Run a surface VTP with data association on cells, and open a plot using PyVista.
 
             .. code-block:: python
 
@@ -492,10 +488,7 @@ class PredictionPostProcessings:
         """
         return self._get_or_run(SurfaceVTP, {}, run)
 
-    def surface_vtp_td_location(
-        self,
-        run: bool = True,
-    ) -> Optional[SurfaceVTPTDLocation]:
+    def surface_vtp_td_location(self, run: bool = True) -> Optional[SurfaceVTPTDLocation]:
         """Compute or get the result of the prediction's surface in VTP format .
 
         This method keeps the original data association as they are in the sample.
@@ -516,11 +509,11 @@ class PredictionPostProcessings:
                 computed, and ``None`` is returned if it does not exist yet.
 
         Returns:
-            :class:`SurfaceVTPTDLocation` objects that allow downloading the binary data.
+            :class:`SurfaceVTPTDLocation` object that allows downloading the binary data.
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
 
         Examples:
-            Run and download a surface VTP.
+            Run and download a surface VTP with the original data association.
 
             .. code-block:: python
 
@@ -530,7 +523,7 @@ class PredictionPostProcessings:
                 prediction = simai.predictions.list()[0]
                 surface_vtp = prediction.post.surface_vtp_td_location().data.download("/tmp/simai.vtp")
 
-            Run a surface VTP with data location on cells, and open a plot using PyVista.
+            Run a surface VTP with the original data association, and open a plot using PyVista.
 
             .. code-block:: python
 
