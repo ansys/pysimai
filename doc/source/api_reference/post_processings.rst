@@ -56,6 +56,10 @@ Available postprocessings
     :members:
 
 
+.. autoclass:: SurfaceVTPTDLocation()
+    :members:
+
+
 .. autoclass:: VolumeVTU()
     :members:
 

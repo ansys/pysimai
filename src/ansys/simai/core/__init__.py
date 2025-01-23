@@ -37,5 +37,6 @@ from ansys.simai.core.data.post_processings import (
     Slice,
     SurfaceEvolution,
     SurfaceVTP,
+    SurfaceVTPTDLocation,
     VolumeVTU,
 )
