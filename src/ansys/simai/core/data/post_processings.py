@@ -273,9 +273,16 @@ class VolumeVTU(_PostProcessingVTKExport):
 
 
 class SurfaceVTP(_PostProcessingVTKExport):
-    """Provides for exporting the surface of the prediction in VTP format.
+    """Exports the surface of the prediction in VTP format associating all data with cells.
 
     This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp()` method.
+    """
+
+
+class SurfaceVTPTDLocation(_PostProcessingVTKExport):
+    """Exports the surface of the prediction in VTP format keeping the original data association.
+
+    This class is generated through the :meth:`~PredictionPostProcessings.surface_vtp_td_location()` method.
     """
 
 
@@ -435,7 +442,10 @@ class PredictionPostProcessings:
     def surface_vtp(self, run: bool = True) -> Optional[SurfaceVTP]:
         """Compute or get the result of the prediction's surface in VTP format.
 
-        This is a non-blocking method. It returns the ``PostProcessingVTP``
+        This method associates all data with cells; if a variable is originally
+        associated with points in the sample, it would be now associated with cells.
+
+        It is a non-blocking method. It returns the ``PostProcessingVTP``
         object without waiting. This object may not have data right away
         if the computation is still in progress. Data is filled
         asynchronously once the computation is finished.
@@ -455,7 +465,7 @@ class PredictionPostProcessings:
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
 
         Examples:
-            Run and download a surface VTP.
+            Run and download a surface VTP with data associated with cells.
 
             .. code-block:: python
 
@@ -465,8 +475,7 @@ class PredictionPostProcessings:
                 prediction = simai.predictions.list()[0]
                 surface_vtp = prediction.post.surface_vtp().data.download("/tmp/simai.vtp")
 
-
-            Run a surface VTP and open a plot using PyVista.
+            Run a surface VTP with data association on cells, and open a plot using PyVista.
 
             .. code-block:: python
 
@@ -485,6 +494,61 @@ class PredictionPostProcessings:
                     surface_vtp.plot()
         """
         return self._get_or_run(SurfaceVTP, {}, run)
+
+    def surface_vtp_td_location(self, run: bool = True) -> Optional[SurfaceVTPTDLocation]:
+        """Compute or get the result of the prediction's surface in VTP format .
+
+        This method keeps the original data association as they are in the sample.
+
+        It is a non-blocking method. It returns the ``PostProcessingVTP``
+        object without waiting. This object may not have data right away
+        if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be monitored with the ``is_ready`` flag
+        or waited upon with the ``wait()`` method.
+
+        The computation is launched only on first call of this method.
+        Subsequent calls do not relaunch it.
+
+        Args:
+            run: Boolean indicating whether to compute or get the postprocessing.
+                The default is ``True``. If ``False``, the postprocessing is not
+                computed, and ``None`` is returned if it does not exist yet.
+
+        Returns:
+            :class:`SurfaceVTPTDLocation` object that allows downloading the binary data.
+            Returns ``None`` if ``run=False`` and the postprocessing does not exist.
+
+        Examples:
+            Run and download a surface VTP with the original data association.
+
+            .. code-block:: python
+
+                import ansys.simai.core
+
+                simai = ansys.simai.core.from_config()
+                prediction = simai.predictions.list()[0]
+                surface_vtp = prediction.post.surface_vtp_td_location().data.download("/tmp/simai.vtp")
+
+            Run a surface VTP with the original data association, and open a plot using PyVista.
+
+            .. code-block:: python
+
+                import ansys.simai.core
+                import pyvista
+                import tempfile
+
+                simai = ansys.simai.core.from_config()
+                prediction = simai.predictions.list()[0]
+                surface_vtp_data = prediction.post.surface_vtp_td_location().data
+                # I don't want to save the file locally but pyvista doesn't read file-objects
+                # Using temporary file as a workaround but a real path can be used instead
+                with tempfile.NamedTemporaryFile(suffix=".vtp") as temp_vtp_file:
+                    surface_vtp_data.download(temp_vtp_file.name)
+                    surface_vtp = pyvista.read(temp_vtp_file.name)
+                    surface_vtp.plot()
+        """
+        return self._get_or_run(SurfaceVTPTDLocation, {}, run)
 
     def volume_vtu(self, run: bool = True) -> Optional[VolumeVTU]:
         """Compute or get the result of the prediction's volume in VTU format.

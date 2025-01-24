@@ -32,6 +32,7 @@ from ansys.simai.core.data.post_processings import (
     Slice,
     SurfaceEvolution,
     SurfaceVTP,
+    SurfaceVTPTDLocation,
     VolumeVTU,
 )
 
@@ -342,6 +343,30 @@ def test_post_processing_result_surface_vtp(simai_client):
 
     # we have used vtp.data twice, generating 2 hits to the endpoint
     assert responses.assert_call_count("https://test.test/post-processings/01010101654", 2)
+
+
+@responses.activate
+def test_post_processing_result_surface_vtp_td_location(simai_client):
+    """WHEN Running a surface_vtp post-processing on a prediction
+    WITH predict-as-learnt option (location is PPSurfaceLocation.AS_LEARNT)
+    AND calling its .data field,
+    THEN a GET request is made on the post-processings/SurfaceVTPTDLocation endpoint
+    AND the returned instance is of type SurfaceVTPTDLocation.
+    """
+    # Mock request for PP creation
+    responses.add(
+        responses.POST,
+        "https://test.test/predictions/7546/post-processings/SurfaceVTPTDLocation",
+        json={"id": "01010101654", "state": "successful"},
+        status=200,
+    )
+
+    pred = simai_client._prediction_directory._model_from({"id": "7546", "state": "successful"})
+    surface_vtp = pred.post.surface_vtp_td_location()
+    assert responses.assert_call_count(
+        "https://test.test/predictions/7546/post-processings/SurfaceVTPTDLocation", 1
+    )
+    assert isinstance(surface_vtp, SurfaceVTPTDLocation)
 
 
 @responses.activate
