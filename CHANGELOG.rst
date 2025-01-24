@@ -1,12 +1,25 @@
 Changelog
 ---------
 
-Unreleased
-**********
+0.2.6 (2025-01-23)
+******************
+
+New:
+
+- Add options for using custom TLS CA bundles in :py:class:`ClientConfig<ansys.simai.core.utils.configuration.ClientConfig>`
+- Check if :py:class:`Project<ansys.simai.core.data.projects.Project>` is trainable before build
+- Reintroduce surface evolution post-processing as :py:class:`SurfaceEvolution<ansys.simai.core.data.post_processings.SurfaceEvolution>`
+- Raise an error when a variable is not found in the reference sample
+- Support post processing predict as learnt and predict on cells for surface variables by introducing :py:class:`SurfaceVTPTDLocation<ansys.simai.core.data.post_processings.SurfaceVTPTDLocation>`, together with the methods :py:meth:`PredictionPostProcessings.surface_vtp_td_location()<ansys.simai.core.data.post_processings.PredictionPostProcessings.surface_vtp_td_location>` and :py:meth:`SelectionPostProcessingsMethods.surface_vtp_td_location()<ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_vtp_td_location>`
+
+Changes:
+
+- Remove `ModelManifest.version` property from :py:class:`ModelManifest<ansys.simai.core.data.workspaces.ModelManifest>`
 
 Fixes:
 
 - Type hints on ``SimAIClient`` off by one
+- Fix pysimai version check
 
 0.2.5 (2024-11-05)
 ******************
