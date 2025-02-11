@@ -41,16 +41,16 @@ class TrainingDataPartClientMixin(ApiClientMixin):
             to use for further requests.
         """
         post_data = {"name": name, "file_extension": extension}
-        response = self._post(f"training_data/{training_data_id}/parts/", json=post_data)
+        response = self._post(f"training-data/{training_data_id}/parts/", json=post_data)
         return (response["training_data_part"], response["upload_id"])
 
     def get_training_data_part(self, id: str) -> Dict[str, Any]:
-        return self._get(f"training_data_parts/{id}")
+        return self._get(f"training-data-parts/{id}")
 
     def complete_training_data_part_upload(
         self, id: str, upload_id: str, parts: List[Dict[str, Any]]
     ):
         self._post(
-            f"training_data_parts/{id}/complete",
+            f"training-data-parts/{id}/complete",
             json={"upload_id": upload_id, "parts": parts},
         )

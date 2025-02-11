@@ -32,13 +32,13 @@ if TYPE_CHECKING:
 
 class TrainingDataClientMixin(ApiClientMixin):
     def delete_training_data(self, id: str) -> None:
-        self._delete(f"training_data/{id}", return_json=False)
+        self._delete(f"training-data/{id}", return_json=False)
 
     def get_training_data(self, id: str) -> Dict[str, Any]:
-        return self._get(f"training_data/{id}")
+        return self._get(f"training-data/{id}")
 
     def iter_training_data(self, filters: Optional["RawFilters"]) -> Iterable[Dict[str, Any]]:
-        next_page = "training_data"
+        next_page = "training-data"
         query = urlencode(
             [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
         )
@@ -54,24 +54,24 @@ class TrainingDataClientMixin(ApiClientMixin):
         if project_id:
             args["project"] = project_id
         return self._post(
-            "training_data/",
+            "training-data/",
             json=args,
         )
 
     def add_training_data_to_project(self, training_data_id: str, project_id: str):
         return self._put(
-            f"training_data/{training_data_id}/project/{project_id}/association",
+            f"training-data/{training_data_id}/project/{project_id}/association",
             return_json=False,
         )
 
     def remove_training_data_from_project(self, training_data_id: str, project_id: str):
         return self._delete(
-            f"training_data/{training_data_id}/project/{project_id}/association",
+            f"training-data/{training_data_id}/project/{project_id}/association",
             return_json=False,
         )
 
     def compute_training_data(self, training_data_id: str) -> None:
-        self._post(f"training_data/{training_data_id}/compute")
+        self._post(f"training-data/{training_data_id}/compute")
 
     def get_training_data_subset(self, project_id: str, training_data_id: str) -> Dict[str, Any]:
         return self._get(f"projects/{project_id}/data/{training_data_id}/subset")

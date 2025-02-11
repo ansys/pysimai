@@ -51,7 +51,7 @@ def _upload_training_data_part(id, named_part, client, monitor_callback):
             training_data_part_fields, is_upload_complete=False
         )
         parts = client._api.upload_parts(
-            f"training_data_parts/{training_data_part.id}/part",
+            f"training-data-parts/{training_data_part.id}/part",
             file,
             upload_id,
             monitor_callback=monitor_callback,

@@ -38,18 +38,18 @@ if TYPE_CHECKING:
 def test_training_data_list(simai_client):
     responses.add(
         responses.GET,
-        "https://test.test/training_data",
+        "https://test.test/training-data",
         match=[responses.matchers.query_param_matcher({})],
         headers={
             "X-Pagination": json.dumps({"total_pages": 2}),
-            "Link": '<http://test.test/training_data?last_id=one>; rel="next"',
+            "Link": '<http://test.test/training-data?last_id=one>; rel="next"',
         },
         json=[{"id": "one"}],
         status=200,
     )
     responses.add(
         responses.GET,
-        "http://test.test/training_data",
+        "http://test.test/training-data",
         match=[responses.matchers.query_param_matcher({"last_id": "one"})],
         json=[{"id": "two"}],
         status=200,
@@ -65,7 +65,7 @@ def test_training_data_list(simai_client):
 def test_training_data_list_with_filters(simai_client):
     resps_lst = responses.add(
         responses.GET,
-        "https://test.test/training_data",
+        "https://test.test/training-data",
         match=[
             responses.matchers.query_string_matcher(
                 urlencode(
@@ -106,7 +106,7 @@ def test_training_data_add_to_project(simai_client, training_data_factory, proje
     project = project_factory(id="09090")
     responses.add(
         responses.PUT,
-        f"https://test.test/training_data/{td.id}/project/{project.id}/association",
+        f"https://test.test/training-data/{td.id}/project/{project.id}/association",
         status=204,
     )
     td.add_to_project(project)
@@ -118,7 +118,7 @@ def test_training_data_remove_from_project(simai_client, training_data_factory, 
     project = project_factory(id="09090")
     responses.add(
         responses.DELETE,
-        f"https://test.test/training_data/{td.id}/project/{project.id}/association",
+        f"https://test.test/training-data/{td.id}/project/{project.id}/association",
         status=204,
     )
     td.remove_from_project(project)
