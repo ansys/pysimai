@@ -32,11 +32,10 @@ from typing import (
     Callable,
     Dict,
     Generator,
-    Iterator,
     List,
     Literal,
     Optional,
-    Sized,
+    Protocol,
     Tuple,
     TypedDict,
     TypeVar,
@@ -106,7 +105,7 @@ Identifiable = Union[DataModelType, str]
 """Either a model or the string ID of an object of the same type."""
 
 D = TypeVar("D", bound=DataModel)
-T = TypeVar("T")
+T_co = TypeVar("T_co", covariant=True)
 
 
 def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = None, **kwargs):
@@ -316,8 +315,8 @@ def to_raw_filters(filters: Optional["Filters"]) -> Optional["RawFilters"]:
             return [{"field": fld, "operator": op, "value": val} for fld, op, val in filters]
 
 
-class SizedIterator(Sized, Iterator[T]):
+class SizedIterator(Protocol[T_co]):
     """Alias of ``Iterator[T] & Sized``."""
 
     def __len__(self) -> int: ...
-    def __next__(self) -> T: ...
+    def __next__(self) -> T_co: ...
