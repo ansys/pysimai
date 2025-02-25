@@ -21,10 +21,11 @@
 # SOFTWARE.
 
 import json
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 from urllib.parse import urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+from ansys.simai.core.utils.pagination import APIRawIterable
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.types import RawFilters
@@ -37,17 +38,11 @@ class TrainingDataClientMixin(ApiClientMixin):
     def get_training_data(self, id: str) -> Dict[str, Any]:
         return self._get(f"training-data/{id}")
 
-    def iter_training_data(self, filters: Optional["RawFilters"]) -> Iterable[Dict[str, Any]]:
-        next_page = "training-data"
+    def iter_training_data(self, filters: Optional["RawFilters"]) -> APIRawIterable:
         query = urlencode(
             [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
         )
-        if query:
-            next_page += f"?{query}"
-        while next_page:
-            page_request = self._get(next_page, return_json=False)
-            next_page = page_request.links.get("next", {}).get("url")
-            yield from page_request.json()
+        return APIRawIterable(self, f"training-data?{query}")
 
     def create_training_data(self, name: str, project_id: Optional[str] = None) -> Dict[str, Any]:
         args = {"name": name}

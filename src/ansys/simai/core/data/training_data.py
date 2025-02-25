@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import pathlib
+import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
@@ -36,6 +37,7 @@ from ansys.simai.core.data.types import (
     unpack_named_file,
 )
 from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.utils.pagination import DataModelIterable
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
@@ -219,20 +221,29 @@ class TrainingDataDirectory(Directory[TrainingData]):
 
     _data_model = TrainingData
 
-    def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
-        """List all :class:`TrainingData` objects on the server.
+    def iter(self, filters: Optional[Filters] = None) -> DataModelIterable[TrainingData]:
+        """Iterate over all :class:`TrainingData` objects on the server.
 
         Args:
             filters: Optional :obj:`~.types.Filters` to apply.
 
         Returns:
-            List of all :class:`TrainingData` objects on the server.
+            Iterator over all :class:`TrainingData` objects on the server.
         """
         raw_filters = to_raw_filters(filters)
-        return [
-            self._model_from(training_data)
-            for training_data in self._client._api.iter_training_data(filters=raw_filters)
-        ]
+        raw_iterable = self._client._api.iter_training_data(filters=raw_filters)
+        return DataModelIterable(raw_iterable, self)
+
+    def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
+        """List all :class:`TrainingData` objects on the server.
+
+        Use :py:meth:`~iter` instead.
+        """
+        warnings.warn(
+            "training_data.list() can take a very long time, consider using training_data.iter()",
+            stacklevel=2,
+        )
+        return list(self.iter(filters))
 
     def get(self, id) -> TrainingData:
         """Get a specific :class:`TrainingData` object from the server."""
