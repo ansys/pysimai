@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 from urllib.parse import urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
-from ansys.simai.core.utils.pagination import APIRawIterable
+from ansys.simai.core.utils.pagination import PaginatedAPIRawIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.types import RawFilters
@@ -38,11 +38,11 @@ class TrainingDataClientMixin(ApiClientMixin):
     def get_training_data(self, id: str) -> Dict[str, Any]:
         return self._get(f"training-data/{id}")
 
-    def iter_training_data(self, filters: Optional["RawFilters"]) -> APIRawIterable:
+    def iter_training_data(self, filters: Optional["RawFilters"]) -> PaginatedAPIRawIterator:
         query = urlencode(
             [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
         )
-        return APIRawIterable(self, f"training-data?{query}")
+        return PaginatedAPIRawIterator(self, f"training-data?{query}")
 
     def create_training_data(self, name: str, project_id: Optional[str] = None) -> Dict[str, Any]:
         args = {"name": name}

@@ -31,13 +31,14 @@ from ansys.simai.core.data.types import (
     MonitorCallback,
     NamedFile,
     Path,
+    SizedIterator,
     SubsetEnum,
     get_id_from_identifiable,
     to_raw_filters,
     unpack_named_file,
 )
 from ansys.simai.core.errors import InvalidArguments
-from ansys.simai.core.utils.pagination import DataModelIterable
+from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
@@ -221,7 +222,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
 
     _data_model = TrainingData
 
-    def iter(self, filters: Optional[Filters] = None) -> DataModelIterable[TrainingData]:
+    def iter(self, filters: Optional[Filters] = None) -> SizedIterator[TrainingData]:
         """Iterate over all :class:`TrainingData` objects on the server.
 
         Args:
@@ -232,7 +233,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
         """
         raw_filters = to_raw_filters(filters)
         raw_iterable = self._client._api.iter_training_data(filters=raw_filters)
-        return DataModelIterable(raw_iterable, self)
+        return DataModelIterator(raw_iterable, self)
 
     def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
         """List all :class:`TrainingData` objects on the server.

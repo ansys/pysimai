@@ -20,23 +20,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict, Iterable, Sized, TypeVar
+"""Helpers to handle paginated responses."""
+
+import json
+import logging
+from typing import Any, Dict, Iterator, Sized, TypeVar
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.data.base import DataModel, Directory
 
+logger = logging.getLogger(__name__)
 M = TypeVar("M", bound=DataModel)
 
 
-class APIRawIterable(Sized, Iterable[Dict[str, Any]]):
-    """Iterable over a raw paginated response with a known length."""
+class PaginatedAPIRawIterator(Sized, Iterator[Dict[str, Any]]):
+    """Iterator over a raw paginated response with a known length."""
 
     def __init__(self, client: ApiClientMixin, uri: str):
         self.client = client
         self._first_page = client._get(uri, return_json=False)
-        self.len = self._first_page.headers.get("X-Pagination", {}).get("total", -1)
+        try:
+            x_pagination = self._first_page.headers["X-Pagination"]
+            self.len = json.loads(x_pagination)["total"]
+        except (KeyError, json.JSONDecodeError) as e:
+            logger.warning(f"Could not fetch item count from pagination header: {e}")
+            self.len = 0
+        self.__it = self.__gen()
 
-    def __iter__(self):
+    def __gen(self):
         yield from self._first_page.json()
         next_page = self._first_page.links.get("next", {}).get("url")
         del self._first_page
@@ -45,20 +56,23 @@ class APIRawIterable(Sized, Iterable[Dict[str, Any]]):
             next_page = page_request.links.get("next", {}).get("url")
             yield from page_request.json()
 
-    def __len__(self):
+    def __next__(self) -> Dict[str, Any]:
+        return next(self.__it)
+
+    def __len__(self) -> int:
         return self.len
 
 
-class DataModelIterable(Sized, Iterable[M]):
-    """Iterable over paginated objects with a known length."""
+class DataModelIterator(Sized, Iterator[M]):
+    """Iterator over paginated objects with a known length."""
 
-    def __init__(self, raw: APIRawIterable, directory: Directory[M]):
+    def __init__(self, raw: PaginatedAPIRawIterator, directory: Directory[M]):
         self.raw = raw
         self.directory = directory
 
-    def __iter__(self):
-        for entry in self.raw:
-            yield self.directory._model_from(entry)
+    def __next__(self) -> M:
+        entry = next(self.raw)
+        return self.directory._model_from(entry)
 
-    def __len__(self):
-        return self.raw.len()
+    def __len__(self) -> int:
+        return len(self.raw)
