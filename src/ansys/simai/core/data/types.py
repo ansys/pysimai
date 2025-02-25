@@ -27,7 +27,6 @@ from contextlib import contextmanager
 from enum import Enum
 from numbers import Number
 from typing import (
-    TYPE_CHECKING,
     Any,
     BinaryIO,
     Callable,
@@ -36,8 +35,10 @@ from typing import (
     List,
     Literal,
     Optional,
+    Protocol,
     Tuple,
     TypedDict,
+    TypeVar,
     Union,
 )
 
@@ -103,10 +104,8 @@ For uploads, the callback receives the number of bytes written each iteration.
 Identifiable = Union[DataModelType, str]
 """Either a model or the string ID of an object of the same type."""
 
-if TYPE_CHECKING:
-    from typing import TypeVar
-
-    D = TypeVar("D", bound=DataModel)
+D = TypeVar("D", bound=DataModel)
+T_co = TypeVar("T_co", covariant=True)
 
 
 def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = None, **kwargs):
@@ -314,3 +313,10 @@ def to_raw_filters(filters: Optional["Filters"]) -> Optional["RawFilters"]:
             return filters
         if isinstance(filters[0], (tuple, list)):
             return [{"field": fld, "operator": op, "value": val} for fld, op, val in filters]
+
+
+class SizedIterator(Protocol[T_co]):
+    """Alias of ``Iterator[T] & Sized``."""
+
+    def __len__(self) -> int: ...
+    def __next__(self) -> T_co: ...
