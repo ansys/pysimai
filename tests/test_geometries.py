@@ -125,3 +125,33 @@ def test_geometries_upload_point_cloud(geometry_factory):
     file = BytesIO(b"Hello World")
     geometry.upload_point_cloud((file, "my-point-cloud.vtp"))
     assert geometry.point_cloud == {"id": "pc-0"}
+
+
+@responses.activate
+def test_geometries_delete_point_cloud(geometry_factory):
+    responses.add(responses.DELETE, "https://test.test/point-clouds/point-cloud-0", status=204)
+
+    geometry = geometry_factory(id="geom-0", point_cloud={"id": "point-cloud-0"})
+    geometry.delete_point_cloud()
+    assert geometry.point_cloud is None
+
+
+@responses.activate
+def test_geometries_delete_point_cloud_cleares_pp_cache(
+    geometry_factory, prediction_factory, post_processing_factory
+):
+    responses.add(responses.DELETE, "https://test.test/point-clouds/point-cloud-0", status=204)
+
+    custom_volume_point_cloud = post_processing_factory(
+        type="CustomVolumePointCloud", prediction_id="prediction-0"
+    )
+    prediction = prediction_factory(
+        id="prediction-0", post_processings=[custom_volume_point_cloud], geometry_id="geom-0"
+    )
+    geometry = geometry_factory(
+        id="geom-0", point_cloud={"id": "point-cloud-0"}, predictions=[prediction]
+    )
+
+    assert custom_volume_point_cloud in prediction.post._local_post_processings
+    geometry.delete_point_cloud()
+    assert custom_volume_point_cloud not in prediction.post._local_post_processings
