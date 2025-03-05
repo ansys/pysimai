@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: "3.10"
+  MAIN_PYTHON_VERSION: "3.12"
   DOCUMENTATION_CNAME: "simai.docs.pyansys.com"
   LIBRARY_NAME: "ansys-simai-core"
 
@@ -48,6 +48,9 @@ jobs:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
+          # jeepney is MIT but action thinks it's UNKNOWN
+          # https://gitlab.com/takluyver/jeepney/-/blob/master/LICENSE?ref_type=heads
+          whitelist-license-check: "jeepney"
 
   tests:
     name: "Test using Python ${{ matrix.python-version }}"
@@ -88,6 +91,8 @@ jobs:
     steps:
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
       - uses: actions/checkout@v4
       - name: Generate doc requirements
         run: pdm export -G doc --no-default -o doc_requirements.txt
