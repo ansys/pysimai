@@ -44,6 +44,9 @@ from ansys.simai.core.utils.requests import handle_response
 
 logger = logging.getLogger(__name__)
 
+# polling can't be faster or auth server returns HTTP 400 Slow down
+DEVICE_AUTH_POLLING_INTERVAL = 5
+
 
 class _AuthTokens(BaseModel):
     """Represents the OIDC tokens received from the auth server."""
@@ -141,8 +144,7 @@ class _AuthTokensRetriever:
         webbrowser.open(auth_codes["verification_uri_complete"])
         # loop will exit when auth server returns "400 Device code is expired"
         while True:
-            # polling can't be faster or auth server returns HTTP 400 Slow down
-            time.sleep(5)
+            time.sleep(DEVICE_AUTH_POLLING_INTERVAL)
             validation = self.session.post(
                 self.token_url,
                 headers={"Content-Type": "application/x-www-form-urlencoded"},
