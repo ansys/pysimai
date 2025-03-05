@@ -57,7 +57,9 @@ class PaginatedAPIRawIterator(Sized, Iterator[Dict[str, Any]]):
             yield from page_request.json()
 
     def __next__(self) -> Dict[str, Any]:
-        return next(self.__it)
+        elem = next(self.__it)
+        self.len -= 1
+        return elem
 
     def __len__(self) -> int:
         return self.len

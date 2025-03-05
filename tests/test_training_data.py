@@ -49,7 +49,9 @@ def test_training_data_iter(simai_client):
     it = simai_client.training_data.iter()
     assert len(it) == 999
     assert next(it).id == "one"
+    assert len(it) == 998
     assert next(it, None) is None
+    assert len(it) == 998
 
 
 @responses.activate
