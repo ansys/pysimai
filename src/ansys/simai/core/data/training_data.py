@@ -30,12 +30,14 @@ from ansys.simai.core.data.types import (
     MonitorCallback,
     NamedFile,
     Path,
+    SizedIterator,
     SubsetEnum,
     get_id_from_identifiable,
     to_raw_filters,
     unpack_named_file,
 )
 from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
@@ -219,8 +221,24 @@ class TrainingDataDirectory(Directory[TrainingData]):
 
     _data_model = TrainingData
 
+    def iter(self, filters: Optional[Filters] = None) -> SizedIterator[TrainingData]:
+        """Iterate over all :class:`TrainingData` objects on the server.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
+
+        Returns:
+            Iterator over all :class:`TrainingData` objects on the server.
+        """
+        raw_filters = to_raw_filters(filters)
+        raw_iterable = self._client._api.iter_training_data(filters=raw_filters)
+        return DataModelIterator(raw_iterable, self)
+
     def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
         """List all :class:`TrainingData` objects on the server.
+
+        Warning:
+            This can take a very long time, consider using :py:meth:`~iter` instead.
 
         Args:
             filters: Optional :obj:`~.types.Filters` to apply.
@@ -228,11 +246,7 @@ class TrainingDataDirectory(Directory[TrainingData]):
         Returns:
             List of all :class:`TrainingData` objects on the server.
         """
-        raw_filters = to_raw_filters(filters)
-        return [
-            self._model_from(training_data)
-            for training_data in self._client._api.iter_training_data(filters=raw_filters)
-        ]
+        return list(self.iter(filters))
 
     def get(self, id) -> TrainingData:
         """Get a specific :class:`TrainingData` object from the server."""

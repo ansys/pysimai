@@ -35,6 +35,26 @@ if TYPE_CHECKING:
 
 
 @responses.activate
+def test_training_data_iter(simai_client):
+    responses.add(
+        responses.GET,
+        "https://test.test/training-data",
+        match=[responses.matchers.query_param_matcher({})],
+        headers={
+            "X-Pagination": json.dumps({"total": 999}),
+        },
+        json=[{"id": "one"}],
+        status=200,
+    )
+    it = simai_client.training_data.iter()
+    assert len(it) == 999
+    assert next(it).id == "one"
+    assert len(it) == 998
+    assert next(it, None) is None
+    assert len(it) == 998
+
+
+@responses.activate
 def test_training_data_list(simai_client):
     responses.add(
         responses.GET,
