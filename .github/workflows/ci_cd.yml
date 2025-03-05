@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: "3.10"
+  MAIN_PYTHON_VERSION: "3.12"
   DOCUMENTATION_CNAME: "simai.docs.pyansys.com"
   LIBRARY_NAME: "ansys-simai-core"
 
@@ -88,6 +88,8 @@ jobs:
     steps:
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
       - uses: actions/checkout@v4
       - name: Generate doc requirements
         run: pdm export -G doc --no-default -o doc_requirements.txt
