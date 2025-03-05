@@ -20,6 +20,7 @@ jobs:
   code-style:
     name: "Code style"
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - uses: ansys/actions/code-style@v8
         with:
@@ -28,6 +29,7 @@ jobs:
   doc-style:
     name: "Documentation style"
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - uses: ansys/actions/doc-style@v8
         with:
@@ -37,6 +39,7 @@ jobs:
     name: "Build and Smoke tests"
     runs-on: ${{ matrix.os }}
     needs: [code-style]
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
@@ -56,6 +59,7 @@ jobs:
     name: "Test using Python ${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
     needs: [smoke-tests]
+    timeout-minutes: 5
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -88,6 +92,7 @@ jobs:
     name: "Build documentation"
     runs-on: ubuntu-latest
     needs: [doc-style]
+    timeout-minutes: 10
     steps:
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
@@ -107,6 +112,7 @@ jobs:
     name: "Build library basic example"
     runs-on: ubuntu-latest
     needs: [doc-build, tests]
+    timeout-minutes: 10
     steps:
       - uses: ansys/actions/build-library@v8
         with:
@@ -117,6 +123,7 @@ jobs:
     name: "Deploy development documentation"
     runs-on: ubuntu-latest
     needs: [build-library]
+    timeout-minutes: 10
     if: github.event_name == 'push' && !contains(github.ref, 'refs/tags')
     steps:
       - uses: ansys/actions/doc-deploy-dev@v8
@@ -130,6 +137,7 @@ jobs:
     name: "Deploy stable documentation"
     runs-on: ubuntu-latest
     needs: [build-library]
+    timeout-minutes: 10
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
       - uses: ansys/actions/doc-deploy-stable@v8
@@ -146,6 +154,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     needs: [build-library]
+    timeout-minutes: 10
     steps:
       - name: "Release to the public PyPI repository"
         uses: ansys/actions/release-pypi-public@v8
