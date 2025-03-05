@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import pathlib
-import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
@@ -238,12 +237,15 @@ class TrainingDataDirectory(Directory[TrainingData]):
     def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
         """List all :class:`TrainingData` objects on the server.
 
-        Use :py:meth:`~iter` instead.
+        Warning:
+            This can take a very long time, consider using :py:meth:`~iter` instead.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
+
+        Returns:
+            List of all :class:`TrainingData` objects on the server.
         """
-        warnings.warn(
-            "training_data.list() can take a very long time, consider using training_data.iter()",
-            stacklevel=2,
-        )
         return list(self.iter(filters))
 
     def get(self, id) -> TrainingData:
