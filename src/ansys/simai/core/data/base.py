@@ -300,7 +300,7 @@ class Directory(ABC, Generic[DataModelType]):
         elif data["type"] == "resource" and isinstance(item, UploadableResourceMixin):
             item._handle_resource_sse_event(data)
         else:
-            logger.error("Received a server update that could not be interpreted.")
+            logger.debug("Received a server update that could not be interpreted.")
 
     def _all_objects(self):
         return self._registry.values()
