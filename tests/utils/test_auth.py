@@ -391,7 +391,7 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
     assert resps_refresh.call_count == 0
     t0 = time.time()
     while time.time() - t0 < 2 and resps_refresh.call_count == 0:
-        # wait for the daemon thread to do its thing, of for the 2sec timeout...
+        # wait for the daemon thread to do its thing, or for the 2sec timeout...
         time.sleep(0.1)
     # Tokens are automatically refreshed so refresh token doesn't expire'
     assert resps_direct_grant.call_count == 1
