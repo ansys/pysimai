@@ -33,6 +33,7 @@ from ansys.simai.core.data.geometry_utils import (
     _geometry_matches_range_constraints,
     _sweep,
 )
+from ansys.simai.core.data.post_processings import CustomVolumePointCloud
 from ansys.simai.core.data.types import (
     BoundaryConditions,
     File,
@@ -321,6 +322,13 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             raise InvalidOperationError("No point cloud file to delete")
         self._client._api.delete_point_cloud(self.point_cloud["id"])
         self._fields["point_cloud"] = None
+        # The post-processing will be deleted server side but the prediction cache will still
+        # have the post-processing registered. Meaning a new _get_or_run of the post-processing will
+        # attempt a get, thinking the post-processing exists. So for all the registered prediction who
+        # belong to the current geometry, we need to clear the CustomVolumePointCloud local registry.
+        for prediction in self._client._prediction_directory._registry.values():
+            if prediction.geometry_id == self.id:
+                prediction.post._post_processings[CustomVolumePointCloud] = {}
 
 
 class GeometryDirectory(Directory[Geometry]):

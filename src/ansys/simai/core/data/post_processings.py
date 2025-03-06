@@ -698,7 +698,7 @@ Attach the required file to enable CustomVolumePointCloud postprocessing."""
                     cleandoc(
                         f"""
                         Multiple postprocessings were found when only one should be found.
-                        {[pp['id'] for pp in api_response]}
+                        {[pp["id"] for pp in api_response]}
                         """
                     )
                 )
@@ -747,7 +747,7 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         else:
             constructor = self._data_model_for_type_name(data["type"])
         if not constructor:
-            raise ValueError(f"""Received unknown postprocessing type {data['type']}.""")
+            raise ValueError(f"""Received unknown postprocessing type {data["type"]}.""")
         post_processing = super()._model_from(data, data_model=constructor)
         post_processing._prediction = prediction
         return post_processing
