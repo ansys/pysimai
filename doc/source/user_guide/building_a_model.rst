@@ -82,7 +82,7 @@ Configure and build the model
           mdl_conf = ModelConfiguration(
                project=project,                             # project of the model configuration
                build_preset="debug",                        # duration of the build
-               continuous=False,                            # continuous training or not
+               build_on_top=False,                          # continuous training or not
                input=model_input,                           # model input
                output=model_output,                         # model output
                global_coefficients=global_coefficients,     # Global Coefficients
