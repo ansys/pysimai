@@ -1,6 +1,18 @@
 Changelog
 ---------
 
+0.2.7 (2025-03-26)
+******************
+
+New:
+
+- Add :py:meth:`TrainingDataDirectory.iter<ansys.simai.core.data.training_data.TrainingDataDirectory.iter>` as a more efficient alternative to listing training data.
+
+Fixes:
+
+- Stop using deprecated endpoints
+- Deleting PointCloud now cleanses the CustomVolumePointCloud post-processing cache
+
 0.2.6 (2025-01-23)
 ******************
 
