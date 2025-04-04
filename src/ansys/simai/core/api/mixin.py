@@ -22,6 +22,7 @@
 
 import logging
 import os
+import re
 import ssl
 import sys
 from io import BytesIO
@@ -32,13 +33,12 @@ from urllib.request import getproxies
 
 import requests
 import requests.adapters
-from requests.adapters import HTTPAdapter
+from requests.adapters import HTTPAdapter, Retry
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
-from urllib3.util import Retry
 
 from ansys.simai.core import __version__
 from ansys.simai.core.data.types import APIResponse, File, MonitorCallback
-from ansys.simai.core.errors import ConfigurationError, ConnectionError
+from ansys.simai.core.errors import ApiClientError, ConfigurationError, ConnectionError
 from ansys.simai.core.utils.auth import Authenticator
 from ansys.simai.core.utils.configuration import ClientConfig
 from ansys.simai.core.utils.files import file_path_to_obj_file
@@ -63,8 +63,9 @@ class ApiClientMixin:
 
     def __init__(self, *args, config: ClientConfig):  # noqa: D107
         self._session = requests.Session()
+        # Enable retry for non idempotent verbs (no POST)
         retries = Retry(total=5, backoff_factor=0.2, status_forcelist=[502, 503, 504])
-        self._session.mount("http", HTTPAdapter(max_retries=retries))
+        self._session.mount("https://", HTTPAdapter(max_retries=retries))
 
         if config.tls_ca_bundle == "system":
             self._session.mount("https://", TruststoreAdapter(max_retries=retries))
@@ -148,6 +149,17 @@ class ApiClientMixin:
             )
         except requests.exceptions.ConnectionError as e:
             raise ConnectionError(e) from None
+        except requests.exceptions.RetryError as e:
+            m = re.search("too many ([0-9]{3}) error responses", str(e))
+            if m:
+                code = m.group(1)
+                if code == "502":
+                    raise ApiClientError("502 Bad Gateway") from None
+                if code == "503":
+                    raise ApiClientError("503 Service Unavailable") from None
+                if code == "504":
+                    raise ApiClientError("504 Gateway Timeout") from None
+            raise ApiClientError(str(e)) from None
 
     def download_file(
         self,
