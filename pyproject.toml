@@ -46,8 +46,23 @@ dependencies = [
 [tool.flit.module]
 name = "ansys.simai.core"
 
-[tool.pdm.dev-dependencies]
-test = [
+[dependency-groups]
+dev = [
+    "ruff>=0.2",
+    "blacken-docs",
+    "pre-commit",
+    { include-group = "docs" },
+    { include-group = "tests" },
+]
+docs = [
+    "sphinx>=7.2.0",
+    "autodoc-pydantic>=2.0.0",
+    "ansys-sphinx-theme>=0.12.5",
+    "sphinx-gallery",
+    "blacken-docs>=1.16.0"
+    "sphinx_design>=0.6.1"
+]
+tests = [
     "pytest>=7.0.0",
     "pytest-cov>=4.1.0",
     "pytest-asyncio>=0.21.0",
@@ -56,24 +71,6 @@ test = [
     "coverage[toml]>=7.0",
     "pyjwt>=2.4.0"
 ]
-doc = [
-    "sphinx>=7.2.0",
-    "autodoc-pydantic>=2.0.0",
-    "ansys-sphinx-theme>=0.12.5",
-    "sphinx-gallery",
-    "blacken-docs>=1.16.0",
-    "sphinx_design>=0.6.1"
-]
-linting = [
-    "ruff>=0.2",
-    "blacken-docs",
-    "pre-commit"
-]
-
-[tool.pdm.scripts]
-lint = "pre-commit run --all-files"
-test = "pytest --cov=ansys --cov-report=term --cov-report=html:./cov/html tests -vv"
-doc = "sphinx-build doc/source _build/html --color -vW -bhtml"
 
 [project.urls]
 Bugs = "https://github.com/ansys/pysimai/issues"

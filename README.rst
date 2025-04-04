@@ -65,34 +65,24 @@ need to follow these steps:
 
 #. Start by cloning this repository:
 
-   .. code:: bash
+    .. code:: bash
 
-      git clone https://github.com/ansys/pysimai
+       git clone https://github.com/ansys/pysimai
 
-#. `Install PDM <https://pdm-project.org/latest/#recommended-installation-method>`_. NB: If you are a Windows user, make sure that Python is installed on your system and it is added to the Path.
+#. `Install uv <https://docs.astral.sh/uv/>`_. NB: If you are a Windows user, make sure that Python is installed on your system and it is added to the Path.
 
-#. Use PDM to create a virtual env with the dependencies and activate it
+#. Use uv to run commands
 
-   * For Linux/Mac:
+    .. code:: shell
 
-     .. code:: bash
-
-        pdm install
-        eval $(pdm venv activate)
-
-   * For Windows:
-
-     .. code:: shell
-
-        pdm install
-        Invoke-Expression (pdm venv activate)
+       uv run pytest -xlv
 
 #. Finally, verify your development installation by running:
 
-   .. code:: bash
+    .. code:: bash
 
-         python -m pip install tox
-         tox
+       uv tool install tox --with tox-uv
+       tox
 
 
 
@@ -132,7 +122,7 @@ encouraged to install this tool via:
 
 .. code:: bash
 
-    python -m pip install pre-commit && pre-commit install
+    uv tool install pre-commit && pre-commit install
 
 
 Documentation
@@ -143,7 +133,7 @@ For building documentation, you can either run the usual rules provided in the
 
 .. code:: bash
 
-    make -C doc/ html && open doc/html/index.html
+    uv run make -C doc/ html && open doc/html/index.html
 
 However, the recommended way of checking documentation integrity is using:
 
@@ -155,12 +145,12 @@ However, the recommended way of checking documentation integrity is using:
 Distributing
 ------------
 
-PDM commands can help you build or publish the package
+uv commands can help you build or publish the package
 
 .. code:: bash
 
-   pdm build
-   pdm publish
+   uv build
+   uv publish
 
 
 .. LINKS AND REFERENCES
