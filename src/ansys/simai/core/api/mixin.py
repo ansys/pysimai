@@ -66,6 +66,7 @@ class ApiClientMixin:
         # Enable retry for non idempotent verbs (no POST)
         retries = Retry(total=5, backoff_factor=0.2, status_forcelist=[502, 503, 504])
         self._session.mount("https://", HTTPAdapter(max_retries=retries))
+        self._session.mount("http://", HTTPAdapter(max_retries=retries))
 
         if config.tls_ca_bundle == "system":
             self._session.mount("https://", TruststoreAdapter(max_retries=retries))
