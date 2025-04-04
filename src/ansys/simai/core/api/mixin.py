@@ -32,8 +32,9 @@ from urllib.request import getproxies
 
 import requests
 import requests.adapters
-from requests.adapters import HTTPAdapter, Retry
+from requests.adapters import HTTPAdapter
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
+from urllib3.util import Retry
 
 from ansys.simai.core import __version__
 from ansys.simai.core.data.types import APIResponse, File, MonitorCallback
@@ -62,15 +63,15 @@ class ApiClientMixin:
 
     def __init__(self, *args, config: ClientConfig):  # noqa: D107
         self._session = requests.Session()
+        retries = Retry(total=5, backoff_factor=0.2, status_forcelist=[502, 503, 504])
+        self._session.mount("http", HTTPAdapter(max_retries=retries))
+
         if config.tls_ca_bundle == "system":
-            self._session.mount("https://", TruststoreAdapter())
+            self._session.mount("https://", TruststoreAdapter(max_retries=retries))
         elif config.tls_ca_bundle == "unsecure-none":
             self._session.verify = False
         elif isinstance(config.tls_ca_bundle, os.PathLike):
             self._session.verify = str(config.tls_ca_bundle)
-
-        retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
-        self._session.mount("http", HTTPAdapter(max_retries=retries))
 
         system_proxies = getproxies()
         if config.https_proxy:
