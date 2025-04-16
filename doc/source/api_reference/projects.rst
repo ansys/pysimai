@@ -26,3 +26,15 @@ IsTrainableInfo
 .. autoclass:: IsTrainableInfo()
     :members:
     :exclude-members: is_trainable, reason
+
+TrainingCapabilities
+--------------------
+
+.. autoclass:: TrainingCapabilities()
+    :members:
+
+ContinuousLearningCapabilities
+------------------------------
+
+.. autoclass:: ContinuousLearningCapabilities()
+    :members:

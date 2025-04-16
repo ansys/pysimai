@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, NamedTuple, Optional
 
 from ansys.simai.core.data.base import DataModel, Directory
@@ -79,6 +80,30 @@ class IsTrainableInfo(NamedTuple):
         return f"<is_trainable: {self.is_trainable}, reason(s): {self.reason}>"
 
 
+@dataclass
+class ContinuousLearningCapabilities:
+    """Provides a project's continuous learning capabilities.
+
+    Args:
+        able: Is this project able to use continuous learning feature
+        reasons: Reasons why a project can't use continuous learning feature
+    """
+
+    able: bool
+    reasons: List[str]
+
+
+@dataclass
+class TrainingCapabilities:
+    """Provides a project's training capabilities.
+
+    Args:
+        continuous_learning: Continuous learning capabilities.
+    """
+
+    continuous_learning: ContinuousLearningCapabilities
+
+
 class Project(DataModel):
     """Provides the local representation of a  project object."""
 
@@ -116,6 +141,13 @@ class Project(DataModel):
             return None
         return self._client.training_data._model_from(self.fields["sample"])
 
+    @property
+    def training_capabilities(self) -> TrainingCapabilities:
+        """Training capabilities of the project. Determines whether a project can use continuous learning."""
+        raw_tc = self.fields["training_capabilities"]
+        continuous_learning = ContinuousLearningCapabilities(**raw_tc["continuous_learning"])
+        return TrainingCapabilities(continuous_learning=continuous_learning)
+
     @sample.setter
     def sample(self, new_sample: Identifiable["TrainingData"]):
         td_id = get_id_from_identifiable(new_sample)
@@ -123,11 +155,12 @@ class Project(DataModel):
         self.reload()
 
     @property
-    def last_model_configuration(self) -> ModelConfiguration:
+    def last_model_configuration(self) -> Optional[ModelConfiguration]:
         """Last :class:`configuration <ansys.simai.core.data.model_configuration.ModelConfiguration>` used for model training in this project."""
-        return ModelConfiguration._from_payload(
-            project=self, **self.fields.get("last_model_configuration")
-        )
+        raw_last_model_configuration = self.fields.get("last_model_configuration")
+        if raw_last_model_configuration is None:
+            return None
+        return ModelConfiguration._from_payload(project=self, **raw_last_model_configuration)
 
     def is_trainable(self) -> IsTrainableInfo:
         """Check if the project meets the prerequisites to be trained."""
