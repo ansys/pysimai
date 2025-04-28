@@ -146,6 +146,32 @@ def test_sse_event_prediction_success(sse_mixin, prediction_factory):
     assert pred.confidence_score == "high"
 
 
+@pytest.mark.parametrize(
+    "start_status, status, record",
+    [
+        ("processing", "successful", {"confidence_score": "yolo"}),
+        ("successful", "processing", {}),
+    ],
+)
+def test_prediction_fields_updated_on_sse_event(
+    sse_mixin, prediction_factory, start_status, status, record
+):
+    prediction = prediction_factory(state=start_status)
+    updated_record = prediction.fields.copy()
+    updated_record.update(record)
+    sse_event = {
+        "target": {"id": prediction.id, "type": "prediction"},
+        "status": status,
+        "type": "job",
+    }
+    if record:
+        sse_event["record"] = updated_record
+
+    sse_mixin._handle_sse_event(create_sse_event(json.dumps(sse_event)))
+
+    assert prediction.fields.get("confidence_score") == record.get("confidence_score")
+
+
 def test_sse_event_update_prediction_failure(sse_mixin, prediction_factory):
     """WHEN SSEMixin receives a SSE message updating a prediction as failed
     THEN the appropriate prediction object is set to failed and failure_reason field is as expected

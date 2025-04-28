@@ -220,7 +220,8 @@ class ComputableDataModel(DataModel):
             self._set_is_pending()
         else:
             # Only update fields if state is not in PENDING_STATES
-            self.fields = data["record"]
+            if record := data.get("record"):
+                self.fields = record
 
             if state == "successful":
                 logger.debug(f"{self._classname} id {self.id} set status successful")
