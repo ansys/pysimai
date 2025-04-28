@@ -53,7 +53,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           # jeepney is MIT but action thinks it's UNKNOWN
           # https://gitlab.com/takluyver/jeepney/-/blob/master/LICENSE?ref_type=heads
-          whitelist-license-check: "jeepney"
+          whitelist-license-check: "jeepney,urllib3"
 
   tests:
     name: "Test using Python ${{ matrix.python-version }}"
