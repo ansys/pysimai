@@ -176,3 +176,6 @@ source = ["ansys.simai.core"]
 [tool.coverage.report]
 show_missing = true
 exclude_also = ["if TYPE_CHECKING:"]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
