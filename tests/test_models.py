@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import re
 from copy import deepcopy
 from typing import TYPE_CHECKING, NamedTuple
 from unittest.mock import Mock
@@ -706,3 +707,142 @@ def test_throw_error_when_unknown_variables(simai_client):
         mdl_config.output = ModelOutput(volume=unknown_vars)
     for ukn_var in unknown_vars:
         assert ukn_var in str(e.value)
+
+
+@responses.activate
+def test_build_with_build_on_top_not_able(simai_client):
+    """WHEN I call launch_build() using last model conf and build on top
+    WITH project not being able to use continuous learning
+    THEN an InvalidArguments exception is raised
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+        "last_model_configuration": MODEL_CONF_RAW,
+        "training_capabilities": {
+            "continuous_learning": {"able": False, "reasons": ["Reason 1", "Reason 2"]}
+        },
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    project_last_conf = project.last_model_configuration
+
+    assert isinstance(project_last_conf, ModelConfiguration)
+    assert project_last_conf._to_payload() == MODEL_CONF_RAW
+
+    with pytest.raises(
+        InvalidArguments,
+        match=re.escape("Cannot train model because: ['Reason 1', 'Reason 2']"),
+    ):
+        project_last_conf.build_on_top = True
+        simai_client.models.build(project_last_conf)
+
+
+@responses.activate
+def test_build_with_build_on_top_new_config(simai_client):
+    """WHEN I call launch_build() using a new build configuration and build on top
+    THEN an InvalidArguments exception is raised
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+        "last_model_configuration": MODEL_CONF_RAW,
+        "training_capabilities": {"continuous_learning": {"able": True, "reasons": []}},
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+
+    project_last_conf = project.last_model_configuration
+
+    assert isinstance(project_last_conf, ModelConfiguration)
+    assert project_last_conf._to_payload() == MODEL_CONF_RAW
+
+    with pytest.raises(
+        InvalidArguments,
+        match=re.escape(
+            "Cannot train model because: ['When using build on top, model configuration cannot change from last model configuration']"
+        ),
+    ):
+        project_last_conf.build_on_top = True
+        project_last_conf.build_preset = "2_days"
+        simai_client.models.build(project_last_conf)
+
+
+@responses.activate
+def test_build_with_build_on_top_previous_config(simai_client):
+    """WHEN I call launch_build() using the last build configuration and build on top
+    THEN I get a Model object, its project_id matches the
+    id of the project, and its configuration is a
+    ModelConfiguration and its content matches the project last conf.
+    """
+
+    raw_project = {
+        "id": MODEL_RAW["project_id"],
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+        "last_model_configuration": MODEL_CONF_RAW,
+        "training_capabilities": {
+            "continuous_learning": {"able": True, "reasons": ["Reason 1", "Reasons 2"]}
+        },
+    }
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
+        json={"is_trainable": True},
+        status=200,
+    )
+
+    responses.add(
+        responses.GET,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}",
+        json=raw_project,
+        status=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+
+    project.verify_gc_formula = Mock()
+    project_last_conf = project.last_model_configuration
+    project_last_conf.build_on_top = True
+
+    model_config_new = deepcopy(MODEL_CONF_RAW)
+    model_raw_new = deepcopy(MODEL_RAW)
+
+    model_config_new["continuous"] = True
+    model_raw_new["configuration"] = model_config_new
+
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{MODEL_RAW['project_id']}/model",
+        json=model_raw_new,
+        status=200,
+    )
+    launched_model: Model = simai_client.models.build(project_last_conf)
+
+    assert isinstance(launched_model.configuration, ModelConfiguration)
+    assert launched_model.project_id == MODEL_RAW["project_id"]
+    assert launched_model.configuration._to_payload() == project_last_conf._to_payload()
