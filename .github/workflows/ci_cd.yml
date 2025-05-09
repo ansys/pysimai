@@ -51,6 +51,7 @@ jobs:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
+          check-licenses: ${{ matrix.python-version != '3.9' }}
           # jeepney is MIT but action thinks it's UNKNOWN
           # https://gitlab.com/takluyver/jeepney/-/blob/master/LICENSE?ref_type=heads
           whitelist-license-check: "jeepney,urllib3"
