@@ -29,6 +29,7 @@ from ansys.simai.core.api.project import ProjectClientMixin
 from ansys.simai.core.api.sse import SSEMixin
 from ansys.simai.core.api.training_data import TrainingDataClientMixin
 from ansys.simai.core.api.training_data_part import TrainingDataPartClientMixin
+from ansys.simai.core.api.user import UserClientMixin
 from ansys.simai.core.api.workspace import WorkspaceClientMixin
 
 
@@ -42,6 +43,7 @@ class ApiClient(
     SSEMixin,
     TrainingDataClientMixin,
     TrainingDataPartClientMixin,
+    UserClientMixin,
     WorkspaceClientMixin,
 ):
     """Provides the low-level client that handles direct communication with the server."""

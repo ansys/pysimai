@@ -43,6 +43,7 @@ from ansys.simai.core.data.projects import Project, ProjectDirectory
 from ansys.simai.core.data.training_data import TrainingDataDirectory
 from ansys.simai.core.data.training_data_parts import TrainingDataPartDirectory
 from ansys.simai.core.data.types import Path
+from ansys.simai.core.data.users import UserDirectory
 from ansys.simai.core.data.workspaces import Workspace, WorkspaceDirectory
 from ansys.simai.core.errors import (
     InvalidClientStateError,
@@ -95,6 +96,7 @@ class SimAIClient:
         self._prediction_directory = PredictionDirectory(client=self)
         self._training_data_directory = TrainingDataDirectory(client=self)
         self._training_data_part_directory = TrainingDataPartDirectory(client=self)
+        self._user_directory = UserDirectory(client=self)
         self._current_workspace = None
         self._current_project = None
         if config.workspace is not None:
@@ -242,6 +244,13 @@ class SimAIClient:
         For more information, see :ref:`projects`.
         """
         return self._project_directory
+
+    @property
+    def users(self):
+        """Representation of all projects on the server.
+        For more information, see :ref:`users`.
+        """
+        return self._user_directory
 
     @property
     def workspaces(self):
