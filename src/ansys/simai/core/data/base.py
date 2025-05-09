@@ -42,6 +42,7 @@ PENDING_STATES = [
     "requested",
     "processing",
     "pending_retry",
+    "stalled",
 ]
 
 
@@ -211,19 +212,25 @@ class ComputableDataModel(DataModel):
     def _handle_job_sse_event(self, data):
         """Update object with the information and state received through the SSE."""
         logger.debug(f"Handling SSE job event for {self._classname} id {self.id}")
-        self.fields = data["record"]
-        state: str = data["record"]["state"]
+
+        state: str = data["status"]
+
         if state in PENDING_STATES:
             logger.debug(f"{self._classname} id {self.id} set status pending")
             self._set_is_pending()
-        elif state == "successful":
-            logger.debug(f"{self._classname} id {self.id} set status successful")
-            self._set_is_over()
-        elif state in ERROR_STATES:
-            reason_str = f"with reason {self.fields.get('error')}"
-            logger.debug(f"{self._classname} id {self.id} set status failed {reason_str}")
-            self._set_has_failed()
-            logger.error(self.fields.get("error"))
+        else:
+            # Only update fields if state is not in PENDING_STATES
+            if record := data.get("record"):
+                self.fields = record
+
+            if state == "successful":
+                logger.debug(f"{self._classname} id {self.id} set status successful")
+                self._set_is_over()
+            elif state in ERROR_STATES:
+                reason_str = f"with reason {self.fields.get('error')}"
+                logger.debug(f"{self._classname} id {self.id} set status failed {reason_str}")
+                self._set_has_failed()
+                logger.error(self.fields.get("error"))
 
 
 DataModelType = TypeVar("DataModelType", bound=DataModel)

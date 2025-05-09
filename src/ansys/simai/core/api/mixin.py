@@ -90,7 +90,8 @@ class ApiClientMixin:
 
     def _set_user_agent(self) -> None:
         """Set the user-agent header for the session."""
-        user_agent = f"PySimAI {__version__}"
+        v = sys.version_info
+        user_agent = f"PySimAI {__version__}/Python {v.major}.{v.minor}.{v.micro}"
         self._session.headers.update({"User-Agent": user_agent})
 
     def _get(self, url, *args, **kwargs) -> APIResponse:
