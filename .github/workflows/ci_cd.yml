@@ -57,7 +57,7 @@ jobs:
           whitelist-license-check: "jeepney,urllib3"
 
   tests:
-    name: "Test using Python ${{ matrix.python-version }}"
+    name: "Test using Python ${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     needs: [smoke-tests]
     timeout-minutes: 5
