@@ -44,6 +44,19 @@ def test_construct_default_url():
     assert client._api._url_prefix == HttpUrl("https://api.simai.ansys.com/v2/")
 
 
+@responses.activate(registry=responses.registries.OrderedRegistry)
+def test_retry_on_5XX(api_client):
+    url = "https://try.me"
+    rsp1 = responses.add(responses.GET, url=url, status=503)
+    rsp2 = responses.add(responses.GET, url=url, status=504)
+    rsp3 = responses.add(responses.GET, url=url, status=200, json={"wat": "hyperdrama"})
+    resp = api_client._get(url)
+    assert resp == {"wat": "hyperdrama"}
+    assert rsp1.call_count == 1
+    assert rsp2.call_count == 1
+    assert rsp3.call_count == 1
+
+
 @responses.activate
 def test_404_response_raises_not_found_error(api_client):
     """WHEN ApiClient gets a 404 response

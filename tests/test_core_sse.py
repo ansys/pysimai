@@ -128,22 +128,48 @@ create_sse_event = NamedTuple("SSEEvent", [("data", dict)])
 
 
 def test_sse_event_prediction_success(sse_mixin, prediction_factory):
-    """WHEN SSEMixin receives a SSE message updating a prediction to success
+    """WHEN SSEMixin receives an SSE message updating a prediction to success
     THEN the appropriate prediction is updated and changes state to successful
     """
     pred = prediction_factory(state="processing")
     assert pred.is_pending
-    # Mock a SSE success event
+    # Mock an SSE success event
     updated_record = pred.fields.copy()
     updated_record.update({"state": "successful", "confidence_score": "high"})
     sse_mixin._handle_sse_event(
         create_sse_event(
-            f'{{"target": {{"id": "{pred.id}", "type": "prediction"}}, "type": "job", "record": {json.dumps(updated_record)}}}'
+            f'{{"target": {{"id": "{pred.id}", "type": "prediction"}}, "status": "successful", "type": "job", "record": {json.dumps(updated_record)}}}'
         )
     )
     assert not pred.is_pending
     assert pred.is_ready
     assert pred.confidence_score == "high"
+
+
+@pytest.mark.parametrize(
+    "start_status, status, record",
+    [
+        ("processing", "successful", {"confidence_score": "yolo"}),
+        ("successful", "processing", {}),
+    ],
+)
+def test_prediction_fields_updated_on_sse_event(
+    sse_mixin, prediction_factory, start_status, status, record
+):
+    prediction = prediction_factory(state=start_status)
+    updated_record = prediction.fields.copy()
+    updated_record.update(record)
+    sse_event = {
+        "target": {"id": prediction.id, "type": "prediction"},
+        "status": status,
+        "type": "job",
+    }
+    if record:
+        sse_event["record"] = updated_record
+
+    sse_mixin._handle_sse_event(create_sse_event(json.dumps(sse_event)))
+
+    assert prediction.fields.get("confidence_score") == record.get("confidence_score")
 
 
 def test_sse_event_update_prediction_failure(sse_mixin, prediction_factory):
@@ -157,7 +183,7 @@ def test_sse_event_update_prediction_failure(sse_mixin, prediction_factory):
     updated_record.update({"state": "failure", "error": "something went wrong"})
     sse_mixin._handle_sse_event(
         create_sse_event(
-            f'{{"target": {{"id": "{pred.id}", "type": "prediction"}}, "type": "job", "record": {json.dumps(updated_record)}}}'
+            f'{{"target": {{"id": "{pred.id}", "type": "prediction"}}, "status": "failure", "type": "job", "record": {json.dumps(updated_record)}}}'
         )
     )
     assert not pred.is_pending
@@ -228,6 +254,7 @@ def test_prediction_data_update(simai_client, prediction_factory):
     simai_client._prediction_directory._handle_sse_event(
         {
             "reason": "",
+            "status": "successful",
             "result": {"data": {"values": {"confidence_score": "low"}}, "dim": 1},
             "target": {"id": pred.id, "type": "prediction"},
             "type": "job",
