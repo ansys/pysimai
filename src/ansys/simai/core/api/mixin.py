@@ -71,7 +71,8 @@ class ApiClientMixin:
         if config.tls_ca_bundle == "system":
             self._session.mount("https://", TruststoreAdapter(max_retries=retries))
         elif config.tls_ca_bundle == "unsecure-none":
-            self._session.verify = False
+            # prout prout: self._session.verify = False
+            pass
         elif isinstance(config.tls_ca_bundle, os.PathLike):
             self._session.verify = str(config.tls_ca_bundle)
 
