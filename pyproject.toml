@@ -1,8 +1,3 @@
-# Using PDM with flit backend
-[build-system]
-requires = ["flit_core>=3.2,<4"]
-build-backend = "flit_core.buildapi"
-
 [project]
 name = "ansys-simai-core"
 version = "0.3.0"
@@ -43,14 +38,12 @@ dependencies = [
     "truststore>=0.10.0; python_version >= '3.10'",
 ]
 
-[tool.flit.module]
-name = "ansys.simai.core"
-
 [dependency-groups]
 dev = [
     "ruff>=0.2",
     "blacken-docs",
     "pre-commit",
+    "poethepoet",
     { include-group = "docs" },
     { include-group = "tests" },
 ]
@@ -78,6 +71,11 @@ Documentation = "https://simai.docs.pyansys.com"
 Source = "https://github.com/ansys/pysimai"
 Discussions = "https://github.com/ansys/pysimai/discussions"
 Releases = "https://github.com/ansys/pysimai/releases"
+
+[tool.poe.tasks]
+lint = "pre-commit run --all-files"
+test = "pytest --cov=ansys --cov-report=term --cov-report=html:./cov/html tests -vv"
+doc = "sphinx-build doc/source _build/html --color -vW -bhtml"
 
 [tool.ruff]
 line-length = 100
@@ -168,12 +166,21 @@ convention = "google"
 [tool.ruff.lint.isort]
 known-first-party = ["ansys.simai.core"]
 
+
 [tool.coverage.run]
 source = ["ansys.simai.core"]
-
 [tool.coverage.report]
 show_missing = true
 exclude_also = ["if TYPE_CHECKING:"]
 
+
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ansys"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
