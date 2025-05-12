@@ -107,28 +107,20 @@ class ModelDirectory(Directory[Model]):
         if not is_trainable:
             raise InvalidArguments(f"Cannot train model because: {is_trainable.reason}")
 
-        # Check if there is a difference between the two model configuration (except continuous field)
-        configuration_mismatch = not configuration.project.last_model_configuration or {
-            k
-            for k, _ in configuration.project.last_model_configuration._to_payload().items()
-            ^ configuration._to_payload().items()
-        } != {"continuous"}
-        if configuration.build_on_top and (
-            configuration_mismatch
-            or not configuration.project.training_capabilities.continuous_learning.able
-        ):
-            reasons = configuration.project.training_capabilities.continuous_learning.reasons
-            if configuration_mismatch:
-                reasons.append(
-                    "When using build on top, model configuration cannot change from last model configuration"
+        if configuration.build_on_top:
+            return self._model_from(
+                self._client._api.launch_build_on_top(
+                    configuration.project.id,
+                    dismiss_data_with_fields_discrepancies,
+                    dismiss_data_with_volume_overflow,
                 )
-            raise InvalidArguments(f"Cannot train model because: {reasons}")
-
-        return self._model_from(
-            self._client._api.launch_build(
-                configuration.project.id,
-                configuration._to_payload(),
-                dismiss_data_with_fields_discrepancies,
-                dismiss_data_with_volume_overflow,
             )
-        )
+        else:
+            return self._model_from(
+                self._client._api.launch_build(
+                    configuration.project.id,
+                    configuration._to_payload(),
+                    dismiss_data_with_fields_discrepancies,
+                    dismiss_data_with_volume_overflow,
+                )
+            )
