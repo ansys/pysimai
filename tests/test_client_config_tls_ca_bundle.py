@@ -41,14 +41,41 @@ from ansys.simai.core import SimAIClient
 @pytest.fixture(scope="module")
 def tls_root_certificate(tmp_path_factory):
     tmp_path = tmp_path_factory.mktemp("tls_root_certificate")
-    # Create CA key and certificate
-    subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", tmp_path / "ca_key.pem", "-out", tmp_path / "test_ca.pem", "-days", "3650", "-subj", "/CN=Test CA"], check=False)  # fmt: skip # noqa: S607, S603
+    # Create OpenSSL config file for the CA with key usage extension
+    with open(tmp_path / "ca_openssl.cnf", "w") as f:
+        f.write("""
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_ca
+x509_extensions = v3_ca
+
+[req_distinguished_name]
+
+[v3_ca]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+basicConstraints = critical, CA:true
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+""")
+    # Create CA key and certificate with extensions
+    subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", tmp_path / "ca_key.pem", "-out", tmp_path / "test_ca.pem", "-days", "3650", "-subj", "/CN=Test CA", "-config", tmp_path / "ca_openssl.cnf"], check=False)  # fmt: skip # noqa: S607, S603
     # Create server key and certificate
     subprocess.run(["openssl", "req", "-newkey", "rsa:2048", "-nodes", "-keyout", tmp_path / "server_key.pem", "-out", tmp_path / "server_csr.pem", "-subj", "/CN=localhost"], check=False)  # fmt: skip # noqa: S607, S603
-    with open(tmp_path / "openssl.cnf", "w") as f:
-        # Create a config file for OpenSSL to include the SAN
-        f.write("[SAN]\nsubjectAltName = DNS:localhost\n")
-    subprocess.run(["openssl", "x509", "-req", "-in", tmp_path / "server_csr.pem", "-CA", tmp_path / "test_ca.pem", "-CAkey", tmp_path / "ca_key.pem", "-CAcreateserial", "-out", tmp_path / "server_cert.pem", "-days", "3650", "-extensions", "SAN", "-extfile", tmp_path / "openssl.cnf"], check=False)  # fmt: skip # noqa: S607, S603
+    with open(tmp_path / "server_openssl.cnf", "w") as f:
+        # Create a config file for OpenSSL to include the SAN and key usage extensions
+        f.write("""
+[req]
+distinguished_name = req_distinguished_name
+
+[req_distinguished_name]
+
+[server_ext]
+basicConstraints = CA:FALSE
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = DNS:localhost
+""")
+    subprocess.run(["openssl", "x509", "-req", "-in", tmp_path / "server_csr.pem", "-CA", tmp_path / "test_ca.pem", "-CAkey", tmp_path / "ca_key.pem", "-CAcreateserial", "-out", tmp_path / "server_cert.pem", "-days", "3650", "-extensions", "server_ext", "-extfile", tmp_path / "server_openssl.cnf"], check=False)  # fmt: skip # noqa: S607, S603
 
     return {
         "ca": tmp_path / "test_ca.pem",
