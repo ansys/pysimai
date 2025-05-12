@@ -90,12 +90,19 @@ BASE_CLT_ARGS = {
 }
 
 
+def disable_http_retry(clt: SimAIClient, url: str):
+    "Avoids slow tests due to retry backoff"
+    adapter = clt._api._session.get_adapter(url)
+    adapter.max_retries = 0
+
+
 #
 # TESTS
 #
 def test_client_without_config_tls_ca_bundle(tls_root_certificate, https_server):
     # Default config, using certifi's certificate store
     clt = SimAIClient(**BASE_CLT_ARGS)
+    disable_http_retry(clt, https_server)
     # By default, the self-signed test CA is not accepted
     with pytest.raises(err.ConnectionError):
         clt._api._get(https_server)
@@ -110,6 +117,7 @@ def test_client_without_config_tls_ca_bundle(tls_root_certificate, https_server)
 )
 def test_client_config_tls_ca_bundle_system(tls_root_certificate, https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="system")
+    disable_http_retry(clt, https_server)
     # The system CA rejects the test CA by default
     with pytest.raises(err.ConnectionError):
         clt._api._get(https_server)
