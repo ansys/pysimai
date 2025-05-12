@@ -19,3 +19,4 @@
 * [Revathy Venugopal](https://github.com/Revathyvenugopal162)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
 * [romane-m](https://github.com/romane-m)
+* [Sylvain Collas](https://github.com/u8slvn)
