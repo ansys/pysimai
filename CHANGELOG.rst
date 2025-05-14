@@ -1,6 +1,18 @@
 Changelog
 ---------
 
+0.3.0 (2025-05-14)
+******************
+
+New:
+
+- Retry sending requests on HTTP 5xx error (#135)
+
+Changes:
+
+- Include python version in user_agent (#143)
+- SSE: Don't expect record from jobs with pending status (#141)
+
 0.2.7 (2025-03-26)
 ******************
 
