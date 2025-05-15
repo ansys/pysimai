@@ -95,7 +95,7 @@ class ProjectClientMixin(ApiClientMixin):
         dismiss_data_with_fields_discrepancies: bool = False,
         dismiss_data_with_volume_overflow: bool = False,
     ):
-        """Launches a build on top of previous model for a project.
+        """Launches a build on top of the previous model for a project.
 
         Args:
             project_id: the ID of the project
