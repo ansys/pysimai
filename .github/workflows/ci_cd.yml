@@ -34,7 +34,6 @@ jobs:
       - uses: ansys/actions/doc-style@a3a45ea76bfae7ec138e4d4b4471ffe2cb238ec8 # TODO: move to v10 when out
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          use-uv: true
 
   smoke-tests:
     name: "Build and Smoke tests"
@@ -95,7 +94,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: actions/checkout@v4
       - name: Generate doc requirements
-        run: uv export --only group docs -o doc_requirements.txt
+        run: uv export --only-group docs -o doc_requirements.txt
       - uses: ansys/actions/doc-build@v9
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
