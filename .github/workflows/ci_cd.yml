@@ -31,9 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: ansys/actions/doc-style@v9
+      - uses: ansys/actions/doc-style@a3a45ea76bfae7ec138e4d4b4471ffe2cb238ec8 # TODO: move to v10 when out
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          use-uv: true
 
   smoke-tests:
     name: "Build and Smoke tests"
