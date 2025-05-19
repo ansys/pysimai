@@ -107,11 +107,17 @@ class ModelDirectory(Directory[Model]):
         if not is_trainable:
             raise InvalidArguments(f"Cannot train model because: {is_trainable.reason}")
 
-        return self._model_from(
-            self._client._api.launch_build(
+        if configuration.build_on_top:
+            response = self._client._api.launch_build_on_top(
+                configuration.project.id,
+                dismiss_data_with_fields_discrepancies,
+                dismiss_data_with_volume_overflow,
+            )
+        else:
+            response = self._client._api.launch_build(
                 configuration.project.id,
                 configuration._to_payload(),
                 dismiss_data_with_fields_discrepancies,
                 dismiss_data_with_volume_overflow,
             )
-        )
+        return self._model_from(response)
