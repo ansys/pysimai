@@ -22,19 +22,15 @@
 
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, List, NamedTuple, Optional
+from typing import TYPE_CHECKING, NamedTuple, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
-from ansys.simai.core.utils.numerical import cast_values_to_float
 
 if TYPE_CHECKING:
-    from ansys.simai.core.data.global_coefficients_requests import (
-        CheckGlobalCoefficient,
-        ComputeGlobalCoefficient,
-    )
+    from ansys.simai.core.data.global_coefficients_requests import ProcessGlobalCoefficient
     from ansys.simai.core.data.training_data import TrainingData
 
 EXTRA_CALCULETTE_FIELDS = ["Area", "Normals", "Centroids"]
@@ -90,7 +86,7 @@ class ContinuousLearningCapabilities:
     """
 
     able: bool
-    reasons: List[str]
+    reasons: list[str]
 
 
 @dataclass
@@ -126,7 +122,7 @@ class Project(DataModel):
         self.reload()
 
     @property
-    def data(self) -> List["TrainingData"]:
+    def data(self) -> list["TrainingData"]:
         """List of all :class:`~ansys.simai.core.data.training_data.TrainingData` instances in the project."""
         raw_td_list = self._client._api.iter_training_data_in_project(self.id)
         return [
@@ -171,7 +167,7 @@ class Project(DataModel):
         """Delete the project."""
         self._client._api.delete_project(self.id)
 
-    def get_variables(self) -> Optional[Dict[str, List[str]]]:
+    def get_variables(self) -> Optional[dict[str, list[str]]]:
         """Get the available variables for the model's input/output."""
         if not self.sample:
             return None
@@ -183,50 +179,25 @@ class Project(DataModel):
             data[key] = [local_field.get("name") for local_field in local_fields]
         return data
 
-    def verify_gc_formula(
+    def process_gc_formula(
         self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
-    ):
-        """Verify whether the syntax of the global coefficient formula is valid."""
+    ) -> Union[float, None]:
+        """Process the formula of a global coefficient according to the project sample.
+        It handles checking and computing the global coefficient formula as one workflow.
+        """
 
         if not self.sample:
             raise ProcessingError(
-                f"No sample is set in the project {self.id}. A sample should be set to verify a global coefficient formula."
+                f"No sample is set for the project {self.id}. A sample should be set "
+                f"for computing the results of a Global Coefficients formula."
             )
 
         sample_metadata = self.sample.fields.get("extracted_metadata")
 
-        gc_check: CheckGlobalCoefficient = self._client._check_gc_formula_directory._model_from(
-            data={
-                "id": f"{self.id}-check-{gc_formula}",
-            },
-            project_id=self.id,
-            gc_formula=gc_formula,
-            sample_metadata=sample_metadata,
-            bc=bc,
-            surface_variables=surface_variables,
-        )
-
-        gc_check.run()
-        gc_check.wait()
-
-        return gc_check.is_ready
-
-    def compute_gc_formula(
-        self, gc_formula: str, bc: list[str] = None, surface_variables: list[str] = None
-    ) -> float:
-        """Compute the result of a global coefficient formula according to the project sample."""
-
-        if not self.sample:
-            raise ProcessingError(
-                f"No sample is set for the project {self.id}. A sample should be set for computing the results of a Global Coefficients formula."
-            )
-
-        sample_metadata = self.sample.fields.get("extracted_metadata")
-
-        gc_compute: ComputeGlobalCoefficient = (
-            self._client._compute_gc_formula_directory._model_from(
+        gc_process: ProcessGlobalCoefficient = (
+            self._client._process_gc_formula_directory._model_from(
                 data={
-                    "id": f"{self.id}-compute-{gc_formula}",
+                    "id": f"{self.id}-process-{gc_formula}",
                 },
                 project_id=self.id,
                 gc_formula=gc_formula,
@@ -236,10 +207,10 @@ class Project(DataModel):
             )
         )
 
-        gc_compute.run()
-        gc_compute.wait()
+        gc_process.run()
+        gc_process.wait()
 
-        return cast_values_to_float(gc_compute.result["value"])
+        return gc_process.result
 
     def cancel_build(self):
         """Cancels a build if there is one pending."""
@@ -266,7 +237,7 @@ class ProjectDirectory(Directory[Project]):
 
     _data_model = Project
 
-    def list(self) -> List[Project]:
+    def list(self) -> list[Project]:
         """List all projects available on the server."""
         return [self._model_from(data) for data in self._client._api.projects()]
 

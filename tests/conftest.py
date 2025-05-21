@@ -23,8 +23,11 @@
 # ruff: noqa: S311
 
 import random
-from sys import modules
+import threading
+import time
+from collections.abc import Callable
 
+import modules
 import niquests
 import pytest
 import requests
@@ -223,13 +226,8 @@ def create_mock_geometry():
 def global_coefficient_request_factory(simai_client):
     """Returns a function to create a global coefficient request object."""
 
-    def _factory(request_type="check", **kwargs):
-        if "state" not in kwargs.get("data"):
-            kwargs.get("data").setdefault("state", "successful")
-        if request_type == "check":
-            return simai_client._check_gc_formula_directory._model_from(**kwargs)
-        elif request_type == "compute":
-            return simai_client._compute_gc_formula_directory._model_from(**kwargs)
+    def _factory(**kwargs):
+        return simai_client._process_gc_formula_directory._model_from(**kwargs)
 
     return _factory
 
@@ -246,3 +244,65 @@ def model_factory(simai_client) -> Model:
         return model
 
     return _factory
+
+
+@pytest.fixture
+def delayed_events():
+    """
+    Fixture to test Event.wait() with sequential events.
+
+    This fixture provides a manager for scheduling events to happen at specific times,
+    allowing for controlled testing of wait() behavior.
+
+    Usage:
+        def test_something(delayed_events):
+            # Schedule events to occur
+            delayed_events.add(0.1, lambda: model.update_state("processing"))
+            delayed_events.add(0.3, lambda: model.complete())
+
+            # Start the background thread that will trigger events
+            delayed_events.start()
+
+            # Call the wait method you're testing
+            result = model.wait()
+
+            # Make assertions
+            assert result is True
+    """
+
+    class DelayedEventManager:
+        def __init__(self) -> None:
+            self.events = []
+            self.thread = None
+
+        def add(self, delay: float, callback: Callable[[], None] = None):
+            """Add a callback to be executed after the specified delay (in seconds)"""
+            self.events.append((delay, callback))
+
+        def start(self):
+            """Start the thread that will execute all scheduled events"""
+
+            def run_events():
+                start_time = time.time()
+
+                for delay, callback in self.events:
+                    time_to_wait = delay - (time.time() - start_time)
+                    if time_to_wait > 0:
+                        time.sleep(time_to_wait)
+                    callback()
+
+            self.thread = threading.Thread(target=run_events)
+            self.thread.daemon = True
+            self.thread.start()
+            return self
+
+        def join(self):
+            """Wait for all events to complete"""
+            if self.thread:
+                self.thread.join()
+
+    manager = DelayedEventManager()
+
+    yield manager
+
+    manager.join()

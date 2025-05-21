@@ -22,12 +22,12 @@
 
 from typing import TYPE_CHECKING
 
+import pytest
 import responses
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.global_coefficients_requests import (
-        CheckGlobalCoefficient,
-        ComputeGlobalCoefficient,
+        ProcessGlobalCoefficient,
     )
 
 METADATA_RAW = {
@@ -75,20 +75,17 @@ METADATA_RAW = {
 
 
 @responses.activate
-def test_check_formula_failure(global_coefficient_request_factory):
+def test_process_formula_success(global_coefficient_request_factory):
     gc_formula = "max(Pressure)"
     project_id = "xX007Xx"
-
     responses.add(
         responses.POST,
-        f"https://test.test/projects/{project_id}/check-formula",
-        status=200,
+        f"https://test.test/projects/{project_id}/process-formula",
+        status=204,
     )
-
-    check_gc: CheckGlobalCoefficient = global_coefficient_request_factory(
-        request_type="check",
+    process_gc: ProcessGlobalCoefficient = global_coefficient_request_factory(
         data={
-            "id": f"{project_id}-check-{gc_formula}",
+            "id": f"{project_id}-process-{gc_formula}",
         },
         project_id="xX007Xx",
         gc_formula=gc_formula,
@@ -96,120 +93,93 @@ def test_check_formula_failure(global_coefficient_request_factory):
         bc=["Vx"],
         surface_variables=["Pressure"],
     )
-
-    reason_of_failure = "wrong shoes"
-    sse_event = {
-        "status": "failure",
-        "target": {"action": "check", "formula": gc_formula},
-        "reason": reason_of_failure,
-    }
-
-    check_gc._handle_job_sse_event(sse_event)
-
-    assert check_gc.has_failed
-    assert all(keyword in check_gc.failure_reason for keyword in [reason_of_failure, gc_formula])
-
-
-@responses.activate
-def test_check_formula_success(global_coefficient_request_factory):
-    gc_formula = "max(Pressure)"
-    project_id = "xX007Xx"
-
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project_id}/check-formula",
-        status=200,
-    )
-
-    check_gc: CheckGlobalCoefficient = global_coefficient_request_factory(
-        request_type="check",
-        data={
-            "id": f"{project_id}-check-{gc_formula}",
-        },
-        project_id="xX007Xx",
-        gc_formula=gc_formula,
-        sample_metadata=METADATA_RAW,
-        bc=["Vx"],
-        surface_variables=["Pressure"],
-    )
-
-    sse_event = {
+    check_sse_event = {
         "status": "successful",
         "target": {"action": "check", "formula": gc_formula},
     }
-
-    check_gc._handle_job_sse_event(sse_event)
-
-    assert check_gc.is_ready
-
-
-@responses.activate
-def test_compute_formula_failure(global_coefficient_request_factory):
-    gc_formula = "max(Pressure)"
-    project_id = "xX007Xx"
-
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project_id}/check-formula",
-        status=200,
-    )
-
-    check_gc: ComputeGlobalCoefficient = global_coefficient_request_factory(
-        request_type="compute",
-        data={
-            "id": f"{project_id}-compute-{gc_formula}",
-        },
-        project_id="xX007Xx",
-        gc_formula=gc_formula,
-        sample_metadata=METADATA_RAW,
-        bc=["Vx"],
-        surface_variables=["Pressure"],
-    )
-
-    reason_of_failure = "wrong shoes"
-    sse_event = {
-        "status": "failure",
-        "target": {"action": "compute", "formula": gc_formula},
-        "reason": reason_of_failure,
-    }
-
-    check_gc._handle_job_sse_event(sse_event)
-
-    assert check_gc.has_failed
-    assert all(keyword in check_gc.failure_reason for keyword in [reason_of_failure, gc_formula])
-
-
-@responses.activate
-def test_compute_formula_success(global_coefficient_request_factory):
-    gc_formula = "max(Pressure)"
-    project_id = "xX007Xx"
-
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project_id}/check-formula",
-        status=200,
-    )
-
-    check_gc: ComputeGlobalCoefficient = global_coefficient_request_factory(
-        request_type="compute",
-        data={
-            "id": f"{project_id}-compute-{gc_formula}",
-        },
-        project_id="xX007Xx",
-        gc_formula=gc_formula,
-        sample_metadata=METADATA_RAW,
-        bc=["Vx"],
-        surface_variables=["Pressure"],
-    )
-
     compute_result = 0.25478328
-    sse_event = {
+    compute_sse_event = {
         "status": "successful",
         "target": {"action": "compute", "formula": gc_formula},
         "result": {"value": compute_result},
     }
 
-    check_gc._handle_job_sse_event(sse_event)
+    process_gc.run()
 
-    assert check_gc.is_ready
-    assert check_gc.result == compute_result
+    assert not process_gc.is_ready
+
+    process_gc._handle_job_sse_event(check_sse_event)
+
+    assert not process_gc.is_ready
+    assert process_gc.result is None
+
+    process_gc._handle_job_sse_event(compute_sse_event)
+
+    assert process_gc.is_ready
+    assert process_gc.result == compute_result
+
+
+@responses.activate
+def test_process_formula_success_with_cache(global_coefficient_request_factory):
+    gc_formula = "max(Pressure)"
+    project_id = "xX007Xx"
+    compute_result = 0.25478328
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project_id}/process-formula",
+        status=200,
+        json={"result": compute_result},
+    )
+    process_gc: ProcessGlobalCoefficient = global_coefficient_request_factory(
+        data={
+            "id": f"{project_id}-process-{gc_formula}",
+        },
+        project_id="xX007Xx",
+        gc_formula=gc_formula,
+        sample_metadata=METADATA_RAW,
+        bc=["Vx"],
+        surface_variables=["Pressure"],
+    )
+
+    process_gc.run()
+
+    assert process_gc.is_ready
+    assert process_gc.result == compute_result
+
+
+@pytest.mark.parametrize("action", ["check", "compute"])
+@responses.activate
+def test_process_formula_failure(global_coefficient_request_factory, action):
+    gc_formula = "max(Pressure)"
+    project_id = "xX007Xx"
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project_id}/process-formula",
+        status=204,
+    )
+    process_gc: ProcessGlobalCoefficient = global_coefficient_request_factory(
+        request_type=action,
+        data={
+            "id": f"{project_id}-process-{gc_formula}",
+        },
+        project_id="xX007Xx",
+        gc_formula=gc_formula,
+        sample_metadata=METADATA_RAW,
+        bc=["Vx"],
+        surface_variables=["Pressure"],
+    )
+    reason_of_failure = "wrong shoes"
+    sse_event = {
+        "status": "failure",
+        "target": {"action": action, "formula": gc_formula},
+        "reason": reason_of_failure,
+    }
+
+    process_gc.run()
+
+    assert not process_gc.is_ready
+
+    process_gc._handle_job_sse_event(sse_event)
+
+    assert process_gc.has_failed
+    assert all(keyword in process_gc.failure_reason for keyword in [reason_of_failure, gc_formula])

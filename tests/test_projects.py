@@ -19,14 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+from functools import partial
 from typing import TYPE_CHECKING
-from unittest.mock import patch
 
 import pytest
 import responses
 
-from ansys.simai.core.data.global_coefficients_requests import CheckGlobalCoefficient
 from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.errors import ApiClientError, ProcessingError
@@ -267,46 +265,65 @@ def test_last_model_configuration(simai_client):
     assert project_last_conf._to_payload() == last_conf
 
 
-def test_verify_gc_no_sample(simai_client):
+def test_process_gc_formula_with_no_sample(simai_client):
     """WHEN no sample is defined in the project
-    THEN an exception is raised in verify_gc_formula."""
+    THEN an exception is raised in process_gc_formula."""
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
-
     project: Project = simai_client._project_directory._model_from(raw_project)
 
     with pytest.raises(ProcessingError):
-        project.verify_gc_formula("max(Pressure)")
-
-
-def test_compute_gc_no_sample(simai_client):
-    """WHEN no sample is defined in the project
-    THEN an exception is raised in compute_gc_formula."""
-    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
-
-    project: Project = simai_client._project_directory._model_from(raw_project)
-
-    with pytest.raises(ProcessingError):
-        project.compute_gc_formula("max(Pressure)")
-
-
-def fake_wait(gc_class):
-    gc_class._set_is_over()
+        project.process_gc_formula("max(Pressure)")
 
 
 @responses.activate
-@patch.object(CheckGlobalCoefficient, "wait", fake_wait)
-def test_successful_gc_verify(simai_client):
+def test_process_gc_formula_without_cache(simai_client, delayed_events):
+    gc_formula = "max(Pressure)"
+    compute_result = 0.25478328
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
-
     project: Project = simai_client._project_directory._model_from(raw_project)
-
     responses.add(
         responses.POST,
-        f"https://test.test/projects/{project.id}/check-formula",
+        f"https://test.test/projects/{project.id}/process-formula",
+        status=204,
+    )
+    check_sse_event = {
+        "status": "successful",
+        "target": {"id": "xX007Xx", "action": "check", "formula": gc_formula},
+    }
+    compute_sse_event = {
+        "status": "successful",
+        "target": {"id": "xX007Xx", "action": "compute", "formula": gc_formula},
+        "result": {"value": compute_result},
+    }
+    sse_callback = simai_client._process_gc_formula_directory._handle_sse_event
+    # Schedule events with proper sequencing - check event first, then compute event
+    delayed_events.add(0.1, partial(sse_callback, data=check_sse_event))
+    delayed_events.add(0.3, partial(sse_callback, data=compute_sse_event))
+    delayed_events.start()
+
+    result = project.process_gc_formula(gc_formula)
+
+    assert result == compute_result
+
+
+@responses.activate
+def test_process_gc_formula_with_cache(simai_client):
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
+    project: Project = simai_client._project_directory._model_from(raw_project)
+    responses.add(
+        responses.POST,
+        f"https://test.test/projects/{project.id}/process-formula",
         status=200,
+        json={
+            "formula": "max(Pressure)",
+            "result": 0.25478328,
+        },
     )
 
-    assert project.verify_gc_formula("max(Pressure)") is True
+    # No need to wait for the SSE event, the cache value is returned by the API
+    result = project.process_gc_formula("max(Pressure)")
+
+    assert result == 0.25478328
 
 
 @responses.activate
