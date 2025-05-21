@@ -136,10 +136,8 @@ class SSEMixin(ApiClientMixin):
             self.simai_client._model_directory._handle_sse_event(data)
         elif target["type"] == "project":
             if "action" in target:
-                if target["action"] == "check":
-                    self.simai_client._check_gc_formula_directory._handle_sse_event(data)
-                elif target["action"] == "compute":
-                    self.simai_client._compute_gc_formula_directory._handle_sse_event(data)
+                if target["action"] in ["check", "compute"]:
+                    self.simai_client._process_gc_formula_directory._handle_sse_event(data)
                 else:
                     logger.debug(
                         f"Unknown action {target['action']} of type {target['type']} received for job or resource event. Ignoring."
