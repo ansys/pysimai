@@ -62,7 +62,10 @@ class DomainAxisDefinition:
 
         .. code-block:: python
 
-            from ansys.simai.core.data.models import DomainAxisDefinition, DomainOfAnalysis
+            from ansys.simai.core.data.model_configuration import (
+                DomainAxisDefinition,
+                DomainOfAnalysis,
+            )
 
             # Get the last configuration from a project
             bld_conf = my_project.last_model_configuration
@@ -128,7 +131,7 @@ class DomainOfAnalysis:
 
         .. code-block:: python
 
-            from ansys.simai.core.data.models import DomainOfAnalysis
+            from ansys.simai.core.data.model_configuration import DomainOfAnalysis
 
             # Get the last configuration from a project
             bld_conf = my_project.last_model_configuration

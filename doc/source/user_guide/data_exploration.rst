@@ -60,7 +60,7 @@ metadata closest to the candidate geometry.
 .. code-block:: python
 
    geometry = simai.geometries.list()[0]
-   neighbour_geometries = geometry.sweep(sweep_variables=["height", "length"])
+   neighbour_geometries = geometry.sweep(swept_metadata=["height", "length"])
 
    # with which a selection can be built:
    selection = Selection(neighbour_geometries, [dict(Vx=13.4)])
