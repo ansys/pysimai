@@ -276,9 +276,10 @@ class OptimizationDirectory(Directory[Optimization]):
             import ansys.simai.core
 
             simai = ansys.simai.core.from_config(workspace="optimization-workspace")
+            geometry = simai.geometries.list()[0]
 
             simai.optimizations.run_non_parametric(
-                geometry="/local/path/to/geometry.vtp",
+                geometry,
                 bounding_boxes=[[0, 1, 0, 1, 0, 1]],
                 boundary_conditions={"VelocityX": 10.5},
                 symmetries=["y"],
