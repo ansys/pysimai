@@ -8,26 +8,14 @@ Global Coefficients
 This module contains a collection of classes for validating global coefficient formulas and
 executing them on project samples.
 
-CheckGlobalCoefficient
-----------------------
-
-.. autoclass:: CheckGlobalCoefficient()
-    :members:
-
-CheckGlobalCoefficientDirectory
--------------------------------
-
-.. autoclass:: CheckGlobalCoefficientDirectory()
-    :members:
-
-ComputeGlobalCoefficient
+ProcessGlobalCoefficient
 ------------------------
 
-.. autoclass:: ComputeGlobalCoefficient()
+.. autoclass:: ProcessGlobalCoefficient()
     :members:
 
-ComputeGlobalCoefficientDirectory
+ProcessGlobalCoefficientDirectory
 ---------------------------------
 
-.. autoclass:: ComputeGlobalCoefficientDirectory()
+.. autoclass:: ProcessGlobalCoefficientDirectory()
     :members:

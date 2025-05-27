@@ -9,10 +9,8 @@ https_proxy
 PySimAI
 zipfile
 TrainingData
-CheckGlobalCoefficient
-CheckGlobalCoefficientDirectory
-ComputeGlobalCoefficient
-ComputeGlobalCoefficientDirectory
+ProcessGlobalCoefficient
+ProcessGlobalCoefficientDirectory
 TrialRuns
 GlobalCoefficientDefinition
 DomainAxisDefinition
