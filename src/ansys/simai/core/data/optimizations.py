@@ -84,7 +84,9 @@ class OptimizationDirectory(Directory[Optimization]):
             import ansys.simai.core
 
             simai = ansys.simai.core.from_config()
-            simai.optimizations.run(...)
+            simai.optimizations.run_parametric(
+                ...
+            )  # or simai.optimizations.run_non_parametric(...)
     """
 
     _data_model = Optimization
@@ -161,7 +163,7 @@ class OptimizationDirectory(Directory[Optimization]):
 
             simai = ansys.simai.core.from_config(workspace="optimization-workspace")
 
-            results = simai.optimizations.run(
+            simai.optimizations.run_parametric(
                 geometry_generation_fn=my_geometry_generation_function,
                 geometry_parameters={
                     "param_a": {"bounds": (-12.5, 12.5)},
@@ -172,8 +174,6 @@ class OptimizationDirectory(Directory[Optimization]):
                 outcome_constraints=["TotalForceY <= 10"],
                 n_iters=100,
             )
-
-            print(results)
         """
         workspace_id = get_id_from_identifiable(workspace, True, self._client._current_workspace)
         _validate_geometry_parameters(geometry_parameters)
@@ -269,6 +269,24 @@ class OptimizationDirectory(Directory[Optimization]):
 
         Warning:
             This feature is in beta. Results are not guaranteed.
+
+        Example:
+          .. code-block:: python
+
+            import ansys.simai.core
+
+            simai = ansys.simai.core.from_config(workspace="optimization-workspace")
+            geometry = simai.geometries.list()[0]
+
+            simai.optimizations.run_non_parametric(
+                geometry,
+                bounding_boxes=[[0, 1, 0, 1, 0, 1]],
+                boundary_conditions={"VelocityX": 10.5},
+                symmetries=["y"],
+                n_iters=10,
+                minimize=["TotalForceX"],
+                show_progress=True,
+            )
         """
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         objective = _build_objective(minimize, maximize)
