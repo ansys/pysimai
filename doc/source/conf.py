@@ -64,6 +64,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
+    "sphinx_design",
     "sphinxcontrib.autodoc_pydantic",
     "sphinx_gallery.gen_gallery",
 ]
