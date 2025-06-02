@@ -28,7 +28,13 @@ import pytest
 import responses
 import sseclient
 
-from ansys.simai.core.data.optimizations import _validate_geometry_generation_fn_signature
+from ansys.simai.core.data.optimizations import (
+    _validate_bounding_boxes,
+    _validate_geometry_generation_fn_signature,
+    _validate_global_coefficients_for_non_parametric,
+    _validate_n_iters,
+    _validate_outcome_constraints,
+)
 from ansys.simai.core.errors import InvalidArguments
 
 
@@ -64,6 +70,156 @@ def test_validate_geometry_generation_fn_valid_signature():
     geometry_parameters = {"param_c": {"bounds": (-12.5, 12.5)}, "param_d": {"choices": (0.1, 1.0)}}
 
     _validate_geometry_generation_fn_signature(my_geometry_generation_function, geometry_parameters)
+
+
+def test_validate_bounding_boxes_success():
+    bounding_boxes = [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]]
+
+    _validate_bounding_boxes(bounding_boxes)
+
+
+@pytest.mark.parametrize(
+    "bounding_boxes, error_message",
+    [
+        ([], "bounding_boxes must be a non-empty list"),
+        ([[0.1, 0.1, 0.1, 0.1]], "Bounding box at index 0 should be a list of 6 values"),
+        (
+            [[0.1, "foo", 0.1, 0.2, 0.1, 0.2]],
+            "Bounding box at index 0 contains non-numeric values.",
+        ),
+        (
+            [[0.1, 0.1, 0.1, 0.2, 0.1, 0.2]],
+            r"Bounding box at index 0: xmin \(0\.1\) must be less than xmax \(0\.1\)",
+        ),
+        (
+            [[0.1, 0.2, 0.1, 0.1, 0.1, 0.2]],
+            r"Bounding box at index 0: ymin \(0\.1\) must be less than ymax \(0\.1\)",
+        ),
+        (
+            [[0.1, 0.2, 0.1, 0.2, 0.1, 0.1]],
+            r"Bounding box at index 0: zmin \(0\.1\) must be less than zmax \(0\.1\)",
+        ),
+    ],
+)
+def test_validate_bounding_boxes_fails(bounding_boxes, error_message):
+    with pytest.raises(
+        expected_exception=InvalidArguments,
+        match=error_message,
+    ):
+        _validate_bounding_boxes(bounding_boxes)
+
+
+def test_validate_global_coefficients_for_non_parametric_success():
+    # Test with minimize only
+    _validate_global_coefficients_for_non_parametric(minimize=["TotalForceX"], maximize=[])
+
+    # Test with maximize only
+    _validate_global_coefficients_for_non_parametric(minimize=[], maximize=["TotalForceY"])
+
+
+@pytest.mark.parametrize(
+    "minimize, maximize, error_message",
+    [
+        (
+            ["TotalForceX"],
+            ["TotalForceY"],
+            "Only one of minimize or maximize can be provided for non parametric optimization.",
+        ),
+        (
+            [],
+            [],
+            "minimize or maximize must be a list of one string for non parametric optimization.",
+        ),
+        (
+            ["TotalForceX", "Pressure"],
+            [],
+            "minimize or maximize must be a list of one string for non parametric optimization.",
+        ),
+        (
+            None,
+            None,
+            "minimize or maximize must be a list.",
+        ),
+        (
+            {},
+            [],
+            "minimize or maximize must be a list of one string for non parametric optimization.",
+        ),
+        (
+            [],
+            None,
+            "minimize or maximize must be a list of one string for non parametric optimization.",
+        ),
+        (
+            "string_instead_of_list",
+            [],
+            "minimize or maximize must be a list of one string for non parametric optimization.",
+        ),
+    ],
+)
+def test_validate_global_coefficients_for_non_parametric_fails(minimize, maximize, error_message):
+    with pytest.raises(
+        expected_exception=InvalidArguments,
+        match=error_message,
+    ):
+        _validate_global_coefficients_for_non_parametric(minimize, maximize)
+
+
+def test_validate_outcome_constraints_success():
+    outcome_constraints = ["TotalForceX <= 10", "Pressure >= 5.5"]
+
+    _validate_outcome_constraints(outcome_constraints)
+
+
+@pytest.mark.parametrize(
+    "outcome_constraints, error_message",
+    [
+        (None, "outcome_constraints must be a list"),
+        ([123], "Constraint at index 0 must be a string"),
+        (
+            ["TotalForceX > 10"],
+            r"Constraint at index 0 \(TotalForceX > 10\) must contain either >= or <= operator",
+        ),
+        (
+            ["TotalForceX <= 10 <= 20"],
+            r"Constraint at index 0 \(TotalForceX <= 10 <= 20\) must be of form 'metric_name <= value'",
+        ),
+        (["<= 10"], r"Constraint at index 0 \(<= 10\) must have a metric name"),
+        (
+            ["TotalForceX <= abc"],
+            r"Constraint at index 0 \(TotalForceX <= abc\): 'abc' must be a numeric value",
+        ),
+    ],
+)
+def test_validate_outcome_constraints_fails(outcome_constraints, error_message):
+    with pytest.raises(
+        expected_exception=InvalidArguments,
+        match=error_message,
+    ):
+        _validate_outcome_constraints(outcome_constraints)
+
+
+def test_validate_n_iters_success():
+    n_iters = 10
+
+    _validate_n_iters(n_iters)
+
+
+@pytest.mark.parametrize(
+    "n_iters, error_message",
+    [
+        (None, "n_iters must be an integer"),
+        ("5", "n_iters must be an integer"),
+        (0, "n_iters must be strictly positive"),
+        (-5, "n_iters must be strictly positive"),
+    ],
+)
+def test_validate_n_iters_fails(n_iters, error_message):
+    with pytest.raises(
+        expected_exception=InvalidArguments,
+        match=error_message,
+    ):
+        _validate_n_iters(n_iters)
 
 
 @responses.activate
@@ -229,7 +385,7 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory):
         ).start()
     results = simai_client.optimizations.run_non_parametric(
         geometry=geometry,
-        bounding_boxes=[[1, 1, 1, 1, 1, 1]],
+        bounding_boxes=[[0.1, 1, 0.1, 1, 0.1, 1]],
         symmetries=["x", "y", "z"],
         minimize=["TotalForceX"],
         boundary_conditions={"VelocityX": 10.5},
