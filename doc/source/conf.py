@@ -120,6 +120,7 @@ nitpick_ignore_regex = {
     ("py:class", "_io.BytesIO"),
     ("py:class", "pydantic_core._pydantic_core.Url"),
     ("py:class", "pydantic_core._pydantic_core.Annotated"),
+    ("py:class", "annotated_types.Gt"),
     ("py:class", "pydantic.networks.UrlConstraints"),
 }
 
