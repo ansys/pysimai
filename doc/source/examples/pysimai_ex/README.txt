@@ -1,4 +1,3 @@
-.. _gallery:
 
 
 PySimAI examples
