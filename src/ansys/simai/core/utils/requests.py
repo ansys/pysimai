@@ -82,7 +82,7 @@ def handle_http_errors(response: niquests.Response) -> None:
 
 
 @overload
-def handle_response(response: niquests.Response, return_json: Literal[True]) -> JSON: ...
+def handle_response(response: niquests.Response, return_json: Literal[True]) -> JSON | None: ...
 
 
 @overload
@@ -95,7 +95,7 @@ def handle_response(
 def handle_response(response: niquests.Response, return_json: bool) -> APIResponse: ...
 
 
-def handle_response(response: niquests.Response, return_json: bool = True) -> APIResponse:
+def handle_response(response: niquests.Response, return_json: bool = True) -> APIResponse | None:
     """Handle HTTP errors and return the relevant data from the response.
 
     Args:
@@ -109,7 +109,10 @@ def handle_response(response: niquests.Response, return_json: bool = True) -> AP
     handle_http_errors(response)
 
     logger.debug("Returning response.")
-    if return_json and response.status_code != HTTPStatus.NO_CONTENT:
+    if return_json:
+        if response.status_code == HTTPStatus.NO_CONTENT:
+            return None
+
         try:
             return response.json()
         except (ValueError, JSONDecodeError):

@@ -257,8 +257,8 @@ def delayed_events():
     Usage:
         def test_something(delayed_events):
             # Schedule events to occur
-            delayed_events.add(0.1, lambda: model.update_state("processing"))
-            delayed_events.add(0.3, lambda: model.complete())
+            delayed_events.add(lambda: model.update_state("processing"))
+            delayed_events.add(lambda: model.complete())
 
             # Start the background thread that will trigger events
             delayed_events.start()
@@ -275,7 +275,7 @@ def delayed_events():
             self.events = []
             self.thread = None
 
-        def add(self, delay: float, callback: Callable[[], None] = None):
+        def add(self, callback: Callable[[], None], delay: float = 0.1):
             """Add a callback to be executed after the specified delay (in seconds)"""
             self.events.append((delay, callback))
 

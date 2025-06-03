@@ -54,7 +54,7 @@ def test_handle_http_errors(mocker):
     (
         (200, {"status": "succeeding"}, True),
         (200, {"status": "succeeding"}, False),
-        (204, "", True),
+        (204, "Should be None", True),
     ),
 )
 def test_handle_response_success(mocker, status_code, return_value, return_json):
@@ -65,8 +65,10 @@ def test_handle_response_success(mocker, status_code, return_value, return_json)
 
     result = handle_response(response, return_json=return_json)
 
-    if return_json is False or status_code == 204:
+    if return_json is False:
         assert isinstance(result, Response)
+    elif status_code == 204:
+        assert result is None
     else:
         assert result == return_value
 
