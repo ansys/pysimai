@@ -115,8 +115,12 @@ class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType])
     def _handle_sse_event(self, data: dict[str, Any]) -> None:
         gc_formula = data.get("target", {}).get("formula")
         action = data.get("target", {}).get("action")
-        # Set the action to process if it is check or compute.
+
+        # `check` and `compute` are considered the same action `process` for now.
+        # They are managed by the same directory (ProcessGlobalCoefficientDirectory) which is
+        # registered with a key using `process` as the action.
         action = "process" if action in ["check", "compute"] else action
+
         item_id: str = f"{data['target']['id']}-{action}-{gc_formula}"
         if item_id not in self._registry:
             logger.debug(
@@ -181,8 +185,7 @@ class ProcessGlobalCoefficient(GlobalCoefficientRequest):
         if state in PENDING_STATES:
             logger.debug(f"{self._classname} id {self.id} set status pending")
             self._set_is_pending()
-        # The job is considered successful if compute is successful as compute job will always start if
-        # check job is successful too.
+        # The whole Global Coefficient request is considered successful if only `check` is successful.
         elif state == "successful" and target["action"] == "compute":
             logger.debug(f"{self._classname} id {self.id} set status successful")
             self._result = cast_values_to_float(data.get("result", {}).get("value"))

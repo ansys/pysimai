@@ -297,8 +297,8 @@ def test_process_gc_formula_without_cache(simai_client, delayed_events):
     }
     sse_callback = simai_client._process_gc_formula_directory._handle_sse_event
     # Schedule events with proper sequencing - check event first, then compute event
-    delayed_events.add(0.1, partial(sse_callback, data=check_sse_event))
-    delayed_events.add(0.3, partial(sse_callback, data=compute_sse_event))
+    delayed_events.add(partial(sse_callback, data=check_sse_event))
+    delayed_events.add(partial(sse_callback, data=compute_sse_event))
     delayed_events.start()
 
     result = project.process_gc_formula(gc_formula)
