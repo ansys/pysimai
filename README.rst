@@ -84,6 +84,14 @@ need to follow these steps:
        uv tool install tox --with tox-uv
        tox
 
+#. Alternatively, you can also run tasks defined in `pyproject.toml` using `poethepoet`:
+
+    .. code:: shell
+
+       uv tool install poethepoet
+       uv run poe lint
+       uv run poe test
+       uv run poe doc
 
 
 How to test
