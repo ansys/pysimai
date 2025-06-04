@@ -64,6 +64,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
+    "sphinx_design",
     "sphinxcontrib.autodoc_pydantic",
     "sphinx_gallery.gen_gallery",
 ]
@@ -73,9 +74,9 @@ sphinx_gallery_conf = {
     # default png file for thumbnails
     "default_thumb_file": ANSYS_SIMAI_THUMBNAIL,
     # path to your examples scripts
-    "examples_dirs": ["examples"],
+    "examples_dirs": ["examples/pysimai_ex"],
     # path where to save gallery generated examples
-    "gallery_dirs": ["_examples"],
+    "gallery_dirs": ["_examples/pysimai_ex"],
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
@@ -83,6 +84,7 @@ sphinx_gallery_conf = {
 }
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+    "pydantic": ("https://docs.pydantic.dev/latest/", None),
 }
 
 # Add any paths that contain templates here, relative to this directory.

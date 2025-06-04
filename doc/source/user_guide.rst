@@ -1,12 +1,14 @@
+.. _ref_user_guide:
+
 User guide
 ==========
+
 
 .. toctree::
    :maxdepth: 2
 
+   user_guide/installation
    user_guide/configuration
    user_guide/config_file
    user_guide/proxy
-   user_guide/building_a_model
-   user_guide/data_exploration
-   user_guide/best_practices
+   user_guide/pysimai_ug/index
