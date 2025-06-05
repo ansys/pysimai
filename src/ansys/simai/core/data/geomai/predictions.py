@@ -96,7 +96,7 @@ class GeomAIPrediction(ComputableDataModel):
 class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
     """Provides a collection of methods related to GeomAI model predictions.
 
-    This method is accessed through ``client.prediction``.
+    This method is accessed through ``client.geomai.predictions``.
 
     Example:
         .. code-block:: python
