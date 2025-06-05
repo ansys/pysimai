@@ -28,3 +28,4 @@ Model
 
 .. autoclass:: Model()
     :members:
+    :inherited-members:

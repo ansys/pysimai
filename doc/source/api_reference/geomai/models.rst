@@ -21,3 +21,4 @@ Model
 
 .. autoclass:: GeomAIModel()
     :members:
+    :inherited-members:

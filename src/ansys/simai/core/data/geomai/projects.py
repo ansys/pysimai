@@ -54,7 +54,7 @@ class GeomAIProject(DataModel):
 
     @property
     def data(self) -> List["GeomAITrainingData"]:
-        """List of all :class:`~ansys.simai.core.data.geomai.training_data.GeomAITrainingData` instances in the project."""
+        """List of all :class:`~.training_data.GeomAITrainingData` instances in the project."""
         raw_td_list = self._client._api.iter_training_data_in_geomai_project(self.id)
         return [
             self._client.geomai.training_data._model_from(training_data)
@@ -63,7 +63,7 @@ class GeomAIProject(DataModel):
 
     @property
     def last_model_configuration(self) -> Optional[GeomAIModelConfiguration]:
-        """Last :class:`configuration <ansys.simai.core.data.model_configuration.ModelConfiguration>` used for model training in this project."""
+        """Last :class:`configuration <.models.GeomAIModelConfiguration>` used for model training in this project."""
         raw_last_model_configuration = self.fields.get("last_model_configuration")
         if raw_last_model_configuration is None:
             return None
@@ -106,7 +106,7 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
             import ansys.simai.core
 
             simai = ansys.simai.core.from_config()
-            simai.projects.list()
+            simai.geomai.projects.list()
     """
 
     _data_model = GeomAIProject

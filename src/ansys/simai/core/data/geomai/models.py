@@ -126,7 +126,7 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
                 configuration = GeomAIModelConfiguration.new(
                     build_preset="default", nb_latent_param=123
                 )
-                simai.geomai.models.build(project, configuration)
+                model = simai.geomai.models.build(project, configuration)
 
 
             Use a previous configuration for a new build in the same project
@@ -134,9 +134,7 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
             .. code-block:: python
 
                 a_project = simai.geomai.projects.get("project_A")
-
                 build_conf = a_project.last_model_configuration
-
                 new_model = simai.geomai.models.build(build_conf)
 
             Use a previous configuration for a new build in another project
@@ -144,11 +142,8 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
             .. code-block:: python
 
                 a_project = simai.geomai.projects.get("project_A")
-
                 build_conf = a_project.last_model_configuration
-
                 b_project = simai.geomai.projects.get("project_B")
-
                 new_model = simai.geomai.models.build(build_conf)
 
         """
