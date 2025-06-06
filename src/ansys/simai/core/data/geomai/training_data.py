@@ -250,7 +250,7 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
                 object.
         """
         project_id = get_id_from_identifiable(
-            project, default=self._client.geomai.current_project, required=False
+            project, default=self._client.geomai._current_project, required=False
         )
         with unpack_named_file(file) as (file_bytes, name, extension):
             training_data = self._model_from(
