@@ -105,7 +105,7 @@ class TrainingCapabilities:
 
 
 class Project(DataModel):
-    """Provides the local representation of a  project object."""
+    """Provides the local representation of a project object."""
 
     def __repr__(self) -> str:
         return f"<Project: {self.id}, {self.name}>"
