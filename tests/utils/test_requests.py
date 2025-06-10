@@ -20,27 +20,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import niquests
 import pytest
-import requests
-from requests.models import Response
+from niquests.models import Response
 
 from ansys.simai.core.errors import ApiClientError, SimAIError
 from ansys.simai.core.utils.requests import handle_http_errors, handle_response
 
 
 def test_handle_http_errors(mocker):
-    response_json_mock = mocker.patch("requests.models.Response.json")
-    raise_for_status_mock = mocker.patch("requests.models.Response.raise_for_status")
+    response_json_mock = mocker.patch("niquests.models.Response.json")
+    raise_for_status_mock = mocker.patch("niquests.models.Response.raise_for_status")
 
     # Error without json body
-    raise_for_status_mock.side_effect = requests.exceptions.HTTPError(Response())
+    raise_for_status_mock.side_effect = niquests.exceptions.HTTPError(Response())
     response_json_mock.side_effect = ValueError()
 
     with pytest.raises(SimAIError):
         handle_http_errors(Response())
 
     # Error with json body
-    raise_for_status_mock.side_effect = requests.exceptions.HTTPError(Response())
+    raise_for_status_mock.side_effect = niquests.exceptions.HTTPError(Response())
     response_json_mock.side_effect = None
     response_json_mock.return_value = {"status": "rekt"}
 
@@ -50,7 +50,7 @@ def test_handle_http_errors(mocker):
 
 def test_handle_response(mocker):
     mocker.patch("ansys.simai.core.utils.requests.handle_http_errors")
-    response_json_mock = mocker.patch("requests.models.Response.json")
+    response_json_mock = mocker.patch("niquests.models.Response.json")
 
     # JSON response -> return json
     response_json_mock.return_value = {"status": "succeeding"}

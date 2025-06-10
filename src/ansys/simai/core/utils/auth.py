@@ -31,11 +31,11 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, ClassVar, Optional
 from urllib.parse import urljoin
 
-import requests
+import niquests
 from filelock import FileLock
+from niquests.auth import AuthBase
+from niquests.models import PreparedRequest
 from pydantic import BaseModel, ValidationError, computed_field, model_validator
-from requests.auth import AuthBase
-from requests.models import PreparedRequest
 
 from ansys.simai.core.errors import ApiClientError
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
@@ -101,7 +101,7 @@ class _AuthTokensRetriever:
     def __init__(
         self,
         credentials: Optional["Credentials"],
-        session: requests.Session,
+        session: niquests.Session,
         auth_cache_hash: str,
         realm_url: str,
     ) -> None:
@@ -168,7 +168,7 @@ class _AuthTokensRetriever:
             return _AuthTokens(
                 **handle_response(self.session.post(self.token_url, data=request_params))
             )
-        except (requests.exceptions.ConnectionError, ApiClientError) as e:
+        except (niquests.exceptions.ConnectionError, ApiClientError) as e:
             logger.error(f"Could not refresh authentication tokens: {e}")
             return None
 
@@ -211,7 +211,7 @@ class _AuthTokensRetriever:
 
 
 class Authenticator(AuthBase):
-    def __init__(self, config: ClientConfig, session: requests.Session) -> None:
+    def __init__(self, config: ClientConfig, session: niquests.Session) -> None:
         self._session = session
         self._enabled = not getattr(config, "_disable_authentication", False)
         if not self._enabled:
