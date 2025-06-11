@@ -177,7 +177,6 @@ class OptimizationDirectory(Directory[Optimization]):
         """
         workspace_id = get_id_from_identifiable(workspace, True, self._client._current_workspace)
         outcome_constraints = outcome_constraints or []
-        workspace = workspace or self._client._current_workspace
         _validate_n_iters(n_iters)
         _validate_geometry_parameters(geometry_parameters)
         _validate_geometry_generation_fn_signature(geometry_generation_fn, geometry_parameters)
