@@ -65,6 +65,7 @@ class ModelDirectory(Directory[Model]):
         configuration: ModelConfiguration,
         dismiss_data_with_fields_discrepancies: bool = False,
         dismiss_data_with_volume_overflow: bool = False,
+        dismiss_data_input_with_nan: bool = False,
     ):
         """Launches a build given a configuration.
 
@@ -72,6 +73,7 @@ class ModelDirectory(Directory[Model]):
             configuration: a ModelConfiguration object that contains the properties to be used in the build
             dismiss_data_with_fields_discrepancies: set to True for omitting data with missing properties
             dismiss_data_with_volume_overflow: set to True for omitting data outside the Domain of Analysis
+            dismiss_data_input_with_nan: set to True for omitting data with inputs containing NaN values
 
         Example:
             Use a previous configuration for a new build in the same project
@@ -112,6 +114,7 @@ class ModelDirectory(Directory[Model]):
                 configuration.project.id,
                 dismiss_data_with_fields_discrepancies,
                 dismiss_data_with_volume_overflow,
+                dismiss_data_input_with_nan,
             )
         else:
             response = self._client._api.launch_build(
@@ -119,5 +122,6 @@ class ModelDirectory(Directory[Model]):
                 configuration._to_payload(),
                 dismiss_data_with_fields_discrepancies,
                 dismiss_data_with_volume_overflow,
+                dismiss_data_input_with_nan,
             )
         return self._model_from(response)
