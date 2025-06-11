@@ -22,7 +22,7 @@
 
 import logging
 from inspect import signature
-from typing import Callable, Dict, List, Literal, Optional, Tuple
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple
 
 from tqdm import tqdm
 from wakepy import keep
@@ -106,8 +106,8 @@ class OptimizationDirectory(Directory[Optimization]):
         self,
         geometry_generation_fn: Callable[..., NamedFile],
         geometry_parameters: Dict[str, Tuple[float, float]],
-        boundary_conditions: Dict[str, float],
         n_iters: int,
+        boundary_conditions: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
         outcome_constraints: Optional[List[str]] = None,
@@ -181,9 +181,14 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_geometry_parameters(geometry_parameters)
         _validate_geometry_generation_fn_signature(geometry_generation_fn, geometry_parameters)
         _validate_outcome_constraints(outcome_constraints)
+
+        model_bc = get_object_from_identifiable(
+            workspace, self._client._workspace_directory, self._client._current_workspace
+        ).model_manifest.boundary_conditions
+        _validate_boundary_conditions_keys(boundary_conditions, model_bc)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
-            "boundary_conditions": boundary_conditions,
+            "boundary_conditions": boundary_conditions or {},
             "n_iters": n_iters,
             "objective": objective,
             "type": "parametric",
@@ -242,8 +247,8 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry: Identifiable[Geometry],
         bounding_boxes: List[List[float]],
         symmetries: List[Literal["x", "y", "z", "X", "Y", "Z"]],
-        boundary_conditions: Dict[str, float],
         n_iters: int,
+        boundary_conditions: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
         show_progress: bool = False,
@@ -294,10 +299,15 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_n_iters(n_iters)
         _validate_global_coefficients_for_non_parametric(minimize, maximize)
         _validate_bounding_boxes(bounding_boxes)
+
+        workspace = self._client._workspace_directory.get(id=geometry._fields["workspace_id"])
+        _validate_boundary_conditions_keys(
+            boundary_conditions, workspace.model_manifest.boundary_conditions
+        )
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
-            "boundary_conditions": boundary_conditions,
+            "boundary_conditions": boundary_conditions or {},
             "n_iters": n_iters,
             "objective": objective,
             "type": "non_parametric",
@@ -448,6 +458,27 @@ def _validate_n_iters(n_iters) -> None:
 
     if n_iters <= 0:
         raise InvalidArguments("n_iters must be strictly positive")
+
+
+def _validate_boundary_conditions_keys(
+    input_bc: Dict[str, float] | None, model_bc: Dict[str, Any]
+) -> None:
+    """Validate boundary conditions keys against workspace model requirements."""
+    required_bc = set(model_bc.keys()) if model_bc else set()
+
+    if not required_bc:
+        return
+
+    if input_bc is None:
+        raise InvalidArguments(
+            f"Model requires boundary conditions {sorted(required_bc)} but None was provided"
+        )
+
+    provided_bc = set(input_bc.keys())
+    missing_bc = required_bc - provided_bc
+
+    if missing_bc:
+        raise InvalidArguments(f"Missing required boundary conditions {sorted(missing_bc)}")
 
 
 def _build_objective(minimize: list[str], maximize: list[str]) -> dict:

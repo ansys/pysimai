@@ -22,6 +22,7 @@
 # ruff: noqa: E731
 
 import json
+import re
 import threading
 
 import pytest
@@ -29,6 +30,7 @@ import responses
 import sseclient
 
 from ansys.simai.core.data.optimizations import (
+    _validate_boundary_conditions_keys,
     _validate_bounding_boxes,
     _validate_geometry_generation_fn_signature,
     _validate_global_coefficients_for_non_parametric,
@@ -222,6 +224,41 @@ def test_validate_n_iters_fails(n_iters, error_message):
         _validate_n_iters(n_iters)
 
 
+def test_validate_boundary_conditions_keys_success():
+    input_bc = {"Vx": 5.1, "Vy": 10.1}
+    model_bc = {"Vy": {"something": []}, "Vx": {"something": []}}
+
+    _validate_boundary_conditions_keys(input_bc, model_bc)
+
+
+@pytest.mark.parametrize(
+    "input_bc, model_bc, error_message",
+    [
+        (
+            None,
+            {"Vx": {"something": []}},
+            "Model requires boundary conditions ['Vx'] but None was provided",
+        ),
+        (
+            {"WrongWrong": 5},
+            {"Vx": {"something": []}},
+            "Missing required boundary conditions ['Vx']",
+        ),
+        (
+            {"Px": 5, "Vx": 5, "Lx": 5},
+            {"Vx": {"something": []}, "Vy": {"something": []}, "Vz": {"something": []}},
+            "Missing required boundary conditions ['Vy', 'Vz']",
+        ),
+    ],
+)
+def test_validate_boundary_conditions_keys_fails(input_bc, model_bc, error_message):
+    with pytest.raises(
+        expected_exception=InvalidArguments,
+        match=re.escape(error_message),
+    ):
+        _validate_boundary_conditions_keys(input_bc, model_bc)
+
+
 @responses.activate
 def test_run_parametric_optimization(simai_client, mocker):
     workspace_id = "insert_cool_reference"
@@ -229,6 +266,18 @@ def test_run_parametric_optimization(simai_client, mocker):
     geometry_upload = mocker.patch.object(simai_client.geometries, "upload")
     geometry_upload.return_value = simai_client.geometries._model_from({"id": "geomx"})
 
+    responses.add(
+        responses.GET,
+        f"https://test.test/workspaces/{workspace_id}",
+        status=202,
+        json={"id": workspace_id, "name": workspace_id},
+    )
+    responses.add(
+        responses.GET,
+        f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
+        status=202,
+        json={"boundary_conditions": {"VelocityX": {"something": []}}},
+    )
     responses.add(
         responses.POST,
         f"https://test.test/workspaces/{workspace_id}/optimizations",
@@ -316,6 +365,18 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory):
     workspace_id = "insert_cool_reference"
     geometry = geometry_factory(workspace_id=workspace_id)
 
+    responses.add(
+        responses.GET,
+        f"https://test.test/workspaces/{workspace_id}",
+        status=202,
+        json={"id": workspace_id, "name": workspace_id},
+    )
+    responses.add(
+        responses.GET,
+        f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
+        status=202,
+        json={"boundary_conditions": {"VelocityX": {"something": []}}},
+    )
     responses.add(
         responses.POST,
         f"https://test.test/workspaces/{workspace_id}/optimizations",
