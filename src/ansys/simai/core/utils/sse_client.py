@@ -24,7 +24,7 @@ import logging
 import time
 from typing import Callable, Optional
 
-import requests
+import niquests
 import sseclient
 
 logger = logging.getLogger(__name__)
@@ -73,8 +73,8 @@ class ReconnectingSSERequestsClient:
                     self._last_event_id = event.id
             except (
                 StopIteration,
-                requests.exceptions.ChunkedEncodingError,
-                requests.RequestException,
+                niquests.exceptions.ChunkedEncodingError,
+                niquests.RequestException,
                 EOFError,
             ) as e:
                 logger.info(f"SSEClient disconnected: {e}")

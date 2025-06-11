@@ -28,8 +28,8 @@ import time
 from datetime import datetime, timezone
 from math import ceil
 
+import niquests
 import pytest
-import requests
 import responses
 from responses.matchers import urlencoded_params_matcher
 
@@ -70,7 +70,7 @@ def test_request_auth_tokens_direct_grant_bad_credentials_raises(mocker, tmpdir)
     )
     tokens_retriever = _AuthTokensRetriever(
         credentials=None,
-        session=requests.Session(),
+        session=niquests.Session(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="rando",
     )
@@ -100,7 +100,7 @@ def test_request_auth_tokens_direct_grant(mocker, tmpdir):
     )
     tokens_retriever = _AuthTokensRetriever(
         credentials=None,
-        session=requests.Session(),
+        session=niquests.Session(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="rando",
     )
@@ -150,7 +150,7 @@ def test_token_refresh_failure_triggers_reauth(mocker, tmpdir):
         )
     tokens_retriever = _AuthTokensRetriever(
         credentials=Credentials(username="timmy", password=""),
-        session=requests.Session(),
+        session=niquests.Session(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="rando",
     )
@@ -175,7 +175,7 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir):
     device_code = "foxtrot uniform charlie kilo"
     realm_url = "http://myauthserver.com/my-realm"
     token_retriever = _AuthTokensRetriever(
-        credentials=None, session=requests.Session(), realm_url=realm_url, auth_cache_hash="lol"
+        credentials=None, session=niquests.Session(), realm_url=realm_url, auth_cache_hash="lol"
     )
     fake_cache = _AuthTokens(
         access_token="",
@@ -249,7 +249,7 @@ def test_refresh_auth_tokens(mocker, tmpdir):
     expired_token.expiration = datetime(year=1970, month=1, day=1, tzinfo=timezone.utc)
     token_retriever = _AuthTokensRetriever(
         credentials=None,
-        session=requests.Session(),
+        session=niquests.Session(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="popo",
     )
@@ -328,10 +328,10 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed(mo
                 organization="13_monkeys",
                 credentials=Credentials(username="timmy", password="key"),
             ),
-            requests.Session(),
+            niquests.Session(),
         )
 
-        request = requests.Request("GET", "https://simai.ansys.com/v2/models", auth=auth).prepare()
+        request = niquests.Request("GET", "https://simai.ansys.com/v2/models", auth=auth).prepare()
         assert request.headers.get("Authorization") == "Bearer check 1 2"
         assert request.headers.get("X-Org") == "13_monkeys"
 
@@ -385,7 +385,7 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
             organization="14_monkeys",
             credentials=Credentials(username="timmy", password="key"),
         ),
-        requests.Session(),
+        niquests.Session(),
     )
     assert resps_direct_grant.call_count == 1
     assert resps_refresh.call_count == 0
@@ -417,8 +417,8 @@ def test_requests_outside_user_api_are_not_authentified(mocker, tmpdir):
                 organization="Justice",
                 credentials={"username": "timmy", "password": "D.A.N.C.E"},
             ),
-            requests.Session(),
+            niquests.Session(),
         )
-        request = requests.Request("GET", "https://amazonaws.com/bloc-party", auth=auth).prepare()
+        request = niquests.Request("GET", "https://amazonaws.com/bloc-party", auth=auth).prepare()
         assert request.headers.get("Authorization") is None
         assert request.headers.get("X-Org") is None

@@ -42,7 +42,7 @@ from typing import (
     Union,
 )
 
-from requests import Response
+from niquests import Response
 
 from ansys.simai.core.data.base import DataModel, DataModelType, Directory
 from ansys.simai.core.errors import InvalidArguments
