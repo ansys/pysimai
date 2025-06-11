@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: ansys/actions/code-style@v9
+      - uses: ansys/actions/code-style@v10
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: ansys/actions/doc-style@a3a45ea76bfae7ec138e4d4b4471ffe2cb238ec8 # TODO: move to v10 when out
+      - uses: ansys/actions/doc-style@495ca3d79c1627f5b96c469cfbe799718e9dc35f # TODO: move to v10 when out
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,7 +46,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: ansys/actions/build-wheelhouse@v9
+      - uses: ansys/actions/build-wheelhouse@v10
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
@@ -95,7 +95,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Generate doc requirements
         run: uv export --only-group docs -o doc_requirements.txt
-      - uses: ansys/actions/doc-build@v9
+      - uses: ansys/actions/doc-build@v10
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           checkout: false
@@ -108,7 +108,7 @@ jobs:
     needs: [doc-build, tests]
     timeout-minutes: 10
     steps:
-      - uses: ansys/actions/build-library@v9
+      - uses: ansys/actions/build-library@v10
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -120,7 +120,7 @@ jobs:
     timeout-minutes: 10
     if: github.event_name == 'push' && !contains(github.ref, 'refs/tags')
     steps:
-      - uses: ansys/actions/doc-deploy-dev@v9
+      - uses: ansys/actions/doc-deploy-dev@v10
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -134,7 +134,7 @@ jobs:
     timeout-minutes: 10
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
-      - uses: ansys/actions/doc-deploy-stable@v9
+      - uses: ansys/actions/doc-deploy-stable@v10
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -151,14 +151,14 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: "Release to the public PyPI repository"
-        uses: ansys/actions/release-pypi-public@v9
+        uses: ansys/actions/release-pypi-public@v10
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           twine-username: "__token__"
           twine-token: ${{ secrets.PYPI_TOKEN }}
 
       - name: "Release to GitHub"
-        uses: ansys/actions/release-github@v9
+        uses: ansys/actions/release-github@v10
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
