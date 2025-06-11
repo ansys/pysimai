@@ -31,9 +31,9 @@ from typing import Any, BinaryIO, Dict, List, Optional, Union
 from urllib.parse import urljoin
 from urllib.request import getproxies
 
-import requests
-import requests.adapters
-from requests.adapters import HTTPAdapter, Retry
+import niquests
+import niquests.adapters
+from niquests.adapters import HTTPAdapter, Retry
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
 from ansys.simai.core import __version__
@@ -62,7 +62,7 @@ class ApiClientMixin:
     """Provides the core that all mixins and the API client are built on."""
 
     def __init__(self, *args, config: ClientConfig):  # noqa: D107
-        self._session = requests.Session()
+        self._session = niquests.Session()
         # Enable retry for non idempotent verbs (no POST)
         retries = Retry(total=5, backoff_factor=0.2, status_forcelist=[502, 503, 504])
         self._session.mount("https://", HTTPAdapter(max_retries=retries))
@@ -149,9 +149,9 @@ class ApiClientMixin:
                 self._session.request(method, full_url, *args, **kwargs),
                 return_json=return_json,
             )
-        except requests.exceptions.ConnectionError as e:
+        except niquests.exceptions.ConnectionError as e:
             raise ConnectionError(e) from None
-        except requests.exceptions.RetryError as e:
+        except niquests.exceptions.RetryError as e:
             m = re.search("too many ([0-9]{3}) error responses", str(e))
             if m:
                 code = m.group(1)
@@ -211,7 +211,7 @@ class ApiClientMixin:
                 bytes_read_delta = output_file.write(chunk)
                 if monitor_callback is not None:
                     monitor_callback(bytes_read_delta)
-        except requests.exceptions.ConnectionError as e:
+        except niquests.exceptions.ConnectionError as e:
             logger.debug("Error {e} happened during download stream.")
             if close_file is True:
                 output_file.close()

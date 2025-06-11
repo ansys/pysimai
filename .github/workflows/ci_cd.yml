@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: "3.12"
+  MAIN_PYTHON_VERSION: "3.13"
   DOCUMENTATION_CNAME: "simai.docs.pyansys.com"
   LIBRARY_NAME: "ansys-simai-core"
 
@@ -44,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: ansys/actions/build-wheelhouse@v9
         with:
@@ -64,7 +64,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
       fail-fast: false
     steps:
       - name: Setup uv
