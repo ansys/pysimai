@@ -176,15 +176,18 @@ class OptimizationDirectory(Directory[Optimization]):
             )
         """
         workspace_id = get_id_from_identifiable(workspace, True, self._client._current_workspace)
+        outcome_constraints = outcome_constraints or []
+        _validate_n_iters(n_iters)
         _validate_geometry_parameters(geometry_parameters)
         _validate_geometry_generation_fn_signature(geometry_generation_fn, geometry_parameters)
+        _validate_outcome_constraints(outcome_constraints)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
             "boundary_conditions": boundary_conditions,
             "n_iters": n_iters,
             "objective": objective,
             "type": "parametric",
-            "outcome_constraints": outcome_constraints or [],
+            "outcome_constraints": outcome_constraints,
             "geometry_generation": {
                 "geometry_parameters": geometry_parameters,
             },
@@ -288,6 +291,9 @@ class OptimizationDirectory(Directory[Optimization]):
                 show_progress=True,
             )
         """
+        _validate_n_iters(n_iters)
+        _validate_global_coefficients_for_non_parametric(minimize, maximize)
+        _validate_bounding_boxes(bounding_boxes)
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
@@ -356,7 +362,95 @@ def _validate_geometry_generation_fn_signature(geometry_generation_fn, geometry_
         )
 
 
-def _build_objective(minimize: List[str], maximize: List[str]) -> Dict:
+def _validate_bounding_boxes(bounding_boxes: list[list[float]]) -> None:
+    if not isinstance(bounding_boxes, list) or not bounding_boxes:
+        raise InvalidArguments("bounding_boxes must be a non-empty list.")
+
+    for i, box in enumerate(bounding_boxes):
+        if not isinstance(box, list) or len(box) != 6:
+            raise InvalidArguments(
+                f"Bounding box at index {i} should be a list of 6 values "
+                f"[xmin, xmax, ymin, ymax, zmin, zmax]."
+            )
+
+        if not all(isinstance(value, (int, float)) for value in box):
+            raise InvalidArguments(f"Bounding box at index {i} contains non-numeric values.")
+
+        dimensions = ("x", "y", "z")
+        for j in range(3):
+            min_index = j * 2
+            max_index = min_index + 1
+            if not (box[min_index] < box[max_index]):
+                raise InvalidArguments(
+                    f"Bounding box at index {i}: {dimensions[j]}min ({box[min_index]}) "
+                    f"must be less than {dimensions[j]}max ({box[max_index]})."
+                )
+
+
+def _validate_global_coefficients_for_non_parametric(minimize: List[str], maximize: List[str]):
+    if minimize and maximize:
+        raise InvalidArguments(
+            "Only one of minimize or maximize can be provided for non parametric optimization."
+        )
+
+    active_list = minimize if minimize else maximize
+    if not isinstance(active_list, list) or (
+        isinstance(active_list, list) and len(active_list) != 1
+    ):
+        raise InvalidArguments(
+            "minimize or maximize must be a list of one string for non parametric optimization."
+        )
+
+
+def _validate_outcome_constraints(outcome_constraints: list) -> None:
+    if not isinstance(outcome_constraints, list):
+        raise InvalidArguments("outcome_constraints must be a list")
+
+    for i, constraint in enumerate(outcome_constraints):
+        if not isinstance(constraint, str):
+            raise InvalidArguments(f"Constraint at index {i} must be a string")
+
+        # Check if constraint contains either >= or <=
+        if ">=" in constraint:
+            operator = ">="
+        elif "<=" in constraint:
+            operator = "<="
+        else:
+            raise InvalidArguments(
+                f"Constraint at index {i} ({constraint}) must contain either >= or <= operator"
+            )
+
+        parts = constraint.split(operator)
+        if len(parts) != 2:
+            raise InvalidArguments(
+                f"Constraint at index {i} ({constraint}) must be of form 'metric_name {operator} value'"
+            )
+
+        metric_name = parts[0].strip()
+        value = parts[1].strip()
+
+        if not metric_name:
+            raise InvalidArguments(
+                f"Constraint at index {i} ({constraint}) must have a metric name"
+            )
+
+        try:
+            float(value)
+        except ValueError as error:
+            raise InvalidArguments(
+                f"Constraint at index {i} ({constraint}): '{value}' must be a numeric value"
+            ) from error
+
+
+def _validate_n_iters(n_iters) -> None:
+    if not isinstance(n_iters, int):
+        raise InvalidArguments("n_iters must be an integer")
+
+    if n_iters <= 0:
+        raise InvalidArguments("n_iters must be strictly positive")
+
+
+def _build_objective(minimize: list[str], maximize: list[str]) -> dict:
     if not minimize and not maximize:
         raise InvalidArguments("No global coefficient to optimize.")
     objective = {}
