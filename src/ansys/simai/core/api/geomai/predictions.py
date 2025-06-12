@@ -33,8 +33,8 @@ class GeomAIPredictionClientMixin(ApiClientMixin):
     """Provides the client for the Prediction ("/predictions") part of the API."""
 
     def geomai_predictions(self, workspace_id: str):
-        """Get a list of all predictions."""
-        return self._get("geomai/predictions/", params={"workspace": workspace_id})
+        """Get a list of all predictions in a workspace."""
+        return self._get(f"geomai/workspaces/{workspace_id}/predictions")
 
     def get_geomai_prediction(self, prediction_id: str):
         """Get information on a single prediction.
@@ -52,21 +52,10 @@ class GeomAIPredictionClientMixin(ApiClientMixin):
         """
         return self._delete(
             f"predictions/{prediction_id}",
-            params={"confirm": True},
             return_json=False,
         )
 
     def run_geomai_prediction(self, workspace_id: str, configuration: Dict):  # noqa: D417
-        """Run a prediction in the given workspace.
-
-        Args:
-            geometry_id: ID of the target geometry.
-
-        Keyword Arguments:
-            boundary_conditions dict: Constraints of the problem in dictionary form.
-            tolerance float: Delta under which two boundary condition components
-                are considered equal. The default is ``10**-6``.
-        """
         return self._post(f"geomai/workspaces/{workspace_id}/predictions", json=configuration)
 
     def download_geomai_prediction(self, prediction_id: str, file: Optional[File]):

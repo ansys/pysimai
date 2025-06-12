@@ -29,6 +29,7 @@ from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.training_data import GeomAITrainingData
+    from ansys.simai.core.data.geomai.workspaces import GeomAIWorkspace
 
 
 class GeomAIProject(DataModel):
@@ -52,14 +53,18 @@ class GeomAIProject(DataModel):
         self._client._api.update_geomai_project(self.id, name=new_name)
         self.reload()
 
-    @property
     def data(self) -> List["GeomAITrainingData"]:
-        """List of all :class:`~.training_data.GeomAITrainingData` instances in the project."""
+        """Lists all :class:`~.training_data.GeomAITrainingData` instances in the project."""
         raw_td_list = self._client._api.iter_training_data_in_geomai_project(self.id)
         return [
             self._client.geomai.training_data._model_from(training_data)
             for training_data in raw_td_list
         ]
+
+    def workspaces(self) -> List["GeomAIWorkspace"]:
+        """Lists all :class:`~.workspaces.GeomAIWorkspace` instances in the project."""
+        workspaces = self._client._api.get_geomai_project_related_workspaces(self.id)
+        return [self._client.geomai.workspaces._model_from(workspace) for workspace in workspaces]
 
     @property
     def last_model_configuration(self) -> Optional[GeomAIModelConfiguration]:
@@ -93,6 +98,16 @@ class GeomAIProject(DataModel):
                 See :class:`.models.GeomAIModelConfiguration` for details.
         """
         return self._client.geomai.models.build(self.id, configuration)
+
+    def create_workspace(self, name: str) -> "GeomAIWorkspace":
+        """Creates a workspace using the latest model trained in this project.
+
+        Args:
+            name: Name to give to the new workspace
+        """
+        return self._client.geomai.workspaces._model_from(
+            self._client._api.create_geomai_workspace(name, self.id)
+        )
 
 
 class GeomAIProjectDirectory(Directory[GeomAIProject]):

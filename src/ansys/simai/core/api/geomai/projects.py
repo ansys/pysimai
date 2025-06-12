@@ -45,7 +45,7 @@ class GeomAIProjectClientMixin(ApiClientMixin):
         self._patch(f"geomai/projects/{project_id}", json=request_json, return_json=False)
 
     def iter_training_data_in_geomai_project(self, project_id: str) -> Iterator[Dict[str, Any]]:
-        next_page = f"geomai/projects/{project_id}/data"
+        next_page = f"geomai/projects/{project_id}/training-data"
         while next_page:
             page_request = self._get(next_page, return_json=False)
             next_page = page_request.links.get("next", {}).get("url")
@@ -53,6 +53,9 @@ class GeomAIProjectClientMixin(ApiClientMixin):
 
     def delete_geomai_project(self, project_id: str):
         self._delete(f"geomai/projects/{project_id}", return_json=False)
+
+    def get_geomai_project_related_workspaces(self, project_id: str):
+        return self._get(f"geomai/projects/{project_id}/workspaces")
 
     def launch_geomai_build(
         self,

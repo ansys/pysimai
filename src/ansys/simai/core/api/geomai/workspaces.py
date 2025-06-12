@@ -20,10 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from urllib.parse import quote
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+from ansys.simai.core.data.types import File
 
 
 class GeomAIWorkspaceClientMixin(ApiClientMixin):
@@ -67,9 +68,7 @@ class GeomAIWorkspaceClientMixin(ApiClientMixin):
         Returns:
             JSON representation of the new workspace.
         """
-        return self._post(
-            f"geomai/projects/{project_id}/workspaces/", json={"name": name, **kwargs}
-        )
+        return self._post(f"geomai/projects/{project_id}/workspaces", json={"name": name, **kwargs})
 
     def delete_geomai_workspace(self, workspace_id: str):
         """Delete a workspace.
@@ -82,3 +81,8 @@ class GeomAIWorkspaceClientMixin(ApiClientMixin):
             ansys.simai.core.errors.ApiClientError: On other HTTP errors.
         """
         return self._delete(f"geomai/workspaces/{workspace_id}")
+
+    def download_geomai_workspace_latent_parameters(self, workspace_id: str, file: Optional[File]):
+        return self.download_file(
+            f"geomai/workspaces/{workspace_id}/model/latent-parameters-json", file
+        )

@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 class GeomAIPredictionConfiguration(BaseModel):
-    """The configuration to run a GeomAI prediction."""
+    """The configuration used to run a GeomAI prediction."""
 
     latent_params: List[float]
     """A list of floats that represent the position of the geometry in the latent space.
@@ -160,7 +160,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
 
         Args:
             configuration: The configuration to run the prediction with.
-            workspace: Optional ID or :class:`model <.workspaces.GeomAIWorkspace>` of the target geometry.
+            workspace: Optional ID or :class:`model <.workspaces.GeomAIWorkspace>` of the target workspace.
                 Defaults to the current workspace if set.
 
         Returns:
@@ -175,7 +175,8 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
                 simai = ansys.simai.core.from_config()
                 workspace = simai.geomai.workspaces.list()[0]
                 prediction = simai.geomai.predictions.run(
-                    workspaces, dict(latent_params=[0.1, 2, 5], resolution=(100, 100, 100), margin=25.2)
+                    dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100), margin=0.0),
+                    workspace,
                 )
         """
         if not isinstance(configuration, GeomAIPredictionConfiguration):
@@ -183,7 +184,9 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
                 configuration = GeomAIPredictionConfiguration.model_validate(configuration)
             except ValidationError as e:
                 raise InvalidArguments(e.errors(include_url=False)) from None
-        workspace_id = get_id_from_identifiable(workspace, self._client.geomai._current_workspace)
+        workspace_id = get_id_from_identifiable(
+            workspace, default=self._client.geomai._current_workspace
+        )
         return self._model_from(
             self._client._api.run_geomai_prediction(workspace_id, configuration.model_dump())
         )

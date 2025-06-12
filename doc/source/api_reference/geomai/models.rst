@@ -17,8 +17,20 @@ Directory
 
 
 Model
----------
+-----
 
 .. autoclass:: GeomAIModel()
     :members:
     :inherited-members:
+
+
+GeomAIModelConfiguration
+------------------------
+
+.. autopydantic_model:: GeomAIModelConfiguration
+  :model-show-config-summary: False
+  :model-show-validator-summary: False
+  :model-show-json: False
+  :model-show-field-summary: False
+  :model-show-validator-members: False
+  :field-list-validators: False

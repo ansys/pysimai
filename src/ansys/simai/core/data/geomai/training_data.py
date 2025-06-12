@@ -125,7 +125,7 @@ class GeomAITrainingData(ComputableDataModel):
     ) -> List["GeomAITrainingDataPart"]:
         """Upload all the parts contained in a folder to a :class:`~ansys.simai.core.data.geomai.training_data.GeomAITrainingData` instance.
 
-        Upon upload completion, SimAI will extract data from each part.
+        Upon upload completion, GeomAI will extract data from each part.
 
         Args:
             folder_path: Path to the folder with the files to upload.
@@ -203,7 +203,7 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
 
     def get(self, id) -> GeomAITrainingData:
         """Get a specific :class:`GeomAITrainingData` object from the server."""
-        return self._model_from(self._client._api.get_training_data(id))
+        return self._model_from(self._client._api.get_geomai_training_data(id))
 
     def delete(self, training_data: Identifiable[GeomAITrainingData]) -> None:
         """Delete a :class:`GeomAITrainingData` object and its associated parts from the server.

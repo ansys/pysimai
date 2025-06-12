@@ -20,11 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List, Optional
+from typing import TYPE_CHECKING, BinaryIO, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
-from ansys.simai.core.data.geomai.projects import GeomAIProject
-from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
+from ansys.simai.core.data.types import File, Identifiable, get_id_from_identifiable
+
+if TYPE_CHECKING:
+    from ansys.simai.core.data.geomai.predictions import GeomAIPrediction
+    from ansys.simai.core.data.geomai.projects import GeomAIProject
 
 
 class GeomAIWorkspace(DataModel):
@@ -46,15 +49,33 @@ class GeomAIWorkspace(DataModel):
         """Delete the workspace."""
         return self._client._api.delete_geomai_workspace(self.id)
 
+    def list_predictions(self) -> List["GeomAIPrediction"]:
+        """Lists all the predictions in the workspace."""
+        return [
+            self._client.geomai.predictions._model_from(prediction)
+            for prediction in self._client._api.geomai_predictions(self.id)
+        ]
+
     def set_as_current_workspace(self) -> None:
         """Configure the client to use this workspace instead of the one currently configured."""
         self._client.geomai.current_workspace = self
+
+    def download_latent_parameters_json(self, file: Optional[File] = None) -> Union[None, BinaryIO]:
+        """Download the json file containing the latent parameters for the model's training data.
+
+        Args:
+            file: Binary file-object or the path of the file to put the content into.
+
+        Returns:
+            ``None`` if a file is specified or a binary file-object otherwise.
+        """
+        return self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
 
 
 class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
     """Provides a collection of methods related to GeomAI workspaces.
 
-    This class is accessed through ``client.geomai._workspaces``.
+    This class is accessed through ``client.geomai.workspaces``.
 
     Example:
       .. code-block:: python
@@ -94,7 +115,7 @@ class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
             return self._model_from(self._client._api.get_geomai_workspace(id))
         raise ValueError("Either 'id' or 'name' must be specified.")
 
-    def create(self, name: str, project: Identifiable[GeomAIProject]) -> GeomAIWorkspace:
+    def create(self, name: str, project: Identifiable["GeomAIProject"]) -> GeomAIWorkspace:
         """Create a workspace.
 
         Args:

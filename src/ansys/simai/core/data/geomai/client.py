@@ -60,7 +60,7 @@ class GeomAIClient:
 
     @property
     def current_workspace(self) -> GeomAIWorkspace:
-        """Workspace currently used by the SimAI client.
+        """Workspace currently used by the GeomAI client.
 
         Note:
             You should not set the workspace directly. Instead, use the :meth:`set_current_workspace`
@@ -75,7 +75,7 @@ class GeomAIClient:
         self._current_workspace = workspace
 
     def set_current_workspace(self, name: str):
-        """Set the current workspace for the SimAI client.
+        """Set the current workspace for the GeomAI client.
 
         Args:
             name: Name of the workspace that the client should switch to.
@@ -98,7 +98,7 @@ class GeomAIClient:
 
     @property
     def current_project(self) -> GeomAIProject:
-        """Project currently used by the SimAPI client.
+        """Project currently used by the GeomAI client.
 
         Note:
             You should not set the project directly. Instead, use the :meth:`set_current_project`
@@ -113,7 +113,7 @@ class GeomAIClient:
         self._current_project = project
 
     def set_current_project(self, name: str):
-        """Set the current project for the SimAI client.
+        """Set the current project for the GeomAI client.
 
         This method affects how some methods related to projects or associated
         data behave.

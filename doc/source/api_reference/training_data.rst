@@ -7,7 +7,7 @@ TrainingData
 
 A :class:`TrainingData<ansys.simai.core.data.training_data.TrainingData>` instance is a
 collection of :class:`TrainingDataPart<ansys.simai.core.data.training_data_parts.TrainingDataPart>`
-instances representing a prediction that can be used as input for the training of models.
+instances representing a simulation that can be used as input for the training of models.
 
 Directory
 ---------

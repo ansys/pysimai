@@ -34,16 +34,30 @@ if TYPE_CHECKING:
 
 class GeomAIModelConfiguration(BaseModel):
     nb_latent_param: int = Field(ge=2, le=256)
-    "TODO document"
+    """
+    This number defines the number of floats that will be listed in the `latent_params` parameter for prediction.
+    It has to be defined according to the complexity and the diversity of the geometries you used as training data.
+
+    You need to find the smallest number of latent parameters enabling the model to rebuild
+    a training data with a similar level of detail as the original geometry.
+
+    - If the number is too low, the generated geometries will be too coarse.
+    - If the number is too high, the model will not be able to generate consistent geometries.
+
+    In most cases, the optimal number of latent parameters is lower than `20`.
+    """
     build_preset: Optional[Literal["debug", "short", "default", "long"]] = None
     """
     The preset to use for the model training duration. One of `debug`, `short`, `default`, `long`.
 
+    - `short` duration should last approximately 10 minutes.
+    - `long` duration should last a few hours at most.
+
     Mutually exclusive with `nb_epochs`.
     """
-    nb_epochs: Optional[int] = Field(default=None, ge=1, le=300)
+    nb_epochs: Optional[int] = Field(default=None, ge=1, le=1000)
     """
-    The number of epochs the training will run for, between 1 and 300.
+    The number of times each training data is seen by the model during the training, between 1 and 1000.
 
     Mutually exclusive with `build_preset`.
     """
@@ -112,24 +126,22 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
         """Launches a GeomAI build with the given configuration.
 
         Args:
-            project: The GeomAI project in which to run the training
-            configuration: a :class:`GeomAIModelConfiguration` object that contains the properties to be used in the build
+            project: The GeomAI project in which to run the training.
+            configuration: a :class:`GeomAIModelConfiguration` object that contains the properties to be used in the build.
 
         Examples:
             .. code-block:: python
 
-                import ansys.core.simai
-                from ansys.core.simai.data.geomai.models import GeomAIModelConfiguration
+                import ansys.simai.core
+                from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 
-                simai = ansys.core.simai.from_config()
+                simai = ansys.simai.core.from_config()
                 project = simai.geomai.projects.get("new_secret_project")
-                configuration = GeomAIModelConfiguration.new(
-                    build_preset="default", nb_latent_param=123
-                )
+                configuration = GeomAIModelConfiguration.new(build_preset="default", nb_latent_param=10)
                 model = simai.geomai.models.build(project, configuration)
 
 
-            Use a previous configuration for a new build in the same project
+            Use a previous configuration for a new build in the same project:
 
             .. code-block:: python
 
@@ -137,7 +149,7 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
                 build_conf = a_project.last_model_configuration
                 new_model = simai.geomai.models.build(build_conf)
 
-            Use a previous configuration for a new build in another project
+            Use a previous configuration for a new build in another project:
 
             .. code-block:: python
 
