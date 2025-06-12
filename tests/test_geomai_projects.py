@@ -29,7 +29,7 @@ from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 from ansys.simai.core.errors import ProcessingError
 
 if TYPE_CHECKING:
-    from ansys.simai.core.data.projects import Project
+    from ansys.simai.core.data.geomai.projects import GeomAIProject
 
 
 @responses.activate
@@ -54,28 +54,30 @@ def test_project_rename(simai_client):
 
 @responses.activate
 def test_project_list_training_data(simai_client):
-    project: Project = simai_client.geomai._project_directory._model_from(
+    project: GeomAIProject = simai_client.geomai._project_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
 
     responses.add(
         responses.GET,
-        "https://test.test/geomai/projects/0011/data",
+        "https://test.test/geomai/projects/0011/training-data",
         match=[responses.matchers.query_param_matcher({})],
-        headers={"Link": '<https://test.test/geomai/projects/0011/data?last_id=first>; rel="next"'},
+        headers={
+            "Link": '<https://test.test/geomai/projects/0011/training-data?last_id=first>; rel="next"'
+        },
         json=[{"id": "first"}],
         status=200,
     )
 
     responses.add(
         responses.GET,
-        "https://test.test/geomai/projects/0011/data",
+        "https://test.test/geomai/projects/0011/training-data",
         match=[responses.matchers.query_param_matcher({"last_id": "first"})],
         json=[{"id": "second"}],
         status=200,
     )
 
-    assert [data.id for data in project.data] == ["first", "second"]
+    assert [data.id for data in project.data()] == ["first", "second"]
 
 
 def test_last_model_configuration(simai_client):
@@ -89,7 +91,7 @@ def test_last_model_configuration(simai_client):
         "last_model_configuration": last_conf,
     }
 
-    project: Project = simai_client.geomai._project_directory._model_from(raw_project)
+    project: GeomAIProject = simai_client.geomai._project_directory._model_from(raw_project)
 
     project_last_conf = project.last_model_configuration
 
