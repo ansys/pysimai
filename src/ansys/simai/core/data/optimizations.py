@@ -461,10 +461,10 @@ def _validate_n_iters(n_iters) -> None:
 
 
 def _validate_boundary_conditions_keys(
-    input_bc: Dict[str, float] | None, model_bc: Dict[str, Any]
+    input_bc: Optional[Dict[str, float]], model_bc: Dict[str, Any]
 ) -> None:
     """Validate boundary conditions keys against workspace model requirements."""
-    required_bc = set(model_bc.keys()) if model_bc else set()
+    required_bc = set(model_bc.keys())
 
     if not required_bc:
         return

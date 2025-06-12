@@ -230,6 +230,9 @@ def test_validate_boundary_conditions_keys_success():
 
     _validate_boundary_conditions_keys(input_bc, model_bc)
 
+    # If the model doesn't require boundary conditions
+    _validate_boundary_conditions_keys(input_bc, {})
+
 
 @pytest.mark.parametrize(
     "input_bc, model_bc, error_message",
