@@ -58,6 +58,13 @@ class GeomAIPredictionConfiguration(BaseModel):
     margin: Optional[float] = Field(default=None, ge=0, le=1)
     """A float that sets how far around the surface the reconstruction is computed.
 
+    The margin should be between 0.0 and 0.1, inclusive.
+
+    A margin of 0.0 is highly recommended for detailed results.
+
+        Note:
+            The modification of the margin should only be performed by expert users.
+
     A higher margin gives a coarser surface with less detail.
     A lower margin produces a sharper, more accurate surface.
     However, if the margin is too small, parts of the surface may be missed.
