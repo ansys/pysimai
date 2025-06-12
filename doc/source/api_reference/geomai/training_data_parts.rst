@@ -11,7 +11,7 @@ instance.
 
 .. warning::
    It is strongly recommended to use
-   :meth:`GeomAITrainingData.create_file<ansys.simai.core.data.geomai.training_data.GeomAITrainingData.create_file`
+   :meth:`GeomAITrainingData.create_file<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.create_from_file>`
    instead of interacting with parts directly.
 
 Directory
