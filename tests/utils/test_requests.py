@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from json import JSONDecodeError
 
 import niquests
 import pytest
@@ -48,18 +49,42 @@ def test_handle_http_errors(mocker):
         handle_http_errors(Response())
 
 
-def test_handle_response(mocker):
+@pytest.mark.parametrize(
+    "status_code, return_value, return_json",
+    (
+        (200, {"status": "succeeding"}, True),
+        (200, {"status": "succeeding"}, False),
+        (204, "Should be None", True),
+    ),
+)
+def test_handle_response_success(mocker, status_code, return_value, return_json):
     mocker.patch("ansys.simai.core.utils.requests.handle_http_errors")
-    response_json_mock = mocker.patch("niquests.models.Response.json")
+    mocker.patch.object(Response, "json", return_value=return_value)
+    response = Response()
+    response.status_code = status_code
 
-    # JSON response -> return json
-    response_json_mock.return_value = {"status": "succeeding"}
-    assert handle_response(Response(), return_json=True) == {"status": "succeeding"}
+    result = handle_response(response, return_json=return_json)
 
-    # Non json response -> return response
-    assert isinstance(handle_response(Response(), return_json=False), Response)
+    if return_json is False:
+        assert isinstance(result, Response)
+    elif status_code == 204:
+        assert result is None
+    else:
+        assert result == return_value
 
-    # Malformed JSON -> error
-    response_json_mock.side_effect = ValueError
+
+@pytest.mark.parametrize(
+    "status_code, side_effect",
+    (
+        (200, JSONDecodeError("msg", "doc", 0)),
+        (200, ValueError()),
+    ),
+)
+def test_handle_response_raises(mocker, status_code, side_effect):
+    mocker.patch("ansys.simai.core.utils.requests.handle_http_errors")
+    mocker.patch("requests.models.Response.json", side_effect=side_effect)
+    response = Response()
+    response.status_code = status_code
+
     with pytest.raises(ApiClientError):
         handle_response(Response(), return_json=True)

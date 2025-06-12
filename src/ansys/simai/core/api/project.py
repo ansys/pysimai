@@ -118,8 +118,16 @@ class ProjectClientMixin(ApiClientMixin):
     def is_project_trainable(self, project_id: str):
         return self._get(f"projects/{project_id}/trainable")
 
-    def check_formula(self, project_id: str, calculette_payload: Dict[str, Any]):
-        """Verify the validity of a Global Coefficient formula.
+    def process_formula(
+        self, project_id: str, calculette_payload: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """This method combines the functionality of both `check_formula` and `compute_formula` in a
+        single call. It first validates the formula syntax, and if valid, proceeds to compute the
+        result based on the project's sample. This provides a streamlined approach for working
+        with Global Coefficient formulas.
+
+        If the formula has been previously processed, a cached result is returned immediately to
+        improve performance and reduce redundant calculations.
 
         Args:
             project_id:         the ID of the project
@@ -127,26 +135,17 @@ class ProjectClientMixin(ApiClientMixin):
                                 formula that describes a Global Coefficient
         """
 
-        return self._post(
-            f"projects/{project_id}/check-formula",
+        result = self._post(
+            f"projects/{project_id}/process-formula",
             json=calculette_payload,
-            return_json=False,
+            return_json=True,
         )
 
-    def compute_formula(self, project_id: str, calculette_payload: Dict[str, Any]):
-        """Computes the result of a Global Coefficient formula according to the project's sample.
+        # If the result is not a dictionary, no data has been returned
+        if not isinstance(result, dict):
+            return {}
 
-        Args:
-            project_id:         the ID of the project
-            calculette_payload: the payload for calculette that includes the
-                                formula that describes a Global Coefficient
-        """
-
-        return self._post(
-            f"projects/{project_id}/compute-formula",
-            json=calculette_payload,
-            return_json=False,
-        )
+        return result
 
     def cancel_build(self, project_id: str):
         """Cancels an existing model build if it exists.

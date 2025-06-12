@@ -88,7 +88,7 @@ Example:
 """
 
 
-JSON = Union[Dict[str, Any], List[Dict[str, Any]]]
+JSON = Union[Dict[str, Any], List[Dict[str, Any]], None]
 APIResponse = Union[Response, JSON]
 
 

@@ -22,7 +22,7 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 
 from ansys.simai.core.data.base import (
     ERROR_STATES,
@@ -54,7 +54,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
         bc: list[str] = None,
         surface_variables: list[str] = None,
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(client=client, directory=directory, fields=fields)
 
         self.project_id = project_id
@@ -63,7 +63,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
         )
 
     @ComputableDataModel._failure_message.getter
-    def _failure_message(self):
+    def _failure_message(self) -> Optional[str]:
         return self.fields.get("error")
 
     def _compose_calculette_payload(
@@ -72,7 +72,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
         sample_metadata: dict[str, Any],
         bc: list[str] = None,
         surface_variables: list[str] = None,
-    ):
+    ) -> dict[str, Any]:
         """Composes the payload for a calculette request."""
 
         surface_vars_list = EXTRA_CALCULETTE_FIELDS
@@ -91,7 +91,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
         }
 
     @abstractmethod
-    def run(self):
+    def run(self) -> None:
         """Abstract method to perform the customized required process."""
 
 
@@ -112,9 +112,15 @@ class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType])
 
         return self._registry[item_id] if item_id not in self._registry else None
 
-    def _handle_sse_event(self, data):
-        gc_formula = data.get("target").get("formula")
-        action = data.get("target").get("action")
+    def _handle_sse_event(self, data: dict[str, Any]) -> None:
+        gc_formula = data.get("target", {}).get("formula")
+        action = data.get("target", {}).get("action")
+
+        # `check` and `compute` are considered the same action `process` for now.
+        # They are managed by the same directory (ProcessGlobalCoefficientDirectory) which is
+        # registered with a key using `process` as the action.
+        action = "process" if action in ["check", "compute"] else action
+
         item_id: str = f"{data['target']['id']}-{action}-{gc_formula}"
         if item_id not in self._registry:
             logger.debug(
@@ -126,59 +132,61 @@ class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType])
         item._handle_job_sse_event(data)
 
 
-class CheckGlobalCoefficient(GlobalCoefficientRequest):
-    """Verifies a Global Coefficient formula."""
+class ProcessGlobalCoefficient(GlobalCoefficientRequest):
+    """Processes the result of a Global Coefficient formula.
+    Handles the check and compute requests in a single call.
+    """
 
-    def run(self):
-        """Performs a check-formula request."""
-        self._client._api.check_formula(self.project_id, self._calculette_payload)
+    def __init__(
+        self,
+        client: "ansys.simai.core.client.SimAIClient",
+        directory: "Directory",
+        fields: dict,
+        project_id: str,
+        gc_formula: str,
+        sample_metadata: dict[str, Any],
+        **kwargs,
+    ) -> None:
+        super().__init__(
+            client=client,
+            directory=directory,
+            fields=fields,
+            project_id=project_id,
+            gc_formula=gc_formula,
+            sample_metadata=sample_metadata,
+            **kwargs,
+        )
+        self._result = None
 
-    def _handle_job_sse_event(self, data):
-        """Manage object's state according to SSE."""
-        logger.debug(f"Handling SSE job event for {self._classname} id {self.id}")
+        super().__init__(
+            client, directory, fields, project_id, gc_formula, sample_metadata, **kwargs
+        )
 
-        state: str = data.get("status")
+    def run(self) -> None:
+        """Performs a process-formula request."""
+        response = self._client._api.process_formula(self.project_id, self._calculette_payload)
+        result = response.get("result")
 
-        target = data.get("target")
+        if not result:
+            return
 
-        if state in PENDING_STATES:
-            logger.debug(f"{self._classname} id {self.id} set status pending")
-            self._set_is_pending()
-        elif state == "successful":
-            logger.debug(f"{self._classname} id {self.id} set status successful")
-            self._set_is_over()
-        elif state in ERROR_STATES:
-            error_message = f"Verification of formula {target.get('formula')} failed with {data.get('reason', 'UNKNOWN ERROR')}"
-            self.fields["error"] = error_message
-            self._set_has_failed()
-            logger.error(error_message)
+        # If the response is a 200, the cached result is returned, so the request is
+        # considered successful and the object is set to over.
+        self._result = cast_values_to_float(result)
+        self._set_is_over()
 
-
-class CheckGlobalCoefficientDirectory(GlobalCoefficientRequestDirectory[CheckGlobalCoefficient]):
-    """Extends GlobalCoefficientRequestDirectory for verifying a Global Coefficient formula."""
-
-    _data_model = CheckGlobalCoefficient
-
-
-class ComputeGlobalCoefficient(GlobalCoefficientRequest):
-    """Computes the result of a Global Coefficient formula."""
-
-    def run(self):
-        """Performs a compute-formula request."""
-        self._client._api.compute_formula(self.project_id, self._calculette_payload)
-
-    def _handle_job_sse_event(self, data):
+    def _handle_job_sse_event(self, data: dict[str, Any]) -> None:
         """Manage object's state according to SSE and store the result of the formula."""
         logger.debug(f"Handling SSE job event for {self._classname} id {self.id}")
 
         state: str = data.get("status")
-
         target = data.get("target")
 
         if state in PENDING_STATES:
             logger.debug(f"{self._classname} id {self.id} set status pending")
             self._set_is_pending()
-        elif state == "successful":
+        # The whole Global Coefficient request is considered successful if only `check` is successful.
+        elif state == "successful" and target["action"] == "compute":
             logger.debug(f"{self._classname} id {self.id} set status successful")
             self._result = cast_values_to_float(data.get("result", {}).get("value"))
             self._set_is_over()
@@ -189,14 +197,14 @@ class ComputeGlobalCoefficient(GlobalCoefficientRequest):
             logger.error(error_message)
 
     @property
-    def result(self):
+    def result(self) -> Union[float, None]:
         """Get the result of the Global Coefficient formula."""
         return self._result if self.is_ready else None
 
 
-class ComputeGlobalCoefficientDirectory(
-    GlobalCoefficientRequestDirectory[ComputeGlobalCoefficient]
+class ProcessGlobalCoefficientDirectory(
+    GlobalCoefficientRequestDirectory[ProcessGlobalCoefficient]
 ):
     """Extends GlobalCoefficientRequestDirectory for computing the result of a Global Coefficient formula."""
 
-    _data_model = ComputeGlobalCoefficient
+    _data_model = ProcessGlobalCoefficient

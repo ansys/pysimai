@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+from http import HTTPStatus
 from json.decoder import JSONDecodeError
 from typing import Literal, overload
 
@@ -51,7 +52,7 @@ def handle_http_errors(response: niquests.Response) -> None:
         except (ValueError, JSONDecodeError):
             # raise the errors from None
             # as we want to ignore the JSONDecodeError
-            if response.status_code == 404:
+            if response.status_code == HTTPStatus.NOT_FOUND:
                 raise NotFoundError("Not Found", response) from e
             else:
                 raise ApiClientError(
@@ -66,7 +67,7 @@ def handle_http_errors(response: niquests.Response) -> None:
                 or response.reason
             )
 
-            if response.status_code == 404:
+            if response.status_code == HTTPStatus.NOT_FOUND:
                 raise NotFoundError(f"{message}", response) from e
             else:
                 error_message = f"{response.status_code} {message}"
@@ -109,6 +110,9 @@ def handle_response(response: niquests.Response, return_json: bool = True) -> AP
 
     logger.debug("Returning response.")
     if return_json:
+        if response.status_code == HTTPStatus.NO_CONTENT:
+            return None
+
         try:
             return response.json()
         except (ValueError, JSONDecodeError):
@@ -116,5 +120,5 @@ def handle_response(response: niquests.Response, return_json: bool = True) -> AP
             raise ApiClientError(
                 "Expected a JSON response but did not receive one.", response
             ) from None
-    else:
-        return response
+
+    return response

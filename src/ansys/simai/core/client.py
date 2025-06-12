@@ -28,10 +28,7 @@ from pydantic import ValidationError
 from ansys.simai.core import __version__
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.geometries import GeometryDirectory
-from ansys.simai.core.data.global_coefficients_requests import (
-    CheckGlobalCoefficientDirectory,
-    ComputeGlobalCoefficientDirectory,
-)
+from ansys.simai.core.data.global_coefficients_requests import ProcessGlobalCoefficientDirectory
 from ansys.simai.core.data.models import ModelDirectory
 from ansys.simai.core.data.optimizations import (
     OptimizationDirectory,
@@ -83,8 +80,7 @@ class SimAIClient:
 
         api_client_class = getattr(config, "_api_client_class_override", ApiClient)
         self._api = api_client_class(simai_client=self, config=config)
-        self._check_gc_formula_directory = CheckGlobalCoefficientDirectory(client=self)
-        self._compute_gc_formula_directory = ComputeGlobalCoefficientDirectory(client=self)
+        self._process_gc_formula_directory = ProcessGlobalCoefficientDirectory(client=self)
         self._geometry_directory = GeometryDirectory(client=self)
         self._optimization_directory = OptimizationDirectory(client=self)
         self._optimization_trial_run_directory = _OptimizationTrialRunDirectory(client=self)
