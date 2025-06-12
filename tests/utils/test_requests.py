@@ -59,7 +59,7 @@ def test_handle_http_errors(mocker):
 )
 def test_handle_response_success(mocker, status_code, return_value, return_json):
     mocker.patch("ansys.simai.core.utils.requests.handle_http_errors")
-    mocker.patch("niquests.models.Response.json")
+    mocker.patch.object(Response, "json", return_value=return_value)
     response = Response()
     response.status_code = status_code
 

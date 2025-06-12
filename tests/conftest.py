@@ -26,8 +26,8 @@ import random
 import threading
 import time
 from collections.abc import Callable
+from sys import modules
 
-import modules
 import niquests
 import pytest
 import requests
