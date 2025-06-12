@@ -23,7 +23,7 @@
 import logging
 from http import HTTPStatus
 from json.decoder import JSONDecodeError
-from typing import Literal, Union, overload
+from typing import Literal, overload
 
 import niquests
 
@@ -82,9 +82,7 @@ def handle_http_errors(response: niquests.Response) -> None:
 
 
 @overload
-def handle_response(
-    response: niquests.Response, return_json: Literal[True]
-) -> Union[JSON, None]: ...
+def handle_response(response: niquests.Response, return_json: Literal[True]) -> JSON: ...
 
 
 @overload
@@ -97,9 +95,7 @@ def handle_response(
 def handle_response(response: niquests.Response, return_json: bool) -> APIResponse: ...
 
 
-def handle_response(
-    response: niquests.Response, return_json: bool = True
-) -> Union[APIResponse, None]:
+def handle_response(response: niquests.Response, return_json: bool = True) -> APIResponse:
     """Handle HTTP errors and return the relevant data from the response.
 
     Args:

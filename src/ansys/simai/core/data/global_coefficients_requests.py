@@ -22,7 +22,7 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 
 from ansys.simai.core.data.base import (
     ERROR_STATES,
@@ -63,7 +63,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
         )
 
     @ComputableDataModel._failure_message.getter
-    def _failure_message(self) -> str:
+    def _failure_message(self) -> Optional[str]:
         return self.fields.get("error")
 
     def _compose_calculette_payload(
