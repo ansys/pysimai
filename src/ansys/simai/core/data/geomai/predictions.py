@@ -55,7 +55,7 @@ class GeomAIPredictionConfiguration(BaseModel):
 
     Defaults to [100, 100, 100] if none is provided.
     """
-    margin: Optional[float] = Field(default=None, ge=0)
+    margin: Optional[float] = Field(default=None, ge=0, le=1)
     """A float that sets how far around the surface the reconstruction is computed.
 
     A higher margin gives a coarser surface with less detail.
