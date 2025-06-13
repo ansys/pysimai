@@ -40,6 +40,7 @@ from typing import (
     TypedDict,
     TypeVar,
     Union,
+    overload,
 )
 
 from niquests import Response
@@ -248,6 +249,22 @@ def unpack_named_file(
     finally:
         if close_file is True:
             file.close()
+
+
+@overload
+def get_id_from_identifiable(
+    identifiable: Optional[Identifiable[D]] = None,
+    required: Literal[True] = True,
+    default: Optional[Identifiable[D]] = None,
+) -> str: ...
+
+
+@overload
+def get_id_from_identifiable(
+    identifiable: Optional[Identifiable[D]] = None,
+    required: Literal[False] = False,
+    default: Optional[Identifiable[D]] = None,
+) -> Optional[str]: ...
 
 
 def get_id_from_identifiable(

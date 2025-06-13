@@ -90,6 +90,10 @@ class ClientConfig(BaseModel, extra="allow"):
     "Name of the workspace to use by default."
     project: Optional[str] = None
     "Name of the project to use by default."
+    geomai_workspace: Optional[str] = None
+    "Name of the GeomAI workspace to use by default."
+    geomai_project: Optional[str] = None
+    "Name of the GeomAI project to use by default."
     credentials: Optional[Credentials] = Field(
         default=None,
         validate_default=True,

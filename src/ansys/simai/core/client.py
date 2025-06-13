@@ -27,6 +27,7 @@ from pydantic import ValidationError
 
 from ansys.simai.core import __version__
 from ansys.simai.core.api.client import ApiClient
+from ansys.simai.core.data.geomai.client import GeomAIClient
 from ansys.simai.core.data.geometries import GeometryDirectory
 from ansys.simai.core.data.global_coefficients_requests import ProcessGlobalCoefficientDirectory
 from ansys.simai.core.data.models import ModelDirectory
@@ -97,6 +98,7 @@ class SimAIClient:
             self.set_current_workspace(config.workspace)
         if config.project is not None:
             self.set_current_project(config.project)
+        self._geomai_client = GeomAIClient(self, config)
 
         if not config.skip_version_check:
             self._check_for_new_version()
@@ -252,6 +254,11 @@ class SimAIClient:
         For more information, see :ref:`models`.
         """
         return self._model_directory
+
+    @property
+    def geomai(self) -> GeomAIClient:
+        """Access the GeomAI client."""
+        return self._geomai_client
 
     @classmethod
     def from_config(
