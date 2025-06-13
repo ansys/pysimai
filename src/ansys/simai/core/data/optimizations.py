@@ -106,8 +106,8 @@ class OptimizationDirectory(Directory[Optimization]):
         self,
         geometry_generation_fn: Callable[..., NamedFile],
         geometry_parameters: Dict[str, Tuple[float, float]],
-        boundary_conditions: Dict[str, float],
         n_iters: int,
+        boundary_conditions: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
         outcome_constraints: Optional[List[str]] = None,
@@ -183,7 +183,7 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_outcome_constraints(outcome_constraints)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
-            "boundary_conditions": boundary_conditions,
+            "boundary_conditions": boundary_conditions or {},
             "n_iters": n_iters,
             "objective": objective,
             "type": "parametric",
@@ -242,8 +242,8 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry: Identifiable[Geometry],
         bounding_boxes: List[List[float]],
         symmetries: List[Literal["x", "y", "z", "X", "Y", "Z"]],
-        boundary_conditions: Dict[str, float],
         n_iters: int,
+        boundary_conditions: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
         show_progress: bool = False,
@@ -297,7 +297,7 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
-            "boundary_conditions": boundary_conditions,
+            "boundary_conditions": boundary_conditions or {},
             "n_iters": n_iters,
             "objective": objective,
             "type": "non_parametric",
