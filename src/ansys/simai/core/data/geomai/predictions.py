@@ -56,20 +56,17 @@ class GeomAIPredictionConfiguration(BaseModel):
     Defaults to [100, 100, 100] if none is provided.
     """
     margin: Optional[float] = Field(default=None, ge=0, le=1)
-    """A float that sets how far around the surface the reconstruction is computed.
+    """A float that sets the size of the isosurface for the reconstruction of the geometry.
 
-    The margin should be between 0.0 and 0.1, inclusive.
+    Note:
+        A margin of 0.0 is highly recommended for non-expert users.
 
-    A margin of 0.0 is highly recommended for detailed results.
+    If you are an expert user, and if the generated geometry is noisy,
+    you can try to adjust both resolution and margin values to find
+    the right balance between them to generate a smoother geometry.
 
-        Note:
-            The modification of the margin should only be performed by expert users.
-
-    A higher margin gives a coarser surface with less detail.
-    A lower margin produces a sharper, more accurate surface.
-    However, if the margin is too small, parts of the surface may be missed.
-
-    It is important to find a good balance between resolution and margin for accurate and efficient reconstruction.
+    | A higher margin gives a coarser surface with less detail.
+    | A lower margin produces a sharper surface.
 
     Defaults to 0 if none is provided.
     """
