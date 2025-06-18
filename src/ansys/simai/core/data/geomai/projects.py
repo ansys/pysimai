@@ -171,4 +171,4 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
         project_response = self._client._api.get_geomai_project(project_id)
         if project_response.get("is_being_trained") is False:
             raise ProcessingError("No build pending for this project.")
-        self._client._api.cancel_build(project_id)
+        self._client._api.cancel_geomai_build(project_id)
