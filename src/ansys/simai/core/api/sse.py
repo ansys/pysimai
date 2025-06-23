@@ -24,7 +24,6 @@ import json
 import logging
 import os
 import threading
-from typing import Optional
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.errors import ConnectionError
@@ -60,20 +59,8 @@ class SSEMixin(ApiClientMixin):
         # immediately without needing another event.
         self._stop_sse_threads = getattr(config, "_stop_sse_threads", False)
         logger.debug("Connecting to SSE.")
-
-        def sse_connection_factory(last_event_id: Optional[str]):
-            headers = {"Accept": "text/event-stream"}
-            if last_event_id is not None:
-                headers["Last-Event-ID"] = last_event_id
-            return self._get(
-                self._get_sse_url(),
-                stream=True,
-                headers=headers,
-                return_json=False,
-            )
-
         try:
-            self.sse_client = ReconnectingSSERequestsClient(sse_connection_factory)
+            self.sse_client = ReconnectingSSERequestsClient(self._session, self._get_sse_url())
         except Exception as e:
             raise ConnectionError("Impossible to connect to event's endpoint.") from e
         logger.debug("SSEMixin is connected to SSE endpoint.")
@@ -81,9 +68,6 @@ class SSEMixin(ApiClientMixin):
         self.listener_thread = threading.Thread(target=self._sse_thread_loop, daemon=True)
         self.listener_thread.start()
         logger.debug("Started listener thread.")
-
-    def __del__(self):
-        self._stop_sse_threads = True
 
     def _sse_thread_loop(self):
         try:
@@ -96,6 +80,9 @@ class SSEMixin(ApiClientMixin):
             # if object has been garbage collected, ignore exceptions
             if not self._stop_sse_threads:
                 os._exit(1)
+
+    def __del__(self):
+        self._stop_sse_threads = True
 
     def _handle_sse_event(self, event):
         try:
@@ -114,7 +101,7 @@ class SSEMixin(ApiClientMixin):
                 self._handle_data_model_event(data)
         except Exception as e:
             msg = f"Error handling SSE event: {e}."
-            logger.error(msg)
+            logger.exception(msg)
 
     def _handle_data_model_event(self, data):
         target = data["target"]
