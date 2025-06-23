@@ -249,6 +249,10 @@ class Project(DataModel):
             raise ProcessingError("No build pending for this project.")
         self._client._api.cancel_build(self.id)
 
+    def set_as_current_project(self) -> None:
+        """Configure the client to use this project instead of the one currently configured."""
+        self._client.current_project = self
+
 
 class ProjectDirectory(Directory[Project]):
     """Provides a collection of methods related to projects.

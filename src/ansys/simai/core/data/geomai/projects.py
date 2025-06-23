@@ -109,6 +109,10 @@ class GeomAIProject(DataModel):
             self._client._api.create_geomai_workspace(name, self.id)
         )
 
+    def set_as_current_project(self) -> None:
+        """Configure the client to use this project instead of the one currently configured."""
+        self._client.geomai.current_project = self
+
 
 class GeomAIProjectDirectory(Directory[GeomAIProject]):
     """Provides a collection of methods related to projects.
