@@ -49,5 +49,15 @@ class GeomAITrainingDataPartDirectory(Directory[GeomAITrainingDataPart]):
     _data_model = GeomAITrainingDataPart
 
     def get(self, id: str) -> GeomAITrainingDataPart:
-        """Get a :class:`GeomAITrainingDataPart` object from the server."""
+        """Get a :class:`GeomAITrainingDataPart` object from the server.
+
+        Args:
+            id: ID of the training data part.
+
+        Returns:
+            :class:`GeomAITrainingDataPart` instance with the given ID if it exists.
+
+        Raises:
+            NotFoundError: No prediction with the given ID exists.
+        """
         return self._model_from(self._client._api.get_geomai_training_data_part(id))

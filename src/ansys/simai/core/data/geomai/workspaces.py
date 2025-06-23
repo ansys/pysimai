@@ -105,7 +105,7 @@ class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
             A :class:`GeomAIWorkspace`.
 
         Raises:
-            NotFoundError: No geometry with the given ID exists.
+            NotFoundError: No workspace with the given ID exists.
         """
         if name and id:
             raise ValueError("'id' and 'name' cannot both be specified.")

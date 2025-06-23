@@ -72,7 +72,7 @@ class GeomAIPredictionConfiguration(BaseModel):
     """
 
     def __init__(self, *args, **kwargs):
-        """Raises :exception:`~ansys.simai.core.errors.InvalidArguments` if the input data cannot be validated to from a valid model."""
+        """Raises :exc:`~ansys.simai.core.errors.InvalidArguments` if the input data cannot be validated to from a valid model."""
         try:
             super().__init__(*args, **kwargs)
         except ValidationError as e:
@@ -145,7 +145,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
             :class:`GeomAIPrediction` instance with the given ID if it exists.
 
         Raises:
-            :class:`NotFoundError`: No prediction with the given ID exists.
+            NotFoundError: No prediction with the given ID exists.
         """
         return self._model_from(self._client._api.get_geomai_prediction(id))
 
@@ -156,7 +156,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
             prediction: ID or :class:`model <GeomAIPrediction>` of the prediction.
 
         Raises:
-            :py:class:`ansys.simai.core.errors.NotFoundError`: No prediction with the given ID exists.
+            NotFoundError: No prediction with the given ID exists.
         """
         prediction_id = get_id_from_identifiable(prediction)
         self._client._api.delete_geomai_prediction(prediction_id)

@@ -167,10 +167,10 @@ class WorkspaceDirectory(Directory[Workspace]):
             name: Name of the workspace.
 
         Returns:
-            Workspace.
+            :class:`Workspace` instance with the given ID if it exists
 
         Raises:
-            NotFoundError: No geometry with the given ID exists.
+            NotFoundError: No workspace with the given ID exists.
         """
         if name and id:
             raise ValueError("'id' and 'name' cannot both be specified.")

@@ -202,7 +202,17 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
         return list(self.iter(filters))
 
     def get(self, id) -> GeomAITrainingData:
-        """Get a specific :class:`GeomAITrainingData` object from the server."""
+        """Get a specific :class:`GeomAITrainingData` object from the server.
+
+        Args:
+            id: ID of the training data
+
+        Returns:
+            :class:`GeomAITrainingData`
+
+        Raises:
+            NotFoundError: No training data with the given ID exists.
+        """
         return self._model_from(self._client._api.get_geomai_training_data(id))
 
     def delete(self, training_data: Identifiable[GeomAITrainingData]) -> None:

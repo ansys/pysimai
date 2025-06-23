@@ -63,7 +63,7 @@ class GeomAIModelConfiguration(BaseModel):
     """
 
     def __init__(self, *args, **kwargs):
-        """Raises :exception:`~ansys.simai.core.errors.InvalidArguments` if the input data cannot be validated to from a valid model."""
+        """Raises :exc:`~ansys.simai.core.errors.InvalidArguments` if the input data cannot be validated to from a valid model."""
         try:
             super().__init__(*args, **kwargs)
         except ValidationError as e:

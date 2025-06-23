@@ -274,7 +274,7 @@ class ProjectDirectory(Directory[Project]):
         """Create a project."""
         return self._model_from(self._client._api.create_project(name=name))
 
-    def get(self, id: Optional[str] = None, name: Optional[str] = None):
+    def get(self, id: Optional[str] = None, name: Optional[str] = None) -> Project:
         """Get a project by either ID or name.
 
         You can specify either the ID or the name, not both.
@@ -282,6 +282,9 @@ class ProjectDirectory(Directory[Project]):
         Args:
             id: ID of the project.
             name: Name of the project.
+
+        Raises:
+            ansys.simai.core.errors.NotFoundError: If the project doesn't exist
         """
         if name and id:
             raise InvalidArguments("Only the 'id' or 'name' argument should be specified.")

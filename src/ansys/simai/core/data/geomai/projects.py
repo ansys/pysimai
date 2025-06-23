@@ -134,7 +134,7 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
         """Create a project."""
         return self._model_from(self._client._api.create_geomai_project(name=name))
 
-    def get(self, id: Optional[str] = None, name: Optional[str] = None):
+    def get(self, id: Optional[str] = None, name: Optional[str] = None) -> GeomAIProject:
         """Get a project by either ID or name.
 
         You can specify either the ID or the name, not both.
@@ -142,6 +142,12 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
         Args:
             id: ID of the project.
             name: Name of the project.
+
+        Returns:
+            :class:`GeomAIProject` instance with the given ID if it exists.
+
+        Raises:
+            NotFoundError: If the project doesn't exist
         """
         if name and id:
             raise InvalidArguments("Only the 'id' or 'name' argument should be specified.")
