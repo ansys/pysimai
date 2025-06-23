@@ -47,7 +47,7 @@ def test_api_client_connects_to_sse_if_flag():
     with responses.RequestsMock() as rsps:
         rsps.add_callback(
             responses.GET,
-            "https://test.test/sessions/events",
+            "sse://test.test/sessions/events",
             content_type="application/json",
             callback=sse_connection,
         )
@@ -77,7 +77,7 @@ def test_api_client_sse_endpoint_unreachable():
     """
     responses.add(
         responses.GET,
-        "https://test.test/sessions/events",
+        "sse://test.test/sessions/events",
         body="Not found",
         status=404,
     )

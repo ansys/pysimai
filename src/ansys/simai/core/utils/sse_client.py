@@ -22,54 +22,62 @@
 
 import logging
 import time
-from typing import Callable, Optional
+from urllib.parse import urlparse
 
 import niquests
-import sseclient
-import urllib3
+import urllib3_future
 
 logger = logging.getLogger(__name__)
-
-
-# take an optional last-event-id to be sent in request headers
-EventSourceFactoryType = Callable[[Optional[str]], sseclient.SSEClient]
 
 
 class ReconnectingSSERequestsClient:
     def __init__(
         self,
-        event_source_factory: EventSourceFactoryType,
-        char_enc: Optional[str] = None,
+        session: niquests.Session,
+        url: str,
     ):
-        self._sseclient = None
-        self._event_source_factory = event_source_factory
-        self._char_enc = char_enc
+        self._session = session
+        parsed_url = urlparse(url)
+        if parsed_url.scheme == "https":
+            self.url = parsed_url._replace(scheme="sse").geturl()
+        elif parsed_url.scheme == "http":
+            self.url = parsed_url._replace(scheme="psse").geturl()
         self._last_event_id = None
         self._retry_timeout_sec = 3
+        self._sse = None
         self._connect()
 
     def _connect(self):
         self._disconnect_client()
         logger.info(f"Will connect to SSE with last event id {self._last_event_id}.")
-        event_source = self._event_source_factory(self._last_event_id)
-        logger.info("Create SSEClient with event source.")
-        self._sseclient = sseclient.SSEClient(event_source)
+        self._sse = self._session.get(self.url)
+        self._sse.raise_for_status()
+        logger.info("Created SSEClient with event source.")
 
     def _disconnect_client(self):
-        if self._sseclient is not None:
+        if self._sse and self._sse.extension and not self._sse.extension.closed:
             try:
                 self.close()
+            except AssertionError:
+                # Connection was already closed by peer
+                pass
             except Exception:
                 logger.error("Failed to close SSEClient ", exc_info=True)
 
     def close(self):
-        self._sseclient.close()
-        self._sseclient = None
+        self._sse.extension.close()
+        self._sse = None
 
     def events(self):
         while True:
             try:
-                for event in self._sseclient.events():
+                while not self._sse.extension.closed:
+                    event = self._sse.extension.next_payload()
+                    logger.debug(f"SSE event received: {event}")
+                    if event is None:
+                        logger.warning("SSE connection closed by remote")
+                        self._connect()
+                        break
                     yield event
                     self._last_event_id = event.id
             except (
@@ -77,7 +85,10 @@ class ReconnectingSSERequestsClient:
                 niquests.exceptions.ChunkedEncodingError,
                 niquests.RequestException,
                 EOFError,
-                urllib3.exceptions.MustRedialError,
+                urllib3_future.exceptions.MustRedialError,
+                # In some cases, when the extension is closed the SSE extension
+                # becomes None and trying to access .closed causes an AttributeError
+                AttributeError,
             ) as e:
                 logger.info(f"SSEClient disconnected: {e}")
                 logger.info(f"Will try to reconnect after {self._retry_timeout_sec}s")

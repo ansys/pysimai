@@ -26,7 +26,7 @@ import threading
 
 import pytest
 import responses
-import sseclient
+from urllib3_future.contrib.webextensions.sse import ServerSentEvent
 
 from ansys.simai.core.data.optimizations import (
     _validate_bounding_boxes,
@@ -325,7 +325,7 @@ def test_run_parametric_optimization(simai_client, mocker):
         0.1,
         simai_client._api._handle_sse_event,
         args=[
-            sseclient.Event(
+            ServerSentEvent(
                 data=json.dumps(
                     {
                         "type": "job",
@@ -346,7 +346,7 @@ def test_run_parametric_optimization(simai_client, mocker):
             i / 10 + 0.1,
             simai_client._api._handle_sse_event,
             args=[
-                sseclient.Event(
+                ServerSentEvent(
                     data=json.dumps(
                         {
                             "type": "job",
@@ -412,7 +412,7 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory):
         0.1,
         simai_client._api._handle_sse_event,
         args=[
-            sseclient.Event(
+            ServerSentEvent(
                 data=json.dumps(
                     {
                         "type": "job",
@@ -433,7 +433,7 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory):
             i / 10 + 0.1,
             simai_client._api._handle_sse_event,
             args=[
-                sseclient.Event(
+                ServerSentEvent(
                     data=json.dumps(
                         {
                             "type": "job",
