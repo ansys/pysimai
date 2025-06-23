@@ -72,7 +72,7 @@ class GeomAIProject(DataModel):
         raw_last_model_configuration = self.fields.get("last_model_configuration")
         if raw_last_model_configuration is None:
             return None
-        return GeomAIModelConfiguration.new(**raw_last_model_configuration)
+        return GeomAIModelConfiguration(**raw_last_model_configuration)
 
     def delete(self) -> None:
         """Delete the project."""

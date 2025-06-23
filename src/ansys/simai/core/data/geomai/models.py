@@ -132,7 +132,7 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
 
                 simai = ansys.simai.core.from_config()
                 project = simai.geomai.projects.get("new_secret_project")
-                configuration = GeomAIModelConfiguration.new(build_preset="default", nb_latent_param=10)
+                configuration = GeomAIModelConfiguration(build_preset="default", nb_latent_param=10)
                 model = simai.geomai.models.build(project, configuration)
 
 
