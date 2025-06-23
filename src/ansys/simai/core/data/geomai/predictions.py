@@ -44,7 +44,7 @@ class GeomAIPredictionConfiguration(BaseModel):
     """A list of floats that represent the position of the geometry in the latent space.
 
     These parameters describe the shape in a compressed form.
-    The number of floats should match the `nb_latent_param` your model was requested with.
+    The number of floats should match the ``nb_latent_param`` your model was requested with.
 
     Required.
     """
@@ -53,7 +53,7 @@ class GeomAIPredictionConfiguration(BaseModel):
 
     Higher values allow for more detailed geometry reconstruction, while lower values reduce detail but speed up computation.
 
-    Defaults to [100, 100, 100] if none is provided.
+    Defaults to ``[100, 100, 100]`` if none is provided.
     """
     margin: Optional[float] = Field(default=None, ge=0, le=1)
     """A float that sets the size of the isosurface for the reconstruction of the geometry.
@@ -70,6 +70,13 @@ class GeomAIPredictionConfiguration(BaseModel):
 
     Defaults to 0 if none is provided.
     """
+
+    def __init__(self, *args, **kwargs):
+        """Raises :exception:`~ansys.simai.core.errors.InvalidArguments` if the input data cannot be validated to from a valid model."""
+        try:
+            super().__init__(*args, **kwargs)
+        except ValidationError as e:
+            raise InvalidArguments(e.errors(include_url=False)) from None
 
 
 class GeomAIPrediction(ComputableDataModel):

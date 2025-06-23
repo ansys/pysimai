@@ -62,6 +62,13 @@ class GeomAIModelConfiguration(BaseModel):
     Mutually exclusive with `build_preset`.
     """
 
+    def __init__(self, *args, **kwargs):
+        """Raises :exception:`~ansys.simai.core.errors.InvalidArguments` if the input data cannot be validated to from a valid model."""
+        try:
+            super().__init__(*args, **kwargs)
+        except ValidationError as e:
+            raise InvalidArguments(e.errors(include_url=False)) from None
+
     @model_validator(mode="after")
     def _build_preset_or_nb_epochs(self) -> "GeomAIModelConfiguration":
         if (self.nb_epochs is None and self.build_preset is None) or (
@@ -69,18 +76,6 @@ class GeomAIModelConfiguration(BaseModel):
         ):
             raise ValueError("Exactly one of nb_epochs or build_preset must have a value")
         return self
-
-    @classmethod
-    def new(cls, **kwargs):
-        """Generate and validate a :class:`GeomAIModelConfiguration` object.
-
-        Raises:
-            InvalidArguments: if the configuration is not valid
-        """
-        try:
-            return cls.model_validate(kwargs)
-        except ValidationError as e:
-            raise InvalidArguments(e.errors(include_url=False)) from None
 
 
 class GeomAIModel(ComputableDataModel):
@@ -163,7 +158,7 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
         configuration = (
             configuration
             if isinstance(configuration, GeomAIModelConfiguration)
-            else GeomAIModelConfiguration.model_validate(configuration)
+            else GeomAIModelConfiguration(configuration)
         )
         response = self._client._api.launch_geomai_build(
             project_id,
