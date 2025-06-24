@@ -246,6 +246,7 @@ class OptimizationDirectory(Directory[Optimization]):
         boundary_conditions: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
+        max_displacement: Optional[List[float]] = None,
         show_progress: bool = False,
     ):
         """Run an optimization loop with server-side geometry generation using automorphism.
@@ -268,6 +269,8 @@ class OptimizationDirectory(Directory[Optimization]):
                 The global coefficients should map to existing coefficients in your project/workspace.
             maximize: List of global coefficients to maximize.
                 The global coefficients should map to existing coefficients in your project/workspace.
+            max_displacement: User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
+                It is specified as a list (max_displacement) matching the number of bounding boxes (box_bounds_list). Each value limits the displacement within the corresponding bounding box, using the same metric as the bounding box coordinates.
             show_progress: Whether to print progress on stdout.
 
         Warning:
@@ -294,6 +297,7 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_n_iters(n_iters)
         _validate_global_coefficients_for_non_parametric(minimize, maximize)
         _validate_bounding_boxes(bounding_boxes)
+        _validate_max_displacement(max_displacement, bounding_boxes)
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
@@ -305,6 +309,7 @@ class OptimizationDirectory(Directory[Optimization]):
                 "geometry": geometry.id,
                 "box_bounds_list": bounding_boxes,
                 "symmetries": symmetries,
+                "max_displacement": max_displacement,
             },
         }
         with tqdm(total=n_iters, disable=not show_progress) as progress_bar:
@@ -448,6 +453,24 @@ def _validate_n_iters(n_iters) -> None:
 
     if n_iters <= 0:
         raise InvalidArguments("n_iters must be strictly positive")
+
+
+def _validate_max_displacement(
+    max_displacement: Optional[List[float]], bounding_boxes: List[List[float]]
+) -> None:
+    if max_displacement is None:
+        return
+
+    if not isinstance(max_displacement, list):
+        raise InvalidArguments("max_displacement must be a list")
+
+    if not all(isinstance(value, (int, float)) for value in max_displacement):
+        raise InvalidArguments("max_displacement contains non-numeric values")
+
+    if len(max_displacement) != len(bounding_boxes):
+        raise InvalidArguments(
+            "Max displacement list and bounding boxes list must have the same number of items"
+        )
 
 
 def _build_objective(minimize: list[str], maximize: list[str]) -> dict:

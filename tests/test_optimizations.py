@@ -32,6 +32,7 @@ from ansys.simai.core.data.optimizations import (
     _validate_bounding_boxes,
     _validate_geometry_generation_fn_signature,
     _validate_global_coefficients_for_non_parametric,
+    _validate_max_displacement,
     _validate_n_iters,
     _validate_outcome_constraints,
 )
@@ -220,6 +221,73 @@ def test_validate_n_iters_fails(n_iters, error_message):
         match=error_message,
     ):
         _validate_n_iters(n_iters)
+
+
+def validate_max_displacement_success():
+    max_displacement = [1, 0.25]
+    bounding_boxes = [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]]
+
+    _validate_max_displacement(max_displacement, bounding_boxes)
+
+    _validate_max_displacement(None, bounding_boxes)
+
+
+@pytest.mark.parametrize(
+    "max_displacement, bounding_boxes, error_message",
+    [
+        (
+            "not_a_list",
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]],
+            "max_displacement must be a list",
+        ),
+        (
+            123,
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]],
+            "max_displacement must be a list",
+        ),
+        (
+            {},
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]],
+            "max_displacement must be a list",
+        ),
+        (
+            ["this_is_a_string"],
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]],
+            "max_displacement contains non-numeric values",
+        ),
+        (
+            [1, "perhaps_a_string"],
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]],
+            "max_displacement contains non-numeric values",
+        ),
+        (
+            [None],
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]],
+            "max_displacement contains non-numeric values",
+        ),
+        (
+            [1.0],
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]],
+            "Max displacement list and bounding boxes list must have the same number of items",
+        ),
+        (
+            [1.0, 2.0, 3.0],
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]],
+            "Max displacement list and bounding boxes list must have the same number of items",
+        ),
+        (
+            [],
+            [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]],
+            "Max displacement list and bounding boxes list must have the same number of items",
+        ),
+    ],
+)
+def test_validate_max_displacement_fails(max_displacement, bounding_boxes, error_message):
+    with pytest.raises(
+        expected_exception=InvalidArguments,
+        match=error_message,
+    ):
+        _validate_max_displacement(max_displacement, bounding_boxes)
 
 
 @responses.activate
