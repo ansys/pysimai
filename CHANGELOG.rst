@@ -1,6 +1,22 @@
 Changelog
 ---------
 
+0.3.1 (2025-05-24)
+******************
+
+New:
+
+- Add ``max_displacement`` parameter to non-parametric optimization
+
+Changes:
+
+- Add checks on build on top
+- Boundary conditions are optional on optimization runs
+- Use new way to process global coefficients formula that uses a cache
+- Improved checks for parametric and non parametric optimizations
+- Switch to uv
+- Docs improvements
+
 0.3.0 (2025-05-14)
 ******************
 
