@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.simai.core.api.geomai.predictions import GeomAIPredictionClientMixin
+from ansys.simai.core.api.geomai.projects import GeomAIProjectClientMixin
+from ansys.simai.core.api.geomai.training_data import GeomAITrainingDataClientMixin
+from ansys.simai.core.api.geomai.training_data_parts import GeomAITrainingDataPartClientMixin
+from ansys.simai.core.api.geomai.workspaces import GeomAIWorkspaceClientMixin
 from ansys.simai.core.api.geometry import GeometryClientMixin
 from ansys.simai.core.api.optimization import OptimizationClientMixin
 from ansys.simai.core.api.point_cloud import PointCloudClientMixin
@@ -43,5 +48,10 @@ class ApiClient(
     TrainingDataClientMixin,
     TrainingDataPartClientMixin,
     WorkspaceClientMixin,
+    GeomAIPredictionClientMixin,
+    GeomAIProjectClientMixin,
+    GeomAITrainingDataClientMixin,
+    GeomAITrainingDataPartClientMixin,
+    GeomAIWorkspaceClientMixin,
 ):
     """Provides the low-level client that handles direct communication with the server."""

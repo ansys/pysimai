@@ -52,7 +52,7 @@ class ModelDirectory(Directory[Model]):
     _data_model = Model
 
     def get(self, model_id: str) -> Model:
-        """[Do not use] Get a model by project ID.
+        """[Do not use] Get a model by ID.
 
         Args:
             model_id: ID of the model.

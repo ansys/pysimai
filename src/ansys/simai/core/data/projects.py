@@ -101,7 +101,7 @@ class TrainingCapabilities:
 
 
 class Project(DataModel):
-    """Provides the local representation of a  project object."""
+    """Provides the local representation of a project object."""
 
     def __repr__(self) -> str:
         return f"<Project: {self.id}, {self.name}>"
@@ -220,6 +220,10 @@ class Project(DataModel):
             raise ProcessingError("No build pending for this project.")
         self._client._api.cancel_build(self.id)
 
+    def set_as_current_project(self) -> None:
+        """Configure the client to use this project instead of the one currently configured."""
+        self._client.current_project = self
+
 
 class ProjectDirectory(Directory[Project]):
     """Provides a collection of methods related to projects.
@@ -245,7 +249,7 @@ class ProjectDirectory(Directory[Project]):
         """Create a project."""
         return self._model_from(self._client._api.create_project(name=name))
 
-    def get(self, id: Optional[str] = None, name: Optional[str] = None):
+    def get(self, id: Optional[str] = None, name: Optional[str] = None) -> Project:
         """Get a project by either ID or name.
 
         You can specify either the ID or the name, not both.
@@ -253,6 +257,9 @@ class ProjectDirectory(Directory[Project]):
         Args:
             id: ID of the project.
             name: Name of the project.
+
+        Raises:
+            ansys.simai.core.errors.NotFoundError: If the project doesn't exist
         """
         if name and id:
             raise InvalidArguments("Only the 'id' or 'name' argument should be specified.")

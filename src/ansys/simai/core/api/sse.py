@@ -142,6 +142,12 @@ class SSEMixin(ApiClientMixin):
                     logger.debug(
                         f"Unknown action {target['action']} of type {target['type']} received for job or resource event. Ignoring."
                     )
+        elif target["type"] == "geomai_model":
+            self.simai_client.geomai.models._handle_sse_event(data)
+        elif target["type"] == "geomai_prediction":
+            self.simai_client.geomai.predictions._handle_sse_event(data)
+        elif target["type"] == "geomai_training_data":
+            self.simai_client.geomai.training_data._handle_sse_event(data)
 
         else:
             logger.debug(
