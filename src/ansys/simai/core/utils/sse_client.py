@@ -26,6 +26,7 @@ from typing import Callable, Optional
 
 import niquests
 import sseclient
+import urllib3
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,7 @@ class ReconnectingSSERequestsClient:
                 niquests.exceptions.ChunkedEncodingError,
                 niquests.RequestException,
                 EOFError,
+                urllib3.exceptions.MustRedialError,
             ) as e:
                 logger.info(f"SSEClient disconnected: {e}")
                 logger.info(f"Will try to reconnect after {self._retry_timeout_sec}s")
