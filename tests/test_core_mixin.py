@@ -46,7 +46,7 @@ def test_construct_default_url():
 
 @responses.activate(registry=responses.registries.OrderedRegistry)
 def test_retry_on_5XX(api_client):
-    url = "https://try.me/"
+    url = "https://try.me"
     rsp1 = responses.add(responses.GET, url=url, status=503)
     rsp2 = responses.add(responses.GET, url=url, status=504)
     rsp3 = responses.add(responses.GET, url=url, status=200, json={"wat": "hyperdrama"})

@@ -26,12 +26,8 @@ import random
 import threading
 import time
 from collections.abc import Callable
-from sys import modules
 
-import niquests
 import pytest
-import requests
-from niquests.packages import urllib3
 
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.api.client import ApiClient
@@ -46,15 +42,6 @@ from ansys.simai.core.data.projects import Project
 from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.data.workspaces import Workspace
 from ansys.simai.core.utils.configuration import ClientConfig
-
-# HACK: make responses work with niquests, coming from the niquests docs
-# https://niquests.readthedocs.io/en/stable/dev/migrate.html
-modules["requests"] = niquests
-modules["requests.adapters"] = niquests.adapters
-modules["requests.exceptions"] = niquests.exceptions
-modules["requests.compat"] = requests.compat
-modules["requests.packages.urllib3"] = urllib3
-###
 
 
 @pytest.fixture(scope="session")

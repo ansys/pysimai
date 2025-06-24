@@ -21,27 +21,27 @@
 # SOFTWARE.
 from json import JSONDecodeError
 
-import niquests
 import pytest
-from niquests.models import Response
+import requests
+from requests.models import Response
 
 from ansys.simai.core.errors import ApiClientError, SimAIError
 from ansys.simai.core.utils.requests import handle_http_errors, handle_response
 
 
 def test_handle_http_errors(mocker):
-    response_json_mock = mocker.patch("niquests.models.Response.json")
-    raise_for_status_mock = mocker.patch("niquests.models.Response.raise_for_status")
+    response_json_mock = mocker.patch("requests.models.Response.json")
+    raise_for_status_mock = mocker.patch("requests.models.Response.raise_for_status")
 
     # Error without json body
-    raise_for_status_mock.side_effect = niquests.exceptions.HTTPError(Response())
+    raise_for_status_mock.side_effect = requests.exceptions.HTTPError(Response())
     response_json_mock.side_effect = ValueError()
 
     with pytest.raises(SimAIError):
         handle_http_errors(Response())
 
     # Error with json body
-    raise_for_status_mock.side_effect = niquests.exceptions.HTTPError(Response())
+    raise_for_status_mock.side_effect = requests.exceptions.HTTPError(Response())
     response_json_mock.side_effect = None
     response_json_mock.return_value = {"status": "rekt"}
 

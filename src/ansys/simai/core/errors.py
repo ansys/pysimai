@@ -22,7 +22,7 @@
 
 from typing import Any, Callable, Iterable, List, TypeVar
 
-import niquests
+import requests
 
 
 class SimAIError(Exception):
@@ -32,7 +32,7 @@ class SimAIError(Exception):
     """
 
 
-class ApiClientError(SimAIError, niquests.exceptions.HTTPError):
+class ApiClientError(SimAIError, requests.exceptions.HTTPError):
     """HTTP error from the SimAI API."""
 
     def __init__(self, message: str, response=None):
@@ -48,7 +48,7 @@ class NotFoundError(ApiClientError):
     """Required resource was not found on the server."""
 
 
-class ConnectionError(SimAIError, niquests.exceptions.ConnectionError):
+class ConnectionError(SimAIError, requests.exceptions.ConnectionError):
     """Could not communicate with the server."""
 
 

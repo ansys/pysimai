@@ -25,7 +25,7 @@ from http import HTTPStatus
 from json.decoder import JSONDecodeError
 from typing import Literal, overload
 
-import niquests
+import requests
 
 from ansys.simai.core.data.types import JSON, APIResponse
 from ansys.simai.core.errors import ApiClientError, NotFoundError
@@ -33,7 +33,7 @@ from ansys.simai.core.errors import ApiClientError, NotFoundError
 logger = logging.getLogger(__name__)
 
 
-def handle_http_errors(response: niquests.Response) -> None:
+def handle_http_errors(response: requests.Response) -> None:
     """Raise an error if the response status code is an error.
 
     Args:
@@ -46,7 +46,7 @@ def handle_http_errors(response: niquests.Response) -> None:
     logger.debug("Checking for HTTP errors.")
     try:
         response.raise_for_status()
-    except niquests.exceptions.HTTPError as e:
+    except requests.exceptions.HTTPError as e:
         try:
             json_response = response.json()
         except (ValueError, JSONDecodeError):
@@ -82,20 +82,20 @@ def handle_http_errors(response: niquests.Response) -> None:
 
 
 @overload
-def handle_response(response: niquests.Response, return_json: Literal[True]) -> JSON: ...
+def handle_response(response: requests.Response, return_json: Literal[True]) -> JSON: ...
 
 
 @overload
 def handle_response(
-    response: niquests.Response, return_json: Literal[False]
-) -> niquests.Response: ...
+    response: requests.Response, return_json: Literal[False]
+) -> requests.Response: ...
 
 
 @overload
-def handle_response(response: niquests.Response, return_json: bool) -> APIResponse: ...
+def handle_response(response: requests.Response, return_json: bool) -> APIResponse: ...
 
 
-def handle_response(response: niquests.Response, return_json: bool = True) -> APIResponse:
+def handle_response(response: requests.Response, return_json: bool = True) -> APIResponse:
     """Handle HTTP errors and return the relevant data from the response.
 
     Args:
