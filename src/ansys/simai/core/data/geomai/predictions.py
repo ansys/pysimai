@@ -85,7 +85,7 @@ class GeomAIPrediction(ComputableDataModel):
     @property
     def configuration(self) -> GeomAIPredictionConfiguration:
         """The configuration used to run the prediction."""
-        return GeomAIPredictionConfiguration.model_construct(self.fields["configuration"])
+        return GeomAIPredictionConfiguration.model_construct(**self.fields["configuration"])
 
     def delete(self) -> None:
         """Remove a prediction from the server."""
