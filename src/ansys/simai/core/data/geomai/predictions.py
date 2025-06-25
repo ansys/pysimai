@@ -199,7 +199,9 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
             workspace, default=self._client.geomai._current_workspace
         )
         return self._model_from(
-            self._client._api.run_geomai_prediction(workspace_id, configuration.model_dump())
+            self._client._api.run_geomai_prediction(
+                workspace_id, configuration.model_dump(exclude_unset=True)
+            )
         )
 
     def download(
