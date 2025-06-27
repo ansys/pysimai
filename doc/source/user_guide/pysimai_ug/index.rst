@@ -1,7 +1,7 @@
 .. _ref_pysimai_guide:
 
-PySimAI guide
-==============
+How to Run a Prediction on Geometries Using AI Models
+========================================================
 
 These sections teach you how to use particular features of PySimAI.
 
