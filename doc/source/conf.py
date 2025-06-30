@@ -74,9 +74,9 @@ sphinx_gallery_conf = {
     # default png file for thumbnails
     "default_thumb_file": ANSYS_SIMAI_THUMBNAIL,
     # path to your examples scripts
-    "examples_dirs": ["examples/pysimai_ex"],
+    "examples_dirs": ["examples/pysimai_ex", "examples/generative_design_ex"],
     # path where to save gallery generated examples
-    "gallery_dirs": ["_examples/pysimai_ex"],
+    "gallery_dirs": ["_examples/pysimai_ex", "_examples/generative_design_ex"],
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
