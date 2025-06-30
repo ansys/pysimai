@@ -101,6 +101,7 @@ class GeomAIPrediction(ComputableDataModel):
         Returns:
             ``None`` if a file is specified or a binary file-object otherwise.
         """
+        self.wait()
         return self._client._api.download_geomai_prediction(self.id, file)
 
 
@@ -215,6 +216,10 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
 
         Returns:
             ``None`` if a file is specified or a binary file-object otherwise.
+
+        Note:
+            Consider using :meth:`GeomAIPrediction.download` instead which will wait for the
+                prediction to be ready instead of throwing an error if it's not.
         """
         prediction_id = get_id_from_identifiable(prediction)
         return self._client._api.download_geomai_prediction(prediction_id, file)
