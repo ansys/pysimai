@@ -31,19 +31,8 @@ from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfigurati
 # -----------------
 # Create a client to use the PySimAI library. This client will be the
 # entrypoint of all "SimAI" and "GeomAI" objects.
-#
-# In this example, the client is configured using a Configuration file.
-# For more information on how to use a configuration file,
-# see :ref:`config_file`.
-#
-# Step 1. Set up your configuration file with the following content:
-#
-# | [default]
-# | organization = "my_organization"
-#
-# Step 2. Create the client:
 
-simai = ansys.simai.core.from_config(profile="default")
+simai = ansys.simai.core.SimAIClient(organization="my_organization")
 client = simai.geomai
 
 
