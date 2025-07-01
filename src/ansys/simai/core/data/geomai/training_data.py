@@ -90,7 +90,7 @@ class GeomAITrainingData(ComputableDataModel):
         """Extract or reextract the data from a training data.
 
         Data should be extracted from a training data once all its parts have been fully uploaded.
-        This is done automatically when using :meth:`GeomAITrainingDataDirectory.upload_folder` to create training data.
+        This is done automatically when using :meth:`GeomAITrainingDataDirectory.create_from_file` to create training data.
 
         Data can only be reextracted from a training data if the extraction previously failed or if new files have been added.
         """
