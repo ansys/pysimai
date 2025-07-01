@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pathlib
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
@@ -29,13 +28,11 @@ from ansys.simai.core.data.types import (
     Identifiable,
     MonitorCallback,
     NamedFile,
-    Path,
     SizedIterator,
     get_id_from_identifiable,
     to_raw_filters,
     unpack_named_file,
 )
-from ansys.simai.core.errors import InvalidArguments
 from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
@@ -118,22 +115,6 @@ class GeomAITrainingData(ComputableDataModel):
             Created :class:`~ansys.simai.core.data.geomai.training_data_parts.GeomAITrainingDataPart`.
         """
         return _upload_geomai_training_data_part(self.id, file, self._client, monitor_callback)
-
-    def upload_folder(
-        self,
-        folder_path: Path,
-    ) -> List["GeomAITrainingDataPart"]:
-        """Upload all the parts contained in a folder to a :class:`~ansys.simai.core.data.geomai.training_data.GeomAITrainingData` instance.
-
-        Upon upload completion, GeomAI will extract data from each part.
-
-        Args:
-            folder_path: Path to the folder with the files to upload.
-
-        Returns:
-            List of uploaded training data parts.
-        """
-        return self._directory.upload_folder(self.id, folder_path)
 
     def add_to_project(self, project: Identifiable["GeomAIProject"]):
         """Add the training data to a :class:`~.projects.GeomAIProject` object.
@@ -297,34 +278,3 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
             self._client,
             monitor_callback,
         )
-
-    def upload_folder(
-        self,
-        training_data: Identifiable[GeomAITrainingData],
-        folder_path: Path,
-    ) -> List["GeomAITrainingDataPart"]:
-        """Upload all files in a folder to a :class:`~ansys.simai.core.data.geomai.training_data.GeomAITrainingData` object.
-
-        This method automatically requests computation of the training data once the upload is complete
-        unless specified otherwise.
-
-        Args:
-            training_data: ID or :class:`model <GeomAITrainingData>` object of the training data to upload parts to.
-            folder_path: Path to the folder that contains the files to upload.
-
-        See Also:
-            :meth:`create_from_file` handles all the creation of training data and parts for you
-        """
-        training_data_id = get_id_from_identifiable(training_data)
-        path = pathlib.Path(folder_path)
-        if not path.is_dir():
-            raise InvalidArguments("Provided path is not a folder.")
-        path_content = path.glob("[!.]*")
-        files = (obj for obj in path_content if obj.is_file())
-        uploaded_parts = []
-        for file in files:
-            uploaded_parts.append(
-                _upload_geomai_training_data_part(training_data_id, file, self._client, None)
-            )
-        self._client._api.compute_geomai_training_data(training_data_id)
-        return uploaded_parts
