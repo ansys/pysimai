@@ -1,6 +1,6 @@
 .. _ref_pysimai_guide:
 
-How to Run a Prediction on Geometries Using AI Models
+How to run a prediction on geometries using AI models
 ========================================================
 
 These sections teach you how to use particular features of PySimAI.

@@ -21,7 +21,7 @@ from ansys.simai.core.errors import NotFoundError
 # Create the client
 # -----------------
 # Create a client to use the PySimAI library. This client will be the
-# entrypoint of all SimAI and GeomAI objects.
+# entrypoint of all "SimAI" and "GeomAI" objects.
 #
 # In this example, the client is configured using a Configuration file.
 # For more information on how to use a configuration file,
@@ -57,7 +57,7 @@ print(client.projects.list())
 # Retrieve your project by its name or create it if it does not exist:
 
 my_dataset_path = "path/to/your/data/folder"
-my_project_name = "your_new_geomai_project"
+my_project_name = "new-bracket-project"
 
 try:
     project = client.projects.get(name=my_project_name)
@@ -82,7 +82,7 @@ print(project.data())
 
 
 ###############################################################################
-# Add the training data to the current project:
+# To add the training data to the current project:
 #
 # - | If the training data has never been uploaded to the server,
 #   | use the following script:
@@ -93,7 +93,7 @@ for geometry_data_name in os.listdir(my_dataset_path):
         td = client.training_data.create_from_file(file=geometry_data_file, project=project)
         print(f"Uploaded {geometry_data_name} -> ID: {td.id}")
     except Exception as e:
-        print(f"FAILED to upload {geometry_data_name}: {e}")
+        print(f"Failed to upload {geometry_data_name}: {e}")
 
 for data in project.data():
     print(data.name)
@@ -104,7 +104,7 @@ for data in project.data():
 #
 # Step 1. Get the project by name:
 
-project_with_TD = client.projects.get(name="new-GeomAI-project")
+project_with_TD = client.projects.get(name="bracket-project")
 
 ###############################################################################
 # Step 2. Get all training data in that project:
@@ -161,7 +161,8 @@ print(project.data())
 # Create a model configuration:
 
 configuration = GeomAIModelConfiguration(
-    nb_epochs=2,  # build_preset: 'debug', 'short', 'default' or 'long'
+    nb_epochs=2,
+    # or build_preset: 'debug', 'short', 'default' or 'long'
     nb_latent_param=2,  # Required: Must be between 2 and 256
 )
 

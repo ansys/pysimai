@@ -3,7 +3,7 @@
 Best practices
 ==============
 
-Generative Design with AI
+Generative design with AI
 ----------------------------
 
 The principle is that:
@@ -15,12 +15,12 @@ The principle is that:
 This principle is based on the AI concept of latent space.
 
 
-Concept of Latent Space
+Concept of latent space
 ----------------------------
 
 The latent space is a compressed version of complex data, converted into a representation that captures the most important features.
 
-To generate a meaningful geometry from a latent space, it is effective to approximate its corresponding latent representation (i.e. its code)
-by computing a weighted average of two codes from a code dictionary (i.e. a collection of latent codes derived from the training data).
+To generate a meaningful geometry from a latent space, it is effective to approximate its corresponding latent representation (namely, its code)
+by computing a weighted average of two codes from a code dictionary (that is, a collection of latent codes derived from the training data).
 This approach leverages the smooth structure of the latent space, where intermediate points between known latent representations
 can correspond to meaningful interpolations of their associated geometries.

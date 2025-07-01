@@ -30,7 +30,7 @@ from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfigurati
 # Create the client
 # -----------------
 # Create a client to use the PySimAI library. This client will be the
-# entrypoint of all SimAI and GeomAI objects.
+# entrypoint of all "SimAI" and "GeomAI" objects.
 #
 # In this example, the client is configured using a Configuration file.
 # For more information on how to use a configuration file,
@@ -57,7 +57,7 @@ client = simai.geomai
 ###############################################################################
 # Step 1. Set the current project:
 
-client.set_current_project("your_new_geomai_project")
+client.set_current_project("new-bracket-project")
 
 ###############################################################################
 # Step 2. Retrieve all the workspaces of the current project:
@@ -67,7 +67,7 @@ print(client.current_project.workspaces())
 ###############################################################################
 # Step 3. Setting the current workspace:
 
-client.set_current_workspace("your_new_geomai_project #1")
+client.set_current_workspace("new-bracket-project #1")
 workspace = client.current_workspace
 print(workspace)
 
@@ -105,8 +105,6 @@ print(prediction)
 #
 
 print(client.predictions.list(client.workspaces.list()[0]))
-
-client.predictions.download("your_prediction_id")
 
 client.predictions.download("your_prediction_id", r"path/to/your/predictions/folder/output1.vtp")
 
