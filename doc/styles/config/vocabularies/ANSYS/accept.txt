@@ -19,3 +19,5 @@ ModelConfiguration
 ModelConfiguration
 ModelManifest
 ModelOutput
+[Oo]verfit(?:ting)?
+[Uu]nderfit(?:ting)?

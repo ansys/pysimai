@@ -10,7 +10,7 @@ a Python environment of your choice in conjunction with other PyAnsys libraries 
 libraries. With PySimAI, you can manage and access your data on the platform from within Python apps and
 scripts.
 
-The following illustration depicts the Ansys SimAI platform user workflow.
+The following illustration depicts the Ansys SimAI platform and PySimAI library user workflow.
 
 .. image:: ../source/_static/I_Workflow_70pct.png
     :align: center
