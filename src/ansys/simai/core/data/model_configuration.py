@@ -304,7 +304,7 @@ class ModelConfiguration:
                     f"{self.__class__.__name__}: a project must be defined for setting global coefficients."
                 )
 
-            self.project.verify_gc_formula(
+            self.project.process_gc_formula(
                 gc_unit.formula, self.input.boundary_conditions, self.output.surface
             )
             verified_gcs.append(gc_unit)
