@@ -34,3 +34,4 @@ GeomAIModelConfiguration
   :model-show-field-summary: False
   :model-show-validator-members: False
   :field-list-validators: False
+  :field-show-constraints: False
