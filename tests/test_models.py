@@ -23,7 +23,6 @@
 import re
 from copy import deepcopy
 from typing import TYPE_CHECKING, NamedTuple
-from unittest.mock import Mock
 
 import pytest
 import responses
@@ -201,7 +200,7 @@ create_sse_event = NamedTuple("SSEEvent", [("data", dict)])
 
 
 @responses.activate
-def test_build_with_last_config(simai_client):
+def test_build_with_last_config(mocker, simai_client):
     """WHEN I call launch_build() with using the last build configuration
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
@@ -236,12 +235,15 @@ def test_build_with_last_config(simai_client):
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     in_model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     launched_model: Model = simai_client.models.build(in_model_conf)
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
 
@@ -249,7 +251,7 @@ def test_build_with_last_config(simai_client):
 
 
 @responses.activate
-def test_build_with_new_config(simai_client):
+def test_build_with_new_config(mocker, simai_client):
     """WHEN I call launch_build() with using a new build configuration
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
@@ -277,7 +279,7 @@ def test_build_with_new_config(simai_client):
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     model_input = ModelInput(surface=[], boundary_conditions=["Vx"])
     model_output = ModelOutput(
@@ -309,13 +311,16 @@ def test_build_with_new_config(simai_client):
 
     launched_model: Model = simai_client.models.build(new_conf)
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
 
     assert launched_model.configuration._to_payload() == new_conf._to_payload()
 
 
-def test_set_doa(simai_client):
+def test_set_doa(mocker, simai_client):
     """WHEN the Domain of Analysis is updated
     THEN the simulation_volume is updated accordingly.
     """
@@ -328,7 +333,7 @@ def test_set_doa(simai_client):
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
@@ -336,13 +341,16 @@ def test_set_doa(simai_client):
 
     model_conf.domain_of_analysis.height = DomainAxisDefinition(**new_height)
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     assert model_conf._to_payload()["simulation_volume"]["Z"]["type"] == new_height["position"]
 
     assert model_conf._to_payload()["simulation_volume"]["Z"]["value"] == new_height["value"]
     assert model_conf._to_payload()["simulation_volume"]["Z"]["length"] == new_height["length"]
 
 
-def test_get_doa(simai_client):
+def test_get_doa(mocker, simai_client):
     """WHEN the Domain of Analysis is retrieved
     THEN the parameters of the axes match.
     """
@@ -355,7 +363,7 @@ def test_get_doa(simai_client):
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
@@ -363,6 +371,9 @@ def test_get_doa(simai_client):
 
     doa = model_conf.domain_of_analysis
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     assert doa.length.length == doa_length_raw.get("length")
     assert doa.length.position == doa_length_raw.get("type")
     assert doa.length.value == doa_length_raw.get("value")
@@ -435,7 +446,7 @@ def test_doa_tuple():
     assert doa_tuple == doa_long
 
 
-def test_exception_compute_global_coefficient(simai_client):
+def test_exception_compute_global_coefficient(mocker, simai_client):
     """WHEN a project is not defined
     THEN an error is raise."""
 
@@ -447,12 +458,15 @@ def test_exception_compute_global_coefficient(simai_client):
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
 
     model_conf.project = None
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     with pytest.raises(ProcessingError):
         model_conf.compute_global_coefficient()
 
@@ -492,7 +506,7 @@ def test_sse_event_handler(simai_client, model_factory):
     assert model.is_ready
 
 
-def test_throw_error_when_volume_is_missing_from_sample(simai_client):
+def test_throw_error_when_volume_is_missing_from_sample(mocker, simai_client):
     """WHEN there is no volume in the extracted_metadata of the reference sample
     AND the volume variables are set as model output
     THEN a ProcessingError is thrown.
@@ -516,13 +530,13 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
     )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
-
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     model_input = ModelInput(surface=[], boundary_conditions=[])
     model_output = ModelOutput(surface=[], volume=["Velocity_0"])
     global_coefficients = []
 
+    process_gc_formula.assert_not_called()
     with pytest.raises(ProcessingError):
         _ = ModelConfiguration._from_payload(
             project=project,
@@ -535,7 +549,7 @@ def test_throw_error_when_volume_is_missing_from_sample(simai_client):
 
 
 @responses.activate
-def test_post_process_input(simai_client):
+def test_post_process_input(mocker, simai_client):
     """WHEN ModelConfiguration includes a specified pp_input arg
     THEN ModelConfiguration object and Model.configuration property return that exact pp_input
     """
@@ -560,7 +574,7 @@ def test_post_process_input(simai_client):
     )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     pp_input = PostProcessInput(surface=["TurbulentViscosity"])
 
@@ -593,6 +607,9 @@ def test_post_process_input(simai_client):
 
     build_model: Model = simai_client.models.build(config_with_pp_input)
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     assert config_with_pp_input.pp_input.surface == pp_input.surface
     assert (
         config_with_pp_input._to_payload()["fields"]["surface_pp_input"]
@@ -710,7 +727,7 @@ def test_throw_error_when_unknown_variables(simai_client):
 
 
 @responses.activate
-def test_build_with_build_on_top_not_able(simai_client):
+def test_build_with_build_on_top_not_able(mocker, simai_client):
     """WHEN I call launch_build() using last model conf and build on top
     WITH project not being able to use continuous learning
     THEN an InvalidArguments exception is raised
@@ -743,11 +760,13 @@ def test_build_with_build_on_top_not_able(simai_client):
     )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
-
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     project_last_conf = project.last_model_configuration
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     assert isinstance(project_last_conf, ModelConfiguration)
     assert project_last_conf._to_payload() == MODEL_CONF_RAW
 
@@ -762,7 +781,7 @@ def test_build_with_build_on_top_not_able(simai_client):
 
 
 @responses.activate
-def test_build_with_build_on_top_previous_config(simai_client):
+def test_build_with_build_on_top_previous_config(mocker, simai_client):
     """WHEN I call launch_build() using the last build configuration and build on top
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
@@ -792,8 +811,8 @@ def test_build_with_build_on_top_previous_config(simai_client):
     )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
-    project.verify_gc_formula = Mock()
     project_last_conf = project.last_model_configuration
     project_last_conf.build_on_top = True
 
@@ -811,13 +830,16 @@ def test_build_with_build_on_top_previous_config(simai_client):
     )
     launched_model: Model = simai_client.models.build(project_last_conf)
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
     assert launched_model.configuration._to_payload() == project_last_conf._to_payload()
 
 
 @responses.activate
-def test_build_with_build_on_top_minimal_config(simai_client):
+def test_build_with_build_on_top_minimal_config(mocker, simai_client):
     """WHEN I call launch_build() using the minimal configuration and build on top
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
@@ -847,8 +869,7 @@ def test_build_with_build_on_top_minimal_config(simai_client):
     )
 
     project: Project = simai_client._project_directory._model_from(raw_project)
-
-    project.verify_gc_formula = Mock()
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
     build_conf = ModelConfiguration(
         project=project,
@@ -872,6 +893,9 @@ def test_build_with_build_on_top_minimal_config(simai_client):
     project_last_conf = project.last_model_configuration
     project_last_conf.build_on_top = True
 
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+    )
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
     assert launched_model.configuration._to_payload() == project_last_conf._to_payload()
