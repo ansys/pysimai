@@ -1,6 +1,13 @@
 Changelog
 ---------
 
+0.3.3 (2025-07-02)
+******************
+
+Fixes:
+
+- Replace `verify_gc_formula` with `process_gc_formula`.
+
 0.3.2 (2025-07-02)
 ******************
 
