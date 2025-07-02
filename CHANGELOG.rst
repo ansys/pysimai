@@ -1,7 +1,14 @@
 Changelog
 ---------
 
-0.3.1 (2025-05-24)
+0.3.2 (2025-07-02)
+******************
+
+Changes:
+
+- General GeomAI improvements, including docs
+
+0.3.1 (2025-06-24)
 ******************
 
 New:
