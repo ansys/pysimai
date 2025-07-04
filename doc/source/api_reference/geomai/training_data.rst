@@ -10,6 +10,15 @@ collection of :class:`GeomAITrainingDataPart<ansys.simai.core.data.geomai.traini
 instances representing a geometry that can be used as input for the training of models.
 In most cases it will contain a single part: the geometry to train on.
 
+The formats supported as input are ``.vtp`` and ``.stl``.
+
+The geometry used as input must be:
+
+- watertight geometry.
+- manifold geometry.
+
+It must not intersect with itself (no self-penetration).
+
 Directory
 ---------
 
