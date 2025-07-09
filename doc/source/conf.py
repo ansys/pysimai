@@ -154,14 +154,6 @@ html_theme_options = {
         "json_url": f"https://{cname}/versions.json",
         "version_match": get_version_match(version),
     },
-    "check_switcher": False,
-    "use_meilisearch": {
-        "api_key": os.getenv("MEILISEARCH_PUBLIC_API_KEY", ""),
-        "index_uids": {
-            f"pysimai-v{get_version_match(version).replace('.', '-')}": "PySimAI",
-        },
-    },
-    "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
     "navigation_depth": -1,
     "collapse_navigation": True,
 }
