@@ -44,7 +44,9 @@ class GeomAIModelConfiguration(BaseModel):
     - If the number is too low, the generated geometries will be too coarse.
     - If the number is too high, the model will not be able to generate consistent geometries.
 
-    In most cases, the optimal number of latent parameters is lower than `20`.
+    The optimal number of latent parameters depends on the complexity and variability of the training geometries.
+    As a general guideline, start with a relatively low number of latent parameters (for example, 10),
+    and gradually increase it if the generated geometries appear oversimplified or lack sufficient detail.
     """
     build_preset: Optional[Literal["debug", "short", "default", "long"]] = None
     """

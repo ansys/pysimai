@@ -6,8 +6,8 @@ Learn about the parameters to set when configuring and training your AI model.
 Number of latent parameters
 --------------------------------
 
-The number of latent parameters (``nb_latent_param``) defines the dimensions of the latent space.
-It also defines the length of the code, where the code is a set of latent parameters that represent a geometry in the latent space.
+The number of latent parameters (``nb_latent_param``) defines the dimension of the latent space.
+It also determines the length of the code, where the code is a set of parameters that represents the geometry within the latent space.
 
 It must be defined according to the complexity and the diversity of the geometries you use as training data.
 
