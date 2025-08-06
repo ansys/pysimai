@@ -273,9 +273,6 @@ class OptimizationDirectory(Directory[Optimization]):
                 It is specified as a list (max_displacement) matching the number of bounding boxes (box_bounds_list). Each value limits the displacement within the corresponding bounding box, using the same metric as the bounding box coordinates.
             show_progress: Whether to print progress on stdout.
 
-        Warning:
-            This feature is in beta. Results are not guaranteed.
-
         Example:
           .. code-block:: python
 
