@@ -71,7 +71,7 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install dependencies
         run: uv sync
       - name: run tests
@@ -92,7 +92,7 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Generate doc requirements
         run: uv export --only-group docs -o doc_requirements.txt
       - uses: ansys/actions/doc-build@v10
