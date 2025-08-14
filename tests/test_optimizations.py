@@ -29,6 +29,7 @@ import responses
 import sseclient
 
 from ansys.simai.core.data.optimizations import (
+    _validate_axial_symmetry,
     _validate_bounding_boxes,
     _validate_geometry_generation_fn_signature,
     _validate_global_coefficients_for_non_parametric,
@@ -288,6 +289,22 @@ def test_validate_max_displacement_fails(max_displacement, bounding_boxes, error
         match=error_message,
     ):
         _validate_max_displacement(max_displacement, bounding_boxes)
+
+
+def validate_axial_symmetry_success():
+    _validate_axial_symmetry("x")
+    _validate_axial_symmetry(None)
+
+
+@pytest.mark.parametrize(
+    "axial_symmetry",
+    ["a", 5, "not_axis", -1],
+)
+def test_validate_axial_symmetry_fails(axial_symmetry):
+    with pytest.raises(
+        expected_exception=InvalidArguments,
+    ):
+        _validate_axial_symmetry(axial_symmetry)
 
 
 @responses.activate

@@ -247,6 +247,7 @@ class OptimizationDirectory(Directory[Optimization]):
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
         max_displacement: Optional[List[float]] = None,
+        axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
         show_progress: bool = False,
     ):
         """Run an optimization loop with server-side geometry generation using automorphism.
@@ -271,6 +272,7 @@ class OptimizationDirectory(Directory[Optimization]):
                 The global coefficients should map to existing coefficients in your project/workspace.
             max_displacement: User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
                 It is specified as a list (max_displacement) matching the number of bounding boxes (box_bounds_list). Each value limits the displacement within the corresponding bounding box, using the same metric as the bounding box coordinates.
+            axial_symmetry: Axis along which axial symmetry is applied.
             show_progress: Whether to print progress on stdout.
 
         Example:
@@ -295,6 +297,7 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_global_coefficients_for_non_parametric(minimize, maximize)
         _validate_bounding_boxes(bounding_boxes)
         _validate_max_displacement(max_displacement, bounding_boxes)
+        _validate_axial_symmetry(axial_symmetry)
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
@@ -307,6 +310,7 @@ class OptimizationDirectory(Directory[Optimization]):
                 "box_bounds_list": bounding_boxes,
                 "symmetries": symmetries,
                 "max_displacement": max_displacement,
+                "axial_symmetry": axial_symmetry,
             },
         }
         with tqdm(total=n_iters, disable=not show_progress) as progress_bar:
@@ -468,6 +472,11 @@ def _validate_max_displacement(
         raise InvalidArguments(
             "Max displacement list and bounding boxes list must have the same number of items"
         )
+
+
+def _validate_axial_symmetry(axial_symmetry: Optional[Literal["x", "y", "z"]]) -> None:
+    if axial_symmetry is not None and axial_symmetry not in ("x", "y", "z"):
+        raise InvalidArguments("axial_symmetry must be one of 'x', 'y', 'z' or None")
 
 
 def _build_objective(minimize: list[str], maximize: list[str]) -> dict:
