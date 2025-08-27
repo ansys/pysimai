@@ -142,6 +142,7 @@ html_context = {
     "github_repo": "pysimai",
     "github_version": "main",
     "doc_path": "doc",
+    "pyansys_tags": ["AI"],
 }
 html_theme_options = {
     "github_url": "https://github.com/ansys/pysimai",
