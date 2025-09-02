@@ -241,13 +241,13 @@ class OptimizationDirectory(Directory[Optimization]):
         self,
         geometry: Identifiable[Geometry],
         bounding_boxes: List[List[float]],
-        symmetries: List[Literal["x", "y", "z", "X", "Y", "Z"]],
         n_iters: int,
+        symmetries: Optional[List[Literal["x", "y", "z", "X", "Y", "Z"]]] = None,
+        axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
         boundary_conditions: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
         max_displacement: Optional[List[float]] = None,
-        axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
         show_progress: bool = False,
     ):
         """Run an optimization loop with server-side geometry generation using automorphism.
@@ -262,17 +262,28 @@ class OptimizationDirectory(Directory[Optimization]):
                 [box2_xmin, box2_xmax, box2_ymin, box2_ymax, box2_zmin, box2_zmax],
                 ...
                 ]
-            symmetries: list of symmetry axes, axes being x, y or z
+            n_iters: Number of iterations of the optimization loop.
+            symmetries: Optional. The list of symmetry axes, axes being x, y, and z, defining a plane around which the geometry is mirrored.
+
+                - The planar symmetry is applied to all the ``bounding_boxes`` defined.
+                - ``symmetries`` and ``axial_symmetry`` are mutually exclusive parameters.
+
+            axial_symmetry: Optional. The axis, defined by a scalar, along which axial symmetry is applied.
+                For the deformation to be axially symmetrical:
+
+                - The center of the bounding box must coincide with the targeted central axis.
+                - The mesh should be axially symmetrical in the bounding box.
+                - The ``axial_symmetry`` is applied to all the ``bounding_boxes`` defined.
+                - ``symmetries`` and ``axial_symmetry`` are mutually exclusive parameters.
+
             boundary_conditions: Values of the boundary conditions to perform the optimization at.
                 The values should map to existing boundary conditions in your project/workspace.
-            n_iters: Number of iterations of the optimization loop.
             minimize: List of global coefficients to minimize.
                 The global coefficients should map to existing coefficients in your project/workspace.
             maximize: List of global coefficients to maximize.
                 The global coefficients should map to existing coefficients in your project/workspace.
             max_displacement: User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
                 It is specified as a list (max_displacement) matching the number of bounding boxes (box_bounds_list). Each value limits the displacement within the corresponding bounding box, using the same metric as the bounding box coordinates.
-            axial_symmetry: Axis along which axial symmetry is applied.
             show_progress: Whether to print progress on stdout.
 
         Example:
@@ -297,7 +308,7 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_global_coefficients_for_non_parametric(minimize, maximize)
         _validate_bounding_boxes(bounding_boxes)
         _validate_max_displacement(max_displacement, bounding_boxes)
-        _validate_axial_symmetry(axial_symmetry)
+        _validate_axial_symmetry(axial_symmetry, symmetries)
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
@@ -308,7 +319,7 @@ class OptimizationDirectory(Directory[Optimization]):
             "geometry_generation": {
                 "geometry": geometry.id,
                 "box_bounds_list": bounding_boxes,
-                "symmetries": symmetries,
+                "symmetries": symmetries or [],
                 "max_displacement": max_displacement,
                 "axial_symmetry": axial_symmetry,
             },
@@ -474,9 +485,15 @@ def _validate_max_displacement(
         )
 
 
-def _validate_axial_symmetry(axial_symmetry: Optional[Literal["x", "y", "z"]]) -> None:
+def _validate_axial_symmetry(
+    axial_symmetry: Optional[Literal["x", "y", "z"]],
+    symmetries: Optional[List[Literal["x", "y", "z", "X", "Y", "Z"]]],
+) -> None:
     if axial_symmetry is not None and axial_symmetry not in ("x", "y", "z"):
         raise InvalidArguments("axial_symmetry must be one of 'x', 'y', 'z' or None")
+
+    if axial_symmetry is not None and symmetries is not None:
+        raise InvalidArguments("symmetries and axial_symmetry are mutually exclusive parameters")
 
 
 def _build_objective(minimize: list[str], maximize: list[str]) -> dict:

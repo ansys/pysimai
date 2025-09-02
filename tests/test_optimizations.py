@@ -292,19 +292,25 @@ def test_validate_max_displacement_fails(max_displacement, bounding_boxes, error
 
 
 def validate_axial_symmetry_success():
-    _validate_axial_symmetry("x")
-    _validate_axial_symmetry(None)
+    _validate_axial_symmetry("x", None)
+    _validate_axial_symmetry(None, None)
 
 
 @pytest.mark.parametrize(
-    "axial_symmetry",
-    ["a", 5, "not_axis", -1],
+    "axial_symmetry, symmetries",
+    [
+        ("a", None),
+        (5, None),
+        ("not_axis", None),
+        (-1, None),
+        ("x", ["x", "y"]),
+    ],
 )
-def test_validate_axial_symmetry_fails(axial_symmetry):
+def test_validate_axial_symmetry_fails(axial_symmetry, symmetries):
     with pytest.raises(
         expected_exception=InvalidArguments,
     ):
-        _validate_axial_symmetry(axial_symmetry)
+        _validate_axial_symmetry(axial_symmetry, symmetries)
 
 
 @responses.activate
