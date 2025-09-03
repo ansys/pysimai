@@ -62,6 +62,8 @@ class SSEMixin(ApiClientMixin):
         try:
             self.sse_client = ReconnectingSSERequestsClient(self._session, self._get_sse_url())
         except Exception as e:
+            if e.response.status_code == 403:
+                raise ConnectionError(e.response.text) from e
             raise ConnectionError("Impossible to connect to event's endpoint.") from e
         logger.debug("SSEMixin is connected to SSE endpoint.")
         logger.debug("Starting listener thread.")
