@@ -140,7 +140,7 @@ class ApiClientMixin:
 
         Returns:
             JSON dictionary of the response if :py:args:`return_json` is True. The raw
-                :py:class:`requests.Response` otherwise.
+                :py:class:`niquests.Response` otherwise.
         """
         logger.debug(f"Request {method} on {url}")
         full_url = self.build_full_url_for_endpoint(url)
