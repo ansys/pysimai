@@ -165,7 +165,6 @@ jobs:
         with:
           name: ${{ env.LIBRARY_NAME }}-artifacts
           path: ${{ env.LIBRARY_NAME }}-artifacts
-
       - name: "Upload artifacts to PyPI using trusted publisher"
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
         with:
@@ -173,7 +172,6 @@ jobs:
           print-hash: true
           packages-dir: ${{ env.LIBRARY_NAME }}-artifacts
           skip-existing: false
-
       - name: "Release to GitHub"
         uses: ansys/actions/release-github@v10
         with:
