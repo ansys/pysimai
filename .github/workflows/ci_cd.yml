@@ -62,7 +62,7 @@ jobs:
       - uses: ansys/actions/check-vulnerabilities@v10.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           python-package-name: ${{ env.LIBRARY_NAME }}
   tests:
     name: "Test using Python ${{ matrix.python-version }} on ${{ matrix.os }}"
