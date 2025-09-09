@@ -64,6 +64,7 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           python-package-name: ${{ env.LIBRARY_NAME }}
+          dev-mode: ${{ github.ref != "refs/heads/main" }}
   tests:
     name: "Test using Python ${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
