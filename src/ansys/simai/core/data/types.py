@@ -234,8 +234,9 @@ def unpack_named_file(
     # Parse name and extension
     try:
         obj_name, file_ext = filename.rsplit(".", 1)
-        assert file_ext
-    except (ValueError, AssertionError):
+        if not file_ext:
+            raise ValueError
+    except ValueError:
         raise AttributeError(f"Could not determine file extension for {named_file}.") from None
 
     # Open the file if needed

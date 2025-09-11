@@ -53,7 +53,7 @@ class _AuthTokens(BaseModel):
 
     # Time buffer so we treat nearly invalid tokens as invalid.
     # Random so multiple processes don't refresh tokens at the same time.
-    EXPIRATION_BUFFER: ClassVar = random.randrange(5, 15)  # noqa: S311
+    EXPIRATION_BUFFER: ClassVar = random.randrange(5, 15)  # noqa: S311 # nosec
 
     access_token: str
     expiration: datetime
@@ -64,7 +64,8 @@ class _AuthTokens(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def expires_in_to_datetime(cls, data: Any) -> dict:
-        assert isinstance(data, dict)
+        if not isinstance(data, dict):
+            raise TypeError(f"Expected data to be a dict, got {type(data).__name__}")
         if "expiration" not in data:
             # We want to store "expiration" but API responses contains "expires_in"
             now = datetime.now(timezone.utc)
@@ -96,7 +97,7 @@ class _AuthTokensRetriever:
 
     # Time buffer to refresh the refresh_token before it becomes invalid.
     # Random so multiple processes don't refresh the token at the same time
-    REFRESH_BUFFER = random.randrange(50, 120)  # noqa: S311
+    REFRESH_BUFFER = random.randrange(50, 120)  # noqa: S311 # nosec
 
     def __init__(
         self,
@@ -116,13 +117,14 @@ class _AuthTokensRetriever:
         try:
             with open(self.cache_file_path, "r") as f:
                 return _AuthTokens.model_validate_json(f.read())
-        except (IOError, json.JSONDecodeError, ValidationError) as e:
+        except (IOError, json.JSONDecodeError, ValidationError, TypeError) as e:
             logger.info(f"Could not read auth token from cache: {e}")
         return None
 
     def _request_token_direct_grant(self) -> "_AuthTokens":
         logger.debug("request authentication tokens via direct grant")
-        assert self.credentials
+        if not self.credentials:
+            raise RuntimeError("Authentication credentials are missing")
         request_params = {
             "client_id": "sdk",
             "grant_type": "password",
@@ -239,7 +241,8 @@ class Authenticator(AuthBase):
         Returns:
             Request with the authentication.
         """
-        assert request.url
+        if not request.url:
+            raise ValueError("Request must have a valid URL")
         request_host = request.url.split("://", 1)[-1]  # ignore protocol part
         if (
             self._enabled
