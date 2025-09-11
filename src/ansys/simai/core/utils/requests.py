@@ -104,7 +104,7 @@ def handle_response(response: niquests.Response, return_json: bool = True) -> AP
 
     Returns:
         JSON dict of the response if :py:args:`return_json` is ``True`` or the raw
-            :py:class:`requests.Response` otherwise.
+            :py:class:`niquests.Response` otherwise.
     """
     handle_http_errors(response)
 
