@@ -117,7 +117,7 @@ class _AuthTokensRetriever:
         try:
             with open(self.cache_file_path, "r") as f:
                 return _AuthTokens.model_validate_json(f.read())
-        except (IOError, json.JSONDecodeError, ValidationError) as e:
+        except (IOError, json.JSONDecodeError, ValidationError, TypeError) as e:
             logger.info(f"Could not read auth token from cache: {e}")
         return None
 
