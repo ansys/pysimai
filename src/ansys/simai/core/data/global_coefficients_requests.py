@@ -22,7 +22,7 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, TypeVar, Union
 
 from ansys.simai.core.data.base import (
     ERROR_STATES,
@@ -53,13 +53,14 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
         sample_metadata: dict[str, Any],
         bc: list[str] = None,
         surface_variables: list[str] = None,
+        gc_location: Literal["cells", "points"] = "cells",
         **kwargs,
     ) -> None:
         super().__init__(client=client, directory=directory, fields=fields)
 
         self.project_id = project_id
         self._calculette_payload = self._compose_calculette_payload(
-            gc_formula, sample_metadata, bc, surface_variables
+            gc_formula, sample_metadata, bc, surface_variables, gc_location
         )
 
     @ComputableDataModel._failure_message.getter
@@ -72,6 +73,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
         sample_metadata: dict[str, Any],
         bc: list[str] = None,
         surface_variables: list[str] = None,
+        gc_location: Literal["cells", "points"] = "cells",
     ) -> dict[str, Any]:
         """Composes the payload for a calculette request."""
 
@@ -88,6 +90,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
                 if fd.get("name") in surface_vars_list
             ],
             "volume_field_list": [],
+            "gc_location": gc_location,
         }
 
     @abstractmethod
@@ -114,6 +117,7 @@ class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType])
 
     def _handle_sse_event(self, data: dict[str, Any]) -> None:
         gc_formula = data.get("target", {}).get("formula")
+        gc_location = data.get("target", {}).get("location")
         action = data.get("target", {}).get("action")
 
         # `check` and `compute` are considered the same action `process` for now.
@@ -121,7 +125,7 @@ class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType])
         # registered with a key using `process` as the action.
         action = "process" if action in ["check", "compute"] else action
 
-        item_id: str = f"{data['target']['id']}-{action}-{gc_formula}"
+        item_id: str = f"{data['target']['id']}-{action}-{gc_formula}-{gc_location}"
         if item_id not in self._registry:
             logger.debug(
                 f"{self.__class__.__name__}: Ignoring event for unknown object id {item_id}"
@@ -145,6 +149,7 @@ class ProcessGlobalCoefficient(GlobalCoefficientRequest):
         project_id: str,
         gc_formula: str,
         sample_metadata: dict[str, Any],
+        gc_location: Literal["cells", "points"],
         **kwargs,
     ) -> None:
         super().__init__(
@@ -154,13 +159,10 @@ class ProcessGlobalCoefficient(GlobalCoefficientRequest):
             project_id=project_id,
             gc_formula=gc_formula,
             sample_metadata=sample_metadata,
+            gc_location=gc_location,
             **kwargs,
         )
         self._result = None
-
-        super().__init__(
-            client, directory, fields, project_id, gc_formula, sample_metadata, **kwargs
-        )
 
     def run(self) -> None:
         """Performs a process-formula request."""
