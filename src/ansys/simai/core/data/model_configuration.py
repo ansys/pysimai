@@ -168,10 +168,12 @@ class GlobalCoefficientDefinition:
     Args:
         formula: Global Coefficient formula.
         name: Global Coefficient name.
+        gc_location: Location of the Global Coefficient
     """
 
     formula: str
     name: str
+    gc_location: Literal["cells", "points"] = "cells"
 
 
 @dataclass
@@ -305,7 +307,10 @@ class ModelConfiguration:
                 )
 
             self.project.process_gc_formula(
-                gc_unit.formula, self.input.boundary_conditions, self.output.surface
+                gc_unit.formula,
+                self.input.boundary_conditions,
+                self.output.surface,
+                gc_unit.gc_location,
             )
             verified_gcs.append(gc_unit)
         self.__dict__["global_coefficients"] = verified_gcs
