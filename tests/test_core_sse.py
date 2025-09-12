@@ -92,6 +92,30 @@ def test_api_client_sse_endpoint_unreachable():
 
 
 @responses.activate
+def test_api_client_sse_endpoint_wrong_organization():
+    """WHEN ApiClient is created, if SSE endpoint returns 403
+    THEN a ConnectionError is raised with correct error message
+    """
+    responses.add(
+        responses.GET,
+        "sse://test.test/sessions/events",
+        body="User does not belong to the organization not_extrality or the organization does not exist.",
+        status=403,
+    )
+    with pytest.raises(
+        ConnectionError,
+        match="User does not belong to the organization not_extrality or the organization does not exist.",
+    ):
+        ApiClient(
+            ClientConfig(
+                organization="not_extrality",
+                url="https://test.test",
+                _disable_authentication=True,
+            )
+        )
+
+
+@responses.activate
 def test_wait_non_blocking_for_non_loading_items(simai_client):
     """WHEN Creating Mesh, prediction, post-processing objects that are finished
     THEN wait can be called and are not blocking
