@@ -25,7 +25,7 @@ import time
 from urllib.parse import urlparse
 
 import niquests
-import urllib3_future
+from niquests.packages import urllib3
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class ReconnectingSSERequestsClient:
                 niquests.exceptions.ChunkedEncodingError,
                 niquests.RequestException,
                 EOFError,
-                urllib3_future.exceptions.MustRedialError,
+                urllib3.exceptions.HTTPError,
                 # In some cases, when the extension is closed the SSE extension
                 # becomes None and trying to access .closed causes an AttributeError
                 AttributeError,
