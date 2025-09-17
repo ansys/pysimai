@@ -22,14 +22,11 @@
 
 from typing import TYPE_CHECKING
 
-import responses
-
 if TYPE_CHECKING:
     from ansys.simai.core.data.workspaces import Workspace
 
 
-@responses.activate
-def test_workspace_download_mer_data(simai_client):
+def test_workspace_download_mer_data(simai_client, httpx_mock):
     """WHEN downloading mer csv file
     THEN the content of the file matches the content of the response.
     """
@@ -37,11 +34,11 @@ def test_workspace_download_mer_data(simai_client):
     workspace: Workspace = simai_client._workspace_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
-    responses.add(
-        responses.GET,
-        f"https://test.test/workspaces/{workspace.id}/mer-data",
-        body=b"mer-data-geometries",
-        status=200,
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/workspaces/{workspace.id}/mer-data",
+        content=b"mer-data-geometries",
+        status_code=200,
     )
 
     in_memory = workspace.download_mer_data()

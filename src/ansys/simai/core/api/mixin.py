@@ -22,23 +22,20 @@
 
 import logging
 import os
-import re
 import ssl
 import sys
 from io import BytesIO
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 from urllib.parse import urljoin
-from urllib.request import getproxies
 
-import niquests
-import niquests.adapters
-from niquests.adapters import HTTPAdapter, Retry
-from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
+import httpx
+import truststore
+from httpx_retries import RetryTransport
 
 from ansys.simai.core import __version__
 from ansys.simai.core.data.types import APIResponse, File, MonitorCallback
-from ansys.simai.core.errors import ApiClientError, ConfigurationError, ConnectionError
+from ansys.simai.core.errors import ConnectionError
 from ansys.simai.core.utils.auth import Authenticator
 from ansys.simai.core.utils.configuration import ClientConfig
 from ansys.simai.core.utils.files import file_path_to_obj_file
@@ -47,52 +44,41 @@ from ansys.simai.core.utils.requests import handle_response
 logger = logging.getLogger(__name__)
 
 
-class TruststoreAdapter(HTTPAdapter):
-    def init_poolmanager(self, *a, **kw):
-        if sys.version_info < (3, 10):
-            raise ConfigurationError("The system CA store can only be used with python >= 3.10")
-
-        import truststore
-
-        ctx = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        return super().init_poolmanager(*a, **kw, ssl_context=ctx)
-
-
 class ApiClientMixin:
     """Provides the core that all mixins and the API client are built on."""
 
     def __init__(self, *args, config: ClientConfig):  # noqa: D107
-        self._session = niquests.Session()
-        # Enable retry for non idempotent verbs (no POST)
-        retries = Retry(total=5, backoff_factor=0.2, status_forcelist=[502, 503, 504])
-        self._session.mount("https://", HTTPAdapter(max_retries=retries))
-        self._session.mount("http://", HTTPAdapter(max_retries=retries))
+        def new_transport(**kw):
+            return RetryTransport(transport=httpx.HTTPTransport(**kw))
+
+        transport_args = {"retries": 3}
 
         if config.tls_ca_bundle == "system":
-            self._session.mount("https://", TruststoreAdapter(max_retries=retries))
+            transport_args["verify"] = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         elif config.tls_ca_bundle == "unsecure-none":
-            self._session.verify = False
+            transport_args["verify"] = False
         elif isinstance(config.tls_ca_bundle, os.PathLike):
-            self._session.verify = str(config.tls_ca_bundle)
+            transport_args["verify"] = ssl.create_default_context(cafile=str(config.tls_ca_bundle))
 
-        system_proxies = getproxies()
+        mounts = {"https://": new_transport(**transport_args)}
         if config.https_proxy:
-            https_proxy_str = str(config.https_proxy)
-            logger.debug(f"Connecting using specified proxy: {https_proxy_str}")
-            self._session.proxies = {"https": https_proxy_str}
-        elif system_proxies:
-            logger.debug(f"Using detected system proxies: {system_proxies}")
-            self._session.proxies = system_proxies
+            proxy_str = str(config.https_proxy)
+            logger.debug(f"Connecting using specified proxy: {proxy_str}")
+            mounts["https://"] = new_transport(**transport_args, proxy=proxy_str)
+        else:
+            proxies = httpx.Client._get_proxy_map(None, None, True)
+            for k, v in proxies.items():
+                mounts[k] = new_transport(**transport_args, proxy=v)
 
+        self._session = httpx.Client(mounts=mounts, headers=self._get_user_agent())
         self._url_prefix = config.url
-        self._set_user_agent()
         self._session.auth = Authenticator(config, self._session)
 
-    def _set_user_agent(self) -> None:
-        """Set the user-agent header for the session."""
+    def _get_user_agent(self) -> dict:
+        """Get the user-agent header."""
         v = sys.version_info
         user_agent = f"PySimAI {__version__}/Python {v.major}.{v.minor}.{v.micro}"
-        self._session.headers.update({"User-Agent": user_agent})
+        return {"User-Agent": user_agent}
 
     def _get(self, url, *args, **kwargs) -> APIResponse:
         """_request with method set to GET."""
@@ -140,7 +126,7 @@ class ApiClientMixin:
 
         Returns:
             JSON dictionary of the response if :py:args:`return_json` is True. The raw
-                :py:class:`niquests.Response` otherwise.
+                :py:class:`httpx.Response` otherwise.
         """
         logger.debug(f"Request {method} on {url}")
         full_url = self.build_full_url_for_endpoint(url)
@@ -149,19 +135,8 @@ class ApiClientMixin:
                 self._session.request(method, full_url, *args, **kwargs),
                 return_json=return_json,
             )
-        except niquests.exceptions.ConnectionError as e:
-            raise ConnectionError(e) from None
-        except niquests.exceptions.RetryError as e:
-            m = re.search("too many ([0-9]{3}) error responses", str(e))
-            if m:
-                code = m.group(1)
-                if code == "502":
-                    raise ApiClientError("502 Bad Gateway") from None
-                if code == "503":
-                    raise ApiClientError("503 Service Unavailable") from None
-                if code == "504":
-                    raise ApiClientError("504 Gateway Timeout") from None
-            raise ApiClientError(str(e)) from None
+        except httpx.RequestError as e:
+            raise ConnectionError(str(e)) from None
 
     def download_file(
         self,
@@ -199,25 +174,27 @@ class ApiClientMixin:
             output_file = file
             close_file = False
 
-        request_kwargs = {"stream": True, "return_json": False}
+        request_kwargs = {}
         if request_json_body is not None:
             request_kwargs.update({"json": request_json_body})
-        response = self._request(request_method, download_url, **request_kwargs)
-        if monitor_callback is not None:
-            monitor_callback(int(response.headers.get("Content-Length", 0)))
-        logger.info("Starting download.")
+        logger.debug(f"Request stream {request_method} on {download_url}")
+        full_url = self.build_full_url_for_endpoint(download_url)
         try:
-            for chunk in response.iter_content(chunk_size=1024):
-                bytes_read_delta = output_file.write(chunk)
+            with httpx.stream(request_method, full_url, **request_kwargs) as response:
+                handle_response(response, False)
                 if monitor_callback is not None:
-                    monitor_callback(bytes_read_delta)
-        except niquests.exceptions.ConnectionError as e:
+                    monitor_callback(int(response.headers.get("Content-Length", 0)))
+                logger.info("Starting download.")
+                for chunk in response.iter_bytes():
+                    bytes_read_delta = output_file.write(chunk)
+                    if monitor_callback is not None:
+                        monitor_callback(bytes_read_delta)
+        except httpx.RequestError as e:
             logger.debug("Error {e} happened during download stream.")
             if close_file is True:
                 output_file.close()
-                os.remove(output_file)
-            raise ConnectionError(e) from None
-
+                os.remove(str(output_file))
+            raise ConnectionError(str(e)) from None
         logger.info("Download complete.")
         if close_file is True:
             output_file.close()
@@ -232,25 +209,11 @@ class ApiClientMixin:
         presigned_post: Dict[str, Any],
         monitor_callback: Optional[MonitorCallback] = None,
     ):
-        upload_form = presigned_post["fields"]
+        # TODO: monitor_callback support: https://www.python-httpx.org/advanced/clients/#monitoring-upload-progress
         filename = getattr(file, "name", "")
-        upload_form["file"] = (filename, file, "application/octet-stream")
-        multipart = MultipartEncoder(upload_form)
-        if monitor_callback is not None:
-            # Wrap the monitor callback so that it receives only the bytes read
-            # instead of the full MultipartEncoderMonitor object
-            def callback(monitor):
-                monitor.previous_bytes_read = getattr(monitor, "previous_bytes_read", 0)
-                new_bytes = monitor.bytes_read - monitor.previous_bytes_read
-                monitor.previous_bytes_read += new_bytes
-                monitor_callback(new_bytes)
-
-            multipart = MultipartEncoderMonitor(multipart, callback)
+        files = {"file": (filename, file, "application/octet-stream")}
         self._post(
-            presigned_post["url"],
-            data=multipart.read(),
-            headers={"Content-Type": multipart.content_type},
-            return_json=False,
+            presigned_post["url"], files=files, data=presigned_post["fields"], return_json=False
         )
 
     def upload_parts(

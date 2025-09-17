@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Callable, Iterable, List, TypeVar
+from typing import Any, Callable, Iterable, List, Optional, TypeVar
 
-import niquests
+import httpx
 
 
 class SimAIError(Exception):
@@ -32,11 +32,18 @@ class SimAIError(Exception):
     """
 
 
-class ApiClientError(SimAIError, niquests.exceptions.HTTPError):
+class ApiClientError(SimAIError, httpx.HTTPError):
     """HTTP error from the SimAI API."""
 
-    def __init__(self, message: str, response=None):
-        super(ApiClientError, self).__init__(message, response=response)
+    def __init__(
+        self,
+        message: str,
+        response: Optional[httpx.Response] = None,
+        request: Optional[httpx.Request] = None,
+    ):
+        super(ApiClientError, self).__init__(message)
+        self.response = response
+        self._request = request
 
     @property
     def status_code(self):  # noqa: D102
@@ -48,7 +55,7 @@ class NotFoundError(ApiClientError):
     """Required resource was not found on the server."""
 
 
-class ConnectionError(SimAIError, niquests.exceptions.ConnectionError):
+class ConnectionError(SimAIError, httpx.RequestError):
     """Could not communicate with the server."""
 
 

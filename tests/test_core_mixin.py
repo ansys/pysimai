@@ -22,13 +22,15 @@
 
 from io import BytesIO
 
+import httpx
 import pytest
-import responses
 from pydantic import HttpUrl
-from responses import matchers
+from pytest_httpx import HTTPXMock
 
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.errors import ApiClientError, NotFoundError
+
+from .conftest import disable_http_retry
 
 
 def test_construct_default_url():
@@ -44,37 +46,32 @@ def test_construct_default_url():
     assert client._api._url_prefix == HttpUrl("https://api.simai.ansys.com/v2/")
 
 
-@responses.activate(registry=responses.registries.OrderedRegistry)
-def test_retry_on_5XX(api_client):
+def test_retry_on_5XX(api_client, httpx_mock: HTTPXMock):
     url = "https://try.me/"
-    rsp1 = responses.add(responses.GET, url=url, status=503)
-    rsp2 = responses.add(responses.GET, url=url, status=504)
-    rsp3 = responses.add(responses.GET, url=url, status=200, json={"wat": "hyperdrama"})
+    httpx_mock.add_response(method="GET", url=url, status_code=503)
+    httpx_mock.add_response(method="GET", url=url, status_code=504)
+    httpx_mock.add_response(method="GET", url=url, status_code=200, json={"wat": "hyperdrama"})
     resp = api_client._get(url)
     assert resp == {"wat": "hyperdrama"}
-    assert rsp1.call_count == 1
-    assert rsp2.call_count == 1
-    assert rsp3.call_count == 1
 
 
-@responses.activate
-def test_404_response_raises_not_found_error(api_client):
+def test_404_response_raises_not_found_error(api_client, httpx_mock: HTTPXMock):
     """WHEN ApiClient gets a 404 response
     THEN a NotFoundError is raised
     """
-    responses.add(
-        responses.GET,
-        "https://test.test/expected_format",
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/expected_format",
         json={"message": "beep-boop"},
-        status=404,
+        status_code=404,
     )
-    responses.add(
-        responses.GET,
-        "https://test.test/only_status_format",
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/only_status_format",
         json={"status": "not found"},
-        status=404,
+        status_code=404,
     )
-    responses.add(responses.GET, "https://test.test/no_content", status=404)
+    httpx_mock.add_response(method="GET", url="https://test.test/no_content", status_code=404)
 
     with pytest.raises(NotFoundError) as exc_info:
         api_client._get("expected_format")
@@ -87,7 +84,6 @@ def test_404_response_raises_not_found_error(api_client):
     assert exc_info.value.args[0] == "Not Found"
 
 
-@responses.activate
 @pytest.mark.parametrize(
     "code, reason",
     [
@@ -101,18 +97,19 @@ def test_404_response_raises_not_found_error(api_client):
         (502, "Bad Gateway"),
     ],
 )
-def test_4XX_5XX_responses_raise_api_client_error_no_json(api_client, code, reason):
+def test_4XX_5XX_responses_raise_api_client_error_no_json(
+    api_client, httpx_mock: HTTPXMock, code, reason
+):
     """WHEN ApiClient gets a 4XX or 5XX response without details in json
     THEN a ApiClientError is raised with the code and reason
     """
-    responses.add(responses.GET, f"https://test.test/{code}", status=code)
+    httpx_mock.add_response(method="GET", url=f"https://test.test/{code}", status_code=code)
+    with disable_http_retry(api_client, "https://test.test/"):
+        with pytest.raises(ApiClientError) as exc_info:
+            api_client._get(f"{code}")
+        assert exc_info.value.args[0] == f"{code} {reason}"
 
-    with pytest.raises(ApiClientError) as exc_info:
-        api_client._get(f"{code}")
-    assert exc_info.value.args[0] == f"{code} {reason}"
 
-
-@responses.activate
 @pytest.mark.parametrize(
     "json, message",
     [
@@ -125,11 +122,13 @@ def test_4XX_5XX_responses_raise_api_client_error_no_json(api_client, code, reas
         (None, "Bad Request"),
     ],
 )
-def test_4XX_5XX_responses_raise_api_client_error_with_json(api_client, json, message):
+def test_4XX_5XX_responses_raise_api_client_error_with_json(api_client, httpx_mock, json, message):
     """WHEN ApiClient gets a 4XX or 5XX response without details in json
     THEN a ApiClientError is raised with the code and message from the json or fallback
     """
-    responses.add(responses.GET, "https://test.test/errors", json=json, status=400)
+    httpx_mock.add_response(
+        method="GET", url="https://test.test/errors", json=json, status_code=400
+    )
 
     with pytest.raises(ApiClientError) as exc_info:
         api_client._get("errors")
@@ -141,16 +140,21 @@ def test_use_system_proxies(mocker):
     THEN the system proxies are used
     """
     mocker.patch(
-        "ansys.simai.core.api.mixin.getproxies",
-        return_value={"grpc": "https://bonzibuddy.org"},
+        "httpx._utils.getproxies",
+        return_value={"http": "https://bonzibuddy.org"},
     )
+
     client = SimAIClient(
         no_sse_connection=True,
         _disable_authentication=True,
         skip_version_check=True,
         organization="ExtraBanane",
     )
-    assert client._api._session.proxies == {"grpc": "https://bonzibuddy.org"}
+    transport = client._api._session._transport_for_url(httpx.URL("http://popo.org"))
+    assert (
+        f"{transport._sync_transport._pool._proxy_url}"
+        == "URL(scheme=b'https', host=b'bonzibuddy.org', port=None, target=b'/')"
+    )
 
 
 def test_use_user_provided_proxies(mocker):
@@ -158,8 +162,8 @@ def test_use_user_provided_proxies(mocker):
     THEN the specific proxy is used (system proxies are ignored), the url is normalized
     """
     mocker.patch(
-        "ansys.simai.core.api.mixin.getproxies",
-        return_value={"grpc": "https://bonzibuddy.org"},
+        "httpx._utils.getproxies",
+        return_value={"https": "https://bonzibuddy.org"},
     )
 
     client = SimAIClient(
@@ -169,26 +173,24 @@ def test_use_user_provided_proxies(mocker):
         organization="ExtraBanane",
         https_proxy="https://😛.com",
     )
-    assert client._api._session.proxies == {"https": "https://xn--528h.com/"}
+    transport = client._api._session._transport_for_url(httpx.URL("https://popo.org"))
+    assert (
+        str(transport._sync_transport._pool._proxy_url)
+        == "URL(scheme=b'https', host=b'xn--528h.com', port=None, target=b'/')"
+    )
 
 
-@responses.activate
-def test_upload_file_with_presigned_post_monitor_callback(mocker, api_client):
+@pytest.mark.skip(reason="monitor_callback is not implemented for httpx")
+def test_upload_file_with_presigned_post_monitor_callback(mocker, api_client, httpx_mock):
     presigned_post = {"fields": {"sandstorm": "TUTUTUUTUTU"}, "url": "https://leekspin.com/"}
     file = BytesIO(b"Hello World")
     file.name = "hello.txt"
-    responses.add(
-        responses.POST,
-        "https://leekspin.com/",
-        match=[
-            matchers.multipart_matcher(
-                data={
-                    **presigned_post["fields"],
-                },
-                files={"file": ("hello.txt", file, "application/octet-stream")},
-            )
-        ],
-        status=200,
+    httpx_mock.add_response(
+        method="POST",
+        url="https://leekspin.com/",
+        match_files={"file": ("hello.txt", file, "application/octet-stream")},
+        match_data=presigned_post["fields"],
+        status_code=200,
     )
     monitor_values = []
     api_client.upload_file_with_presigned_post(

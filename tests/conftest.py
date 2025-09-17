@@ -21,17 +21,15 @@
 # SOFTWARE.
 #
 # ruff: noqa: S311
-
 import random
 import threading
 import time
 from collections.abc import Callable
-from sys import modules
+from contextlib import contextmanager
 
-import niquests
+import httpx
+import httpx_retries
 import pytest
-import requests
-from niquests.packages import urllib3
 
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.api.client import ApiClient
@@ -47,20 +45,11 @@ from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.data.workspaces import Workspace
 from ansys.simai.core.utils.configuration import ClientConfig
 
-# HACK: make responses work with niquests, coming from the niquests docs
-# https://niquests.readthedocs.io/en/stable/dev/migrate.html
-modules["requests"] = niquests
-modules["requests.adapters"] = niquests.adapters
-modules["requests.exceptions"] = niquests.exceptions
-modules["requests.compat"] = requests.compat
-modules["requests.packages.urllib3"] = urllib3
-###
-
 
 @pytest.fixture(scope="session")
 def api_client():
     """A ApiClient object with bogus URL"""
-    yield ApiClient(
+    clt = ApiClient(
         config=ClientConfig(
             url="https://test.test",
             _disable_authentication=True,
@@ -68,6 +57,7 @@ def api_client():
             organization="ExtraClaquette",
         )
     )
+    yield clt
 
 
 # warning: even with scope=function, the same SimAIClient is kept,
@@ -306,3 +296,15 @@ def delayed_events():
     yield manager
 
     manager.join()
+
+
+@contextmanager
+def disable_http_retry(clt: ApiClient, url: str):
+    "Avoids slow tests due to retry backoff"
+    transport = clt._session._transport_for_url(httpx.URL(url))
+    original_retry = transport.retry
+    transport.retry = httpx_retries.Retry(total=0)
+    try:
+        yield
+    finally:
+        transport.retry = original_retry
