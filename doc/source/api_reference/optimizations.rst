@@ -37,3 +37,6 @@ Model
    .. autoclass:: __OptimizationTrialRun()
        :members:
        :inherited-members:
+
+.. autoclass:: OptimizationResult()
+    :members:
