@@ -122,6 +122,8 @@ nitpick_ignore = [
     ("py:class", "pydantic_core._pydantic_core.Annotated"),
     ("py:class", "annotated_types.Gt"),
     ("py:class", "pydantic.networks.UrlConstraints"),
+    # httpx cannot be linked: https://github.com/encode/httpx/discussions/3091
+    ("py:class", "Request"),
 ]
 nitpick_ignore_regex = {
     ("py:class", r"httpx\..+"),

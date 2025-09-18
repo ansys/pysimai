@@ -157,6 +157,9 @@ def test_client_config_tls_ca_bundle_unsecure_none(https_server):
     clt._api._get(https_server, return_json=False)
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="tls_root_certificate fixture doesn't work on windows ?"
+)
 def test_client_config_tls_ca_bundle_path(tls_root_certificate, https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle=tls_root_certificate["ca"])
     clt._api._get(https_server, return_json=False)
