@@ -115,13 +115,16 @@ add_module_names = False
 # Complain about all broken links
 nitpicky = True
 
-nitpick_ignore_regex = {
+nitpick_ignore = [
     ("py:obj", "ansys.simai.core.data.base.DataModelType"),
     ("py:class", "_io.BytesIO"),
     ("py:class", "pydantic_core._pydantic_core.Url"),
     ("py:class", "pydantic_core._pydantic_core.Annotated"),
     ("py:class", "annotated_types.Gt"),
     ("py:class", "pydantic.networks.UrlConstraints"),
+]
+nitpick_ignore_regex = {
+    ("py:class", r"httpx\..+"),
 }
 
 source_suffix = ".rst"
