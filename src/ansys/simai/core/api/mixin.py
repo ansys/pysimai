@@ -70,7 +70,10 @@ class ApiClientMixin:
             for k, v in proxies.items():
                 mounts[k] = new_transport(**transport_args, proxy=v)
 
-        self._session = httpx.Client(mounts=mounts, headers=self._get_user_agent())
+        # TODO: stop following redirects
+        self._session = httpx.Client(
+            mounts=mounts, headers=self._get_user_agent(), follow_redirects=True
+        )
         self._url_prefix = config.url
         self._session.auth = Authenticator(config, self._session)
 
