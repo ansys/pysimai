@@ -201,6 +201,7 @@ class ComputableDataModel(DataModel):
         Returns:
             ``True`` if the computation has finished, ``False`` if the operation timed out.
         """
+        self._client._api.check_for_sse_error()
         is_done = self._is_over.wait(timeout)
         if self.has_failed:
             raise ProcessingError(self._failure_message)

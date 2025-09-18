@@ -25,6 +25,7 @@ import logging
 import queue
 import time
 from concurrent.futures import Future, ThreadPoolExecutor
+from threading import Event
 
 import httpx
 from httpx_sse import ServerSentEvent, connect_sse
@@ -63,6 +64,7 @@ class SSEMixin(ApiClientMixin):
         # immediately without needing another event.
         self._stop_sse_threads = getattr(config, "_stop_sse_threads", False)
         self._error_queue: queue.Queue[Exception] = queue.Queue()
+        self._flag_sse_started = Event()
         logger.debug("Starting SSE listener thread.")
         self._executor = ThreadPoolExecutor(
             thread_name_prefix="SSEListener",
@@ -70,6 +72,8 @@ class SSEMixin(ApiClientMixin):
         )
         self._sse_listener: Future = self._executor.submit(self._sse_thread_loop)
         logger.debug("Started listener thread.")
+        self._flag_sse_started.wait(timeout=2)
+        self.check_for_sse_error()
 
     def _sse_thread_loop(self):
         last_event_id = ""
@@ -83,9 +87,12 @@ class SSEMixin(ApiClientMixin):
                     headers["Last-Event-ID"] = last_event_id
 
                 with connect_sse(
-                    self._session, "GET", self._get_sse_url(), headers=headers
+                    self._session, "GET", self._get_sse_url(), headers=headers, timeout=15
                 ) as event_source:
                     event_source.response.raise_for_status()
+                    event_source._check_content_type()
+                    self._flag_sse_started.set()
+
                     for sse in event_source.iter_sse():
                         last_event_id = sse.id
                         if sse.retry is not None:
@@ -96,8 +103,10 @@ class SSEMixin(ApiClientMixin):
             except httpx.ReadError as e:
                 logger.info(f"SSE disconnection: {e}")
             except httpx.HTTPError as e:
+                self._flag_sse_started.set()
                 raise ConnectionError("Impossible to connect to event's endpoint.") from e
             except Exception as e:
+                self._flag_sse_started.set()
                 raise ApiClientError("Unhandled exception in SSE thread") from e
             if self._stop_sse_threads:
                 return
@@ -111,10 +120,10 @@ class SSEMixin(ApiClientMixin):
         """
         if not self._sse_listener:
             return
-        exc = self._sse_listener.exception()
-        if exc:
-            raise exc
-        return
+        if self._sse_listener.done():
+            exc = self._sse_listener.exception()
+            if exc:
+                raise exc
 
     def _handle_sse_event(self, event: ServerSentEvent):
         try:

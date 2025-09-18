@@ -82,15 +82,14 @@ def test_api_client_sse_endpoint_unreachable(httpx_mock):
         text="Not found",
         status_code=404,
     )
-    api = ApiClient(
-        ClientConfig(
-            organization="toto",
-            url="https://test.test",
-            _disable_authentication=True,
-        )
-    )
     with pytest.raises(ConnectionError):
-        api.check_for_sse_error()
+        ApiClient(
+            ClientConfig(
+                organization="toto",
+                url="https://test.test",
+                _disable_authentication=True,
+            )
+        )
 
 
 @pytest.mark.skip(reason="not supported in httpx rewrite")
@@ -104,18 +103,17 @@ def test_api_client_sse_endpoint_wrong_organization(httpx_mock):
         text="User does not belong to the organization not_extrality or the organization does not exist.",
         status_code=403,
     )
-    api = ApiClient(
-        ClientConfig(
-            organization="not_extrality",
-            url="https://test.test",
-            _disable_authentication=True,
-        )
-    )
     with pytest.raises(
         ConnectionError,
         match="User does not belong to the organization not_extrality or the organization does not exist.",
     ):
-        api.check_for_sse_error()
+        ApiClient(
+            ClientConfig(
+                organization="not_extrality",
+                url="https://test.test",
+                _disable_authentication=True,
+            )
+        )
 
 
 def test_wait_non_blocking_for_non_loading_items(simai_client, httpx_mock):
