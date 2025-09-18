@@ -210,9 +210,12 @@ class ApiClientMixin:
         self,
         file: BinaryIO,
         presigned_post: Dict[str, Any],
-        monitor_callback: Optional[MonitorCallback] = None,
+        monitor_callback: None = None,
     ):
-        # TODO: monitor_callback support: https://www.python-httpx.org/advanced/clients/#monitoring-upload-progress
+        if monitor_callback:
+            logger.warning(
+                "monitor_callback is no longer supported in upload_file_with_presigned_post"
+            )
         filename = getattr(file, "name", "")
         files = {"file": (filename, file, "application/octet-stream")}
         self._post(

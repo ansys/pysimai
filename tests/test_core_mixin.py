@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from io import BytesIO
 
 import httpx
 import pytest
@@ -178,27 +177,3 @@ def test_use_user_provided_proxies(mocker):
         str(transport._sync_transport._pool._proxy_url)
         == "URL(scheme=b'https', host=b'xn--528h.com', port=None, target=b'/')"
     )
-
-
-@pytest.mark.skip(reason="monitor_callback is not implemented for httpx")
-def test_upload_file_with_presigned_post_monitor_callback(mocker, api_client, httpx_mock):
-    presigned_post = {"fields": {"sandstorm": "TUTUTUUTUTU"}, "url": "https://leekspin.com/"}
-    file = BytesIO(b"Hello World")
-    file.name = "hello.txt"
-    httpx_mock.add_response(
-        method="POST",
-        url="https://leekspin.com/",
-        match_files={"file": ("hello.txt", file, "application/octet-stream")},
-        match_data=presigned_post["fields"],
-        status_code=200,
-    )
-    monitor_values = []
-    api_client.upload_file_with_presigned_post(
-        file=file,
-        presigned_post=presigned_post,
-        monitor_callback=lambda x: monitor_values.append(x),
-    )
-    # Bigger than `file` because:
-    # * the multipart encoding
-    # * the other fields (`sandstorm`)
-    assert monitor_values == [297]
