@@ -25,7 +25,7 @@ from http import HTTPStatus
 from json.decoder import JSONDecodeError
 from typing import Literal, overload
 
-import niquests
+import httpx
 
 from ansys.simai.core.data.types import JSON, APIResponse
 from ansys.simai.core.errors import ApiClientError, NotFoundError
@@ -33,7 +33,7 @@ from ansys.simai.core.errors import ApiClientError, NotFoundError
 logger = logging.getLogger(__name__)
 
 
-def handle_http_errors(response: niquests.Response) -> None:
+def handle_http_errors(response: httpx.Response) -> None:
     """Raise an error if the response status code is an error.
 
     Args:
@@ -46,17 +46,17 @@ def handle_http_errors(response: niquests.Response) -> None:
     logger.debug("Checking for HTTP errors.")
     try:
         response.raise_for_status()
-    except niquests.exceptions.HTTPError as e:
+    except httpx.HTTPError as e:
         try:
             json_response = response.json()
-        except (ValueError, JSONDecodeError):
+        except (ValueError, JSONDecodeError, httpx.ResponseNotRead):
             # raise the errors from None
             # as we want to ignore the JSONDecodeError
             if response.status_code == HTTPStatus.NOT_FOUND:
                 raise NotFoundError("Not Found", response) from e
             else:
                 raise ApiClientError(
-                    f"{response.status_code} {response.reason}", response
+                    f"{response.status_code} {response.reason_phrase}", response
                 ) from None
         if isinstance(json_response, dict):
             message = (
@@ -64,7 +64,7 @@ def handle_http_errors(response: niquests.Response) -> None:
                 or json_response.get("message")
                 or json_response.get("status")
                 or json_response.get("error_description")
-                or response.reason
+                or response.reason_phrase
             )
 
             if response.status_code == HTTPStatus.NOT_FOUND:
@@ -78,24 +78,24 @@ def handle_http_errors(response: niquests.Response) -> None:
                     response,
                 ) from e
         else:
-            raise ApiClientError(f"{response.status_code}: {response.reason}", response) from e
+            raise ApiClientError(
+                f"{response.status_code}: {response.reason_phrase}", response
+            ) from e
 
 
 @overload
-def handle_response(response: niquests.Response, return_json: Literal[True]) -> JSON: ...
+def handle_response(response: httpx.Response, return_json: Literal[True]) -> JSON: ...
 
 
 @overload
-def handle_response(
-    response: niquests.Response, return_json: Literal[False]
-) -> niquests.Response: ...
+def handle_response(response: httpx.Response, return_json: Literal[False]) -> httpx.Response: ...
 
 
 @overload
-def handle_response(response: niquests.Response, return_json: bool) -> APIResponse: ...
+def handle_response(response: httpx.Response, return_json: bool) -> APIResponse: ...
 
 
-def handle_response(response: niquests.Response, return_json: bool = True) -> APIResponse:
+def handle_response(response: httpx.Response, return_json: bool = True) -> APIResponse:
     """Handle HTTP errors and return the relevant data from the response.
 
     Args:
@@ -104,7 +104,7 @@ def handle_response(response: niquests.Response, return_json: bool = True) -> AP
 
     Returns:
         JSON dict of the response if :py:args:`return_json` is ``True`` or the raw
-            :py:class:`niquests.Response` otherwise.
+            :py:class:`httpx.Response` otherwise.
     """
     handle_http_errors(response)
 

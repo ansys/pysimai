@@ -20,19 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import responses
 
-
-@responses.activate
-def test_post_processing_delete(simai_client, post_processing_factory):
+def test_post_processing_delete(simai_client, post_processing_factory, httpx_mock):
     """WHEN Calling delete() on a post-processing
     THEN the /delete endpoint is called
     ALSO the post-processing is not anymore registered in the Directory
     """
-    responses.add(
-        responses.DELETE,
-        "https://test.test/post-processings/uninteresting-coeffs",
-        status=204,
+    httpx_mock.add_response(
+        method="DELETE",
+        url="https://test.test/post-processings/uninteresting-coeffs",
+        status_code=204,
     )
 
     global_coefficients = post_processing_factory(
@@ -42,37 +39,36 @@ def test_post_processing_delete(simai_client, post_processing_factory):
     assert "uninteresting-coeffs" not in simai_client._post_processing_directory._registry
 
 
-@responses.activate
-def test_post_processing_global_coefficients_delete(prediction_factory):
+def test_post_processing_global_coefficients_delete(prediction_factory, httpx_mock):
     """WHEN deleting a GlobalCoefficients post-processing from a prediction
     THEN there is a call to the DELETE endpoint
     ALSO a new call to pred.post.global_coefficients() re-runs the post-processing
     """
     pred = prediction_factory()
-    responses.add(
-        responses.POST,
-        f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
         json={
             "id": "pp-instance-one",
             "state": "successful",
-            "type": "GlobalCoefficients",
+            "location": {},
         },
-        status=200,
+        status_code=200,
     )
-    responses.add(
-        responses.POST,
-        f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
         json={
             "id": "pp-instance-two",
             "state": "successful",
-            "type": "GlobalCoefficients",
+            "location": {},
         },
-        status=200,
+        status_code=200,
     )
-    responses.add(
-        responses.DELETE,
-        "https://test.test/post-processings/pp-instance-one",
-        status=204,
+    httpx_mock.add_response(
+        method="DELETE",
+        url="https://test.test/post-processings/pp-instance-one",
+        status_code=204,
     )
 
     global_coefficients = pred.post.global_coefficients()
@@ -84,39 +80,40 @@ def test_post_processing_global_coefficients_delete(prediction_factory):
     assert global_coefficients.id == "pp-instance-two"
 
 
-@responses.activate
-def test_post_processing_surface_evolution_delete(prediction_factory):
+def test_post_processing_surface_evolution_delete(prediction_factory, httpx_mock):
     """WHEN deleting a SurfaceEvolution post-processing from a prediction
     THEN there is a call to the DELETE endpoint
     ALSO a new call to pred.post.surface_evolution() re-runs the post-processing
     """
     pred = prediction_factory()
-    responses.add(
-        responses.POST,
-        f"https://test.test/predictions/{pred.id}/post-processings/SurfaceEvol",
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/predictions/{pred.id}/post-processings/SurfaceEvol",
         json={
             "id": "im-the-first-one",
             "state": "successful",
             "type": "SurfaceEvol",
             "location": {"axis": "y", "delta": 9.5},
         },
-        status=200,
+        headers={},
+        status_code=200,
     )
-    responses.add(
-        responses.POST,
-        f"https://test.test/predictions/{pred.id}/post-processings/SurfaceEvol",
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/predictions/{pred.id}/post-processings/SurfaceEvol",
         json={
             "id": "im-the-second-one",
             "state": "successful",
             "type": "SurfaceEvol",
             "location": {"axis": "y", "delta": 9.5},
         },
-        status=200,
+        headers={},
+        status_code=200,
     )
-    responses.add(
-        responses.DELETE,
-        "https://test.test/post-processings/im-the-first-one",
-        status=204,
+    httpx_mock.add_response(
+        method="DELETE",
+        url="https://test.test/post-processings/im-the-first-one",
+        status_code=204,
     )
 
     surface_evolution = pred.post.surface_evolution(axis="y", delta=9.5)
