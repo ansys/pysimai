@@ -49,7 +49,7 @@ def handle_http_errors(response: httpx.Response) -> None:
     except httpx.HTTPError as e:
         try:
             json_response = response.json()
-        except (ValueError, JSONDecodeError):
+        except (ValueError, JSONDecodeError, httpx.ResponseNotRead):
             # raise the errors from None
             # as we want to ignore the JSONDecodeError
             if response.status_code == HTTPStatus.NOT_FOUND:
