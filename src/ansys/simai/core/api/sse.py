@@ -95,8 +95,7 @@ class SSEMixin(ApiClientMixin):
 
                     for sse in event_source.iter_sse():
                         last_event_id = sse.id
-                        if sse.retry is not None:
-                            reconnection_delay = sse.retry / 1000
+                        reconnection_delay = (sse.retry or 1000) / 1000
                         self._handle_sse_event(sse)
                         if self._stop_sse_threads:
                             return
