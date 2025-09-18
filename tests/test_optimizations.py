@@ -25,7 +25,7 @@ import json
 import threading
 
 import pytest
-from urllib3_future.contrib.webextensions.sse import ServerSentEvent
+from httpx_sse import ServerSentEvent
 
 from ansys.simai.core.data.optimizations import (
     _validate_axial_symmetry,

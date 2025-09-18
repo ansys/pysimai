@@ -26,7 +26,6 @@ classifiers = [
     "Programming Language :: Python :: 3.13"
 ]
 dependencies = [
-    "requests_toolbelt>=1.0.0,<2",
     "tomli>=2.0.1,<3",
     "pydantic>=2.5.1,<3",
     "semver>=3.0.2",
@@ -37,9 +36,7 @@ dependencies = [
     "truststore>=0.10.0; python_version >= '3.10'",
     "httpx>=0.28.1",
     "httpx-sse>=0.4.1",
-    "stamina>=25.1.0",
     "httpx-retries>=0.4.2",
-    "pytest-httpx>=0.35.0",
 ]
 
 [dependency-groups]
@@ -64,6 +61,7 @@ tests = [
     "pytest-cov>=4.1.0",
     "pytest-asyncio>=0.21.0",
     "pytest-mock>=3.6.1",
+    "pytest-httpx>=0.35.0",
     "responses>=0.23.0",
     "coverage[toml]>=7.0",
     "pyjwt>=2.4.0"
