@@ -145,6 +145,7 @@ html_context = {
     "pyansys_tags": ["AI"],
 }
 html_theme_options = {
+    "logo": "pyansys",
     "github_url": "https://github.com/ansys/pysimai",
     "show_prev_next": False,
     "show_breadcrumbs": True,
