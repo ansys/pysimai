@@ -16,12 +16,11 @@ For more information, see Number of latent parameters.
 Resolution
 -----------
 
-The resolution is a list of three integers defining the number of voxels along the X, Y, and Z axes. The default value is [100,100,100].
-
-| The number of voxels must not exceed 900^3, i.e. the three numbers multiplied together must be less than or equal to 900^3. For example, possible values are [900,900,900], [9000,90,900], and so on.
-| If you exceed that value an error will occur.
-
-| In most cases, the default resolution can be used.
-| However, you may need to use different values, staying below the value of 900^3.
+The resolution parameter is a list of three integers defining the number of voxels along the X, Y, and Z axes.
 
 Use higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
+
+The total number of voxels must not exceed 900^3, i.e. the three numbers multiplied together must be less than or equal to 900^3.
+If you exceed that value an error will occur.
+
+Defaults to ``[100,100,100]``, if ``None`` is provided.
