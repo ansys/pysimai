@@ -1,6 +1,25 @@
 Changelog
 ---------
 
+0.3.4 (2025-09-23)
+******************
+
+New:
+
+- Add ``axial_symmetry`` parameter to non-parametric optimization
+
+Changes:
+
+- Switch to Niquest built-in SSE support
+- Re-order non-parametric optimization parameters
+- Improve error message when creating client with wrong organization
+- Documentation improvements
+
+Fixes:
+
+- Fix improper exception handling
+- Fix unhandled SSE error
+
 0.3.3 (2025-07-02)
 ******************
 
