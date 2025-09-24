@@ -196,6 +196,7 @@ class _AuthTokensRetriever:
             # slow path: tokens are locked, will get refreshed
             auth = self._get_token_from_cache()  # might have changed while we waited the lock
             if auth and auth.is_refresh_token_expired():
+                logger.info("refresh token is expired")
                 auth = None
             if auth and (force_refresh or auth.is_token_expired()):
                 auth = self._refresh_auth_token(auth.refresh_token)
@@ -204,9 +205,9 @@ class _AuthTokensRetriever:
                     auth = self._request_token_direct_grant()
                 else:
                     auth = self._request_token_device_auth()
+            # Use atomic operation (rename) to avoid avoids partial writes
             with open(self.cache_file_path + "~", "w") as f:
                 f.write(auth.model_dump_json())
-            # rename is atomic
             os.replace(self.cache_file_path + "~", self.cache_file_path)
         self._schedule_auth_refresh(auth.refresh_expires_in)
         return auth
