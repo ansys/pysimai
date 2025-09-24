@@ -81,17 +81,9 @@ class OptimizationResult:
     ):
         self._optimization = optimization
         self._objectives: list[Dict] = objectives
-        self._geometries: list[Geometry] = []
-
-        workspace_geometries = self._optimization._client.geometries.list(
-            geometries[0]["workspace_id"]
-        )
-        workspace_geometries = {geom.id: geom for geom in workspace_geometries}
-
-        geometry_ids = [geom["id"] for geom in geometries]
-        for geom_id in geometry_ids:
-            if geom_id in workspace_geometries:
-                self._geometries.append(workspace_geometries[geom_id])
+        self._geometries: list[Geometry] = [
+            self._optimization._client.geometries._model_from(geom) for geom in geometries
+        ]
 
     @property
     def optimization(self) -> Optimization:
