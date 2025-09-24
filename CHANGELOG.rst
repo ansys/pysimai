@@ -1,6 +1,26 @@
 Changelog
 ---------
 
+0.3.4 (2025-09-24)
+******************
+
+New:
+
+- Add ``axial_symmetry`` parameter to non-parametric optimization
+
+Changes:
+
+- Non-parametric optimization now returns :py:class:`OptimizationResult<ansys.simai.core.data.optimizations.OptimizationResult>`
+- Switch to Niquest built-in SSE support
+- Re-order non-parametric optimization parameters
+- Improve error message when creating client with wrong organization
+- Documentation improvements
+
+Fixes:
+
+- Fix improper exception handling
+- Fix unhandled SSE error
+
 0.3.3 (2025-07-02)
 ******************
 
