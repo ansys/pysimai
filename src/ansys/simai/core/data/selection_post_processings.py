@@ -146,7 +146,10 @@ class SelectionPostProcessingsMethods:
         return PPList(selection=self._selection, post=lambda pred: pred.post.volume_vtu())
 
     def surface_vtp(self) -> PPList[SurfaceVTP]:
-        """Compute or get the result of each prediction's surface in the VTP format.
+        """Compute or get the surface results of each prediction within the selection, in VTP format.
+
+        This method associates all data with cells; if a variable is originally
+        associated with points in the sample, it would be now associated with cells.
 
         This is a non-blocking method. It returns a
         :py:class:`~ansys.simai.core.data.lists.PPList` instance of
@@ -167,7 +170,7 @@ class SelectionPostProcessingsMethods:
         return PPList(selection=self._selection, post=lambda pred: pred.post.surface_vtp())
 
     def surface_vtp_td_location(self) -> PPList[SurfaceVTPTDLocation]:
-        """Compute or get the result of each prediction's surface in the VTP format.
+        """Compute or get the result of each prediction's surface of the selection in the VTP format.
 
         This method keeps the original data association as they are in the sample.
 

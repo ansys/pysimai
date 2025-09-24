@@ -21,3 +21,4 @@ ModelManifest
 ModelOutput
 [Oo]verfit(?:ting)?
 [Uu]nderfit(?:ting)?
+[Vv]oxel
