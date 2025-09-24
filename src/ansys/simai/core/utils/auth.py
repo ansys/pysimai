@@ -35,7 +35,7 @@ import niquests
 from filelock import FileLock
 from niquests.auth import AuthBase
 from niquests.models import PreparedRequest
-from pydantic import BaseModel, ValidationError, computed_field, model_validator
+from pydantic import BaseModel, ValidationError, model_validator
 
 from ansys.simai.core.errors import ApiClientError
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
@@ -69,8 +69,10 @@ class _AuthTokens(BaseModel):
         if "expiration" not in data:
             # We want to store "expiration" but API responses contains "expires_in"
             now = datetime.now(timezone.utc)
-            data["expiration"] = now + timedelta(seconds=int(data["expires_in"]))
-            data["refresh_expiration"] = now + timedelta(seconds=int(data["refresh_expires_in"]))
+            data["expiration"] = now + timedelta(seconds=int(data.pop("expires_in")))
+            data["refresh_expiration"] = now + timedelta(
+                seconds=int(data.pop("refresh_expires_in"))
+            )
         return data
 
     def is_token_expired(self):
@@ -79,12 +81,10 @@ class _AuthTokens(BaseModel):
     def is_refresh_token_expired(self):
         return self.refresh_expires_in < self.EXPIRATION_BUFFER
 
-    @computed_field
     @property
     def expires_in(self) -> float:
         return (self.expiration - datetime.now(timezone.utc)).total_seconds()
 
-    @computed_field
     @property
     def refresh_expires_in(self) -> float:
         return (self.refresh_expiration - datetime.now(timezone.utc)).total_seconds()
