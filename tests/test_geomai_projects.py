@@ -23,7 +23,6 @@
 from typing import TYPE_CHECKING
 
 import pytest
-import responses
 
 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 from ansys.simai.core.errors import ProcessingError
@@ -32,49 +31,45 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.projects import GeomAIProject
 
 
-@responses.activate
-def test_project_rename(simai_client):
+def test_project_rename(simai_client, httpx_mock):
     project = simai_client.geomai._project_directory._model_from({"id": "0011", "name": "riri"})
 
-    responses.add(
-        responses.PATCH,
-        "https://test.test/geomai/projects/0011",
-        status=204,
+    httpx_mock.add_response(
+        method="PATCH",
+        url="https://test.test/geomai/projects/0011",
+        status_code=204,
     )
-    responses.add(
-        responses.GET,
-        "https://test.test/geomai/projects/0011",
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects/0011",
         json={"id": "0011", "name": "fifi"},
-        status=200,
+        status_code=200,
     )
 
     project.name = "fifi"
     assert project.name == "fifi"
 
 
-@responses.activate
-def test_project_list_training_data(simai_client):
+def test_project_list_training_data(simai_client, httpx_mock):
     project: GeomAIProject = simai_client.geomai._project_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
 
-    responses.add(
-        responses.GET,
-        "https://test.test/geomai/projects/0011/training-data",
-        match=[responses.matchers.query_param_matcher({})],
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects/0011/training-data",
         headers={
             "Link": '<https://test.test/geomai/projects/0011/training-data?last_id=first>; rel="next"'
         },
         json=[{"id": "first"}],
-        status=200,
+        status_code=200,
     )
 
-    responses.add(
-        responses.GET,
-        "https://test.test/geomai/projects/0011/training-data",
-        match=[responses.matchers.query_param_matcher({"last_id": "first"})],
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects/0011/training-data?last_id=first",
         json=[{"id": "second"}],
-        status=200,
+        status_code=200,
     )
 
     assert [data.id for data in project.data()] == ["first", "second"]
@@ -99,8 +94,7 @@ def test_last_model_configuration(simai_client):
     assert project_last_conf.model_dump() == last_conf
 
 
-@responses.activate
-def test_cancel_build_for_specified_project_id(simai_client):
+def test_cancel_build_for_specified_project_id(simai_client, httpx_mock):
     """WHEN I call projects.cancel_build() for a specified project id
     THEN it returns None if there is an build in progress
     AND raises a ProcessingError otherwise
@@ -108,27 +102,27 @@ def test_cancel_build_for_specified_project_id(simai_client):
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": True},
-        status=200,
+        status_code=200,
     )
 
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project.id}/cancel-training",
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project.id}/cancel-training",
         json={"id": "e45y123", "is_being_trained": False},
-        status=200,
+        status_code=200,
     )
 
     simai_client.projects.cancel_build(project.id)
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": False},
-        status=200,
+        status_code=200,
     )
 
     with pytest.raises(ProcessingError) as excinfo:
@@ -136,48 +130,46 @@ def test_cancel_build_for_specified_project_id(simai_client):
         assert "No build pending for this project" in excinfo.value
 
 
-@responses.activate
-def test_cancel_active_build_from_project(simai_client):
+def test_cancel_active_build_from_project(simai_client, httpx_mock):
     """WHEN I call cancel_build() from a project with an active build
     THEN returns None
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": True},
-        status=200,
+        status_code=200,
     )
 
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project.id}/cancel-training",
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project.id}/cancel-training",
         json={"id": "e45y123"},
-        status=200,
+        status_code=200,
     )
 
     project.cancel_build()
-    assert len(responses.calls) == 2
+    assert len(httpx_mock.get_requests()) == 2
 
 
-@responses.activate
-def test_cancel_inactive_build_from_project(simai_client):
+def test_cancel_inactive_build_from_project(simai_client, httpx_mock):
     """WHEN I call cancel_build() from a project with an inactive build
     THEN it raises a ProcessingError
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": False},
-        status=200,
+        status_code=200,
     )
 
     with pytest.raises(ProcessingError) as excinfo:
         project.cancel_build()
         assert "No build pending for this project" in excinfo.value
-    assert len(responses.calls) == 1
+    assert len(httpx_mock.get_requests()) == 1

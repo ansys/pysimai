@@ -22,8 +22,8 @@
 
 import json
 
+import httpx
 import pytest
-import responses
 
 from ansys.simai.core.data.selections import Selection
 from ansys.simai.core.errors import MultipleErrors
@@ -86,8 +86,7 @@ def test_selection_get_predictions(four_geometries_test_set):
     assert point.boundary_conditions == {"Vx": 20.2}
 
 
-@responses.activate
-def test_selection_run_predictions(geometry_factory, prediction_factory):
+def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_mock):
     """WHEN calling run_prediction() on a selection
     THEN a POST request is launched for each not-existing prediction
     AND after the call, selection.predictions contains values for
@@ -117,14 +116,13 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
 
     # Endpoints for prediction creations
     def geometry1_pred_request_callback(request):
-        payload = json.loads(request.body)
+        payload = json.loads(request.content)
         boundary_conditions = payload["boundary_conditions"]
         # geometry1 had a pred for speed 4.5, it should not be recreated
         assert boundary_conditions["Vx"] in {5.5, 6.5}
-        return (
+        return httpx.Response(
             200,
-            {},
-            json.dumps(
+            json=(
                 {
                     "id": f"pred{boundary_conditions}",
                     "status": "queued",
@@ -134,14 +132,13 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
         )
 
     def geometry2_pred_request_callback(request):
-        payload = json.loads(request.body)
+        payload = json.loads(request.content)
         boundary_conditions = payload["boundary_conditions"]
         # geometry2 had no pred, preds for all speed will be created
         assert boundary_conditions["Vx"] in {4.5, 5.5, 6.5}
-        return (
+        return httpx.Response(
             200,
-            {},
-            json.dumps(
+            json=(
                 {
                     "id": f"pred{boundary_conditions}",
                     "status": "queued",
@@ -150,16 +147,18 @@ def test_selection_run_predictions(geometry_factory, prediction_factory):
             ),
         )
 
-    responses.add_callback(
-        responses.POST,
-        "https://test.test/geometries/77777/predictions",
-        callback=geometry1_pred_request_callback,
-    )
-    responses.add_callback(
-        responses.POST,
-        "https://test.test/geometries/88888/predictions",
-        callback=geometry2_pred_request_callback,
-    )
+    for _ in range(2):
+        httpx_mock.add_callback(
+            geometry1_pred_request_callback,
+            method="POST",
+            url="https://test.test/geometries/77777/predictions",
+        )
+    for _ in range(3):
+        httpx_mock.add_callback(
+            geometry2_pred_request_callback,
+            method="POST",
+            url="https://test.test/geometries/88888/predictions",
+        )
 
     # Let's run all predictions in the selection
     selection.run_predictions()
@@ -203,8 +202,7 @@ def test_selection_tolerance(geometry_factory, prediction_factory):
     assert predictions[0].id == "here-i-am"
 
 
-@responses.activate
-def test_selection_run_prediction_error(geometry_factory):
+def test_selection_run_prediction_error(geometry_factory, httpx_mock):
     """WHEN calling run_predictions, and some calls return an error
     THEN all the predictions are ran nevertheless
     AND at the end a MultipleErrors is raised
@@ -218,14 +216,13 @@ def test_selection_run_prediction_error(geometry_factory):
     def pred_creation_callback(request):
         nonlocal nb_calls
         nb_calls += 1
-        payload = json.loads(request.body)
+        payload = json.loads(request.content)
         boundary_conditions = payload["boundary_conditions"]
         # send 422 error for the first 2 calls, 200 for the last one
         if nb_calls < 3:
-            return (
+            return httpx.Response(
                 422,
-                {},
-                json.dumps(
+                json=(
                     {
                         "code": 422,
                         "errors": {"json": {"speed": "Planets are not aligned"}},
@@ -234,10 +231,9 @@ def test_selection_run_prediction_error(geometry_factory):
                 ),
             )
         else:
-            return (
+            return httpx.Response(
                 200,
-                {},
-                json.dumps(
+                json=(
                     {
                         "id": "saturn",
                         "status": "queued",
@@ -246,17 +242,18 @@ def test_selection_run_prediction_error(geometry_factory):
                 ),
             )
 
-    responses.add_callback(
-        responses.POST,
-        f"https://test.test/geometries/{geometry.id}/predictions",
-        callback=pred_creation_callback,
-    )
+    for _ in range(3):
+        httpx_mock.add_callback(
+            pred_creation_callback,
+            method="POST",
+            url=f"https://test.test/geometries/{geometry.id}/predictions",
+        )
 
     with pytest.raises(MultipleErrors):
         selection.run_predictions()
 
     # assert 3 calls have been made despite the first two having failed
-    assert len(responses.calls) == 3
+    assert len(httpx_mock.get_requests()) == 3
     assert len(selection.predictions) == 1
     assert selection.predictions[0].id == "saturn"
 

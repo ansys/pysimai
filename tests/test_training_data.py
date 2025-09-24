@@ -25,7 +25,6 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlencode
 
 import pytest
-import responses
 
 from ansys.simai.core.data.types import SubsetEnum
 from ansys.simai.core.errors import InvalidArguments
@@ -34,17 +33,15 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.training_data import TrainingData
 
 
-@responses.activate
-def test_training_data_iter(simai_client):
-    responses.add(
-        responses.GET,
-        "https://test.test/training-data",
-        match=[responses.matchers.query_param_matcher({})],
+def test_training_data_iter(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/training-data",
         headers={
             "X-Pagination": json.dumps({"total": 999}),
         },
         json=[{"id": "one"}],
-        status=200,
+        status_code=200,
     )
     it = simai_client.training_data.iter()
     assert len(it) == 999
@@ -54,92 +51,86 @@ def test_training_data_iter(simai_client):
     assert len(it) == 998
 
 
-@responses.activate
-def test_training_data_list(simai_client):
-    responses.add(
-        responses.GET,
-        "https://test.test/training-data",
-        match=[responses.matchers.query_param_matcher({})],
+def test_training_data_list(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/training-data",
         headers={
             "X-Pagination": json.dumps({"total_pages": 2}),
-            "Link": '<http://test.test/training-data?last_id=one>; rel="next"',
+            "Link": '<https://test.test/training-data?last_id=one>; rel="next"',
         },
         json=[{"id": "one"}],
-        status=200,
+        status_code=200,
     )
-    responses.add(
-        responses.GET,
-        "http://test.test/training-data",
-        match=[responses.matchers.query_param_matcher({"last_id": "one"})],
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/training-data?last_id=one",
         json=[{"id": "two"}],
-        status=200,
+        status_code=200,
     )
 
-    td = simai_client.training_data.list()
-    assert len(td) == 2
-    assert td[0].id == "one"
-    assert td[1].id == "two"
+    td_list = simai_client.training_data.list()
+    assert len(td_list) == 2
+    assert td_list[0].id == "one"
+    assert td_list[1].id == "two"
 
 
-@responses.activate
-def test_training_data_list_with_filters(simai_client):
-    resps_lst = responses.add(
-        responses.GET,
-        "https://test.test/training-data",
-        match=[
-            responses.matchers.query_string_matcher(
-                urlencode(
-                    [
-                        (
-                            "filter[]",
-                            json.dumps(
-                                {"field": "name", "operator": "EQ", "value": "thingo"},
-                                separators=(",", ":"),
-                            ),
-                        ),
-                        (
-                            "filter[]",
-                            json.dumps(
-                                {"field": "size", "operator": "LT", "value": 10000},
-                                separators=(",", ":"),
-                            ),
-                        ),
-                    ]
-                )
-            )
-        ],
+def test_training_data_list_with_filters(simai_client, httpx_mock):
+    expected_query = urlencode(
+        [
+            (
+                "filter[]",
+                json.dumps(
+                    {"field": "name", "operator": "EQ", "value": "thingo"},
+                    separators=(",", ":"),
+                ),
+            ),
+            (
+                "filter[]",
+                json.dumps(
+                    {"field": "size", "operator": "LT", "value": "10000"},
+                    separators=(",", ":"),
+                ),
+            ),
+        ]
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/training-data?{expected_query}",
         headers={
             "X-Pagination": json.dumps({"total_pages": 1}),
         },
         json=[{"id": "one"}],
-        status=200,
+        status_code=200,
     )
 
     td = simai_client.training_data.list(filters=[("name", "EQ", "thingo"), ("size", "LT", 10000)])
     assert len(td) == 1
-    assert resps_lst.call_count == 1
+    assert len(httpx_mock.get_requests()) == 1
 
 
-@responses.activate
-def test_training_data_add_to_project(simai_client, training_data_factory, project_factory):
+def test_training_data_add_to_project(
+    simai_client, training_data_factory, project_factory, httpx_mock
+):
     td: TrainingData = training_data_factory(id="08080")
     project = project_factory(id="09090")
-    responses.add(
-        responses.PUT,
-        f"https://test.test/training-data/{td.id}/project/{project.id}/association",
-        status=204,
+    httpx_mock.add_response(
+        method="PUT",
+        url=f"https://test.test/training-data/{td.id}/project/{project.id}/association",
+        status_code=204,
     )
     td.add_to_project(project)
 
 
-@responses.activate
-def test_training_data_remove_from_project(simai_client, training_data_factory, project_factory):
+def test_training_data_remove_from_project(
+    simai_client, training_data_factory, project_factory, httpx_mock
+):
     td: TrainingData = training_data_factory(id="08080")
     project = project_factory(id="09090")
-    responses.add(
-        responses.DELETE,
-        f"https://test.test/training-data/{td.id}/project/{project.id}/association",
-        status=204,
+    httpx_mock.add_response(
+        method="DELETE",
+        url=f"https://test.test/training-data/{td.id}/project/{project.id}/association",
+        status_code=204,
     )
     td.remove_from_project(project)
 
@@ -153,31 +144,29 @@ def test_training_data_remove_from_project(simai_client, training_data_factory, 
         ({"id": "81", "name": "Diablo", "subset": None}),
     ],
 )
-@responses.activate
-def test_get_subset(training_data_factory, project_factory, td_factory_args):
+def test_get_subset(training_data_factory, project_factory, td_factory_args, httpx_mock):
     project = project_factory(id="e45y", name="coolest_proj")
     td_subset = td_factory_args.get("subset")
     td_factory_args["project"] = project
     td: TrainingData = training_data_factory(**td_factory_args)
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}/data/{td.id}/subset",
-        status=200,
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}/data/{td.id}/subset",
+        status_code=200,
         json={"subset": td_subset},
     )
     assert td.get_subset(project=project) == td_subset
 
 
-@responses.activate
-def test_get_subset_fails_enum_check(training_data_factory, project_factory):
+def test_get_subset_fails_enum_check(training_data_factory, project_factory, httpx_mock):
     project = project_factory(id="bon5ai", name="coolest_proj")
     td: TrainingData = training_data_factory(project=project, id="415")
     td_subset = "Trainidation"
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}/data/{td.id}/subset",
-        status=200,
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}/data/{td.id}/subset",
+        status_code=200,
         json={"subset": td_subset},
     )
     with pytest.raises(ValueError) as e:
@@ -185,17 +174,17 @@ def test_get_subset_fails_enum_check(training_data_factory, project_factory):
     assert str(e.value) == f"'{td_subset}' is not a valid SubsetEnum"
 
 
-@responses.activate
-def test_assign_subset(training_data_factory, project_factory):
+def test_assign_subset(training_data_factory, project_factory, httpx_mock):
     project = project_factory(id="n07e45y", name="bananarama")
     td: TrainingData = training_data_factory(project=project, subset=SubsetEnum.TRAINING)
 
-    responses.add(
-        responses.PUT,
-        f"https://test.test/projects/{project.id}/data/{td.id}/subset",
-        status=200,
-        json={"subset": SubsetEnum.TEST},
-    )
+    for _ in range(3):
+        httpx_mock.add_response(
+            method="PUT",
+            url=f"https://test.test/projects/{project.id}/data/{td.id}/subset",
+            status_code=200,
+            json={"subset": SubsetEnum.TEST},
+        )
     td.assign_subset(project=project, subset=SubsetEnum.TEST)
     td.assign_subset(project=project, subset="Test")
     td.assign_subset(project=project, subset=None)

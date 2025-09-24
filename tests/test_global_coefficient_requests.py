@@ -23,7 +23,6 @@
 from typing import TYPE_CHECKING
 
 import pytest
-import responses
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.global_coefficients_requests import (
@@ -74,14 +73,13 @@ METADATA_RAW = {
 }
 
 
-@responses.activate
-def test_process_formula_success(global_coefficient_request_factory):
+def test_process_formula_success(global_coefficient_request_factory, httpx_mock):
     gc_formula = "max(Pressure)"
     project_id = "xX007Xx"
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project_id}/process-formula",
-        status=204,
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project_id}/process-formula",
+        status_code=204,
     )
     process_gc: ProcessGlobalCoefficient = global_coefficient_request_factory(
         data={
@@ -119,15 +117,14 @@ def test_process_formula_success(global_coefficient_request_factory):
     assert process_gc.result == compute_result
 
 
-@responses.activate
-def test_process_formula_success_with_cache(global_coefficient_request_factory):
+def test_process_formula_success_with_cache(global_coefficient_request_factory, httpx_mock):
     gc_formula = "max(Pressure)"
     project_id = "xX007Xx"
     compute_result = 0.25478328
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project_id}/process-formula",
-        status=200,
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project_id}/process-formula",
+        status_code=200,
         json={"result": compute_result},
     )
     process_gc: ProcessGlobalCoefficient = global_coefficient_request_factory(
@@ -148,14 +145,13 @@ def test_process_formula_success_with_cache(global_coefficient_request_factory):
 
 
 @pytest.mark.parametrize("action", ["check", "compute"])
-@responses.activate
-def test_process_formula_failure(global_coefficient_request_factory, action):
+def test_process_formula_failure(global_coefficient_request_factory, action, httpx_mock):
     gc_formula = "max(Pressure)"
     project_id = "xX007Xx"
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project_id}/process-formula",
-        status=204,
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project_id}/process-formula",
+        status_code=204,
     )
     process_gc: ProcessGlobalCoefficient = global_coefficient_request_factory(
         request_type=action,
