@@ -34,7 +34,12 @@ import responses
 from responses.matchers import urlencoded_params_matcher
 
 from ansys.simai.core.errors import SimAIError
-from ansys.simai.core.utils.auth import Authenticator, _AuthTokens, _AuthTokensRetriever
+from ansys.simai.core.utils.auth import (
+    TOKEN_REFRESH_BUFFER,
+    Authenticator,
+    _AuthTokens,
+    _AuthTokensRetriever,
+)
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
 
 DEFAULT_TOKENS = {
@@ -338,12 +343,20 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed(mo
 
 @responses.activate
 def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires(mocker, tmpdir):
+    """
+    Test that the Authenticator schedules and performs an automatic token refresh
+    before the refresh token expires, based on the TOKEN_REFRESH_BUFFER.
+
+    Verifies that when a refresh token is still valid but close to expiration,
+    the authenticator schedules a refresh operation to prevent token expiration
+    during idle periods.
+    """
     mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
 
     auth_tokens = copy.deepcopy(DEFAULT_TOKENS)
     auth_tokens["access_token"] = "monkey-see"
-    auth_tokens["expires_in"] = _AuthTokens.EXPIRATION_BUFFER - 1
-    auth_tokens["refresh_expires_in"] = _AuthTokensRetriever.REFRESH_BUFFER + 1
+    auth_tokens["expires_in"] = TOKEN_REFRESH_BUFFER - 1
+    auth_tokens["refresh_expires_in"] = TOKEN_REFRESH_BUFFER + 1
     resps_direct_grant = responses.add(
         responses.POST,
         "https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
@@ -393,7 +406,7 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
     while time.time() - t0 < 2 and resps_refresh.call_count == 0:
         # wait for the daemon thread to do its thing, or for the 2sec timeout...
         time.sleep(0.1)
-    # Tokens are automatically refreshed so refresh token doesn't expire'
+    # Tokens are automatically refreshed so refresh token doesn't expire
     assert resps_direct_grant.call_count == 1
     assert resps_refresh.call_count == 1
 

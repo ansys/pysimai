@@ -28,7 +28,7 @@ import threading
 import time
 import webbrowser
 from datetime import datetime, timedelta, timezone
-from typing import Any, ClassVar, Optional
+from typing import Any, Optional
 from urllib.parse import urljoin
 
 import niquests
@@ -46,14 +46,15 @@ logger = logging.getLogger(__name__)
 
 # polling can't be faster or auth server returns HTTP 400 Slow down
 DEVICE_AUTH_POLLING_INTERVAL = 5
+# Try to refresh tokens 300-400 secs before they go bad
+# - Randomized to prevent thundering herd
+# - Accounts for network latency and clock skew
+TOKEN_REFRESH_BUFFER = random.randrange(300, 400)  # noqa: S311
+TOKEN_EXPIRATION_BUFFER = 5
 
 
 class _AuthTokens(BaseModel):
     """Represents the OIDC tokens received from the auth server."""
-
-    # Time buffer so we treat nearly invalid tokens as invalid.
-    # Random so multiple processes don't refresh tokens at the same time.
-    EXPIRATION_BUFFER: ClassVar = random.randrange(5, 15)  # noqa: S311 # nosec
 
     access_token: str
     expiration: datetime
@@ -75,11 +76,11 @@ class _AuthTokens(BaseModel):
             )
         return data
 
-    def is_token_expired(self):
-        return self.expires_in < self.EXPIRATION_BUFFER
+    def must_refresh_tokens(self):
+        return self.expires_in < TOKEN_REFRESH_BUFFER
 
     def is_refresh_token_expired(self):
-        return self.refresh_expires_in < self.EXPIRATION_BUFFER
+        return self.refresh_expires_in < TOKEN_EXPIRATION_BUFFER
 
     @property
     def expires_in(self) -> float:
@@ -94,10 +95,6 @@ class _AuthTokensRetriever:
     """Retrieve tokens via ``get_tokens()``.
     It handles caching and the various auth token sources.
     """
-
-    # Time buffer to refresh the refresh_token before it becomes invalid.
-    # Random so multiple processes don't refresh the token at the same time
-    REFRESH_BUFFER = random.randrange(50, 120)  # noqa: S311 # nosec
 
     def __init__(
         self,
@@ -123,7 +120,7 @@ class _AuthTokensRetriever:
             logger.info(f"Could not read auth token from cache: {e}")
         return None
 
-    def _request_token_direct_grant(self) -> "_AuthTokens":
+    def _request_tokens_direct_grant(self) -> "_AuthTokens":
         logger.debug("request authentication tokens via direct grant")
         if not self.credentials:
             raise RuntimeError("Authentication credentials are missing")
@@ -137,7 +134,7 @@ class _AuthTokensRetriever:
             **handle_response(self.session.post(self.token_url, data=request_params))
         )
 
-    def _request_token_device_auth(self) -> "_AuthTokens":
+    def _request_tokens_device_auth(self) -> "_AuthTokens":
         logger.debug("request authentication tokens via device auth")
         auth_codes = handle_response(
             self.session.post(self.device_auth_url, data={"client_id": "sdk", "scope": "openid"})
@@ -161,7 +158,7 @@ class _AuthTokensRetriever:
             if b"authorization_pending" not in validation.content:
                 return _AuthTokens(**handle_response(validation))
 
-    def _refresh_auth_token(self, refresh_token: str) -> Optional[_AuthTokens]:
+    def _refresh_auth_tokens(self, refresh_token: str) -> Optional[_AuthTokens]:
         logger.debug("Refreshing authentication tokens.")
         request_params = {
             "client_id": "sdk",
@@ -178,19 +175,19 @@ class _AuthTokensRetriever:
 
     def _schedule_auth_refresh(self, refresh_expires_in: float):
         """Schedule authentication refresh to avoids refresh token expiring if the client is idle for a long time."""
-        if refresh_expires_in <= self.REFRESH_BUFFER:
+        if refresh_expires_in <= TOKEN_REFRESH_BUFFER:
             # Skip scheduling: refresh token too close to expiration (max SSO session nearly reached)
             return
         self.refresh_timer.cancel()
         self.refresh_timer = threading.Timer(
-            refresh_expires_in - self.REFRESH_BUFFER, self.get_tokens
+            refresh_expires_in - TOKEN_REFRESH_BUFFER, self.get_tokens
         )
         self.refresh_timer.daemon = True
         self.refresh_timer.start()
 
-    def get_tokens(self, force_refresh=False) -> _AuthTokens:
+    def get_tokens(self, force_refresh: bool = False) -> _AuthTokens:
         auth = self._get_token_from_cache()
-        if auth and not auth.is_token_expired() and not force_refresh:
+        if auth and not auth.must_refresh_tokens() and not force_refresh:
             # fast path: avoid locking the tokens, return early
             self._schedule_auth_refresh(auth.refresh_expires_in)
             return auth
@@ -200,13 +197,13 @@ class _AuthTokensRetriever:
             if auth and auth.is_refresh_token_expired():
                 logger.info("refresh token is expired")
                 auth = None
-            if auth and (force_refresh or auth.is_token_expired()):
-                auth = self._refresh_auth_token(auth.refresh_token)
+            if auth and (force_refresh or auth.must_refresh_tokens()):
+                auth = self._refresh_auth_tokens(auth.refresh_token)
             if auth is None:
                 if self.credentials:
-                    auth = self._request_token_direct_grant()
+                    auth = self._request_tokens_direct_grant()
                 else:
-                    auth = self._request_token_device_auth()
+                    auth = self._request_tokens_device_auth()
             # Use atomic operation (rename) to avoid avoids partial writes
             with open(self.cache_file_path + "~", "w") as f:
                 f.write(auth.model_dump_json())
