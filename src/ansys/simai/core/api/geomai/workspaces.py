@@ -86,3 +86,8 @@ class GeomAIWorkspaceClientMixin(ApiClientMixin):
         return self.download_file(
             f"geomai/workspaces/{workspace_id}/model/latent-parameters-json", file
         )
+
+    def download_geomai_workspace_model_evaluation_report(
+        self, workspace_id: str, file: Optional[File]
+    ):
+        return self.download_file(f"geomai/workspaces/{workspace_id}/model-evaluation-report", file)
