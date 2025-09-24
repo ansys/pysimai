@@ -26,6 +26,7 @@ import os
 import random
 import threading
 import time
+import shutil
 import webbrowser
 from datetime import datetime, timedelta, timezone
 from typing import Any, ClassVar, Optional
@@ -196,7 +197,7 @@ class _AuthTokensRetriever:
             # slow path: tokens are locked, will get refreshed
             auth = self._get_token_from_cache()  # might have changed while we waited the lock
             if auth and auth.is_refresh_token_expired():
-                logger.info("refresh token is expired")
+                logger.info("refresh token %s is expired", os.path.basename(self.cache_file_path))
                 auth = None
             if auth and (force_refresh or auth.is_token_expired()):
                 auth = self._refresh_auth_token(auth.refresh_token)
@@ -258,3 +259,43 @@ class Authenticator(AuthBase):
             request.headers["Authorization"] = f"Bearer {auth.access_token}"
             request.headers["X-Org"] = self._organization_name
         return request
+
+
+
+def _clean_tokens(self):
+    """Remove stale token files from the cache directory."""
+    cache_dir = get_cache_dir()
+    current_time = datetime.now(timezone.utc)
+    files_token = []
+    files_token_lock = set()
+    files_junk = []
+    for item in cache_dir.iterdir():
+        if item.is_file():
+            if item.name.startswith("tokens-") and item.suffix == ".json":
+                files_token.append(item)
+            elif item.name.startswith("tokens-") and item.suffix == ".lock":
+                files_token_lock.add(item)
+            else:
+                item.unlink()
+        else:
+            shutil.rmtree(item)
+
+
+
+
+    for item in cache_dir.iterdir():
+        if item.is_file() and item.name.startswith("tokens-") and item.name.endswith(".json"):
+            try:
+                with FileLock(item.name + ".lock", timeout=600):
+                    with open(item, "r") as f:
+                        data = json.load(f)
+                    refresh_expiration = datetime.fromisoformat(data.get("refresh_expiration"))
+                    if refresh_expiration < current_time:
+                        item.unlink()
+                        logger.debug("Removed stale token file: %s", item.name)
+            except (IOError, json.JSONDecodeError, KeyError, TypeError) as e:
+                logger.warning("Could not read token file %s: %s", item.name, e)
+                try:
+                    item.unlink()
+                except OSError:
+                    pass
