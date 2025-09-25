@@ -50,7 +50,7 @@ DEVICE_AUTH_POLLING_INTERVAL = 5
 # - Randomized to prevent thundering herd
 # - Accounts for network latency and clock skew
 TOKEN_REFRESH_BUFFER = random.randrange(300, 400)  # noqa: S311
-TOKEN_EXPIRATION_BUFFER = 5
+TOKEN_EXPIRATION_BUFFER = random.randrange(5, 15)  # noqa: S311
 
 
 class _AuthTokens(BaseModel):
@@ -180,7 +180,9 @@ class _AuthTokensRetriever:
             return
         self.refresh_timer.cancel()
         self.refresh_timer = threading.Timer(
-            refresh_expires_in - TOKEN_REFRESH_BUFFER, self.get_tokens
+            refresh_expires_in - TOKEN_REFRESH_BUFFER,
+            self.get_tokens,
+            kwargs={"force_refresh": True},
         )
         self.refresh_timer.daemon = True
         self.refresh_timer.start()

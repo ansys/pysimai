@@ -342,7 +342,7 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed(mo
 
 
 @responses.activate
-def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires(mocker, tmpdir):
+def test_authenticator_automatically_refreshes_before_refresh_token_expires(mocker, tmpdir):
     """
     Test that the Authenticator schedules and performs an automatic token refresh
     before the refresh token expires, based on the TOKEN_REFRESH_BUFFER.
@@ -353,14 +353,14 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
     """
     mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
 
-    auth_tokens = copy.deepcopy(DEFAULT_TOKENS)
-    auth_tokens["access_token"] = "monkey-see"
-    auth_tokens["expires_in"] = TOKEN_REFRESH_BUFFER - 1
-    auth_tokens["refresh_expires_in"] = TOKEN_REFRESH_BUFFER + 1
+    tokens_direct_grant = copy.deepcopy(DEFAULT_TOKENS)
+    tokens_direct_grant["access_token"] = "monkey-see"
+    tokens_direct_grant["expires_in"] = TOKEN_REFRESH_BUFFER + 100
+    tokens_direct_grant["refresh_expires_in"] = TOKEN_REFRESH_BUFFER + 1
     resps_direct_grant = responses.add(
         responses.POST,
         "https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
-        json=auth_tokens,
+        json=tokens_direct_grant,
         status=200,
         match=[
             urlencoded_params_matcher(
@@ -392,7 +392,7 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
             )
         ],
     )
-    Authenticator(
+    auth = Authenticator(
         ClientConfig(
             url="https://simai.ansys.com",
             organization="14_monkeys",
@@ -400,15 +400,18 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
         ),
         niquests.Session(),
     )
+    initial_refresh_timer = auth.tokens_retriever.refresh_timer
     assert resps_direct_grant.call_count == 1
     assert resps_refresh.call_count == 0
+    assert initial_refresh_timer.is_alive()
     t0 = time.time()
-    while time.time() - t0 < 2 and resps_refresh.call_count == 0:
-        # wait for the daemon thread to do its thing, or for the 2sec timeout...
+    while time.time() - t0 < 2 and auth.tokens_retriever.refresh_timer == initial_refresh_timer:
+        # wait for the refresh timer to restart, or for the 2sec timeout...
         time.sleep(0.1)
-    # Tokens are automatically refreshed so refresh token doesn't expire
-    assert resps_direct_grant.call_count == 1
-    assert resps_refresh.call_count == 1
+    assert resps_direct_grant.call_count == 1  # Initial authentication
+    assert resps_refresh.call_count == 1  # Tokens refresh
+    assert auth.tokens_retriever.refresh_timer != initial_refresh_timer
+    assert auth.tokens_retriever.refresh_timer.is_alive()
 
 
 @responses.activate
