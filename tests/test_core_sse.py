@@ -92,7 +92,6 @@ def test_api_client_sse_endpoint_unreachable(httpx_mock):
         )
 
 
-@pytest.mark.skip(reason="not supported in httpx rewrite")
 def test_api_client_sse_endpoint_wrong_organization(httpx_mock):
     """WHEN ApiClient is created, if SSE endpoint returns 403
     THEN a ConnectionError is raised with correct error message

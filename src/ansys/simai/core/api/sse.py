@@ -89,7 +89,7 @@ class SSEMixin(ApiClientMixin):
                 with connect_sse(
                     self._session, "GET", self._get_sse_url(), headers=headers, timeout=15
                 ) as event_source:
-                    event_source.response.raise_for_status()
+                    _raise_for_status(event_source.response)
                     event_source._check_content_type()
                     self._flag_sse_started.set()
 
@@ -102,6 +102,8 @@ class SSEMixin(ApiClientMixin):
             except httpx.ReadError as e:
                 logger.info(f"SSE disconnection: {e}")
             except httpx.HTTPError as e:
+                if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 403:
+                    raise ConnectionError(e.response.text) from e
                 self._flag_sse_started.set()
                 raise ConnectionError("Impossible to connect to event's endpoint.") from e
             except Exception as e:
@@ -189,3 +191,15 @@ class SSEMixin(ApiClientMixin):
 
     def _get_sse_url(self):
         return self.build_full_url_for_endpoint(SSE_ENDPOINT)
+
+
+def _raise_for_status(resp: httpx.Response):
+    """Wrapper for Response.raise_for_status().
+
+    Reads the stream on error so err.response.text is loaded.
+    """
+    try:
+        resp.raise_for_status()
+    except httpx.HTTPStatusError:
+        resp.read()
+        raise
