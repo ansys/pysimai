@@ -2,7 +2,7 @@ Non-parametric optimization
 =============================
 
 SimAI's non-parametric optimization feature is a process used to improve the performance of a given geometry
-— referred to as the baseline geometry — by applying smooth, data-driven deformations based on predicted sensitivity maps.
+(referred to as the baseline geometry) by applying smooth, data-driven deformations based on predicted sensitivity maps.
 
 This approach is especially relevant when there are no predefined building parameters, and it would be too difficult to
 define them retroactively.
