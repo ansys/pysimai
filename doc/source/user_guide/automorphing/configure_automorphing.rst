@@ -44,7 +44,7 @@ Symmetry constraints help reduce computational costs and ensure physically consi
 
 Symmetry can be planar or axial:
 
-- Planar symmetry, with the ``symmetries`` parameter (for example, ['X', 'Y', 'Z']), ensures that the geometry is mirrored across a plane normal to the given direction, which is useful for designs that are identical on both sides of a plane. For example, the design has a planar symmetry based on the "YZ" plane. Then, the parameter to specify is "X".
+- Planar symmetry, with the ``symmetries`` parameter (for example, ['X', 'Y', 'Z']), ensures that the geometry is mirrored across a plane normal to the given direction, which is useful for designs that are identical on both sides of a plane. For example, the design has a planar symmetry based on the "YZ" plane. Then, "X" is the parameter to specify.
 - Axial symmetry, with the ``axial_symmetry`` parameter (for example, 'x', 'y', 'z'), should be chosen when the deformation needs to be equal around a specific axis, resulting in rotational symmetry.
 
 Boundary conditions
