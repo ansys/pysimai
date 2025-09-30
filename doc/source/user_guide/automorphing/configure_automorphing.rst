@@ -5,7 +5,7 @@ How to configure the non-parametric optimization
 
 Learn about the parameters to set when configuring the non-parametric optimization.
 
-Baseline Geometry (geometry)
+Baseline geometry (geometry)
 ----------------------------
 
 The baseline geometry should be chosen carefully, as it forms the foundation for the optimization process.
@@ -44,7 +44,8 @@ Symmetry constraints help reduce computational costs and ensure physically consi
 
 Symmetry can be planar or axial:
 
-- Planar symmetry, with the ``symmetries`` parameter (for example, ['X', 'Y', 'Z']), ensures that the geometry is mirrored across a plane, which is useful for designs that are identical on both sides of a plane.
+- | Planar symmetry, with the ``symmetries`` parameter (for example, ['X', 'Y', 'Z']), ensures that the geometry is mirrored across a plane normal to the given direction, which is useful for designs that are identical on both sides of a plane.
+  | For example, the design has a planar symmetry based on the "YZ" plane. Then, the parameter to specify is "X".
 - Axial symmetry, with the ``axial_symmetry`` parameter (for example, 'x', 'y', 'z'), should be chosen when the deformation needs to be equal around a specific axis, resulting in rotational symmetry.
 
 Boundary conditions
@@ -59,7 +60,7 @@ Number of iterations (n_iters)
 ------------------------------
 
 The number of iterations determines how many rounds of improvement will be executed in one optimization process.
-For quick tests, 30 to 50 iterations are usually sufficient.
+For quick tests, 5 iterations are usually sufficient.
 If convergence is slow or the optimum remains unstable, consider increasing the number of iterations to 100 or more.
 Before committing to long runs, you should monitor the convergence trend to ensure additional iterations will provide value rather than waste computation time.
 
@@ -89,7 +90,7 @@ For example, for two bounding boxes:
 Its unit must correspond to the geometry coordinates unit.
 For example, if the bounding box is 2 meters long, the maximum displacement should be specified in meters as well.
 
-Setting this value too high will lead to an error that will return the maximum possible value based on the optimization parameters,
+Setting this value too high leads to an error that returns the maximum possible value based on the optimization parameters,
 while values that are too low may overly restrict the optimization.
 
 A practical guideline is to limit displacement to a small percentage of the geometry's characteristic length for each bounding box.
@@ -101,4 +102,3 @@ Show progress
 The ``show_progress`` parameter determines whether progress updates are displayed during the optimization run.
 It is generally recommended to enable this feature during development and testing phases
 so that you can monitor the process and detect potential issues early.
-You can disable progress reporting for final production runs where clean logs or faster execution is preferred.

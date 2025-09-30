@@ -280,7 +280,7 @@ class OptimizationDirectory(Directory[Optimization]):
         show_progress: bool = False,
     ) -> OptimizationResult:
         """Run an optimization loop to generate server-side geometries using automorphing.
-           Automorphing is a non-parametric deformation of a surface geometry.
+        Automorphing is a non-parametric deformation of a surface geometry.
 
         Args:
             geometry: Required. The object (Geometry) or the ID (str) of the baseline geometry on which to perform
@@ -288,12 +288,16 @@ class OptimizationDirectory(Directory[Optimization]):
                 The optimization will run in the same workspace as the model.
             bounding_boxes: Required. The list of the bounds of the different boxes that will define the absolute locations
                 of the geometry to optimize. It is a list of lists, and each sub-list must have exactly six items with the following
-                expected order: [x_min, x_max, y_min, y_max, z_min, z_max].
-                Example format: [
-                [box1_xmin, box1_xmax, box1_ymin, box1_ymax, box1_zmin, box1_zmax],
-                [box2_xmin, box2_xmax, box2_ymin, box2_ymax, box2_zmin, box2_zmax],
-                ...
-                ]
+                expected order: ``[x_min, x_max, y_min, y_max, z_min, z_max]``.
+
+                Example format::
+
+                    [
+                    [box1_xmin, box1_xmax, box1_ymin, box1_ymax, box1_zmin, box1_zmax],
+                    [box2_xmin, box2_xmax, box2_ymin, box2_ymax, box2_zmin, box2_zmax],
+                    ...
+                    ]
+
             n_iters: Required. The number of optimization iterations. This number must be a strictly positive integer.
                 It will define the number of automorphed geometries uploaded to the SimAI workspace.
             symmetries: Optional. The list of symmetry axes, axes being x, y, and z, defining a plane around which the geometry is mirrored.
@@ -323,10 +327,11 @@ class OptimizationDirectory(Directory[Optimization]):
                 This global coefficient must correspond to one of the existing coefficients defined in your model configuration.
             max_displacement: Optional. User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
                 It is specified as a list (``max_displacement``) matching the number of bounding boxes (``bounding_boxes``).
+
                 For example, for two bounding boxes:
 
-                - bounding_boxes = [[0,1,0,2,0,4],[10,2,10,4,10,5]]
-                - max_displacement = [0.002, 0.001]
+                - ``bounding_boxes = [[0,1,0,2,0,4],[10,2,10,4,10,5]]``
+                - ``max_displacement = [0.002, 0.001]``
 
                 Each value limits the displacement within the corresponding bounding box, using the same metric as the bounding box coordinates.
             show_progress: Optional. Whether to print progress bar on stdout.

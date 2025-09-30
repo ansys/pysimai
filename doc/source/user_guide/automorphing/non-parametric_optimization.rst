@@ -1,14 +1,14 @@
 Non-parametric optimization
 =============================
 
-SimAI non-parametric optimization is a process used to improve the performance of a given geometry
-(referred to as the baseline geometry) regardless of whether it is parameterized, by applying smooth,
-data-driven deformations based on predicted sensitivity maps.
+SimAI's non-parametric optimization feature is a process used to improve the performance of a given geometry
+— referred to as the baseline geometry — by applying smooth, data-driven deformations based on predicted sensitivity maps.
 
-This approach is especially relevant when there are no predefined building parameters and it would be too difficult to
-define them retroactively, as non-parametric optimization enables you to optimize the provided shape directly.
-In such cases, non-parametric optimization must be performed, applying smooth and continuous deformation to
-the baseline geometry helping you to explore design space and drive shape changes based on an objective function,
+This approach is especially relevant when there are no predefined building parameters, and it would be too difficult to
+define them retroactively.
+In such cases, non-parametric optimization must be performed, as it enables you to optimize the provided shape directly
+by applying smooth and continuous deformations to the baseline geometry.
+This helps you explore the design space and make shape changes based on an objective function
 without generating new geometries themselves or reparametrizing existing designs.
 
 This is where automorphing comes in:
@@ -24,7 +24,7 @@ For more information, see :ref:`Optimization<optimizations>`.
 How to perform non-parametric optimization
 -------------------------------------------
 
-Requirements for the training data:
+**Requirements for the training data:**
 
 Robust data preparation is the first step to successfully running the non-parametric optimization.
 Make sure the maximum magnitude within the simulation data is around the minimal optimization gain you want.
