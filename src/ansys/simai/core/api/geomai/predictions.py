@@ -51,7 +51,7 @@ class GeomAIPredictionClientMixin(ApiClientMixin):
             prediction_id: ID of the prediction.
         """
         return self._delete(
-            f"predictions/{prediction_id}",
+            f"geomai/predictions/{prediction_id}",
             return_json=False,
         )
 
