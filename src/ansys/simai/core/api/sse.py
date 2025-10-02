@@ -22,10 +22,9 @@
 
 import json
 import logging
-import queue
+import sys
 import time
-from concurrent.futures import Future, ThreadPoolExecutor
-from threading import Event
+from threading import Event, Thread
 
 import httpx
 from httpx_sse import ServerSentEvent, connect_sse
@@ -35,7 +34,6 @@ from ansys.simai.core.errors import ApiClientError, ConnectionError
 from ansys.simai.core.utils.configuration import ClientConfig
 
 logger = logging.getLogger(__name__)
-
 
 SSE_ENDPOINT = "sessions/events"
 
@@ -63,57 +61,54 @@ class SSEMixin(ApiClientMixin):
         # The _stop_sse_threads is to allow unit tests to kill the thread
         # immediately without needing another event.
         self._stop_sse_threads = getattr(config, "_stop_sse_threads", False)
-        self._error_queue: queue.Queue[Exception] = queue.Queue()
+        self._exception = None
         self._flag_sse_started = Event()
         logger.debug("Starting SSE listener thread.")
-        self._executor = ThreadPoolExecutor(
-            thread_name_prefix="SSEListener",
-            max_workers=1,
-        )
-        self._sse_listener: Future = self._executor.submit(self._sse_thread_loop)
+        self._sse_listener = Thread(target=self._sse_thread_loop, daemon=True, name="SSEListener")
+        self._sse_listener.start()
         logger.debug("Started listener thread.")
         self._flag_sse_started.wait(timeout=2)
         self.check_for_sse_error()
 
     def _sse_thread_loop(self):
-        last_event_id = ""
-        reconnection_delay = 0.0
+        try:
+            last_event_id = ""
+            reconnection_delay = 0.0
 
-        while True:
-            try:
-                time.sleep(reconnection_delay)
-                headers = {"Accept": "text/event-stream"}
-                if last_event_id:
-                    headers["Last-Event-ID"] = last_event_id
+            while True:
+                try:
+                    time.sleep(reconnection_delay)
+                    headers = {"Accept": "text/event-stream"}
+                    if last_event_id:
+                        headers["Last-Event-ID"] = last_event_id
 
-                with connect_sse(
-                    self._session, "GET", self._get_sse_url(), headers=headers, timeout=15
-                ) as event_source:
-                    _raise_for_status(event_source.response)
-                    event_source._check_content_type()
-                    self._flag_sse_started.set()
+                    with connect_sse(
+                        self._session, "GET", self._get_sse_url(), headers=headers, timeout=15
+                    ) as event_source:
+                        _raise_for_status(event_source.response)
+                        event_source._check_content_type()
+                        self._flag_sse_started.set()
 
-                    for sse in event_source.iter_sse():
-                        last_event_id = sse.id
-                        reconnection_delay = (sse.retry or 1000) / 1000
-                        self._handle_sse_event(sse)
-                        if self._stop_sse_threads:
-                            return
-            except httpx.ReadError as e:
-                logger.info(f"SSE disconnection: {e}")
-            except httpx.HTTPError as e:
-                if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 403:
-                    raise ConnectionError(e.response.text) from e
-                self._flag_sse_started.set()
-                raise ConnectionError("Impossible to connect to event's endpoint.") from e
-            except Exception as e:
-                self._flag_sse_started.set()
-                raise ApiClientError("Unhandled exception in SSE thread") from e
-            if self._stop_sse_threads:
-                return
-
-    def __del__(self):
-        self._stop_sse_threads = True
+                        for sse in event_source.iter_sse():
+                            last_event_id = sse.id
+                            reconnection_delay = (sse.retry or 1000) / 1000
+                            self._handle_sse_event(sse)
+                            if self._stop_sse_threads:
+                                return
+                except httpx.ReadError as e:
+                    logger.info(f"SSE disconnection: {e}")
+                except httpx.HTTPError as e:
+                    if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 403:
+                        raise ConnectionError(e.response.text) from e
+                    raise ConnectionError("Impossible to connect to event's endpoint.") from e
+                except Exception as e:
+                    raise ApiClientError("Unhandled exception in SSE thread") from e
+                if self._stop_sse_threads:
+                    return
+        except Exception:
+            # Propagate exceptions to main thread
+            self._flag_sse_started.set()
+            self._exception = sys.exc_info()
 
     def check_for_sse_error(self) -> None:
         """Check if the SSE thread has raised an exception.
@@ -121,10 +116,9 @@ class SSEMixin(ApiClientMixin):
         """
         if not self._sse_listener:
             return
-        if self._sse_listener.done():
-            exc = self._sse_listener.exception()
-            if exc:
-                raise exc
+        if self._exception is not None:
+            exc_type, exc_value, exc_traceback = self._exception
+            raise exc_value.with_traceback(exc_traceback)
 
     def _handle_sse_event(self, event: ServerSentEvent):
         try:
