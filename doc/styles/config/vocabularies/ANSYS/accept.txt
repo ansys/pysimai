@@ -22,3 +22,6 @@ ModelOutput
 [Oo]verfit(?:ting)?
 [Uu]nderfit(?:ting)?
 [Vv]oxel
+[Aa]utomorph(?:ing)?
+[Rr]eparametriz(?:ing)?
+n_iters
