@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 
+import httpcore
 import httpx
 import pytest
 from pydantic import HttpUrl
@@ -138,9 +139,10 @@ def test_use_system_proxies(mocker):
     """WHEN ApiClient is initialized on a system with default proxies
     THEN the system proxies are used
     """
+    proxy_url = "https://bonzibuddy.org"
     mocker.patch(
         "httpx._utils.getproxies",
-        return_value={"http": "https://bonzibuddy.org"},
+        return_value={"http": proxy_url},
     )
 
     client = SimAIClient(
@@ -150,10 +152,7 @@ def test_use_system_proxies(mocker):
         organization="ExtraBanane",
     )
     transport = client._api._session._transport_for_url(httpx.URL("http://popo.org"))
-    assert (
-        f"{transport._sync_transport._pool._proxy_url}"
-        == "URL(scheme=b'https', host=b'bonzibuddy.org', port=None, target=b'/')"
-    )
+    assert transport._sync_transport._pool._proxy_url == httpcore.URL(proxy_url)
 
 
 def test_use_user_provided_proxies(mocker):
@@ -173,7 +172,4 @@ def test_use_user_provided_proxies(mocker):
         https_proxy="https://😛.com",
     )
     transport = client._api._session._transport_for_url(httpx.URL("https://popo.org"))
-    assert (
-        str(transport._sync_transport._pool._proxy_url)
-        == "URL(scheme=b'https', host=b'xn--528h.com', port=None, target=b'/')"
-    )
+    assert transport._sync_transport._pool._proxy_url == httpcore.URL("https://xn--528h.com")
