@@ -186,7 +186,7 @@ class ApiClientMixin:
         logger.debug(f"Request stream {request_method} on {download_url}")
         full_url = self.build_full_url_for_endpoint(download_url)
         try:
-            with httpx.stream(request_method, full_url, **request_kwargs) as response:
+            with self._session.stream(request_method, full_url, **request_kwargs) as response:
                 handle_response(response, False)
                 if monitor_callback is not None:
                     monitor_callback(int(response.headers.get("Content-Length", 0)))
