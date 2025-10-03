@@ -24,3 +24,5 @@ The total number of voxels must not exceed 900^3, that is the three numbers mult
 If you exceed that value, an error will occur.
 
 Defaults to ``[100,100,100]``, if ``None`` is provided.
+
+For the maximum resolution of 900^3, the prediction takes approximately 10 minutes (approximately 1 microsecond per voxel).
