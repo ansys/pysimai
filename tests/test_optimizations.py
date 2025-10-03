@@ -25,8 +25,7 @@ import json
 import threading
 
 import pytest
-import responses
-from urllib3_future.contrib.webextensions.sse import ServerSentEvent
+from httpx_sse import ServerSentEvent
 
 from ansys.simai.core.data.optimizations import (
     _validate_axial_symmetry,
@@ -313,35 +312,34 @@ def test_validate_axial_symmetry_fails(axial_symmetry, symmetries):
         _validate_axial_symmetry(axial_symmetry, symmetries)
 
 
-@responses.activate
-def test_run_parametric_optimization(simai_client, mocker):
+def test_run_parametric_optimization(simai_client, mocker, httpx_mock):
     workspace_id = "insert_cool_reference"
     mocker.patch("ansys.simai.core.data.optimizations._validate_geometry_generation_fn_signature")
     geometry_upload = mocker.patch.object(simai_client.geometries, "upload")
     geometry_upload.return_value = simai_client.geometries._model_from({"id": "geomx"})
 
-    responses.add(
-        responses.POST,
-        f"https://test.test/workspaces/{workspace_id}/optimizations",
-        status=202,
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/workspaces/{workspace_id}/optimizations",
+        status_code=202,
         json={"id": "wow", "state": "requested", "trial_runs": []},
     )
-    responses.add(
-        responses.POST,
-        "https://test.test/optimizations/wow/trial-runs",
-        status=202,
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/optimizations/wow/trial-runs",
+        status_code=202,
         json={"id": "wow1", "state": "requested"},
     )
-    responses.add(
-        responses.POST,
-        "https://test.test/optimizations/wow/trial-runs",
-        status=202,
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/optimizations/wow/trial-runs",
+        status_code=202,
         json={"id": "wow2", "state": "requested"},
     )
-    responses.add(
-        responses.POST,
-        "https://test.test/optimizations/wow/trial-runs",
-        status=202,
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/optimizations/wow/trial-runs",
+        status_code=202,
         json={"id": "wow3", "state": "requested"},
     )
     threading.Timer(
@@ -402,40 +400,33 @@ def test_run_parametric_optimization(simai_client, mocker):
     assert results == [{"objective": i, "parameters": {"a": i}} for i in range(1, 4)]
 
 
-@responses.activate
-def test_run_non_parametric_optimization(simai_client, geometry_factory):
+def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_mock):
     workspace_id = "insert_cool_reference"
     geometry = geometry_factory(workspace_id=workspace_id)
 
-    responses.add(
-        responses.POST,
-        f"https://test.test/workspaces/{workspace_id}/optimizations",
-        status=202,
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/workspaces/{workspace_id}/optimizations",
+        status_code=202,
         json={"id": "wow", "state": "requested", "trial_runs": []},
     )
-    responses.add(
-        responses.POST,
-        "https://test.test/optimizations/wow/trial-runs",
-        status=202,
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/optimizations/wow/trial-runs",
+        status_code=202,
         json={"id": "wow1", "state": "requested"},
     )
-    responses.add(
-        responses.POST,
-        "https://test.test/optimizations/wow/trial-runs",
-        status=202,
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/optimizations/wow/trial-runs",
+        status_code=202,
         json={"id": "wow2", "state": "requested"},
     )
-    responses.add(
-        responses.POST,
-        "https://test.test/optimizations/wow/trial-runs",
-        status=202,
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/optimizations/wow/trial-runs",
+        status_code=202,
         json={"id": "wow3", "state": "requested"},
-    )
-    responses.add(
-        responses.GET,
-        "https://test.test/geometries/?filters={}&workspace=insert_cool_reference",
-        status=200,
-        json=[{"id": "x1", "name": "x1"}, {"id": "x2", "name": "x2"}, {"id": "x3", "name": "x3"}],
     )
     threading.Timer(
         0.1,

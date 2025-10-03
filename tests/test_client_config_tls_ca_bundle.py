@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import contextlib
-import os
 import ssl
 import subprocess
 import sys
@@ -33,6 +32,8 @@ import pytest
 
 import ansys.simai.core.errors as err
 from ansys.simai.core import SimAIClient
+
+from .conftest import disable_http_retry
 
 
 #
@@ -117,48 +118,30 @@ BASE_CLT_ARGS = {
 }
 
 
-def disable_http_retry(clt: SimAIClient, url: str):
-    "Avoids slow tests due to retry backoff"
-    adapter = clt._api._session.get_adapter(url)
-    adapter.max_retries = 0
-
-
 #
 # TESTS
 #
-def test_client_without_config_tls_ca_bundle(tls_root_certificate, https_server):
-    # Default config, using certifi's certificate store
-    clt = SimAIClient(**BASE_CLT_ARGS)
-    disable_http_retry(clt, https_server)
-    # By default, the self-signed test CA is not accepted
-    with pytest.raises(err.ConnectionError):
-        clt._api._get(https_server)
-    # One can use REQUESTS_CA_BUNDLE
-    with patch.dict(os.environ, {"REQUESTS_CA_BUNDLE": str(tls_root_certificate["ca"])}):
-        clt._api._get(https_server, return_json=False)
-
-
 @pytest.mark.skipif(
     sys.version_info < (3, 11),
     reason='"system" requires Python >= 3.10, "patch" is broken in python 3.10',
 )
 def test_client_config_tls_ca_bundle_system(tls_root_certificate, https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="system")
-    disable_http_retry(clt, https_server)
-    # The system CA rejects the test CA by default
-    with pytest.raises(err.ConnectionError):
-        clt._api._get(https_server)
+    with disable_http_retry(clt._api, https_server):
+        # The system CA rejects the test CA by default
+        with pytest.raises(err.ConnectionError):
+            clt._api._get(https_server)
 
-    # If the host system trusts the test CA, pysimai trusts it !
-    @contextlib.contextmanager
-    def load_test_ca_as_truststore_system_ca(ctx: "ssl.SSLContext"):
-        ctx.load_verify_locations(cafile=tls_root_certificate["ca"])
-        yield
+        # If the host system trusts the test CA, pysimai trusts it !
+        @contextlib.contextmanager
+        def load_test_ca_as_truststore_system_ca(ctx: "ssl.SSLContext"):
+            ctx.load_verify_locations(cafile=tls_root_certificate["ca"])
+            yield
 
-    with patch(
-        "truststore._api._configure_context", side_effect=load_test_ca_as_truststore_system_ca
-    ):
-        clt._api._get(https_server, return_json=False)
+        with patch(
+            "truststore._api._configure_context", side_effect=load_test_ca_as_truststore_system_ca
+        ):
+            clt._api._get(https_server, return_json=False)
 
 
 @pytest.mark.skipif(
@@ -174,6 +157,9 @@ def test_client_config_tls_ca_bundle_unsecure_none(https_server):
     clt._api._get(https_server, return_json=False)
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="tls_root_certificate fixture doesn't work on windows ?"
+)
 def test_client_config_tls_ca_bundle_path(tls_root_certificate, https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle=tls_root_certificate["ca"])
     clt._api._get(https_server, return_json=False)

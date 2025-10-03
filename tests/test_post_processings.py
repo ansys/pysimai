@@ -23,7 +23,6 @@
 import json
 
 import pytest
-import responses
 
 import ansys.simai.core
 from ansys.simai.core.data import post_processings
@@ -31,45 +30,42 @@ from ansys.simai.core.data.predictions import Prediction
 from ansys.simai.core.errors import InvalidArguments
 
 
-@responses.activate
-def test_post_processing_prediction_attribute(post_processing_factory):
+def test_post_processing_prediction_attribute(post_processing_factory, httpx_mock):
     """WHEN accessing the prediction attribute of a PostProcessing
     THEN the prediction is returned
     """
     post_processing = post_processing_factory(type="GlobalCoefficients", prediction_id="java")
-    responses.add(
-        responses.GET,
-        "https://test.test/predictions/java",
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/predictions/java",
         json={"id": "java", "state": "processing"},
-        status=200,
+        status_code=200,
     )
 
     assert isinstance(post_processing.prediction, Prediction)
     assert post_processing.prediction.id == "java"
 
 
-@responses.activate
-def test_post_processing_call_prediction_attribute_twice(post_processing_factory):
+def test_post_processing_call_prediction_attribute_twice(post_processing_factory, httpx_mock):
     """WHEN accessing the prediction attribute of a PostProcessing twice
     THEN the endpoint is called only once
     """
     post_processing = post_processing_factory(type="GlobalCoefficients", prediction_id="sumatra")
-    responses.add(
-        responses.GET,
-        "https://test.test/predictions/sumatra",
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/predictions/sumatra",
         json={"id": "sumatra", "state": "successful"},
-        status=200,
+        status_code=200,
     )
 
     post_processing.prediction  # noqa: B018
     post_processing.prediction  # noqa: B018
 
-    assert len(responses.calls) == 1
+    assert len(httpx_mock.get_requests()) == 1
 
 
-@responses.activate
 def test_post_processing_call_prediction_attribute_already_registered(
-    prediction_factory, post_processing_factory
+    prediction_factory, post_processing_factory, httpx_mock
 ):
     """WHEN accessing the prediction attribute of a PostProcessing when the geometry exists locally
     THEN no query is ran
@@ -78,40 +74,28 @@ def test_post_processing_call_prediction_attribute_already_registered(
     post_processing = post_processing_factory(
         type="GlobalCoefficients", prediction_id="registered_prediction"
     )
-    responses.add(
-        responses.GET,
-        "https://test.test/predictions/registered_prediction",
-        json={"id": "registered_prediction", "state": "successful"},
-        status=200,
-    )
 
     post_processing.prediction  # noqa: B018
 
-    assert len(responses.calls) == 0
+    assert len(httpx_mock.get_requests()) == 0
 
 
-@responses.activate
 def test_post_processing_ran_from_prediction_already_has_a_prediction(
-    prediction_factory, post_processing_factory
+    prediction_factory, post_processing_factory, httpx_mock
 ):
     """WHEN Running a post-treatment on a prediction
     THEN the prediction attribute is available without calling the /predictions/id endpoint
     """
     pred = prediction_factory(post_processings=[post_processing_factory(type="GlobalCoefficients")])
-    responses.add(
-        responses.POST,
-        f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
-        json={"id": "7777"},
-        status=200,
-    )
     global_coefficients = pred.post.global_coefficients()
 
     assert global_coefficients.prediction == pred
-    assert len(responses.calls) == 0
+    assert len(httpx_mock.get_requests()) == 0
 
 
-@responses.activate
-def test_post_processing_dont_run_exists_locally(prediction_factory, post_processing_factory):
+def test_post_processing_dont_run_exists_locally(
+    prediction_factory, post_processing_factory, httpx_mock
+):
     """WHEN Running a post-processing with run=False and it already exists locally
     THEN The local post-processing is returned and the API not called
     """
@@ -119,42 +103,35 @@ def test_post_processing_dont_run_exists_locally(prediction_factory, post_proces
 
     assert pred.post.global_coefficients(run=False) is not None
 
-    assert len(responses.calls) == 0
+    assert len(httpx_mock.get_requests()) == 0
 
 
-@responses.activate
-def test_post_processing_dont_run_does_not_exist_locally_no_params(prediction_factory):
+def test_post_processing_dont_run_does_not_exist_locally_no_params(prediction_factory, httpx_mock):
     """WHEN Running a parameter-less post-processing with run=False and it does not exist locally
     THEN The local post-processing is returned and the API get endpoint is called
     """
     pred = prediction_factory()
-    responses.add(
-        responses.GET,
-        f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
         json=[{"id": "0001", "type": "GlobalCoefficients"}],
-        status=200,
+        status_code=200,
     )
 
     pp = pred.post.global_coefficients(run=False)
     assert pp.id == "0001"
 
 
-@responses.activate
 def test_post_processing_dont_run_does_not_exist_locally_with_params(
-    prediction_factory,
+    prediction_factory, httpx_mock
 ):
     """WHEN Running a post-processing with parameters and run=False and it does not exist locally
     THEN The local post-processing is returned and the API get endpoint is called
     """
     pred = prediction_factory()
-    responses.add(
-        responses.GET,
-        f"https://test.test/predictions/{pred.id}/post-processings/SurfaceEvol",
-        match=[
-            responses.matchers.query_param_matcher(
-                {"filters": json.dumps({"axis": "x", "delta": 0.5})}
-            )
-        ],
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/predictions/{pred.id}/post-processings/SurfaceEvol?filters=%7B%22axis%22%3A%20%22x%22%2C%20%22delta%22%3A%200.5%7D",
         json=[
             {
                 "id": "0002",
@@ -162,48 +139,47 @@ def test_post_processing_dont_run_does_not_exist_locally_with_params(
                 "location": {"axis": "x", "delta": 0.5},
             }
         ],
-        status=200,
+        status_code=200,
     )
 
     pp = pred.post.surface_evolution(axis="x", delta=0.5, run=False)
     assert pp.id == "0002"
 
 
-@responses.activate
 def test_post_processing_dont_run_does_not_exist_locally_or_remotely(
-    prediction_factory,
+    prediction_factory, httpx_mock
 ):
     """WHEN Running a post-processing with run=False and it does not exist locally or on the server
     THEN None is returned and the API get endpoint is called
     """
     pred = prediction_factory()
-    responses.add(
-        responses.GET,
-        f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
         json=[],
-        status=200,
+        status_code=200,
     )
 
     assert pred.post.global_coefficients(run=False) is None
 
 
-@responses.activate
-def test_post_processing_run_from_directory(simai_client, prediction_factory):
+def test_post_processing_run_from_directory(simai_client, prediction_factory, httpx_mock):
     """WHEN I run a post-processing from the directory
     THEN The created post-processing is returned
     """
     pred = prediction_factory()
-    responses.add(
-        responses.GET,
-        f"https://test.test/predictions/{pred.id}",
-        json={"id": pred.id},
-        status=200,
-    )
-    responses.add(
-        responses.POST,
-        f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
-        json={"id": "7777"},
-        status=200,
+    for _ in range(2):
+        httpx_mock.add_response(
+            method="GET",
+            url=f"https://test.test/predictions/{pred.id}",
+            json={"id": pred.id},
+            status_code=200,
+        )
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
+        json={"id": "7777", "state": "successful"},
+        status_code=200,
     )
 
     pp = simai_client.post_processings.run(ansys.simai.core.GlobalCoefficients, pred.id)
@@ -212,41 +188,25 @@ def test_post_processing_run_from_directory(simai_client, prediction_factory):
     assert pp_bis.id == "7777"
 
 
-@responses.activate
-def test_post_processing_list(simai_client):
+def test_post_processing_list(simai_client, httpx_mock):
     """WHEN simai.post_processings.list is called
     THEN it returns a list of all post-processings for the workspace
     """
-    responses.add(
-        responses.GET,
-        "https://test.test/post-processings/",
-        match=[
-            responses.matchers.query_param_matcher({"workspace": simai_client.current_workspace.id})
-        ],
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/post-processings/?workspace={simai_client.current_workspace.id}",
         headers={"X-Pagination": json.dumps({"total_pages": 3})},
         json=[{"type": "GlobalCoefficients", "id": "1"}],
     )
-    responses.add(
-        responses.GET,
-        "https://test.test/post-processings/",
-        match=[
-            responses.matchers.query_param_matcher(
-                {"workspace": simai_client.current_workspace.id, "page": "2"}
-            )
-        ],
-        headers={"X-Pagination": json.dumps({"total_pages": 3})},
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/post-processings/?workspace={simai_client.current_workspace.id}&page=2",
         json=[{"type": "SurfaceVTP", "id": "2"}],
     )
-    responses.add(
-        responses.GET,
-        "https://test.test/post-processings/",
-        match=[
-            responses.matchers.query_param_matcher(
-                {"workspace": simai_client.current_workspace.id, "page": "3"}
-            )
-        ],
-        headers={"X-Pagination": json.dumps({"total_pages": 3})},
-        json=[{"type": "VolumeVTU", "id": "3"}],
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/post-processings/?workspace={simai_client.current_workspace.id}&page=3",
+        json=[{"type": "Slice", "id": "3"}],
     )
 
     pps = simai_client.post_processings.list()
@@ -254,8 +214,7 @@ def test_post_processing_list(simai_client):
     assert [pp.id for pp in pps] == ["1", "2", "3"]
 
 
-@responses.activate
-def test_post_processing_list_prediction_and_workspace_forbidden(simai_client):
+def test_post_processing_list_prediction_and_workspace_forbidden(simai_client, httpx_mock):
     """WHEN simai.post_processings.list is called with a prediction and a workspace
     THEN InvalidArguments error is raised
     """
@@ -263,8 +222,7 @@ def test_post_processing_list_prediction_and_workspace_forbidden(simai_client):
         simai_client.post_processings.list(workspace="toto", prediction="tata")
 
 
-@responses.activate
-def test_post_processing_list_in_prediction(simai_client, mocker):
+def test_post_processing_list_in_prediction(simai_client, mocker, httpx_mock):
     api_mock = mocker.Mock(return_value=[])
     simai_client._api.get_post_processings_for_prediction = api_mock
     pp = simai_client.post_processings.list(prediction="CrouAnthem")
@@ -272,8 +230,7 @@ def test_post_processing_list_in_prediction(simai_client, mocker):
     api_mock.assert_called_with("CrouAnthem", None)
 
 
-@responses.activate
-def test_post_processing_list_in_workspace(simai_client, mocker):
+def test_post_processing_list_in_workspace(simai_client, mocker, httpx_mock):
     api_mock = mocker.Mock(return_value=[])
     simai_client._api.get_post_processings_in_workspace = api_mock
     pp = simai_client.post_processings.list(
@@ -283,8 +240,7 @@ def test_post_processing_list_in_workspace(simai_client, mocker):
     api_mock.assert_called_with("BODEGA", post_processings.Slice._api_name())
 
 
-@responses.activate
-def test_prediction_post_list(simai_client, mocker, prediction_factory):
+def test_prediction_post_list(simai_client, mocker, prediction_factory, httpx_mock):
     pred = prediction_factory()
     api_mock = mocker.Mock(return_value=[])
     simai_client._api.get_post_processings_for_prediction = api_mock

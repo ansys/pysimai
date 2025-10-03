@@ -25,8 +25,8 @@ from threading import Event
 from typing import NamedTuple
 from unittest.mock import Mock
 
+import httpx
 import pytest
-import responses
 
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.post_processings import GlobalCoefficients, VolumeVTU
@@ -34,52 +34,53 @@ from ansys.simai.core.errors import ConnectionError, ProcessingError
 from ansys.simai.core.utils.configuration import ClientConfig
 
 
-def test_api_client_connects_to_sse_if_flag():
+@pytest.mark.parametrize("sse_disabled", [True, False])
+def test_api_client_connects_to_sse_if_flag(httpx_mock, sse_disabled):
     """WHEN ApiClient is created
-    THEN it connects to the SSE URL if and only if the no_sse_connection is not False
+    THEN it connects to the SSE URL if and only if no_sse_connection is not False
     """
     did_connect_to_sse_url = Event()
+    should_connect = not sse_disabled
 
-    def sse_connection(request):
-        did_connect_to_sse_url.set()
-        return (200, {}, "{}")
+    if should_connect:
 
-    with responses.RequestsMock() as rsps:
-        rsps.add_callback(
-            responses.GET,
-            "sse://test.test/sessions/events",
-            content_type="application/json",
-            callback=sse_connection,
+        def sse_connection(request):
+            did_connect_to_sse_url.set()
+            return httpx.Response(200, headers={"Content-Type": "text/event-stream"}, text="{}")
+
+        httpx_mock.add_callback(
+            sse_connection,
+            method="GET",
+            url="https://test.test/sessions/events",
+            match_headers={"Accept": "text/event-stream"},
         )
-        for sse_disabled in [True, False]:
-            should_connect = not sse_disabled
-            ApiClient(
-                ClientConfig(
-                    organization="toto",
-                    url="https://test.test",
-                    _disable_authentication=True,
-                    # We need this flag as unit tests will otherwise be stuck
-                    # waiting for a second event (if we set the flag after start).
-                    # Also __del__ cannot be trusted to be called.
-                    _stop_sse_threads=True,
-                    no_sse_connection=sse_disabled,
-                )
-            )
-            # wait 1 sec max if a connection has been made
-            did_connect = did_connect_to_sse_url.wait(1)
-            assert did_connect == should_connect
+    api = ApiClient(
+        ClientConfig(
+            organization="toto",
+            url="https://test.test",
+            _disable_authentication=True,
+            # We need this flag as unit tests will otherwise be stuck
+            # waiting for a second event (if we set the flag after start).
+            # Also __del__ cannot be trusted to be called.
+            _stop_sse_threads=True,
+            no_sse_connection=sse_disabled,
+        )
+    )
+    # wait 1 sec max if a connection has been made
+    did_connect = did_connect_to_sse_url.wait(1)
+    assert did_connect == should_connect
+    api.check_for_sse_error()
 
 
-@responses.activate
-def test_api_client_sse_endpoint_unreachable():
+def test_api_client_sse_endpoint_unreachable(httpx_mock):
     """WHEN ApiClient is created, if SSE endpoint is not reachable
     THEN a ConnectionError is raised
     """
-    responses.add(
-        responses.GET,
-        "sse://test.test/sessions/events",
-        body="Not found",
-        status=404,
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/sessions/events",
+        text="Not found",
+        status_code=404,
     )
     with pytest.raises(ConnectionError):
         ApiClient(
@@ -91,16 +92,15 @@ def test_api_client_sse_endpoint_unreachable():
         )
 
 
-@responses.activate
-def test_api_client_sse_endpoint_wrong_organization():
+def test_api_client_sse_endpoint_wrong_organization(httpx_mock):
     """WHEN ApiClient is created, if SSE endpoint returns 403
     THEN a ConnectionError is raised with correct error message
     """
-    responses.add(
-        responses.GET,
-        "sse://test.test/sessions/events",
-        body="User does not belong to the organization not_extrality or the organization does not exist.",
-        status=403,
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/sessions/events",
+        text="User does not belong to the organization not_extrality or the organization does not exist.",
+        status_code=403,
     )
     with pytest.raises(
         ConnectionError,
@@ -115,23 +115,22 @@ def test_api_client_sse_endpoint_wrong_organization():
         )
 
 
-@responses.activate
-def test_wait_non_blocking_for_non_loading_items(simai_client):
+def test_wait_non_blocking_for_non_loading_items(simai_client, httpx_mock):
     """WHEN Creating Mesh, prediction, post-processing objects that are finished
     THEN wait can be called and are not blocking
     """
-    responses.add(
-        responses.POST,
-        "https://test.test/geometries/7412/predictions",
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/geometries/7412/predictions",
         json={"id": "2222", "state": "successful"},
-        status=200,
+        status_code=200,
     )
 
-    responses.add(
-        responses.POST,
-        "https://test.test/predictions/2222/post-processings/GlobalCoefficients",
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/predictions/2222/post-processings/GlobalCoefficients",
         json={"id": "3333", "state": "successful"},
-        status=200,
+        status_code=200,
     )
     geometry = simai_client.geometries._model_from(
         {"id": "7412", "state": "successful", "predictions": []}
@@ -217,16 +216,15 @@ def test_sse_event_update_prediction_failure(sse_mixin, prediction_factory):
         pred.wait()
 
 
-@responses.activate
-def test_wait_timeout_false(simai_client):
+def test_wait_timeout_false(simai_client, httpx_mock):
     """WHEN wait timed out
     THEN the return value reflects that to the user (is False)
     """
-    responses.add(
-        responses.POST,
-        "https://test.test/geometries/7412/predictions",
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/geometries/7412/predictions",
         json={"id": "2222", "state": "pending"},
-        status=200,
+        status_code=200,
     )
     geometry = simai_client.geometries._model_from(
         {"id": "7412", "state": "successful", "predictions": []}
