@@ -22,14 +22,11 @@
 
 from typing import TYPE_CHECKING
 
-import responses
-
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.workspaces import GeomAIWorkspace
 
 
-@responses.activate
-def test_geomai_workspace_download_mer(simai_client):
+def test_geomai_workspace_download_mer(simai_client, httpx_mock):
     """WHEN downloading mer zip file
     THEN the content of the file matches the content of the response.
     """
@@ -37,11 +34,11 @@ def test_geomai_workspace_download_mer(simai_client):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
-    responses.add(
-        responses.GET,
-        f"https://test.test/geomai/workspaces/{workspace.id}/model-evaluation-report",
-        body=b"mer-geomai",
-        status=200,
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/model-evaluation-report",
+        text="mer-geomai",
+        status_code=200,
     )
 
     in_memory = workspace.download_model_evaluation_report()

@@ -428,12 +428,6 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_m
         status_code=202,
         json={"id": "wow3", "state": "requested"},
     )
-    responses.add(
-        responses.GET,
-        "https://test.test/geometries/?filters={}&workspace=insert_cool_reference",
-        status=200,
-        json=[{"id": "x1", "name": "x1"}, {"id": "x2", "name": "x2"}, {"id": "x3", "name": "x3"}],
-    )
     threading.Timer(
         0.1,
         simai_client._api._handle_sse_event,
