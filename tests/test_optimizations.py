@@ -428,6 +428,12 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_m
         status_code=202,
         json={"id": "wow3", "state": "requested"},
     )
+    responses.add(
+        responses.GET,
+        "https://test.test/geometries/?filters={}&workspace=insert_cool_reference",
+        status=200,
+        json=[{"id": "x1", "name": "x1"}, {"id": "x2", "name": "x2"}, {"id": "x3", "name": "x3"}],
+    )
     threading.Timer(
         0.1,
         simai_client._api._handle_sse_event,
@@ -464,6 +470,11 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_m
                                 "is_feasible": "true",
                                 "outcome_values": i,
                                 "next_geometry_parameters": None,
+                                "geometry": {
+                                    "id": f"x{i}",
+                                    "name": f"x{i}",
+                                    "workspace_id": geometry._fields["workspace_id"],
+                                },
                             },
                             "target": {"type": "optimization_trial_run", "id": f"wow{i}"},
                         }
@@ -479,4 +490,8 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_m
         boundary_conditions={"VelocityX": 10.5},
         n_iters=3,
     )
-    assert results == [{"objective": i} for i in range(1, 4)]
+    assert len(results.list_objectives()) == 3
+    assert results.list_objectives() == [1, 2, 3]
+    assert len(results.list_geometries()) == 3
+    assert results.list_geometries()[0].name == "x1"
+    assert results.optimization.id == "wow"
