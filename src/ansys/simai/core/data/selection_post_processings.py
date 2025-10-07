@@ -170,7 +170,7 @@ class SelectionPostProcessingsMethods:
         return PPList(selection=self._selection, post=lambda pred: pred.post.surface_vtp())
 
     def surface_vtp_td_location(self) -> PPList[SurfaceVTPTDLocation]:
-        """Compute or get the result of each prediction's surface of the selection in the VTP format.
+        """Compute or get the surface results of each prediction within the selection, in the VTP format.
 
         This method keeps the original data association as they are in the sample.
 
