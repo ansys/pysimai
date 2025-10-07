@@ -49,11 +49,16 @@ class GeomAIPredictionConfiguration(BaseModel):
     Required.
     """
     resolution: Optional[Tuple[PositiveInt, PositiveInt, PositiveInt]] = None
-    """A list of three integers defining the number of divisions along the X, Y, and Z axes.
+    """A list of three integers defining the number of voxels along the X, Y, and Z axes.
 
-    Higher values allow for more detailed geometry reconstruction, while lower values reduce detail but speed up computation.
+    Use higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
 
-    Defaults to ``[100, 100, 100]`` if none is provided.
+    The total number of voxels must not exceed 900^3, that is `x`, `y`, `z` multiplied together must be less than or equal to 900^3.
+    If you exceed that value, an error will occur.
+
+    Defaults to ``[100,100,100]``, if ``None`` is provided.
+
+    For the maximum resolution of 900^3, the prediction takes approximately 10 minutes (approximately 1 microsecond per voxel).
     """
     margin: Optional[float] = Field(default=None, ge=0, le=1)
     """A float that sets the size of the isosurface for the reconstruction of the geometry.
