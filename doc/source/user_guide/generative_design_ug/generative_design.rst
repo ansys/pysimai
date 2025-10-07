@@ -21,7 +21,7 @@ The resolution parameter is a list of three integers defining the number of voxe
 Use higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
 
 The total number of voxels must not exceed 900^3, that is the three numbers multiplied together must be less than or equal to 900^3.
-If you exceed that value, an error will occur.
+If you exceed that value, an error occurs.
 
 Defaults to ``[100,100,100]``, if ``None`` is provided.
 
