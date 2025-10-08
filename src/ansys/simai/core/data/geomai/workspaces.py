@@ -71,6 +71,19 @@ class GeomAIWorkspace(DataModel):
         """
         return self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
 
+    def download_model_evaluation_report(
+        self, file: Optional[File] = None
+    ) -> Union[None, BinaryIO]:
+        """Download the ZIP file of the model evaluation report for the workspace.
+
+        Args:
+            file: Binary file-object or the path of the file to put the content into.
+
+        Returns:
+            ``None`` if a file is specified or a binary file-object otherwise.
+        """
+        return self._client._api.download_geomai_workspace_model_evaluation_report(self.id, file)
+
 
 class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
     """Provides a collection of methods related to GeomAI workspaces.

@@ -115,13 +115,18 @@ add_module_names = False
 # Complain about all broken links
 nitpicky = True
 
-nitpick_ignore_regex = {
+nitpick_ignore = [
     ("py:obj", "ansys.simai.core.data.base.DataModelType"),
     ("py:class", "_io.BytesIO"),
     ("py:class", "pydantic_core._pydantic_core.Url"),
     ("py:class", "pydantic_core._pydantic_core.Annotated"),
     ("py:class", "annotated_types.Gt"),
     ("py:class", "pydantic.networks.UrlConstraints"),
+    # httpx cannot be linked: https://github.com/encode/httpx/discussions/3091
+    ("py:class", "Request"),
+]
+nitpick_ignore_regex = {
+    ("py:class", r"httpx\..+"),
 }
 
 source_suffix = ".rst"
@@ -145,6 +150,7 @@ html_context = {
     "pyansys_tags": ["AI"],
 }
 html_theme_options = {
+    "logo": "pyansys",
     "github_url": "https://github.com/ansys/pysimai",
     "show_prev_next": False,
     "show_breadcrumbs": True,

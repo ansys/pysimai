@@ -31,10 +31,8 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 from urllib.parse import urljoin
 
-import niquests
+import httpx
 from filelock import FileLock
-from niquests.auth import AuthBase
-from niquests.models import PreparedRequest
 from pydantic import BaseModel, ValidationError, model_validator
 
 from ansys.simai.core.errors import ApiClientError
@@ -99,7 +97,7 @@ class _AuthTokensRetriever:
     def __init__(
         self,
         credentials: Optional["Credentials"],
-        session: niquests.Session,
+        session: httpx.Client,
         auth_cache_hash: str,
         realm_url: str,
     ) -> None:
@@ -169,7 +167,7 @@ class _AuthTokensRetriever:
             return _AuthTokens(
                 **handle_response(self.session.post(self.token_url, data=request_params))
             )
-        except (niquests.exceptions.ConnectionError, ApiClientError) as e:
+        except (httpx.ConnectError, ApiClientError) as e:
             logger.error(f"Could not refresh authentication tokens: {e}")
             return None
 
@@ -214,8 +212,8 @@ class _AuthTokensRetriever:
         return auth
 
 
-class Authenticator(AuthBase):
-    def __init__(self, config: ClientConfig, session: niquests.Session) -> None:
+class Authenticator(httpx.Auth):
+    def __init__(self, config: ClientConfig, session: httpx.Client) -> None:
         self._session = session
         self._enabled = not getattr(config, "_disable_authentication", False)
         if not self._enabled:
@@ -234,7 +232,7 @@ class Authenticator(AuthBase):
             force_refresh=True
         )  # start fetching/refreshing auth tokens
 
-    def __call__(self, request: PreparedRequest) -> PreparedRequest:
+    def auth_flow(self, request: httpx.Request):
         """Call to prepare the requests.
 
         Args:
@@ -245,11 +243,11 @@ class Authenticator(AuthBase):
         """
         if not request.url:
             raise ValueError("Request must have a valid URL")
-        request_host = request.url.split("://", 1)[-1]  # ignore protocol part
+        request_host = request.url.host
         if (
             self._enabled
             and request_host.startswith(self._url_prefix.host)
-            and self._realm_url not in request.url
+            and self._realm_url not in str(request.url)
         ):
             # So the token doesn't expire during requests that upload a large amount of data
             is_request_multipart_data = "multipart/form_data" in request.headers.get(
@@ -258,4 +256,4 @@ class Authenticator(AuthBase):
             auth = self.tokens_retriever.get_tokens(force_refresh=is_request_multipart_data)
             request.headers["Authorization"] = f"Bearer {auth.access_token}"
             request.headers["X-Org"] = self._organization_name
-        return request
+        yield request

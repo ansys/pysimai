@@ -21,32 +21,31 @@
 # SOFTWARE.
 from json import JSONDecodeError
 
-import niquests
+import httpx
 import pytest
-from niquests.models import Response
 
 from ansys.simai.core.errors import ApiClientError, SimAIError
 from ansys.simai.core.utils.requests import handle_http_errors, handle_response
 
 
 def test_handle_http_errors(mocker):
-    response_json_mock = mocker.patch("niquests.models.Response.json")
-    raise_for_status_mock = mocker.patch("niquests.models.Response.raise_for_status")
+    response_json_mock = mocker.patch("httpx.Response.json")
+    raise_for_status_mock = mocker.patch("httpx.Response.raise_for_status")
 
     # Error without json body
-    raise_for_status_mock.side_effect = niquests.exceptions.HTTPError(Response())
+    raise_for_status_mock.side_effect = httpx.HTTPError("woaw")
     response_json_mock.side_effect = ValueError()
 
     with pytest.raises(SimAIError):
-        handle_http_errors(Response())
+        handle_http_errors(httpx.Response(200))
 
     # Error with json body
-    raise_for_status_mock.side_effect = niquests.exceptions.HTTPError(Response())
+    raise_for_status_mock.side_effect = httpx.HTTPError("boadyful")
     response_json_mock.side_effect = None
     response_json_mock.return_value = {"status": "rekt"}
 
     with pytest.raises(SimAIError, match="rekt"):
-        handle_http_errors(Response())
+        handle_http_errors(httpx.Response(200))
 
 
 @pytest.mark.parametrize(
@@ -59,14 +58,12 @@ def test_handle_http_errors(mocker):
 )
 def test_handle_response_success(mocker, status_code, return_value, return_json):
     mocker.patch("ansys.simai.core.utils.requests.handle_http_errors")
-    mocker.patch.object(Response, "json", return_value=return_value)
-    response = Response()
-    response.status_code = status_code
+    mocker.patch.object(httpx.Response, "json", return_value=return_value)
 
-    result = handle_response(response, return_json=return_json)
+    result = handle_response(httpx.Response(status_code), return_json=return_json)
 
     if return_json is False:
-        assert isinstance(result, Response)
+        assert isinstance(result, httpx.Response)
     elif status_code == 204:
         assert result is None
     else:
@@ -82,9 +79,7 @@ def test_handle_response_success(mocker, status_code, return_value, return_json)
 )
 def test_handle_response_raises(mocker, status_code, side_effect):
     mocker.patch("ansys.simai.core.utils.requests.handle_http_errors")
-    mocker.patch("requests.models.Response.json", side_effect=side_effect)
-    response = Response()
-    response.status_code = status_code
+    mocker.patch("httpx.Response.json", side_effect=side_effect)
 
     with pytest.raises(ApiClientError):
-        handle_response(Response(), return_json=True)
+        handle_response(httpx.Response(status_code), return_json=True)

@@ -19,28 +19,3 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from ansys.simai.core.data.workspaces import Workspace
-
-
-def test_workspace_download_mer_data(simai_client, httpx_mock):
-    """WHEN downloading mer csv file
-    THEN the content of the file matches the content of the response.
-    """
-
-    workspace: Workspace = simai_client._workspace_directory._model_from(
-        {"id": "0011", "name": "riri"}
-    )
-    httpx_mock.add_response(
-        method="GET",
-        url=f"https://test.test/workspaces/{workspace.id}/mer-data",
-        content=b"mer-data-geometries",
-        status_code=200,
-    )
-
-    in_memory = workspace.download_mer_data()
-    data_in_file = in_memory.readline()
-    assert data_in_file.decode("ascii") == "mer-data-geometries"

@@ -16,10 +16,13 @@ For more information, see Number of latent parameters.
 Resolution
 -----------
 
-The resolution is a list of three integers defining the number of divisions along the X, Y, and Z axes.
+The resolution parameter is a list of three integers defining the number of voxels along the X, Y, and Z axes.
 
-The default value [100, 100, 100] offers a good balance for general use.
-
-Use the default resolution to test your setup.
-Since it is an expert parameter, use a different value (than the default one) only if it is needed.
 Use higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
+
+The total number of voxels must not exceed 900^3, that is `x`, `y`, `z` multiplied together must be less than or equal to 900^3.
+If you exceed that value, an error occurs.
+
+Defaults to ``[100,100,100]``, if ``None`` is provided.
+
+For the maximum resolution of 900^3, the prediction takes approximately 10 minutes (approximately 1 microsecond per voxel).

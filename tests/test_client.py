@@ -23,7 +23,6 @@
 from pathlib import Path
 
 import pytest
-import responses
 
 import ansys.simai.core.errors as err
 from ansys.simai.core import SimAIClient
@@ -47,8 +46,7 @@ def test_client_creation_invalid_config():
         ("1.0.9", "1.9.0", "required."),
     ],
 )
-@responses.activate
-def test_client_version_auto_warn(caplog, mocker, local_ver, latest_ver, expected):
+def test_client_version_auto_warn(caplog, mocker, httpx_mock, local_ver, latest_ver, expected):
     """WHEN the SDK version is slightly outdated compared to what the API responds
     THEN a warning is printed
     """
@@ -56,11 +54,11 @@ def test_client_version_auto_warn(caplog, mocker, local_ver, latest_ver, expecte
         "ansys.simai.core.client.__version__",
         local_ver,
     )
-    responses.add(
-        responses.GET,
-        "https://pypi.org/pypi/ansys-simai-core/json",
+    httpx_mock.add_response(
+        method="GET",
+        url="https://pypi.org/pypi/ansys-simai-core/json",
         json={"info": {"version": latest_ver}},
-        status=200,
+        status_code=200,
     )
     SimAIClient(
         url="https://test.test",

@@ -23,7 +23,6 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 import pytest
-import responses
 
 from ansys.simai.core.data.models import ModelConfiguration
 from ansys.simai.core.data.training_data import TrainingData
@@ -33,68 +32,62 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.projects import Project
 
 
-@responses.activate
-def test_project_rename(simai_client):
+def test_project_rename(simai_client, httpx_mock):
     project = simai_client._project_directory._model_from({"id": "0011", "name": "riri"})
 
-    responses.add(
-        responses.PATCH,
-        "https://test.test/projects/0011",
-        status=204,
+    httpx_mock.add_response(
+        method="PATCH",
+        url="https://test.test/projects/0011",
+        status_code=204,
     )
-    responses.add(
-        responses.GET,
-        "https://test.test/projects/0011",
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/projects/0011",
         json={"id": "0011", "name": "fifi"},
-        status=200,
+        status_code=200,
     )
 
     project.name = "fifi"
     assert project.name == "fifi"
 
 
-@responses.activate
-def test_project_list_training_data(simai_client):
+def test_project_list_training_data(simai_client, httpx_mock):
     project: Project = simai_client._project_directory._model_from({"id": "0011", "name": "riri"})
 
-    responses.add(
-        responses.GET,
-        "https://test.test/projects/0011/data",
-        match=[responses.matchers.query_param_matcher({})],
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/projects/0011/data",
         headers={"Link": '<https://test.test/projects/0011/data?last_id=first>; rel="next"'},
         json=[{"id": "first"}],
-        status=200,
+        status_code=200,
     )
 
-    responses.add(
-        responses.GET,
-        "https://test.test/projects/0011/data",
-        match=[responses.matchers.query_param_matcher({"last_id": "first"})],
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/projects/0011/data?last_id=first",
         json=[{"id": "second"}],
-        status=200,
+        status_code=200,
     )
 
     assert [data.id for data in project.data] == ["first", "second"]
 
 
-@responses.activate
-def test_project_sample(simai_client):
+def test_project_sample(simai_client, httpx_mock):
     raw_td = {"id": "28-06-1712", "name": "jean-jacques rousseau"}
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
-    responses.add(
-        responses.PUT,
-        f"https://test.test/projects/{project.id}/sample",
-        match=[responses.matchers.json_params_matcher({"training_data": raw_td["id"]})],
-        status=200,
+    httpx_mock.add_response(
+        method="PUT",
+        url=f"https://test.test/projects/{project.id}/sample",
+        status_code=200,
     )
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
-        json=({**raw_project, "sample": raw_td}),
-        status=200,
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
+        json={**raw_project, "sample": raw_td},
+        status_code=200,
     )
     assert project.sample is None
     project.sample = raw_td["id"]
@@ -102,7 +95,6 @@ def test_project_sample(simai_client):
     assert project.sample.id == raw_td["id"]
 
 
-@responses.activate
 @pytest.mark.parametrize(
     "status_code,response_body,error_type",
     [
@@ -111,16 +103,16 @@ def test_project_sample(simai_client):
         (400, None, ApiClientError),
     ],
 )
-def test_is_trainable(simai_client, status_code, response_body, error_type):
+def test_is_trainable(simai_client, status_code, response_body, error_type, httpx_mock):
     """Test is_trainable method according to is_trainable parameter and the response status code."""
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}
 
     project: Project = simai_client._project_directory._model_from(raw_project)
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}/trainable",
-        status=status_code,
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}/trainable",
+        status_code=status_code,
         json=response_body,
     )
 
@@ -275,16 +267,15 @@ def test_process_gc_formula_with_no_sample(simai_client):
         project.process_gc_formula("max(Pressure)")
 
 
-@responses.activate
-def test_process_gc_formula_without_cache(simai_client, delayed_events):
+def test_process_gc_formula_without_cache(simai_client, delayed_events, httpx_mock):
     gc_formula = "max(Pressure)"
     compute_result = 0.25478328
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
     project: Project = simai_client._project_directory._model_from(raw_project)
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project.id}/process-formula",
-        status=204,
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project.id}/process-formula",
+        status_code=204,
     )
     check_sse_event = {
         "status": "successful",
@@ -306,14 +297,13 @@ def test_process_gc_formula_without_cache(simai_client, delayed_events):
     assert result == compute_result
 
 
-@responses.activate
-def test_process_gc_formula_with_cache(simai_client):
+def test_process_gc_formula_with_cache(simai_client, httpx_mock):
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
     project: Project = simai_client._project_directory._model_from(raw_project)
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project.id}/process-formula",
-        status=200,
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project.id}/process-formula",
+        status_code=200,
         json={
             "formula": "max(Pressure)",
             "result": 0.25478328,
@@ -326,8 +316,7 @@ def test_process_gc_formula_with_cache(simai_client):
     assert result == 0.25478328
 
 
-@responses.activate
-def test_cancel_build_for_specified_project_id(simai_client):
+def test_cancel_build_for_specified_project_id(simai_client, httpx_mock):
     """WHEN I call projects.cancel_build() for a specified project id
     THEN it returns None if there is an build in progress
     AND raises a ProcessingError otherwise
@@ -335,27 +324,27 @@ def test_cancel_build_for_specified_project_id(simai_client):
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": True},
-        status=200,
+        status_code=200,
     )
 
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project.id}/cancel-training",
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project.id}/cancel-training",
         json={"id": "e45y123", "is_being_trained": False},
-        status=200,
+        status_code=200,
     )
 
     simai_client.projects.cancel_build(project.id)
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": False},
-        status=200,
+        status_code=200,
     )
 
     with pytest.raises(ProcessingError) as excinfo:
@@ -363,48 +352,46 @@ def test_cancel_build_for_specified_project_id(simai_client):
         assert "No build pending for this project" in excinfo.value
 
 
-@responses.activate
-def test_cancel_active_build_from_project(simai_client):
+def test_cancel_active_build_from_project(simai_client, httpx_mock):
     """WHEN I call cancel_build() from a project with an active build
     THEN returns None
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": True},
-        status=200,
+        status_code=200,
     )
 
-    responses.add(
-        responses.POST,
-        f"https://test.test/projects/{project.id}/cancel-training",
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/projects/{project.id}/cancel-training",
         json={"id": "e45y123"},
-        status=200,
+        status_code=200,
     )
 
     project.cancel_build()
-    assert len(responses.calls) == 2
+    assert len(httpx_mock.get_requests()) == 2
 
 
-@responses.activate
-def test_cancel_inactive_build_from_project(simai_client):
+def test_cancel_inactive_build_from_project(simai_client, httpx_mock):
     """WHEN I call cancel_build() from a project with an inactive build
     THEN it raises a ProcessingError
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    responses.add(
-        responses.GET,
-        f"https://test.test/projects/{project.id}",
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": False},
-        status=200,
+        status_code=200,
     )
 
     with pytest.raises(ProcessingError) as excinfo:
         project.cancel_build()
         assert "No build pending for this project" in excinfo.value
-    assert len(responses.calls) == 1
+    assert len(httpx_mock.get_requests()) == 1

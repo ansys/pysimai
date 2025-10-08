@@ -43,7 +43,7 @@ from typing import (
     overload,
 )
 
-from niquests import Response
+from httpx import Response
 
 from ansys.simai.core.data.base import DataModel, DataModelType, Directory
 from ansys.simai.core.errors import InvalidArguments

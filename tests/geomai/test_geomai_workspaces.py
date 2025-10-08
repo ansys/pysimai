@@ -23,24 +23,24 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.simai.core.data.workspaces import Workspace
+    from ansys.simai.core.data.geomai.workspaces import GeomAIWorkspace
 
 
-def test_workspace_download_mer_data(simai_client, httpx_mock):
-    """WHEN downloading mer csv file
+def test_geomai_workspace_download_mer(simai_client, httpx_mock):
+    """WHEN downloading mer zip file
     THEN the content of the file matches the content of the response.
     """
 
-    workspace: Workspace = simai_client._workspace_directory._model_from(
-        {"id": "0011", "name": "riri"}
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "abc123", "name": "HL3"}
     )
     httpx_mock.add_response(
         method="GET",
-        url=f"https://test.test/workspaces/{workspace.id}/mer-data",
-        content=b"mer-data-geometries",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/model-evaluation-report",
+        text="mer-geomai",
         status_code=200,
     )
 
-    in_memory = workspace.download_mer_data()
+    in_memory = workspace.download_model_evaluation_report()
     data_in_file = in_memory.readline()
-    assert data_in_file.decode("ascii") == "mer-data-geometries"
+    assert data_in_file.decode("ascii") == "mer-geomai"
