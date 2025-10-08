@@ -29,9 +29,15 @@ from math import ceil
 
 import httpx
 import pytest
+from pytest_httpx import HTTPXMock
 
 from ansys.simai.core.errors import SimAIError
-from ansys.simai.core.utils.auth import Authenticator, _AuthTokens, _AuthTokensRetriever
+from ansys.simai.core.utils.auth import (
+    TOKEN_REFRESH_BUFFER,
+    Authenticator,
+    _AuthTokens,
+    _AuthTokensRetriever,
+)
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
 
 DEFAULT_TOKENS = {
@@ -245,20 +251,29 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed(
 
 
 def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires(
-    mocker, tmpdir, httpx_mock
+    mocker, tmpdir, httpx_mock: HTTPXMock
 ):
+    """
+    Test that the Authenticator schedules and performs an automatic token refresh
+    before the refresh token expires, based on the TOKEN_REFRESH_BUFFER.
+
+    Verifies that when a refresh token is still valid but close to expiration,
+    the authenticator schedules a refresh operation to prevent token expiration
+    during idle periods.
+    """
     mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
 
-    auth_tokens = copy.deepcopy(DEFAULT_TOKENS)
-    auth_tokens["access_token"] = "monkey-see"
-    auth_tokens["expires_in"] = _AuthTokens.EXPIRATION_BUFFER - 1
-    auth_tokens["refresh_expires_in"] = _AuthTokensRetriever.REFRESH_BUFFER + 1
+    tokens_direct_grant = copy.deepcopy(DEFAULT_TOKENS)
+    tokens_direct_grant["access_token"] = "monkey-see"
+    tokens_direct_grant["expires_in"] = TOKEN_REFRESH_BUFFER + 100
+    tokens_direct_grant["refresh_expires_in"] = TOKEN_REFRESH_BUFFER + 1
     httpx_mock.add_response(
         method="POST",
         url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
-        json=auth_tokens,
+        json=tokens_direct_grant,
         status_code=200,
     )
+    matcher_direct_grant = httpx_mock._callbacks[-1][0]
 
     refreshed_tokens = DEFAULT_TOKENS.copy()
     refreshed_tokens["access_token"] = "TFou"
@@ -268,7 +283,8 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
         json=refreshed_tokens,
         status_code=200,
     )
-    Authenticator(
+    matcher_refresh = httpx_mock._callbacks[-1][0]
+    auth = Authenticator(
         ClientConfig(
             url="https://simai.ansys.com",
             organization="14_monkeys",
@@ -276,9 +292,18 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
         ),
         httpx.Client(),
     )
-    # Note: With pytest-httpx, we can't easily check call counts like with responses
-    # The test verifies that the authenticator works correctly, which is the main goal
-    time.sleep(2)  # wait for potential refresh to happen
+    initial_refresh_timer = auth.tokens_retriever.refresh_timer
+    assert matcher_direct_grant.nb_calls == 1
+    assert matcher_refresh.nb_calls == 0
+    assert initial_refresh_timer.is_alive()
+    t0 = time.time()
+    while time.time() - t0 < 2 and auth.tokens_retriever.refresh_timer == initial_refresh_timer:
+        # wait for the refresh timer to restart, or for the 2sec timeout...
+        time.sleep(0.1)
+    assert matcher_direct_grant.nb_calls == 1  # Initial authentication
+    assert matcher_direct_grant.nb_calls == 1  # Tokens refresh
+    assert auth.tokens_retriever.refresh_timer != initial_refresh_timer
+    assert auth.tokens_retriever.refresh_timer.is_alive()
 
 
 def test_requests_outside_user_api_are_not_authentified(mocker, tmpdir, httpx_mock):
