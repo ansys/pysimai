@@ -49,8 +49,8 @@ DEVICE_AUTH_POLLING_INTERVAL = 5
 # Try to refresh tokens 300-400 secs before they go bad
 # - Randomized to prevent thundering herd
 # - Accounts for network latency and clock skew
-TOKEN_REFRESH_BUFFER = random.randrange(300, 400)  # noqa: S311
-TOKEN_EXPIRATION_BUFFER = random.randrange(5, 15)  # noqa: S311
+TOKEN_REFRESH_BUFFER = random.randrange(300, 400)  # noqa: S311 # nosec
+TOKEN_EXPIRATION_BUFFER = random.randrange(5, 15)  # noqa: S311 # nosec
 
 
 class _AuthTokens(BaseModel):
