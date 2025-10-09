@@ -83,22 +83,23 @@ def test_process_formula_success(global_coefficient_request_factory, httpx_mock)
     )
     process_gc: ProcessGlobalCoefficient = global_coefficient_request_factory(
         data={
-            "id": f"{project_id}-process-{gc_formula}",
+            "id": f"{project_id}-process-{gc_formula}-cells",
         },
         project_id="xX007Xx",
         gc_formula=gc_formula,
         sample_metadata=METADATA_RAW,
         bc=["Vx"],
         surface_variables=["Pressure"],
+        gc_location="cells",
     )
     check_sse_event = {
         "status": "successful",
-        "target": {"action": "check", "formula": gc_formula},
+        "target": {"action": "check", "formula": gc_formula, "gc_location": "cells"},
     }
     compute_result = 0.25478328
     compute_sse_event = {
         "status": "successful",
-        "target": {"action": "compute", "formula": gc_formula},
+        "target": {"action": "compute", "formula": gc_formula, "gc_location": "cells"},
         "result": {"value": compute_result},
     }
 
@@ -136,6 +137,7 @@ def test_process_formula_success_with_cache(global_coefficient_request_factory, 
         sample_metadata=METADATA_RAW,
         bc=["Vx"],
         surface_variables=["Pressure"],
+        gc_location="cells",
     )
 
     process_gc.run()
@@ -163,11 +165,12 @@ def test_process_formula_failure(global_coefficient_request_factory, action, htt
         sample_metadata=METADATA_RAW,
         bc=["Vx"],
         surface_variables=["Pressure"],
+        gc_location="cells",
     )
     reason_of_failure = "wrong shoes"
     sse_event = {
         "status": "failure",
-        "target": {"action": action, "formula": gc_formula},
+        "target": {"action": action, "formula": gc_formula, "gc_location": "cells"},
         "reason": reason_of_failure,
     }
 
