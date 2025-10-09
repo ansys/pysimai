@@ -288,7 +288,12 @@ def test_process_gc_formula_without_cache(simai_client, delayed_events):
     )
     check_sse_event = {
         "status": "successful",
-        "target": {"id": "xX007Xx", "action": "check", "formula": gc_formula, "location": "cells"},
+        "target": {
+            "id": "xX007Xx",
+            "action": "check",
+            "formula": gc_formula,
+            "gc_location": "cells",
+        },
     }
     compute_sse_event = {
         "status": "successful",
@@ -297,6 +302,7 @@ def test_process_gc_formula_without_cache(simai_client, delayed_events):
             "action": "compute",
             "formula": gc_formula,
             "location": "cells",
+            "gc_location": "cells",
         },
         "result": {"value": compute_result},
     }

@@ -117,7 +117,7 @@ class GlobalCoefficientRequestDirectory(Directory[GlobalCoefficientRequestType])
 
     def _handle_sse_event(self, data: dict[str, Any]) -> None:
         gc_formula = data.get("target", {}).get("formula")
-        gc_location = data.get("target", {}).get("location")
+        gc_location = data.get("target", {}).get("gc_location")
         action = data.get("target", {}).get("action")
 
         # `check` and `compute` are considered the same action `process` for now.
