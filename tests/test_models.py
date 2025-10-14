@@ -82,7 +82,9 @@ MODEL_CONF_RAW = {
             },
         ],
     },
-    "global_coefficients": [{"formula": "max(Pressure)", "name": "maxpress"}],
+    "global_coefficients": [
+        {"formula": "max(Pressure)", "name": "maxpress", "gc_location": "cells"}
+    ],
     "simulation_volume": {
         "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
         "Y": {"length": 80.0, "type": "absolute", "value": -80},
@@ -241,7 +243,7 @@ def test_build_with_last_config(mocker, simai_client, httpx_mock):
     launched_model: Model = simai_client.models.build(in_model_conf)
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
@@ -310,7 +312,7 @@ def test_build_with_new_config(mocker, simai_client, httpx_mock):
     launched_model: Model = simai_client.models.build(new_conf)
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
@@ -340,7 +342,7 @@ def test_set_doa(mocker, simai_client):
     model_conf.domain_of_analysis.height = DomainAxisDefinition(**new_height)
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     assert model_conf._to_payload()["simulation_volume"]["Z"]["type"] == new_height["position"]
 
@@ -370,7 +372,7 @@ def test_get_doa(mocker, simai_client):
     doa = model_conf.domain_of_analysis
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     assert doa.length.length == doa_length_raw.get("length")
     assert doa.length.position == doa_length_raw.get("type")
@@ -463,7 +465,7 @@ def test_exception_compute_global_coefficient(mocker, simai_client):
     model_conf.project = None
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     with pytest.raises(ProcessingError):
         model_conf.compute_global_coefficient()
@@ -598,7 +600,7 @@ def test_post_process_input(mocker, simai_client, httpx_mock):
     build_model: Model = simai_client.models.build(config_with_pp_input)
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     assert config_with_pp_input.pp_input.surface == pp_input.surface
     assert (
@@ -746,7 +748,7 @@ def test_build_with_build_on_top_not_able(mocker, simai_client, httpx_mock):
     project_last_conf = project.last_model_configuration
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     assert isinstance(project_last_conf, ModelConfiguration)
     assert project_last_conf._to_payload() == MODEL_CONF_RAW
@@ -811,7 +813,7 @@ def test_build_with_build_on_top_previous_config(mocker, simai_client, httpx_moc
     launched_model: Model = simai_client.models.build(project_last_conf)
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
@@ -873,7 +875,7 @@ def test_build_with_build_on_top_minimal_config(mocker, simai_client, httpx_mock
     project_last_conf.build_on_top = True
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"]
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
     )
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
