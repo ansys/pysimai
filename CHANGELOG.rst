@@ -1,6 +1,23 @@
 Changelog
 ---------
 
+0.3.5 (2025-10-14)
+******************
+
+New:
+
+- Add GeomAI model evaluation report download capabilities
+- Add support for point data in calculette and model training
+
+Changes:
+
+- Replace requests/niquests with httpx
+- Documentation improvements
+
+Fixes:
+
+- Fix GeomAI prediction deletion
+
 0.3.4 (2025-09-24)
 ******************
 
