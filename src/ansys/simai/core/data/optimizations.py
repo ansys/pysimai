@@ -315,16 +315,16 @@ class OptimizationDirectory(Directory[Optimization]):
 
             boundary_conditions: Optional. The values of the boundary conditions to perform the optimization at.
                 The values must correspond to existing boundary conditions already defined in your SimAI workspace.
-            minimize: Minimize and Maximize are mutually exclusive objectives.
-                One objective between ``minimize`` and ``maximize`` must be defined, and only one ``minimize`` objective can be defined.
-                The defined objective must be computed from the surface fields because mesh nodes must be involved.
-                It corresponds to a list of one global coefficient to minimize.
+            minimize: Required if no ``maximize`` parameter is defined. A list of one global coefficient to minimize.
                 This global coefficient must correspond to one of the existing coefficients defined in your model configuration.
-            maximize: Minimize and Maximize are mutually exclusive objectives.
-                One objective between ``minimize`` and ``maximize`` must be defined, and only one ``maximize`` objective can be defined.
-                The defined objective must be computed from the surface fields because mesh nodes must be involved.
-                It corresponds to a list of one global coefficient to maximize.
+            maximize: Required if no ``minimize`` parameter is defined. A list of one global coefficient to maximize.
                 This global coefficient must correspond to one of the existing coefficients defined in your model configuration.
+
+                .. note::
+
+                    - ``minimize`` and ``maximize`` are mutually exclusive objectives; define only one.
+                    - The defined objective must be computed from the surface fields because mesh nodes must be involved.
+
             max_displacement: Optional. User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
                 It is specified as a list (``max_displacement``) matching the number of bounding boxes (``bounding_boxes``).
 
