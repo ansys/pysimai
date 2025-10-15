@@ -140,7 +140,10 @@ class OptimizationDirectory(Directory[Optimization]):
         show_progress: bool = False,
         workspace: Optional[Identifiable[Workspace]] = None,
     ) -> List[Dict]:
-        """Run an optimization loop with client-side parametric geometry generation.
+        """Run an optimization loop to generate a parametric geometry, client-side.
+
+        Warning:
+            This feature is deprecated.
 
         Args:
             geometry_generation_fn: Function to call to generate a new geometry
@@ -276,19 +279,27 @@ class OptimizationDirectory(Directory[Optimization]):
         max_displacement: Optional[List[float]] = None,
         show_progress: bool = False,
     ) -> OptimizationResult:
-        """Run an optimization loop with server-side geometry generation using automorphism.
+        """Run an optimization loop to generate geometries, server-side, using automorphing.
+        Automorphing is a non-parametric deformation of a surface geometry.
 
         Args:
-            geometry: The base geometry on which to perform the automorphism. The optimization will
-                run in the same workspace as the geometry.
-            bounding_boxes: list of the bounds of the different boxes that will define the locations
-                of the geometry to optimize.
-                The format is [
-                [box1_xmin, box1_xmax, box1_ymin, box1_ymax, box1_zmin, box1_zmax],
-                [box2_xmin, box2_xmax, box2_ymin, box2_ymax, box2_zmin, box2_zmax],
-                ...
-                ]
-            n_iters: Number of iterations of the optimization loop.
+            geometry: Required. The object (Geometry) or the ID (str) of the baseline geometry on which to perform
+                the non-parametric optimization and that has already been used to build an AI model.
+                The optimization will run in the same workspace as the model.
+            bounding_boxes: Required. The list of the bounds of the different boxes that will define the absolute locations
+                of the geometry to optimize. It is a list of lists, and each sub-list must have exactly six items with the following
+                expected order: ``[x_min, x_max, y_min, y_max, z_min, z_max]``.
+
+                Example format::
+
+                    [
+                    [box1_xmin, box1_xmax, box1_ymin, box1_ymax, box1_zmin, box1_zmax],
+                    [box2_xmin, box2_xmax, box2_ymin, box2_ymax, box2_zmin, box2_zmax],
+                    ...
+                    ]
+
+            n_iters: Required. The number of optimization iterations. This number must be a strictly positive integer.
+                It will define the number of automorphed geometries uploaded to the SimAI workspace.
             symmetries: Optional. The list of symmetry axes, axes being x, y, and z, defining a plane around which the geometry is mirrored.
 
                 - The planar symmetry is applied to all the ``bounding_boxes`` defined.
@@ -302,15 +313,29 @@ class OptimizationDirectory(Directory[Optimization]):
                 - The ``axial_symmetry`` is applied to all the ``bounding_boxes`` defined.
                 - ``symmetries`` and ``axial_symmetry`` are mutually exclusive parameters.
 
-            boundary_conditions: Values of the boundary conditions to perform the optimization at.
-                The values should map to existing boundary conditions in your project/workspace.
-            minimize: List of global coefficients to minimize.
-                The global coefficients should map to existing coefficients in your project/workspace.
-            maximize: List of global coefficients to maximize.
-                The global coefficients should map to existing coefficients in your project/workspace.
-            max_displacement: User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
-                It is specified as a list (max_displacement) matching the number of bounding boxes (box_bounds_list). Each value limits the displacement within the corresponding bounding box, using the same metric as the bounding box coordinates.
-            show_progress: Whether to print progress on stdout.
+            boundary_conditions: Optional. The values of the boundary conditions to perform the optimization at.
+                The values must correspond to existing boundary conditions already defined in your SimAI workspace.
+            minimize: Required if no ``maximize`` parameter is defined. A list of one global coefficient to minimize.
+                This global coefficient must correspond to one of the existing coefficients defined in your model configuration.
+            maximize: Required if no ``minimize`` parameter is defined. A list of one global coefficient to maximize.
+                This global coefficient must correspond to one of the existing coefficients defined in your model configuration.
+
+                .. note::
+
+                    - ``minimize`` and ``maximize`` are mutually exclusive objectives; define only one.
+                    - The defined objective must be computed from the surface fields because mesh nodes must be involved.
+
+            max_displacement: Optional. User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
+                It is specified as a list (``max_displacement``) matching the number of bounding boxes (``bounding_boxes``).
+
+                For example, for two bounding boxes:
+
+                - ``bounding_boxes = [[0,1,0,2,0,4],[10,2,10,4,10,5]]``
+                - ``max_displacement = [0.002, 0.001]``
+
+                Each value limits the displacement within the corresponding bounding box, using the same metric as the bounding box coordinates.
+            show_progress: Optional. Whether to print progress bar on stdout.
+                It is updated each time a new iteration is completed.
 
         Example:
           .. code-block:: python
@@ -329,6 +354,10 @@ class OptimizationDirectory(Directory[Optimization]):
                 minimize=["TotalForceX"],
                 show_progress=True,
             )
+
+        Returns:
+            An object containing the results of the optimization.
+
         """
         _validate_n_iters(n_iters)
         _validate_global_coefficients_for_non_parametric(minimize, maximize)
