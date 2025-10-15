@@ -13,6 +13,7 @@ Changes:
 
 - Replace requests/niquests with httpx
 - Documentation improvements
+- Refactor the authentication logic
 
 Fixes:
 
