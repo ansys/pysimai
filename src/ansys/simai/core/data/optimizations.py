@@ -140,7 +140,7 @@ class OptimizationDirectory(Directory[Optimization]):
         show_progress: bool = False,
         workspace: Optional[Identifiable[Workspace]] = None,
     ) -> List[Dict]:
-        """Run an optimization loop to generate a client-side parametric geometry.
+        """Run an optimization loop to generate a parametric geometry, client-side.
 
         Warning:
             This feature is deprecated.
@@ -279,7 +279,7 @@ class OptimizationDirectory(Directory[Optimization]):
         max_displacement: Optional[List[float]] = None,
         show_progress: bool = False,
     ) -> OptimizationResult:
-        """Run an optimization loop to generate server-side geometries using automorphing.
+        """Run an optimization loop to generate geometries, server-side, using automorphing.
         Automorphing is a non-parametric deformation of a surface geometry.
 
         Args:

@@ -4,6 +4,7 @@ How to configure the non-parametric optimization
 ==================================================
 
 Learn about the parameters to set when configuring the non-parametric optimization.
+For more information about using those parameters, see :ref:`optimizations`.
 
 Baseline geometry (geometry)
 ----------------------------
@@ -44,19 +45,19 @@ Symmetry constraints help reduce computational costs and ensure physically consi
 
 Symmetry can be planar or axial:
 
-- Planar symmetry, with the ``symmetries`` parameter (for example, ['X', 'Y', 'Z']),
+- Planar symmetry (``symmetries`` parameter)
   ensures that the geometry is mirrored across a plane normal to the given direction,
   which is useful for designs that are identical on both sides of a plane. For example,
   if the design has a planar symmetry based on the "YZ" plane, then "X" is the parameter to specify.
 
-- Axial symmetry, with the ``axial_symmetry`` parameter (for example, 'x', 'y', 'z'),
+- Axial symmetry (``axial_symmetry`` parameter)
   should be chosen when the deformation needs to be equal around a specific axis,
   resulting in rotational symmetry.
 
 Boundary conditions
 --------------------
 
-Boundary conditions should remain consistent with those defined in your model configuration,
+The values of the boundary conditions should remain consistent with those defined in your model configuration,
 so the ``boundary_conditions`` parameter must correspond to the ones defined in the SimAI workspace.
 Frequent changes to boundary conditions can create inconsistencies and reduce the reliability of optimization results.
 Make adjustments only when necessary to maintain a stable and physically realistic simulation environment.
