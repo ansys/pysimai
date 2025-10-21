@@ -191,3 +191,37 @@ def test_assign_subset(training_data_factory, project_factory, httpx_mock):
     with pytest.raises(InvalidArguments) as ve:
         td.assign_subset(project=project, subset="Travalignorinestidation")
     assert str(ve.value) == "Must be None or one of: 'Training', 'Test'."
+
+
+def test_get_training_data_by_id(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/training-data/td-123",
+        json={"id": "td-123", "name": "My Training Data"},
+        status_code=200,
+    )
+    td = simai_client.training_data.get(id="td-123")
+    assert td.id == "td-123"
+    assert td.name == "My Training Data"
+
+
+def test_get_training_data_by_name(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/training-data/name/My%20Training%20Data",
+        json={"id": "td-456", "name": "My Training Data"},
+        status_code=200,
+    )
+    td = simai_client.training_data.get(name="My Training Data")
+    assert td.id == "td-456"
+    assert td.name == "My Training Data"
+
+
+def test_get_training_data_invalid_arguments(simai_client):
+    with pytest.raises(InvalidArguments) as e:
+        simai_client.training_data.get()
+    assert str(e.value) == "Either the 'id' or 'name' argument should be specified."
+
+    with pytest.raises(InvalidArguments) as e:
+        simai_client.training_data.get(id="td-123", name="My Training Data")
+    assert str(e.value) == "Only the 'id' or 'name' argument should be specified."
