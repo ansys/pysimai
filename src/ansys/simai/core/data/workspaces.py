@@ -104,6 +104,15 @@ class Workspace(DataModel):
             )
         return self._model_manifest
 
+    def rename(self, new_name: str) -> None:
+        """Rename the workspace.
+
+        Args:
+            new_name: New name to give to the workspace.
+        """
+        self._client._api.update_workspace(self.id, name=new_name)
+        self.reload()
+
     def delete(self):
         """Delete the workspace."""
         return self._client._api.delete_workspace(self.id)

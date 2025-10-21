@@ -23,6 +23,10 @@
 import json
 import urllib.parse
 from io import BytesIO
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ansys.simai.core.data.geometries import Geometry
 
 
 def test_geometries_list_no_parameter(simai_client, httpx_mock):
@@ -151,3 +155,24 @@ def test_geometries_delete_point_cloud_cleares_pp_cache(
     assert custom_volume_point_cloud in prediction.post._local_post_processings
     geometry.delete_point_cloud()
     assert custom_volume_point_cloud not in prediction.post._local_post_processings
+
+
+def test_geometries_rename(simai_client, httpx_mock):
+    geometry: Geometry = simai_client._geometry_directory._model_from(
+        {"id": "0011", "name": "riri"}
+    )
+
+    httpx_mock.add_response(
+        method="PATCH",
+        url="https://test.test/geometries/0011",
+        status_code=204,
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geometries/0011",
+        json={"id": "0011", "name": "fifi"},
+        status_code=200,
+    )
+
+    geometry.rename("fifi")
+    assert geometry.name == "fifi"

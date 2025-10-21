@@ -44,3 +44,24 @@ def test_workspace_download_mer_data(simai_client, httpx_mock):
     in_memory = workspace.download_mer_data()
     data_in_file = in_memory.readline()
     assert data_in_file.decode("ascii") == "mer-data-geometries"
+
+
+def test_workspace_rename(simai_client, httpx_mock):
+    workspace: Workspace = simai_client._workspace_directory._model_from(
+        {"id": "0011", "name": "riri"}
+    )
+
+    httpx_mock.add_response(
+        method="PATCH",
+        url="https://test.test/workspaces/0011",
+        status_code=204,
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/workspaces/0011",
+        json={"id": "0011", "name": "fifi"},
+        status_code=200,
+    )
+
+    workspace.rename("fifi")
+    assert workspace.name == "fifi"

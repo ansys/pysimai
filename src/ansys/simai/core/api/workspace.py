@@ -99,3 +99,14 @@ class WorkspaceClientMixin(ApiClientMixin):
 
     def download_workspace_mer_data(self, workspace_id: str, file: Optional[File]):
         return self.download_file(f"workspaces/{workspace_id}/mer-data", file)
+
+    def update_workspace(self, workspace_id: str, name: str):
+        """Update a workspace name.
+
+        Args:
+            workspace_id: ID of the workspace.
+            name: New name to give to the workspace.
+        """
+        request_json = {}
+        request_json["name"] = name
+        self._patch(f"workspaces/{workspace_id}", json=request_json, return_json=False)

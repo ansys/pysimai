@@ -81,11 +81,11 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         """The attached point cloud file information if any."""
         return self.fields.get("point_cloud")
 
-    def rename(self, name: str) -> None:
+    def rename(self, new_name: str) -> None:
         """Change the name of the geometry.
 
         Args:
-            name: New name to give to the geometry.
+            new_name: New name to give to the geometry.
 
         Note:
             Only the stem part is modified. The file extension is immutable.
@@ -93,7 +93,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             If the new filename already contains dots other than for the extension,
             the extension must be provided.
         """
-        self._client._api.update_geometry(self.id, name=name)
+        self._client._api.update_geometry(self.id, name=new_name)
         self.reload()
 
     def update_metadata(self, metadata: Dict[str, Union[str, Number, bool]]):

@@ -111,8 +111,7 @@ class Project(DataModel):
         """Name of project."""
         return self.fields["name"]
 
-    @name.setter
-    def name(self, new_name: str):
+    def rename(self, new_name: str) -> None:
         """Rename the project.
 
         Args:
