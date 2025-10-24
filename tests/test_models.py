@@ -600,7 +600,7 @@ def test_post_process_input(mocker, simai_client, httpx_mock):
     build_model: Model = simai_client.models.build(config_with_pp_input)
 
     process_gc_formula.assert_called_once_with(
-        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0"], "cells"
+        "max(Pressure)", ["Vx"], ["Pressure", "WallShearStress_0", "TurbulentViscosity"], "cells"
     )
     assert config_with_pp_input.pp_input.surface == pp_input.surface
     assert (
