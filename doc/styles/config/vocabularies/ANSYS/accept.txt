@@ -5,7 +5,7 @@ csv
 DOE
 https_proxy
 [Nn]amespace
-[Pp]ostprocessing
+[Pp]ostprocessing(?:s)?
 PySimAI
 zipfile
 TrainingData
@@ -19,9 +19,9 @@ ModelConfiguration
 ModelConfiguration
 ModelManifest
 ModelOutput
-[Oo]verfit(?:ting)?
-[Uu]nderfit(?:ting)?
-[Vv]oxel
-[Aa]utomorph(?:ing)?
+[Oo]verfit(?:ting|s)?
+[Uu]nderfit(?:ting|s)?
+[Vv]oxel(?:s)?
+[Aa]utomorph(?:ing|ed)?
 [Rr]eparametriz(?:ing)?
 n_iters

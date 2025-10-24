@@ -1,6 +1,6 @@
 .. _global_coefficient_requests:
 
-Global Coefficients
+Global coefficients
 ===================
 
 .. py:module:: ansys.simai.core.data.global_coefficients_requests
