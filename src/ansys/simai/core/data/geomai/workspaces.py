@@ -45,6 +45,15 @@ class GeomAIWorkspace(DataModel):
         """Name of the workspace."""
         return self.fields["name"]
 
+    def rename(self, new_name: str) -> None:
+        """Rename the workspace.
+
+        Args:
+            new_name: New name to give to the workspace.
+        """
+        self._client._api.update_geomai_workspace(self.id, name=new_name)
+        self.reload()
+
     def delete(self):
         """Delete the workspace."""
         return self._client._api.delete_geomai_workspace(self.id)

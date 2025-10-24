@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 
 def test_project_rename(simai_client, httpx_mock):
-    project = simai_client._project_directory._model_from({"id": "0011", "name": "riri"})
+    project: Project = simai_client._project_directory._model_from({"id": "0011", "name": "riri"})
 
     httpx_mock.add_response(
         method="PATCH",
@@ -47,7 +47,7 @@ def test_project_rename(simai_client, httpx_mock):
         status_code=200,
     )
 
-    project.name = "fifi"
+    project.rename("fifi")
     assert project.name == "fifi"
 
 
