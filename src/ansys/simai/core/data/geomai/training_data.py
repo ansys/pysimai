@@ -33,6 +33,7 @@ from ansys.simai.core.data.types import (
     to_raw_filters,
     unpack_named_file,
 )
+from ansys.simai.core.errors import InvalidArguments
 from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
@@ -182,11 +183,14 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
         """
         return list(self.iter(filters))
 
-    def get(self, id) -> GeomAITrainingData:
+    def get(self, id: Optional[str] = None, name: Optional[str] = None) -> GeomAITrainingData:
         """Get a specific :class:`GeomAITrainingData` object from the server.
 
+        You can specify either the ID or the name, not both.
+
         Args:
-            id: ID of the training data
+            id: ID of the training data.
+            name: Name of the training data.
 
         Returns:
             :class:`GeomAITrainingData`
@@ -194,7 +198,14 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
         Raises:
             NotFoundError: No training data with the given ID exists.
         """
-        return self._model_from(self._client._api.get_geomai_training_data(id))
+        if name and id:
+            raise InvalidArguments("Only the 'id' or 'name' argument should be specified.")
+        elif name:
+            return self._model_from(self._client._api.get_geomai_training_data_by_name(name))
+        elif id:
+            return self._model_from(self._client._api.get_geomai_training_data(id))
+        else:
+            raise InvalidArguments("Either the 'id' or 'name' argument should be specified.")
 
     def delete(self, training_data: Identifiable[GeomAITrainingData]) -> None:
         """Delete a :class:`GeomAITrainingData` object and its associated parts from the server.
