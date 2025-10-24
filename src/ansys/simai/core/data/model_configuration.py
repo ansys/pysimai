@@ -309,7 +309,7 @@ class ModelConfiguration:
             self.project.process_gc_formula(
                 gc_unit.formula,
                 self.input.boundary_conditions,
-                self.output.surface,
+                (self.output.surface or []) + (self.pp_input.surface or []),
                 gc_unit.gc_location,
             )
             verified_gcs.append(gc_unit)
