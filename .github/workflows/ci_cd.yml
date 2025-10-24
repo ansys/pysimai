@@ -7,6 +7,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 env:
   MAIN_PYTHON_VERSION: "3.13"
   DOCUMENTATION_CNAME: "simai.docs.pyansys.com"
@@ -92,6 +95,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
       - name: Install dependencies
         run: uv sync
       - name: run tests
@@ -114,6 +119,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
       - name: Generate doc requirements
         run: uv export --only-group docs -o doc_requirements.txt
       - uses: ansys/actions/doc-build@c2fa7c93f6883114e0e643599431b33d29f0b13f # v10.1.4
