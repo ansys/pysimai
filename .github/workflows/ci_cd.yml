@@ -90,6 +90,7 @@ jobs:
         uses: astral-sh/setup-uv@2ddd2b9cb38ad8efd50337e8ab201519a34c9f24 # v7.1.1
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Install dependencies
         run: uv sync
@@ -97,7 +98,7 @@ jobs:
         run: uv run pytest --cov=ansys --cov-report=term --cov-report=html:.cov/html
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
-        if: matrix.python-version ==  ${{ env.MAIN_PYTHON_VERSION }} && matrix.os == 'ubuntu-latest'
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION && matrix.os == 'ubuntu-latest'
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -111,6 +112,7 @@ jobs:
         uses: astral-sh/setup-uv@2ddd2b9cb38ad8efd50337e8ab201519a34c9f24 # v7.1.1
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Generate doc requirements
         run: uv export --only-group docs -o doc_requirements.txt
