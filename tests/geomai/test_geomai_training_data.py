@@ -52,8 +52,8 @@ def test_get_geomai_training_data_by_name(simai_client, httpx_mock):
 def test_get_geomai_training_data_invalid_arguments(simai_client):
     with pytest.raises(InvalidArguments) as e:
         simai_client.training_data.get()
-    assert str(e.value) == "Either the 'id' or 'name' argument should be specified."
+    assert str(e.value) == "Either 'id' or 'name' argument must be specified."
 
     with pytest.raises(InvalidArguments) as e:
         simai_client.training_data.get(id="td-123", name="My Training Data")
-    assert str(e.value) == "Only the 'id' or 'name' argument should be specified."
+    assert str(e.value) == "Cannot specify both 'id' and 'name' arguments."

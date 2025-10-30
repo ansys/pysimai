@@ -199,13 +199,13 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
             NotFoundError: No training data with the given ID exists.
         """
         if name and id:
-            raise InvalidArguments("Only the 'id' or 'name' argument should be specified.")
+            raise InvalidArguments("Cannot specify both 'id' and 'name' arguments.")
         elif name:
             return self._model_from(self._client._api.get_geomai_training_data_by_name(name))
         elif id:
             return self._model_from(self._client._api.get_geomai_training_data(id))
         else:
-            raise InvalidArguments("Either the 'id' or 'name' argument should be specified.")
+            raise InvalidArguments("Either 'id' or 'name' argument must be specified.")
 
     def delete(self, training_data: Identifiable[GeomAITrainingData]) -> None:
         """Delete a :class:`GeomAITrainingData` object and its associated parts from the server.
