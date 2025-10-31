@@ -217,6 +217,9 @@ class PostProcessInput:
 class ModelConfiguration:
     """Configures the build of a model.
 
+    Warning:
+        `build_on_top` parameter is deprecated.
+
     Args:
         project: the project of the configuration.
         build_preset: indicates the build duration. Available options:
@@ -228,7 +231,7 @@ class ModelConfiguration:
                     | *2_days*: < 2 days, default value.
 
                     | *7_days*: < 1 week
-        build_on_top: indicates if build_on_top learning is enabled. Default is False.
+        build_on_top: **(Deprecated)** indicates if build_on_top learning is enabled. Default is False.
         input: the inputs of the model.
         output: the outputs of the model.
         global_coefficients: the Global Coefficients of the model.
