@@ -153,13 +153,13 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
             NotFoundError: If the project doesn't exist
         """
         if name and id:
-            raise InvalidArguments("Only the 'id' or 'name' argument should be specified.")
+            raise InvalidArguments("Cannot specify both 'id' and 'name' arguments.")
         elif name:
             return self._model_from(self._client._api.get_geomai_project_by_name(name))
         elif id:
             return self._model_from(self._client._api.get_geomai_project(id))
         else:
-            raise InvalidArguments("Either the 'id' or 'name' argument should be specified.")
+            raise InvalidArguments("Either 'id' or 'name' argument must be specified.")
 
     def delete(self, project: Identifiable[GeomAIProject]) -> None:
         """Delete a project.

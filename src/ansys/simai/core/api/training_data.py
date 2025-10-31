@@ -22,7 +22,7 @@
 
 import json
 from typing import TYPE_CHECKING, Any, Dict, Optional
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.utils.pagination import PaginatedAPIRawIterator
@@ -37,6 +37,9 @@ class TrainingDataClientMixin(ApiClientMixin):
 
     def get_training_data(self, id: str) -> Dict[str, Any]:
         return self._get(f"training-data/{id}")
+
+    def get_training_data_by_name(self, name: str) -> Dict[str, Any]:
+        return self._get(f"training-data/name/{quote(name)}")
 
     def iter_training_data(self, filters: Optional["RawFilters"]) -> PaginatedAPIRawIterator:
         query = urlencode(
