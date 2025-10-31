@@ -22,8 +22,8 @@ Predictions on new geometries then lack detail and appear too generic.
 The goal is to find an optimal balance: enough latent parameters to capture the essential complexity of the training geometries,
 but not so many that the model overfits.
 
-In most cases, if the training data is small or simple, use fewer latent parameters.
-If the training data is large and highly variable, a larger number can be used,
+In most cases, if the training data are small or simple, use fewer latent parameters.
+If the training data are large and highly variable, a larger number can be used,
 but it is important to monitor generalization carefully.
 
 

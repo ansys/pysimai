@@ -27,14 +27,22 @@ IsTrainableInfo
     :members:
     :exclude-members: is_trainable, reason
 
+.. vale Google.Headings = NO
+
 TrainingCapabilities
 --------------------
+
+.. vale Google.Headings = YES
 
 .. autoclass:: TrainingCapabilities()
     :members:
 
+.. vale Google.Headings = NO
+
 ContinuousLearningCapabilities
 ------------------------------
+
+.. vale Google.Headings = YES
 
 .. autoclass:: ContinuousLearningCapabilities()
     :members:
