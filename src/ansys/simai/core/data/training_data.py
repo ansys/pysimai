@@ -280,6 +280,8 @@ class TrainingDataDirectory(Directory[TrainingData]):
         monitor_callback: Optional[MonitorCallback],
     ) -> "TrainingDataPart":
         """Add a part to a :class:`TrainingData` object.
+        Use :meth:`TrainingData.extract_data` after all parts are uploaded (to convert the status of data to Ready for model).
+
 
         Args:
             training_data: ID or :class:`model <TrainingData>` object of the training data to
