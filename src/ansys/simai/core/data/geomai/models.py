@@ -160,7 +160,7 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
         configuration = (
             configuration
             if isinstance(configuration, GeomAIModelConfiguration)
-            else GeomAIModelConfiguration(configuration)
+            else GeomAIModelConfiguration(**configuration)
         )
         response = self._client._api.launch_geomai_build(
             project_id,
