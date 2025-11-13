@@ -1,0 +1,147 @@
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+""".. _ref_build_model:
+
+Building a Generative Design Model
+================================================
+
+This tutorial demonstrates how to:
+
+- Configure a GeomAI model
+- Start the model training process
+- Monitor the build progress
+- Handle training completion and errors
+
+Before you begin
+----------------
+
+- Complete ":ref:`ref_create_project_upload_data`" to create a project with training data
+- Ensure all training data in your project is ready (processed successfully)
+
+"""
+
+###############################################################################
+# Import necessary libraries
+# --------------------------
+
+import ansys.simai.core
+from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
+
+###############################################################################
+# User Configuration
+# ------------------
+# Update these variables with your specific settings:
+
+ORGANIZATION = "my_organization"  # Replace with your organization name
+PROJECT_NAME = "new-bracket-project"  # Replace with your project name
+NB_LATENT_PARAMS = 15  # Number of latent parameters (2-256)
+BUILD_PRESET = "default"  # Options: "debug", "short", "default", "long"
+
+###############################################################################
+# Initialize the client and get the project
+# -----------------------------------------
+# Connect to GeomAI and retrieve your project:
+
+simai = ansys.simai.core.SimAIClient(organization=ORGANIZATION)
+client = simai.geomai
+
+###############################################################################
+# Retrieve the project by name:
+
+project = client.projects.get(name=PROJECT_NAME)
+print(f"Using project: {project.name}")
+
+###############################################################################
+# Verify project data is ready
+# ----------------------------
+# Before building a model, ensure all training data is processed:
+
+project_data = project.data()
+ready_data = [data for data in project_data if data.is_ready]
+print(f"Project has {len(ready_data)}/{len(project_data)} ready training data")
+
+if len(ready_data) < len(project_data):
+    print("Warning: Some training data is not ready. Model may fail to build.")
+
+###############################################################################
+# Create model configuration
+# --------------------------
+# Define the configuration for your model. You can either specify the number
+# of epochs directly or use a build preset.
+#
+# Build presets:
+#
+# - "debug": Fast training for testing (very few epochs)
+# - "short": Quick training with reduced accuracy
+# - "default": Balanced training time and quality
+# - "long": Longer training for best quality
+#
+# Instead of build_preset, you can specify the number of epochs directly: `nb_epochs=100`.
+
+
+configuration = GeomAIModelConfiguration(
+    build_preset=BUILD_PRESET,
+    nb_latent_param=NB_LATENT_PARAMS,  # Must be between 2 and 256
+)
+
+###############################################################################
+# Build the model
+# ---------------
+# Start the model training process:
+
+model = client.models.build(project, configuration)
+print(f"Started build for model {model.id}")
+
+###############################################################################
+# Wait for model training to complete
+# -----------------------------------
+# Monitor the training process and handle completion:
+
+print("Waiting for model training to complete (this may take a while)...")
+if model.wait(timeout=600):  # Wait up to 600 seconds (10 minutes)
+    model.reload()  # Refresh model state
+    if model.has_failed:
+        print(f"✗ Model {model.id} failed: {model.failure_reason}")
+    else:
+        print(f"✓ Model {model.id} finished successfully!")
+else:
+    print(f"✗ Model {model.id} did not finish in time or encountered an error.")
+
+###############################################################################
+# Display model information
+# -------------------------
+# Show details about the trained model:
+
+if not model.has_failed:
+    print("\nModel Summary")
+    print("=" * 50)
+    print(f"Model ID: {model.id}")
+    print(f"Latent parameters: {model.configuration.nb_latent_param}")
+    print(f"Status: {'Ready' if model.is_ready else 'Processing'}")
+
+###############################################################################
+# Next steps
+# ----------
+# Once your model is trained, you can:
+# - Generate random geometries: :ref:`ref_generate_random_geometries`
+# - Interpolate between geometries: :ref:`ref_interpolate_geometries`
