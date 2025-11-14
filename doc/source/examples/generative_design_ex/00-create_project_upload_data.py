@@ -25,13 +25,7 @@
 Creating a Geom AI Project and Uploading Training Data
 ===========================================================
 
-This tutorial demonstrates how to:
-
-- Connect to GeomAI
-- Create or retrieve a project
-- Upload geometry files as training data
-- Handle duplicate data automatically
-- Wait for data processing and check status
+This example demonstrates how to connect to GeomAI, create a new project, and upload geometry files as training data.
 
 Before you begin
 ----------------
@@ -50,7 +44,7 @@ Make sure you have:
 
 import os
 
-import ansys.simai.core
+from ansys.simai.core import SimAIClient
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
@@ -68,23 +62,15 @@ PROJECT_NAME = "new-bracket-project"  # Your desired project name
 # Create a client to use the PySimAI library. This client will be the
 # entrypoint for all GeomAI objects.
 
-simai = ansys.simai.core.SimAIClient(organization=ORGANIZATION)
+simai = SimAIClient(organization=ORGANIZATION)
 client = simai.geomai
 
-###############################################################################
-# Show available projects and training data
-# -----------------------------------------
-# List all projects available in your organization:
-
-print("Available projects:")
-print(client.projects.list())
 
 ###############################################################################
 # List all available training data:
 
 print("\nAvailable training data:")
 available_tds = client.training_data.list()
-print(available_tds)
 
 ###############################################################################
 # Create or retrieve a project
@@ -151,9 +137,7 @@ print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} fail
 # waits for all data to be ready.
 
 project_data = project.data()
-print("\nTraining data in project:")
-for data in project_data:
-    print(f"- {data.name}")
+
 
 print("\nWaiting for data processing to complete...")
 for data in project_data:
@@ -168,6 +152,8 @@ for data in project_data:
 # Display project status summary
 # ------------------------------
 # Show a summary of the project's data processing status:
+
+project_data = project.data()
 
 print("\nProject Summary")
 print("=" * 50)

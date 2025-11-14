@@ -25,11 +25,7 @@
 Generating Random Geometries
 ==========================================
 
-This tutorial demonstrates how to:
-
-- Connect to a trained GeomAI workspace
-- Generate random geometries using random latent parameters
-- Download and save the generated geometries
+This example demonstrates how to generate random geometries using random latent parameters.
 
 Before you begin
 ----------------
@@ -158,14 +154,6 @@ for i, prediction in enumerate(predictions):
     else:
         print(f"✗ Prediction {i + 1} timed out")
 
-###############################################################################
-# Summary
-# -------
-# Display generation summary:
-
-print(f"\n{'=' * 50}")
-print("Random geometry generation complete!")
-print(f"Generated geometries saved in: {output_dir}")
 
 ###############################################################################
 # Using generated geometries

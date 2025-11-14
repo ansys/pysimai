@@ -25,12 +25,7 @@
 Building a Generative Design Model
 ================================================
 
-This tutorial demonstrates how to:
-
-- Configure a GeomAI model
-- Start the model training process
-- Monitor the build progress
-- Handle training completion and errors
+This example demonstrates how to configure a GeomAI model, start the model training process, and monitor the build progress.
 
 Before you begin
 ----------------
@@ -97,6 +92,7 @@ if len(ready_data) < len(project_data):
 # - "long": Longer training for best quality
 #
 # Instead of build_preset, you can specify the number of epochs directly: `nb_epochs=100`.
+# The number of latent parameters defines the complexity of the model's latent space; start with a small number (e.g., 10) and adjust based on your needs.
 
 
 configuration = GeomAIModelConfiguration(
@@ -127,17 +123,6 @@ if model.wait(timeout=600):  # Wait up to 600 seconds (10 minutes)
 else:
     print(f"✗ Model {model.id} did not finish in time or encountered an error.")
 
-###############################################################################
-# Display model information
-# -------------------------
-# Show details about the trained model:
-
-if not model.has_failed:
-    print("\nModel Summary")
-    print("=" * 50)
-    print(f"Model ID: {model.id}")
-    print(f"Latent parameters: {model.configuration.nb_latent_param}")
-    print(f"Status: {'Ready' if model.is_ready else 'Processing'}")
 
 ###############################################################################
 # Next steps

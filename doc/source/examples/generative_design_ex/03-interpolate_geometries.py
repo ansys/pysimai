@@ -25,12 +25,7 @@
 Interpolating Between Geometries
 ==============================================
 
-This tutorial demonstrates how to:
-
-- Access latent parameters of training geometries
-- Interpolate between two geometries in latent space
-- Generate a series of intermediate geometries
-- Save the interpolation results
+This example demonstrates how to interpolate between two geometries in latent space.
 
 Before you begin
 ----------------
@@ -48,7 +43,7 @@ import json
 import os
 from typing import Dict, List
 
-import ansys.simai.core
+from ansys.simai.core import SimAIClient
 from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
 from ansys.simai.core.data.predictions import Prediction
 
@@ -115,30 +110,12 @@ def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> L
     return [(1 - alpha) * x + alpha * y for x, y in zip(vec1, vec2)]
 
 
-def run_prediction(client, workspace, latent_params, iteration, output_dir):
-    """Run a prediction and save the result.
-
-    Parameters
-    ----------
-    client : GeomAIClient
-        The GeomAI client instance.
-    workspace : Workspace
-        The workspace to run the prediction in.
-    latent_params : List[float]
-        Latent parameters for the prediction.
-    iteration : int
-        Current iteration number (for file naming).
-    output_dir : str
-        Directory to save the prediction output.
-    """
-
-
 ###############################################################################
 # Initialize the client and get the workspace
 # -------------------------------------------
 # Connect to GeomAI and retrieve your trained workspace:
 
-simai = ansys.simai.core.SimAIClient(organization=ORGANIZATION)
+simai = SimAIClient(organization=ORGANIZATION)
 client = simai.geomai
 
 workspace = client.workspaces.get(name=WORKSPACE_NAME)
@@ -214,14 +191,7 @@ for i, prediction in enumerate(predictions):
         print(f"✓ Saved prediction to {out_path}")
     else:
         print(f"✗ Prediction {i} timed out.")
-###############################################################################
-# Summary
-# -------
-# Display interpolation summary:
 
-print(f"\n{'=' * 50}")
-print("Interpolation complete!")
-print(f"Check the '{OUTPUT_DIR}' folder for results.")
 
 ###############################################################################
 # Understanding interpolation
