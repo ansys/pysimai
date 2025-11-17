@@ -67,9 +67,9 @@ class SimAIClient:
     Example:
         .. code-block:: python
 
-            from ansys.simai.core import SimAIClient
+            import ansys.simai.core as asc
 
-            simai_client = SimAIClient(
+            simai_client = asc.SimAIClient(
                 organization="company_name", https_proxy="http://company_proxy:3128"
             )
     """
