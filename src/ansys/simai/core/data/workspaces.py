@@ -89,7 +89,8 @@ class Workspace(DataModel):
     def model(self) -> ModelManifest:
         """Deprecated alias to :py:attr:`~model_manifest`."""
         warnings.warn(
-            "workspace.model is deprecated, please use workspace.model_manifest", stacklevel=2
+            "workspace.model is deprecated, please use workspace.model_manifest",
+            stacklevel=2,
         )
         return self.model_manifest
 
@@ -154,10 +155,10 @@ class WorkspaceDirectory(Directory[Workspace]):
     Example:
       .. code-block:: python
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.workspaces.list()
+            simai_client = asc.from_config()
+            simai_client.workspaces.list()
     """
 
     _data_model = Workspace

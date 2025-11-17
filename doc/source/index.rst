@@ -32,7 +32,7 @@ For more information, see the `Ansys SimAI User's guide <https://ansyshelp.ansys
         Describes the public Python classes, methods, and functions.
 
     .. grid-item-card:: :octicon:`play` Examples
-        :link: examples/index
+        :link: _examples/index
         :link-type: doc
 
         A collection of examples demonstrating the capabilities of PySimAI.
@@ -51,4 +51,4 @@ PySimAI requires Python 3.9 or later.
    Home<self>
    user_guide
    api_reference
-   examples/index
+   _examples/index

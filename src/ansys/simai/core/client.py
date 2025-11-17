@@ -29,7 +29,9 @@ from ansys.simai.core import __version__
 from ansys.simai.core.api.client import ApiClient
 from ansys.simai.core.data.geomai.client import GeomAIClient
 from ansys.simai.core.data.geometries import GeometryDirectory
-from ansys.simai.core.data.global_coefficients_requests import ProcessGlobalCoefficientDirectory
+from ansys.simai.core.data.global_coefficients_requests import (
+    ProcessGlobalCoefficientDirectory,
+)
 from ansys.simai.core.data.models import ModelDirectory
 from ansys.simai.core.data.optimizations import (
     OptimizationDirectory,
@@ -67,7 +69,7 @@ class SimAIClient:
 
             from ansys.simai.core import SimAIClient
 
-            simai = SimAIClient(
+            simai_client = SimAIClient(
                 organization="company_name", https_proxy="http://company_proxy:3128"
             )
     """
@@ -128,12 +130,12 @@ class SimAIClient:
         Example:
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config(workspace="old plane")
-                simai.geometries.list()  # will list geometries belonging to the "old plane" workspace
-                simai.set_current_workspace("new plane")
-                simai.geometries.list()  # will list geometries belonging to the "new plane" workspace
+                simai_client = asc.from_config(workspace="old plane")
+                simai_client.geometries.list()  # will list geometries belonging to the "old plane" workspace
+                simai_client.set_current_workspace("new plane")
+                simai_client.geometries.list()  # will list geometries belonging to the "new plane" workspace
         """
         try:
             # Ensure the workspace exists
@@ -295,9 +297,9 @@ class SimAIClient:
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
+                simai_client = asc.from_config()
 
         Note:
             The default paths are only supported on Unix systems.

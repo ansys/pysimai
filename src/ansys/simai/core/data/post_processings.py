@@ -422,11 +422,11 @@ class PredictionPostProcessings:
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
                 from PIL import Image
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
                 slice_data = prediction.post.slice("x", 50).data.in_memory()
                 slice = Image.open(slice_data)
                 slice.show()
@@ -469,22 +469,22 @@ class PredictionPostProcessings:
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
                 surface_vtp = prediction.post.surface_vtp().data.download("/tmp/simai.vtp")
 
             Run a surface VTP with data association on cells, and open a plot using PyVista.
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
                 import pyvista
                 import tempfile
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
                 surface_vtp_data = prediction.post.surface_vtp().data
                 # I don't want to save the file locally but pyvista doesn't read file-objects
                 # Using temporary file as a workaround but a real path can be used instead
@@ -524,22 +524,22 @@ class PredictionPostProcessings:
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
                 surface_vtp = prediction.post.surface_vtp_td_location().data.download("/tmp/simai.vtp")
 
             Run a surface VTP with the original data association, and open a plot using PyVista.
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
                 import pyvista
                 import tempfile
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
                 surface_vtp_data = prediction.post.surface_vtp_td_location().data
                 # I don't want to save the file locally but pyvista doesn't read file-objects
                 # Using temporary file as a workaround but a real path can be used instead
@@ -576,10 +576,10 @@ class PredictionPostProcessings:
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
                 volume_vtu = prediction.post.volume_vtu().data.download("/tmp/simai.vtu")
 
 
@@ -587,12 +587,12 @@ class PredictionPostProcessings:
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
                 import pyvista
                 import tempfile
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
                 volume_vtu_data = prediction.post.volume_vtu().data
                 # I don't want to save the file locally but pyvista doesn't read file-objects
                 # Using temporary file as a workaround but a real path can be used instead
@@ -629,10 +629,10 @@ class PredictionPostProcessings:
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
                 prediction.geometry.upload_point_cloud("/data/my-point-cloud.vtp")
                 custom_volume = prediction.post.custom_volume_point_cloud().data.download(
                     "/tmp/simai.vtp"
@@ -760,10 +760,10 @@ class PostProcessingDirectory(Directory[PostProcessing]):
             .. code-block:: python
 
                 from pprint import pprint
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                post_processing_info = simai.post_processings.info
+                simai_client = asc.from_config()
+                post_processing_info = simai_client.post_processings.info
                 pprint(post_processing_info)
         """
         return self._client.current_workspace.model_manifest.post_processings
@@ -812,12 +812,12 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         Example:
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
-                post_processings = simai.post_processings.list(
-                    ansys.simai.core.SurfaceEvolution, prediction.id
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
+                post_processings = simai_client.post_processings.list(
+                    asc.SurfaceEvolution, prediction.id
                 )
         """
         pp_type_str = post_processing_type._api_name() if post_processing_type else None
@@ -863,12 +863,12 @@ class PostProcessingDirectory(Directory[PostProcessing]):
         Examples:
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                prediction = simai.predictions.list()[0]
-                simai.post_processings.run(
-                    ansys.simai.core.Slice, prediction, {"axis": "x", "coordinate": 50}
+                simai_client = asc.from_config()
+                prediction = simai_client.predictions.list()[0]
+                simai_client.post_processings.run(
+                    asc.Slice, prediction, {"axis": "x", "coordinate": 50}
                 )
 
             Using kwargs:

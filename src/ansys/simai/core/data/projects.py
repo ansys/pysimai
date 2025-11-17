@@ -30,7 +30,9 @@ from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
-    from ansys.simai.core.data.global_coefficients_requests import ProcessGlobalCoefficient
+    from ansys.simai.core.data.global_coefficients_requests import (
+        ProcessGlobalCoefficient,
+    )
     from ansys.simai.core.data.training_data import TrainingData
 
 EXTRA_CALCULETTE_FIELDS = ["Area", "Normals", "Centroids"]
@@ -237,10 +239,10 @@ class ProjectDirectory(Directory[Project]):
     Example:
         List all projects::
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.projects.list()
+            simai_client = asc.from_config()
+            simai_client.projects.list()
     """
 
     _data_model = Project

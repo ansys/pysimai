@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_create_project_upload_data:
+""".. _ref_basic_create_project_upload_data:
 
-Creating a Geom AI Project and Uploading Training Data
-===========================================================
+Creating a SimAI Project and Uploading Training Data
+====================================================
 
-This example demonstrates how to connect to GeomAI, create a new project, and upload geometry files as training data.
+This example demonstrates how to connect to SimAI, create a new project, and upload training data folders.
 
 Before you begin
 ----------------
@@ -33,7 +33,7 @@ Before you begin
 Make sure you have:
 
 - Valid SimAI credentials and organization access
-- A folder containing geometry files (.vtp or .stl format)
+- A dataset folder containing subdirectories with your training data
 - The ansys-simai-core library installed
 
 """
@@ -44,7 +44,8 @@ Make sure you have:
 
 import os
 
-from ansys.simai.core import SimAIClient
+import ansys.simai.core as asc
+from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
@@ -52,111 +53,101 @@ from ansys.simai.core.errors import NotFoundError
 # ------------------
 # Update these variables with your specific settings:
 
-ORGANIZATION = "my_organization"  # Replace with your organization name
-DATASET_PATH = "path/to/your/data/folder"  # Folder with .vtp or .stl files
-PROJECT_NAME = "new-bracket-project"  # Your desired project name
+ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
+PROJECT_NAME = "<your_project_name>"  # Your desired project name
+DATASET_PATH = "<PATH_TO_YOUR_DATASET>"  # Directory containing subdirectories with training data
 
 ###############################################################################
-# Create the client
-# -----------------
-# Create a client to use the PySimAI library. This client will be the
-# entrypoint for all GeomAI objects.
+# Initialize the SimAI client
+# ---------------------------
+# Create a client to connect to the SimAI platform:
 
-simai = SimAIClient(organization=ORGANIZATION)
-client = simai.geomai
-
+simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
 ###############################################################################
-# List all available training data:
-
-print("\nAvailable training data:")
-available_tds = client.training_data.list()
-
-###############################################################################
-# Create or retrieve a project
-# ----------------------------
+# Set up the project
+# ------------------
 # Try to get an existing project by name, or create it if it doesn't exist:
 
 try:
-    project = client.projects.get(name=PROJECT_NAME)
+    project = simai_client.projects.get(name=PROJECT_NAME)
     print(f"Using existing project: {PROJECT_NAME}")
 except NotFoundError:
-    project = client.projects.create(PROJECT_NAME)
+    project = simai_client.projects.create(PROJECT_NAME)
     print(f"Created new project: {PROJECT_NAME}")
 
-print(f"Current project: {project.name}")
+###############################################################################
+# Set as the current working project
+# ----------------------------------
+# Setting the current project allows subsequent operations to default to this project:
+
+simai_client.set_current_project(PROJECT_NAME)
+print(f"Current project: {simai_client.current_project}")
 
 ###############################################################################
-# Upload training data to the project
-# -----------------------------------
-# Loop through all geometry files in your dataset folder and upload them.
-# The script handles duplicates by checking if the data already exists.
+# Upload training data
+# -------------------
+# Upload all directories from the dataset path as training data.
+# Each subdirectory should contain the files for one training data sample.
 
 print("\nUploading training data files:")
 successful_uploads = 0
 failed_uploads = 0
 
-for fname in os.listdir(DATASET_PATH):
-    td_name = os.path.splitext(fname)[0]
-    fpath = os.path.join(DATASET_PATH, fname)
+for dir in os.listdir(DATASET_PATH):
+    complete_path = os.path.join(DATASET_PATH, dir)
+    print(f"Uploading {dir}")
 
-    # Skip non-geometry files
-    if not fname.lower().endswith((".vtp", ".stl")):
-        print(f"Skipping non-geometry file: {fname}")
-        continue
-
-    # Check if training data already exists
-    existing_tds = [td for td in available_tds if td.name == td_name]
-    if existing_tds:
-        print(f"Training data '{fname}' already exists in GeomAI. Skipping upload.")
-        td = existing_tds[0]
-        try:
-            td.add_to_project(project)
-            print(f"✓ Added existing '{fname}' to project '{project.name}'")
-            successful_uploads += 1
-        except Exception as e:
-            print(f"✗ Failed to add existing '{fname}' to project: {e}")
-            failed_uploads += 1
-        continue
-
-    # Upload new training data
     try:
-        training_data = client.training_data.create_from_file(file=fpath, project=project)
-        print(f"✓ Uploaded '{fname}' -> ID: {training_data.id}")
-        successful_uploads += 1
-    except Exception as e:
-        print(f"✗ Failed to upload '{fname}': {e}")
-        failed_uploads += 1
+        # Check if training data with this name already exists
+        td: TrainingData = simai_client.training_data.list({"name": dir})[0]
+        print(f"Training data {dir} already exists. Skipping upload.")
+    except IndexError:
+        # Training data doesn't exist, create and upload it
+        try:
+            td: TrainingData = simai_client.training_data.create(dir)
+            td.upload_folder(complete_path)
+            print(f"Uploaded {dir} successfully.")
+        except Exception as e:
+            print(f"Failed to upload {dir}: {e}")
+            failed_uploads += 1
+            continue
+
+    successful_uploads += 1
+    # Add the training data to the project
+    td.add_to_project(project)
 
 print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} failed")
 
 ###############################################################################
 # Check and wait for data processing
-# ----------------------------------
-# After uploading, GeomAI needs to process the geometries. This section
-# waits for all data to be ready.
+# ---------------------------------
+# After uploading, SimAI needs to process the training data.
+# Get all data in the current project:
 
-project_data = project.data()
+project_data = project.data
 
+print("\nTraining data in project:")
+for data in project_data:
+    print(f"- {data.name}")
+
+###############################################################################
+# Wait for all data to be processed:
 
 print("\nWaiting for data processing to complete...")
 for data in project_data:
-    print(f"Processing '{data.name}'...")
+    print(f"Processing {data.name}...")
     data.wait()
-    if data.is_ready:
-        print(f"✓ Data '{data.name}' is ready")
-    else:
-        print(f"✗ Data '{data.name}' failed: {data.failure_reason}")
+    print(f"Data '{data.name}' is ready")
 
 ###############################################################################
 # Display project status summary
-# ------------------------------
+# -----------------------------
 # Show a summary of the project's data processing status:
-
-project_data = project.data()
 
 print("\nProject Summary")
 print("=" * 50)
+
 ready_data = [data for data in project_data if data.is_ready]
 not_ready_data = [data for data in project_data if not data.is_ready]
 
@@ -165,16 +156,12 @@ print(f"Ready data: {len(ready_data)} of {len(project_data)}")
 print(f"Not ready data: {len(not_ready_data)} of {len(project_data)}")
 
 if not_ready_data:
-    print(
-        "\nFailed data processing details:\n"
-        "Having an 'invalid geometry' means that the geometry is not compatible with GeomAI. "
-        "Please check the geometry file for errors or issues (watertightness and manifold).\n"
-    )
+    print("\nFailed data processing details:")
     for data in not_ready_data:
         print(f"- {data.name}: {data.failure_reason}")
 
 ###############################################################################
 # Next steps
 # ----------
-# Once all data is ready, you can proceed to build a model.
-# See the next tutorial: :ref:`ref_build_model`
+# Once all data is ready, you can proceed to configure and build a model.
+# See the next tutorial: :ref:`ref_basic_build_model`

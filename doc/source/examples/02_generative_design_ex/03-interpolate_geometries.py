@@ -30,8 +30,8 @@ This example demonstrates how to interpolate between two geometries in latent sp
 Before you begin
 ----------------
 
-- Complete ":ref:`ref_build_model`" to train a GeomAI model
-- Ensure the model training completed successfully. If not sure, verify if a new workspace was created for the trained model.
+- Complete ":ref:`ref_build_model`" to train a Generative design model.
+- Ensure that the model training has been completed successfully. To do so, verify if a new workspace was created for the trained model.
 
 """
 
@@ -43,12 +43,12 @@ import json
 import os
 from typing import Dict, List
 
-from ansys.simai.core import SimAIClient
+import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
 from ansys.simai.core.data.predictions import Prediction
 
 ###############################################################################
-# User Configuration
+# Configure your settings
 # ------------------
 # Update these variables with your specific settings:
 
@@ -63,9 +63,14 @@ RESOLUTION = (100, 100, 100)  # Output resolution (x, y, z)
 GEOM_A_NAME = "geometry_name_a"  # Replace with actual geometry name
 GEOM_B_NAME = "geometry_name_b"  # Replace with actual geometry name
 
+
 ###############################################################################
-# Helper Functions
-# ----------------
+# Functions for interpolation
+# ---------------------------
+# Before interpolating between two geometries, we need two key functions:
+#
+# 1. A function to efficiently extract the latent parameters from the training data.
+# 2. A function to interpolate between two latent vectors.
 
 
 def get_latent_parameters(workspace) -> Dict[str, List[float]]:
@@ -74,7 +79,7 @@ def get_latent_parameters(workspace) -> Dict[str, List[float]]:
     Parameters
     ----------
     workspace : Workspace
-        The GeomAI workspace containing the trained model.
+        The workspace containing the trained model.
 
     Returns
     -------
@@ -115,10 +120,10 @@ def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> L
 # -------------------------------------------
 # Connect to GeomAI and retrieve your trained workspace:
 
-simai = SimAIClient(organization=ORGANIZATION)
-client = simai.geomai
+simai_client = asc.SimAIClient(organization=ORGANIZATION)
+geomai_client = simai_client.geomai
 
-workspace = client.workspaces.get(name=WORKSPACE_NAME)
+workspace = geomai_client.workspaces.get(name=WORKSPACE_NAME)
 print(f"Using workspace: {workspace.name}")
 
 ###############################################################################
@@ -172,7 +177,7 @@ for i in range(NUM_STEPS + 1):
         latent_params=latent_params,
         resolution=RESOLUTION,
     )
-    prediction = client.predictions.run(config, workspace)
+    prediction = geomai_client.predictions.run(config, workspace)
     print(f"Prediction {i}: {prediction.id} started...")
     predictions.append(prediction)
 
@@ -187,7 +192,7 @@ for i, prediction in enumerate(predictions):
         out_dir = os.path.join(OUTPUT_DIR, workspace.name)
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, f"prediction_{i:02d}_{prediction.id}.vtp")
-        client.predictions.download(prediction.id, out_path)
+        geomai_client.predictions.download(prediction.id, out_path)
         print(f"✓ Saved prediction to {out_path}")
     else:
         print(f"✗ Prediction {i} timed out.")
@@ -198,14 +203,14 @@ for i, prediction in enumerate(predictions):
 # ---------------------------
 # Latent space interpolation allows you to:
 #
-# - Create smooth transitions between existing designs
-# - Explore the design space systematically
-# - Generate variations that blend features from multiple geometries
+# - Create smooth transitions between existing designs.
+# - Explore the design space systematically.
+# - Generate variations that blend features from multiple geometries.
 
 ###############################################################################
 # Next steps
 # ----------
-# You can extend this tutorial to:
+# To go further, you can:
 #
-# - Interpolate between more than two geometries
-# - Combine interpolation with optimization for specific design goals
+# - Interpolate between more than two geometries.
+# - Combine interpolation with optimization for specific design goals.

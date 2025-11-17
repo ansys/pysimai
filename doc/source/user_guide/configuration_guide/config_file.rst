@@ -8,8 +8,9 @@ instance from a configuration file, you use the
 :py:meth:`~ansys.simai.core.client.SimAIClient.from_config` method:
 
 .. code-block:: python
+  import ansys.simai.core as asc
 
-  simai = ansys.simai.core.from_config()
+  simai_client = asc.from_config()
 
 Location
 --------
@@ -45,7 +46,7 @@ Optionally, you can specify the path yourself:
 
 .. code-block:: python
 
-  simai = ansys.simai.core.from_config(path="/path/to/my/config")
+  simai_client = ansys.simai.core.from_config(path="/path/to/my/config")
 
 Content
 -------
@@ -88,4 +89,4 @@ configurations in a single file through profiles, which are loaded like this:
 
 .. code-block:: python
 
-  simai = ansys.simai.core.from_config(profile="alternative")
+  simai_client = ansys.simai.core.from_config(profile="alternative")

@@ -121,10 +121,10 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
     Example:
         List all projects::
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.geomai.projects.list()
+            simai_client = asc.from_config()
+            simai_client.geomai.projects.list()
     """
 
     _data_model = GeomAIProject

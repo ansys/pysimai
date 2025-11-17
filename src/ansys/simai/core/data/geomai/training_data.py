@@ -147,10 +147,10 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
     Example:
         List all of the GeomAI training data::
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.geomai.training_data.list()
+            simai_client = asc.from_config()
+            simai_client.geomai.training_data.list()
     """
 
     _data_model = GeomAITrainingData

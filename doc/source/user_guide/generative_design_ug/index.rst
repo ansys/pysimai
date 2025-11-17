@@ -1,6 +1,6 @@
 .. _ref_generative_design_guide:
 
-How to generate new designs using AI models
+Generate new designs
 ========================================================
 
 With SimAI, you generate new geometries based on existing ones.
