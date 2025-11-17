@@ -199,7 +199,7 @@ for i, prediction in enumerate(predictions):
 # Latent space interpolation allows you to:
 #
 # - Create smooth transitions between existing designs.
-# - Explore the design space systematically
+# - Explore the design space systematically.
 # - Generate variations that blend features from multiple geometries
 
 ###############################################################################
