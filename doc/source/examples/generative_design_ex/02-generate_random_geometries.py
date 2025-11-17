@@ -49,7 +49,7 @@ from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfigurati
 from ansys.simai.core.data.predictions import Prediction
 
 ###############################################################################
-# User Configuration
+# Configure your settings
 # ------------------
 # Update these variables with your specific settings:
 

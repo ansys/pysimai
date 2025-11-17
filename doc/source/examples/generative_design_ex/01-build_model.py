@@ -43,7 +43,7 @@ import ansys.simai.core
 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 
 ###############################################################################
-# User Configuration
+# Configure your settings
 # ------------------
 # Update these variables with your specific settings:
 

@@ -48,7 +48,7 @@ from ansys.simai.core import SimAIClient
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
-# User Configuration
+# Configure your settings
 # ------------------
 # Update these variables with your specific settings:
 
