@@ -31,7 +31,7 @@ Before you begin
 ----------------
 
 - Complete ":ref:`ref_build_model`" to train a Generative Design model
-- Ensure the model training completed successfully
+- Ensure that the model training has been completed successfully.
 
 """
 
