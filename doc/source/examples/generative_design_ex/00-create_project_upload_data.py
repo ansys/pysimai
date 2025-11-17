@@ -25,7 +25,7 @@
 Creating a Geom AI Project and Uploading Training Data
 ===========================================================
 
-This example demonstrates how to connect to GeomAI, create a new project, and upload geometry files as training data.
+This example demonstrates how to connect to the instance, create a new project, and upload geometry files as training data.
 
 Before you begin
 ----------------
@@ -60,7 +60,7 @@ PROJECT_NAME = "new-bracket-project"  # Your desired project name
 # Create the client
 # -----------------
 # Create a client to use the PySimAI library. This client will be the
-# entrypoint for all GeomAI objects.
+# entrypoint for all Generative Design objects.
 
 simai = SimAIClient(organization=ORGANIZATION)
 client = simai.geomai
@@ -108,7 +108,7 @@ for fname in os.listdir(DATASET_PATH):
     # Check if training data already exists
     existing_tds = [td for td in available_tds if td.name == td_name]
     if existing_tds:
-        print(f"Training data '{fname}' already exists in GeomAI. Skipping upload.")
+        print(f"Training data '{fname}' already exists in the datalake. Skipping upload.")
         td = existing_tds[0]
         try:
             td.add_to_project(project)
@@ -133,7 +133,7 @@ print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} fail
 ###############################################################################
 # Check and wait for data processing
 # ----------------------------------
-# After uploading, GeomAI needs to process the geometries. This section
+# After uploading, the instance needs to process the geometries. This section
 # waits for all data to be ready.
 
 project_data = project.data()
@@ -167,7 +167,7 @@ print(f"Not ready data: {len(not_ready_data)} of {len(project_data)}")
 if not_ready_data:
     print(
         "\nFailed data processing details:\n"
-        "Having an 'invalid geometry' means that the geometry is not compatible with GeomAI. "
+        "Having an 'invalid geometry' means that the geometry is not compatible with Generative Design. "
         "Please check the geometry file for errors or issues (watertightness and manifold).\n"
     )
     for data in not_ready_data:

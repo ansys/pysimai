@@ -25,7 +25,7 @@
 Building a Generative Design Model
 ================================================
 
-This example demonstrates how to configure a GeomAI model, start the model training process, and monitor the build progress.
+This example demonstrates how to configure a Generative Design model, start the model training process, and monitor the build progress.
 
 Before you begin
 ----------------
@@ -55,7 +55,7 @@ BUILD_PRESET = "default"  # Options: "debug", "short", "default", "long"
 ###############################################################################
 # Initialize the client and get the project
 # -----------------------------------------
-# Connect to GeomAI and retrieve your project:
+# Connect to the instance and retrieve your project:
 
 simai = ansys.simai.core.SimAIClient(organization=ORGANIZATION)
 client = simai.geomai

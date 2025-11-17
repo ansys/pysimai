@@ -63,9 +63,14 @@ RESOLUTION = (100, 100, 100)  # Output resolution (x, y, z)
 GEOM_A_NAME = "geometry_name_a"  # Replace with actual geometry name
 GEOM_B_NAME = "geometry_name_b"  # Replace with actual geometry name
 
+
 ###############################################################################
-# Helper Functions
-# ----------------
+# Functions for interpolation
+# ---------------------------
+# Before interpolating between two geometries, we need two key functions:
+#
+# 1. A function to efficiently extract the latent parameters from the training data.
+# 2. A function to interpolate between two latent vectors.
 
 
 def get_latent_parameters(workspace) -> Dict[str, List[float]]:
@@ -74,7 +79,7 @@ def get_latent_parameters(workspace) -> Dict[str, List[float]]:
     Parameters
     ----------
     workspace : Workspace
-        The GeomAI workspace containing the trained model.
+        The workspace containing the trained model.
 
     Returns
     -------

@@ -30,7 +30,7 @@ This example demonstrates how to generate random geometries using random latent 
 Before you begin
 ----------------
 
-- Complete ":ref:`ref_build_model`" to train a GeomAI model
+- Complete ":ref:`ref_build_model`" to train a Generative Design model
 - Ensure the model training completed successfully
 
 """
@@ -63,7 +63,7 @@ RESOLUTION = (100, 100, 100)  # Output resolution (x, y, z)
 ###############################################################################
 # Initialize the client and get the workspace
 # -------------------------------------------
-# Connect to GeomAI and retrieve your trained workspace:
+# Connect to the instance and retrieve your trained workspace:
 
 simai = ansys.simai.core.SimAIClient(organization=ORGANIZATION)
 client = simai.geomai
@@ -85,7 +85,7 @@ def get_latent_parameters(workspace) -> Dict[str, List[float]]:
     Parameters
     ----------
     workspace : Workspace
-        The GeomAI workspace containing the trained model.
+        The workspace containing the trained model.
 
     Returns
     -------
