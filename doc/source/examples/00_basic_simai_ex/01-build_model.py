@@ -31,10 +31,10 @@ and domain of analysis, then start the model training process.
 Before you begin
 ----------------
 
-- Complete ":ref:`ref_basic_create_project_upload_data`" to create a project with training data
-- Ensure all training data in your project is ready (processed successfully)
-- Know the names of surfaces and boundary conditions in your training data
-- Determine which global coefficients you want to compute
+- Complete ":ref:`ref_basic_create_project_upload_data`" to create a project with training data.
+- Ensure all training data in your project is ready (processed successfully).
+- Know the names of surfaces and boundary conditions in your training data.
+- Determine which global coefficients you want to compute.
 
 """
 

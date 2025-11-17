@@ -32,9 +32,9 @@ Before you begin
 
 Make sure you have:
 
-- Valid SimAI credentials and organization access
-- A dataset folder containing subdirectories with your training data
-- The ansys-simai-core library installed
+- Valid SimAI credentials and organization access.
+- A dataset folder containing subdirectories with your training data.
+- The ansys-simai-core library installed.
 
 """
 

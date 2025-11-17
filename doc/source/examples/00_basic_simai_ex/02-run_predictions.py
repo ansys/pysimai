@@ -32,10 +32,10 @@ including global coefficients and confidence scores.
 Before you begin
 ----------------
 
-- Complete ":ref:`ref_basic_build_model`" to train a SimAI model
-- Ensure the model training completed successfully
-- Have a dataset folder with subdirectories containing geometry files
-- (Optional) Prepare boundary condition JSON files if your model requires them
+- Complete ":ref:`ref_basic_build_model`" to train a SimAI model.
+- Ensure the model training completed successfully.
+- Have a dataset folder with subdirectories containing geometry files. These geometry files can come from a Generative Design model.
+- (Optional) Prepare boundary condition JSON files if your model requires them.
 
 """
 
@@ -46,7 +46,7 @@ Before you begin
 import json
 import os
 
-from ansys.simai.core import SimAIClient
+import ansys.simai.core as asc
 from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.predictions import Prediction
 
@@ -64,7 +64,7 @@ DATASET_PATH = "<your_dataset>"  # Path to your dataset directory
 # ---------------------------------------
 # Connect to SimAI and set the workspace to use for predictions:
 
-simai_client = SimAIClient(organization=ORGANIZATION_NAME)
+simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
 ###############################################################################
 # Set the current workspace
