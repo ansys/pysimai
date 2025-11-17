@@ -31,7 +31,7 @@ Before you begin
 ----------------
 
 - Complete ":ref:`ref_build_model`" to train a Generative design model.
-- Ensure the model training completed successfully. If not sure, verify if a new workspace was created for the trained model.
+- Ensure that the model training has been completed successfully. To do so, verify if a new workspace was created for the trained model.
 
 """
 
