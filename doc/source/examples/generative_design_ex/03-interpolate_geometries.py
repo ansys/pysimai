@@ -43,7 +43,7 @@ import json
 import os
 from typing import Dict, List
 
-from ansys.simai.core import SimAIClient
+import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
 from ansys.simai.core.data.predictions import Prediction
 
@@ -120,10 +120,10 @@ def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> L
 # -------------------------------------------
 # Connect to GeomAI and retrieve your trained workspace:
 
-simai = SimAIClient(organization=ORGANIZATION)
-client = simai.geomai
+simai_client = asc.SimAIClient(organization=ORGANIZATION)
+geomai_client = simai_client.geomai
 
-workspace = client.workspaces.get(name=WORKSPACE_NAME)
+workspace = geomai_client.workspaces.get(name=WORKSPACE_NAME)
 print(f"Using workspace: {workspace.name}")
 
 ###############################################################################
@@ -177,7 +177,7 @@ for i in range(NUM_STEPS + 1):
         latent_params=latent_params,
         resolution=RESOLUTION,
     )
-    prediction = client.predictions.run(config, workspace)
+    prediction = geomai_client.predictions.run(config, workspace)
     print(f"Prediction {i}: {prediction.id} started...")
     predictions.append(prediction)
 
@@ -192,7 +192,7 @@ for i, prediction in enumerate(predictions):
         out_dir = os.path.join(OUTPUT_DIR, workspace.name)
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, f"prediction_{i:02d}_{prediction.id}.vtp")
-        client.predictions.download(prediction.id, out_path)
+        geomai_client.predictions.download(prediction.id, out_path)
         print(f"✓ Saved prediction to {out_path}")
     else:
         print(f"✗ Prediction {i} timed out.")

@@ -44,7 +44,7 @@ Make sure you have:
 
 import os
 
-from ansys.simai.core import SimAIClient
+import ansys.simai.core as asc
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
@@ -62,15 +62,15 @@ PROJECT_NAME = "new-bracket-project"  # Your desired project name
 # Create a client to use the PySimAI library. This client will be the
 # entrypoint for all Generative Design objects.
 
-simai = SimAIClient(organization=ORGANIZATION)
-client = simai.geomai
+simai_client = asc.SimAIClient(organization=ORGANIZATION)
+geomai_client = simai_client.geomai
 
 
 ###############################################################################
 # List all available training data:
 
 print("\nAvailable training data:")
-available_tds = client.training_data.list()
+available_tds = geomai_client.training_data.list()
 
 ###############################################################################
 # Create or retrieve a project
@@ -78,10 +78,10 @@ available_tds = client.training_data.list()
 # Try to get an existing project by name, or create it if it doesn't exist:
 
 try:
-    project = client.projects.get(name=PROJECT_NAME)
+    project = geomai_client.projects.get(name=PROJECT_NAME)
     print(f"Using existing project: {PROJECT_NAME}")
 except NotFoundError:
-    project = client.projects.create(PROJECT_NAME)
+    project = geomai_client.projects.create(PROJECT_NAME)
     print(f"Created new project: {PROJECT_NAME}")
 
 print(f"Current project: {project.name}")
@@ -121,7 +121,7 @@ for fname in os.listdir(DATASET_PATH):
 
     # Upload new training data
     try:
-        training_data = client.training_data.create_from_file(file=fpath, project=project)
+        training_data = geomai_client.training_data.create_from_file(file=fpath, project=project)
         print(f"✓ Uploaded '{fname}' -> ID: {training_data.id}")
         successful_uploads += 1
     except Exception as e:

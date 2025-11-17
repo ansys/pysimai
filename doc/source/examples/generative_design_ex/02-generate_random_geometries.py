@@ -31,7 +31,7 @@ Before you begin
 ----------------
 
 - Complete ":ref:`ref_build_model`" to train a Generative Design model
-- Ensure that the model training has been completed successfully.
+- Ensure the model training completed successfully
 
 """
 
@@ -44,7 +44,7 @@ import os
 import random
 from typing import Dict, List
 
-import ansys.simai.core
+import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
 from ansys.simai.core.data.predictions import Prediction
 
@@ -65,13 +65,13 @@ RESOLUTION = (100, 100, 100)  # Output resolution (x, y, z)
 # -------------------------------------------
 # Connect to the instance and retrieve your trained workspace:
 
-simai = ansys.simai.core.SimAIClient(organization=ORGANIZATION)
-client = simai.geomai
+simai_client = asc.SimAIClient(organization=ORGANIZATION)
+geomai_client = simai_client.geomai
 
 ###############################################################################
 # Retrieve the workspace by name:
 
-workspace = client.workspaces.get(name=WORKSPACE_NAME)
+workspace = geomai_client.workspaces.get(name=WORKSPACE_NAME)
 print(f"Using workspace: {workspace.name}")
 
 
@@ -135,7 +135,7 @@ for i in range(NUM_GEOMETRIES):
     )
 
     # Run the prediction
-    prediction = client.predictions.run(config, workspace)
+    prediction = geomai_client.predictions.run(config, workspace)
     print(f"Prediction {i + 1}/{NUM_GEOMETRIES}: {prediction.id} started...")
     predictions.append(prediction)
 
@@ -149,7 +149,7 @@ for i, prediction in enumerate(predictions):
 
         # Download the generated geometry
         output_path = os.path.join(output_dir, f"random_{i + 1:02d}_{prediction.id}.vtp")
-        client.predictions.download(prediction.id, output_path)
+        geomai_client.predictions.download(prediction.id, output_path)
         print(f"✓ Saved geometry to {output_path}")
     else:
         print(f"✗ Prediction {i + 1} timed out")

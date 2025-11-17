@@ -39,7 +39,7 @@ Before you begin
 # Import necessary libraries
 # --------------------------
 
-import ansys.simai.core
+import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 
 ###############################################################################
@@ -57,13 +57,13 @@ BUILD_PRESET = "default"  # Options: "debug", "short", "default", "long"
 # -----------------------------------------
 # Connect to the instance and retrieve your project:
 
-simai = ansys.simai.core.SimAIClient(organization=ORGANIZATION)
-client = simai.geomai
+simai_client = asc.SimAIClient(organization=ORGANIZATION)
+geomai_client = simai_client.geomai
 
 ###############################################################################
 # Retrieve the project by name:
 
-project = client.projects.get(name=PROJECT_NAME)
+project = geomai_client.projects.get(name=PROJECT_NAME)
 print(f"Using project: {project.name}")
 
 ###############################################################################
@@ -105,7 +105,7 @@ configuration = GeomAIModelConfiguration(
 # ---------------
 # Start the model training process:
 
-model = client.models.build(project, configuration)
+model = geomai_client.models.build(project, configuration)
 print(f"Started build for model {model.id}")
 
 ###############################################################################
