@@ -30,7 +30,7 @@ This example demonstrates how to interpolate between two geometries in latent sp
 Before you begin
 ----------------
 
-- Complete ":ref:`ref_build_model`" to train a GeomAI model
+- Complete ":ref:`ref_build_model`" to train a Generative design model.
 - Ensure the model training completed successfully. If not sure, verify if a new workspace was created for the trained model.
 
 """
