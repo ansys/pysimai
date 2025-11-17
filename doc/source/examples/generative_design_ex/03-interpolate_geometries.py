@@ -205,7 +205,7 @@ for i, prediction in enumerate(predictions):
 ###############################################################################
 # Next steps
 # ----------
-# You can extend this tutorial to:
+# To go further, you can:
 #
 # - Interpolate between more than two geometries
 # - Combine interpolation with optimization for specific design goals
