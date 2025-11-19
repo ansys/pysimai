@@ -173,6 +173,7 @@ for i, prediction in enumerate(predictions):
 # - Use the workspace's latent space statistics (min, max) for better sampling.
 ###############################################################################
 
+
 # Next steps
 # ----------
 # To generate geometries with more control, see :ref:`ref_interpolate_geometries`.
