@@ -115,7 +115,6 @@ print(f"Started build for model {model.id}")
 
 print("Waiting for model training to complete (this may take a while)...")
 if model.wait(timeout=600):  # Wait up to 600 seconds (10 minutes)
-    model.reload()  # Refresh model state
     if model.has_failed:
         print(f"✗ Model {model.id} failed: {model.failure_reason}")
     else:

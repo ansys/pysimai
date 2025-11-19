@@ -142,7 +142,6 @@ for i in range(NUM_GEOMETRIES):
 for i, prediction in enumerate(predictions):
     # Wait for prediction to complete
     if prediction.wait(timeout=600):  # Wait up to 10 minutes
-        prediction.reload()  # Refresh prediction state
         if prediction.has_failed:
             print(f"✗ Prediction {i + 1} failed: {prediction.failure_reason}")
             continue

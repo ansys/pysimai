@@ -183,7 +183,6 @@ for i in range(NUM_STEPS + 1):
 
 for i, prediction in enumerate(predictions):
     if prediction.wait(timeout=600):  # Wait up to 10 minutes
-        prediction.reload()
         if prediction.has_failed:
             print(f"✗ Prediction {i} failed: {prediction.failure_reason}")
             continue
