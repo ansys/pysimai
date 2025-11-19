@@ -36,6 +36,15 @@ Before you begin
 """
 
 ###############################################################################
+# Understanding interpolation
+# ---------------------------
+# Latent space interpolation allows you to:
+#
+# - Create smooth transitions between existing designs.
+# - Explore the design space systematically.
+# - Generate variations that blend features from multiple geometries.
+
+###############################################################################
 # Import necessary libraries
 # --------------------------
 
@@ -65,7 +74,7 @@ GEOM_B_NAME = "geometry_name_b"  # Replace with actual geometry name
 
 
 ###############################################################################
-# Functions for interpolation
+# Define functions for interpolation
 # ---------------------------
 # Before interpolating between two geometries, we need two key functions:
 #
@@ -196,15 +205,6 @@ for i, prediction in enumerate(predictions):
     else:
         print(f"✗ Prediction {i} timed out.")
 
-
-###############################################################################
-# Understanding interpolation
-# ---------------------------
-# Latent space interpolation allows you to:
-#
-# - Create smooth transitions between existing designs.
-# - Explore the design space systematically.
-# - Generate variations that blend features from multiple geometries.
 
 ###############################################################################
 # Next steps

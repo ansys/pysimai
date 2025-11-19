@@ -22,7 +22,7 @@
 
 """.. _ref_create_project_upload_data:
 
-Creating a Geom AI Project and Uploading Training Data
+Creating a GeomAI Project and Uploading Training Data
 ===========================================================
 
 This example demonstrates how to connect to the instance, create a new project, and upload geometry files as training data.
@@ -32,9 +32,9 @@ Before you begin
 
 Make sure you have:
 
-- Valid SimAI credentials and organization access
-- A folder containing geometry files (.vtp or .stl format)
-- The ansys-simai-core library installed
+- Valid SimAI credentials and organization access.
+- A folder containing geometry files (.vtp or .stl format).
+- The ``ansys-simai-core`` library installed.
 
 """
 
@@ -75,7 +75,7 @@ available_tds = geomai_client.training_data.list()
 ###############################################################################
 # Create or retrieve a project
 # ----------------------------
-# Try to get an existing project by name, or create it if it doesn't exist:
+# Try to get an existing project by name, or create it if it does not exist:
 
 try:
     project = geomai_client.projects.get(name=PROJECT_NAME)
@@ -133,8 +133,8 @@ print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} fail
 ###############################################################################
 # Check and wait for data processing
 # ----------------------------------
-# After uploading, the instance needs to process the geometries. This section
-# waits for all data to be ready.
+# After uploading, the instance needs to process the geometries. This script
+# displays the progress of the data processing.
 
 project_data = project.data()
 
@@ -177,4 +177,4 @@ if not_ready_data:
 # Next steps
 # ----------
 # Once all data is ready, you can proceed to build a model.
-# See the next tutorial: :ref:`ref_build_model`
+# See the next example: :ref:`ref_build_model`.
