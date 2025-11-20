@@ -139,6 +139,17 @@ for i in range(NUM_GEOMETRIES):
     print(f"Prediction {i + 1}/{NUM_GEOMETRIES}: {prediction.id} started...")
     predictions.append(prediction)
 
+
+###############################################################################
+# Download generated geometries
+# --------------------------
+# The downloaded VTP files can be used for:
+#
+# - Visualization in your usual solver.
+# - SimAI training data or predictions.
+# - Further analysis and post-processing.
+
+
 for i, prediction in enumerate(predictions):
     # Wait for prediction to complete
     if prediction.wait(timeout=600):  # Wait up to 10 minutes
@@ -153,15 +164,6 @@ for i, prediction in enumerate(predictions):
     else:
         print(f"✗ Prediction {i + 1} timed out")
 
-
-###############################################################################
-# Using generated geometries
-# --------------------------
-# The downloaded VTP files can be used for:
-#
-# - Visualization in your usual solver.
-# - SimAI training data or predictions.
-# - Further analysis and post-processing.
 
 ###############################################################################
 # Tips for better results

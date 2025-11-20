@@ -190,6 +190,16 @@ for i in range(NUM_STEPS + 1):
     print(f"Prediction {i}: {prediction.id} started...")
     predictions.append(prediction)
 
+
+###############################################################################
+# Download generated geometries
+# --------------------------
+# The downloaded VTP files can be used for:
+#
+# - Visualization in your usual solver.
+# - SimAI training data or predictions.
+# - Further analysis and post-processing.
+
 for i, prediction in enumerate(predictions):
     if prediction.wait(timeout=600):  # Wait up to 10 minutes
         if prediction.has_failed:
