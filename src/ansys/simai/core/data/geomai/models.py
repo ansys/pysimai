@@ -52,7 +52,9 @@ class GeomAIModelConfiguration(BaseModel):
     """
     The preset to use for the model training duration. One of `debug`, `short`, `default`, `long`.
 
+    - `debug`: 4 minutes + 15 sec per geometry.
     - `short`: 45 minutes + 15 sec per geometry.
+    - `default`: 3 hours + 15 sec per geometry.
     - `long`: 15 hours + 15 sec per geometry.
 
     Mutually exclusive with `nb_epochs`.
