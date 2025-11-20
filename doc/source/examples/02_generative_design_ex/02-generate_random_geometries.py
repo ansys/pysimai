@@ -30,8 +30,8 @@ This example demonstrates how to generate random geometries using random latent 
 Before you begin
 ----------------
 
-- Complete ":ref:`ref_build_model`" to train a Generative Design model
-- Ensure the model training completed successfully
+- Complete ":ref:`ref_build_model`" to train a Generative Design model.
+- Ensure the model training completed successfully.
 
 """
 
@@ -63,13 +63,13 @@ RESOLUTION = (100, 100, 100)  # Output resolution (x, y, z)
 ###############################################################################
 # Initialize the client and get the workspace
 # -------------------------------------------
-# Connect to the instance and retrieve your trained workspace:
+# Connect to the instance:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
 
 ###############################################################################
-# Retrieve the workspace by name:
+# Retrieve the trained workspace by its name:
 
 workspace = geomai_client.workspaces.get(name=WORKSPACE_NAME)
 print(f"Using workspace: {workspace.name}")
@@ -139,10 +139,20 @@ for i in range(NUM_GEOMETRIES):
     print(f"Prediction {i + 1}/{NUM_GEOMETRIES}: {prediction.id} started...")
     predictions.append(prediction)
 
+
+###############################################################################
+# Download generated geometries
+# --------------------------
+# The downloaded VTP files can be used for:
+#
+# - Visualization in your usual solver.
+# - SimAI training data or predictions.
+# - Further analysis and post-processing.
+
+
 for i, prediction in enumerate(predictions):
     # Wait for prediction to complete
     if prediction.wait(timeout=600):  # Wait up to 10 minutes
-        prediction.reload()  # Refresh prediction state
         if prediction.has_failed:
             print(f"✗ Prediction {i + 1} failed: {prediction.failure_reason}")
             continue
@@ -156,20 +166,13 @@ for i, prediction in enumerate(predictions):
 
 
 ###############################################################################
-# Using generated geometries
-# --------------------------
-# The downloaded VTP files can be used for:
-# - Visualization in ParaView or similar tools
-# - SimAI training data or predictions
-# - Further analysis and post-processing
-
-###############################################################################
 # Tips for better results
 # -----------------------
-# - Latent parameters typically range from -3 to +3 for meaningful results
-# - Adjust the resolution to balance quality and file size
-# - Increase timeout for complex geometries
-# - Use the workspace's latent space statistics (min, max) for better sampling
+#
+# - Latent parameters typically range from -3 to +3 for meaningful results.
+# - Adjust the resolution to balance quality and file size.
+# - Increase timeout for complex geometries.
+# - Use the workspace's latent space statistics (min, max) for better sampling.
 
 ###############################################################################
 # Next steps

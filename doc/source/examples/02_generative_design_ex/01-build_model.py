@@ -30,8 +30,8 @@ This example demonstrates how to configure a Generative Design model, start the 
 Before you begin
 ----------------
 
-- Complete ":ref:`ref_create_project_upload_data`" to create a project with training data
-- Ensure all training data in your project is ready (processed successfully)
+- Complete ":ref:`ref_create_project_upload_data`" to create a project with training data.
+- Ensure all training data in your project are ready (processed successfully).
 
 """
 
@@ -55,7 +55,7 @@ BUILD_PRESET = "default"  # Options: "debug", "short", "default", "long"
 ###############################################################################
 # Initialize the client and get the project
 # -----------------------------------------
-# Connect to the instance and retrieve your project:
+# Connect to the instance:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
@@ -67,9 +67,9 @@ project = geomai_client.projects.get(name=PROJECT_NAME)
 print(f"Using project: {project.name}")
 
 ###############################################################################
-# Verify project data is ready
+# Verify project data are ready
 # ----------------------------
-# Before building a model, ensure all training data is processed:
+# Before building a model, ensure all training data are processed:
 
 project_data = project.data()
 ready_data = [data for data in project_data if data.is_ready]
@@ -79,19 +79,19 @@ if len(ready_data) < len(project_data):
     print("Warning: Some training data is not ready. Model may fail to build.")
 
 ###############################################################################
-# Create model configuration
+# Configure the model
 # --------------------------
 # Define the configuration for your model. You can either specify the number
 # of epochs directly or use a build preset.
 #
 # Build presets:
 #
-# - "debug": Fast training for testing (very few epochs)
-# - "short": Quick training with reduced accuracy
-# - "default": Balanced training time and quality
-# - "long": Longer training for best quality
+# - "debug": Fast training for testing (very few epochs).
+# - "short": Quick training with reduced accuracy.
+# - "default": Balanced training time and quality.
+# - "long": Longer training for best quality.
 #
-# Instead of build_preset, you can specify the number of epochs directly: `nb_epochs=100`.
+# Instead of ``build_preset``, you can specify the number of epochs directly: ``nb_epochs=100``.
 # The number of latent parameters defines the complexity of the model's latent space; start with a small number (e.g., 10) and adjust based on your needs.
 
 
@@ -114,19 +114,18 @@ print(f"Started build for model {model.id}")
 # Monitor the training process and handle completion:
 
 print("Waiting for model training to complete (this may take a while)...")
-if model.wait(timeout=600):  # Wait up to 600 seconds (10 minutes)
-    model.reload()  # Refresh model state
-    if model.has_failed:
-        print(f"✗ Model {model.id} failed: {model.failure_reason}")
-    else:
-        print(f"✓ Model {model.id} finished successfully!")
-else:
-    print(f"✗ Model {model.id} did not finish in time or encountered an error.")
+while not model.wait(timeout=60):  # Check every 60 seconds
+    print(f"Model {model.id} is still training...")
 
+if model.has_failed:
+    print(f"Model training failed: {model.failure_reason}")
+else:
+    print(f"Model {model.id} trained successfully and is ready to use.")
 
 ###############################################################################
 # Next steps
 # ----------
 # Once your model is trained, you can:
+#
 # - Generate random geometries: :ref:`ref_generate_random_geometries`
 # - Interpolate between geometries: :ref:`ref_interpolate_geometries`

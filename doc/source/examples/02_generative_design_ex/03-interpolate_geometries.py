@@ -36,6 +36,15 @@ Before you begin
 """
 
 ###############################################################################
+# Understanding interpolation
+# ---------------------------
+# Latent space interpolation allows you to:
+#
+# - Create smooth transitions between existing designs.
+# - Explore the design space systematically.
+# - Generate variations that blend features from multiple geometries.
+
+###############################################################################
 # Import necessary libraries
 # --------------------------
 
@@ -65,12 +74,8 @@ GEOM_B_NAME = "geometry_name_b"  # Replace with actual geometry name
 
 
 ###############################################################################
-# Functions for interpolation
-# ---------------------------
-# Before interpolating between two geometries, we need two key functions:
-#
-# 1. A function to efficiently extract the latent parameters from the training data.
-# 2. A function to interpolate between two latent vectors.
+# Helper Functions
+# ----------------
 
 
 def get_latent_parameters(workspace) -> Dict[str, List[float]]:
@@ -181,9 +186,18 @@ for i in range(NUM_STEPS + 1):
     print(f"Prediction {i}: {prediction.id} started...")
     predictions.append(prediction)
 
+
+###############################################################################
+# Download generated geometries
+# --------------------------
+# The downloaded VTP files can be used for:
+#
+# - Visualization in your usual solver.
+# - SimAI training data or predictions.
+# - Further analysis and post-processing.
+
 for i, prediction in enumerate(predictions):
     if prediction.wait(timeout=600):  # Wait up to 10 minutes
-        prediction.reload()
         if prediction.has_failed:
             print(f"✗ Prediction {i} failed: {prediction.failure_reason}")
             continue
@@ -203,9 +217,9 @@ for i, prediction in enumerate(predictions):
 # ---------------------------
 # Latent space interpolation allows you to:
 #
-# - Create smooth transitions between existing designs.
-# - Explore the design space systematically.
-# - Generate variations that blend features from multiple geometries.
+# - Create smooth transitions between existing designs
+# - Explore the design space systematically
+# - Generate variations that blend features from multiple geometries
 
 ###############################################################################
 # Next steps
