@@ -52,7 +52,7 @@ from ansys.simai.core.data.model_configuration import (
 )
 
 ###############################################################################
-# User Configuration
+# Configure your settings
 # ------------------
 # Update these variables with your specific settings:
 
@@ -100,7 +100,7 @@ model_output = ModelOutput(
 # They can be used to extract key performance indicators from your simulations.
 #
 # In this example, we compute the maximum value of a field called "Photometric"
-# at a specific point (point_id==0). You can define multiple global coefficients
+# at a specific point (``point_id==0``). You can define multiple global coefficients
 # with different formulas.
 #
 # Available locations: "points" or "cells"
@@ -120,9 +120,10 @@ global_coefficients = [
 # Values can be specified as absolute dimensions or relative to minimum values.
 #
 # Format: reference_type, min_value, max_value
-# - reference_type: "relative_to_min" or "absolute"
-# - min_value: minimum dimension value
-# - max_value: maximum dimension value
+#
+# - ``reference_type``: ``"relative_to_min"`` or ``"absolute"``.
+# - ``min_value``: minimum dimension value.
+# - ``max_value``: maximum dimension value.
 #
 # You can find appropriate values by analyzing your training data in the SimAI web app.
 
@@ -138,13 +139,12 @@ doa = DomainOfAnalysis(
 # Combine all the configuration elements into a ModelConfiguration object.
 #
 # Build presets determine the training duration:
-# - "1_hour": Quick training for testing
-# - "1_day": Standard training (recommended)
-# - "3_days": Extended training for complex problems
-# - "1_week": Maximum training for best accuracy
 #
-# build_on_top: If True, continues training from the previous model.
-#               If False, starts training from scratch.
+# - ``debug``: Quick training for testing.
+# - ``1_day``: Short training.
+# - ``2_days``: Standard training (recommended).
+# - ``7_days``: Maximum training for best accuracy.
+
 
 mdl_conf = ModelConfiguration(
     project=project,  # Project containing the training data

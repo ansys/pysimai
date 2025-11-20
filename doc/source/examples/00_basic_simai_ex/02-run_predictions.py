@@ -51,7 +51,7 @@ from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.predictions import Prediction
 
 ###############################################################################
-# User Configuration
+# Configure your settings
 # ------------------
 # Update these variables with your specific settings:
 
@@ -184,12 +184,14 @@ print("Results saved successfully!")
 # Understanding the results
 # ------------------------
 # The results dictionary contains:
-# - Global coefficients: Scalar values computed from the prediction
-# - Confidence score: A measure of how confident the model is in its prediction
+#
+# - Global coefficients: Scalar values computed from the prediction,
+# - Confidence score: A measure of how familiar this prediction is for the model.
 #
 # You can also download full field results (VTP files) for visualization:
-# - Use pred.post.surface_vtp() to get surface fields
-# - Use pred.post.volume_vtu() to get volume fields
+#
+# - Use ``pred.post.surface_vtp()`` to get surface fields.
+# - Use ``pred.post.volume_vtu()`` to get volume fields.
 
 ###############################################################################
 # Example: Download surface VTP for visualization
@@ -207,7 +209,8 @@ if preds:
 # Next steps
 # ----------
 # With your prediction results, you can:
-# - Analyze global coefficients to evaluate design performance
-# - Visualize field results in ParaView or similar tools
-# - Compare predictions against validation data
-# - Use results to guide design optimization
+#
+# - Analyze global coefficients to evaluate design performance.
+# - Visualize field results in ParaView or similar tools.
+# - Compare predictions against validation data.
+# - Use results to guide design optimization.

@@ -49,7 +49,7 @@ from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
-# User Configuration
+# Configure your settings
 # ------------------
 # Update these variables with your specific settings:
 
