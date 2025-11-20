@@ -194,11 +194,6 @@ for i in range(NUM_STEPS + 1):
 ###############################################################################
 # Download generated geometries
 # --------------------------
-# The downloaded VTP files can be used for:
-#
-# - Visualization in your usual solver.
-# - SimAI training data or predictions.
-# - Further analysis and post-processing.
 
 for i, prediction in enumerate(predictions):
     if prediction.wait(timeout=600):  # Wait up to 10 minutes
@@ -215,6 +210,12 @@ for i, prediction in enumerate(predictions):
     else:
         print(f"✗ Prediction {i} timed out.")
 
+###############################################################################
+# The downloaded VTP files can be used for:
+#
+# - Visualization in your usual solver.
+# - SimAI training data or predictions.
+# - Further analysis and post-processing.
 
 ###############################################################################
 # Next steps
