@@ -27,6 +27,11 @@ Interpolating Between Geometries
 
 This example demonstrates how to interpolate between two geometries in latent space.
 
+Latent space interpolation allows you to:
+
+- Create smooth transitions between existing designs.
+- Explore the design space systematically.
+- Generate variations that blend features from multiple geometries.
 Before you begin
 ----------------
 
@@ -35,14 +40,6 @@ Before you begin
 
 """
 
-###############################################################################
-# Understanding interpolation
-# ---------------------------
-# Latent space interpolation allows you to:
-#
-# - Create smooth transitions between existing designs.
-# - Explore the design space systematically.
-# - Generate variations that blend features from multiple geometries.
 
 ###############################################################################
 # Import necessary libraries
