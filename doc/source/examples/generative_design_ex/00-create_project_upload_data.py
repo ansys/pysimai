@@ -54,7 +54,7 @@ from ansys.simai.core.errors import NotFoundError
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
 DATASET_PATH = "path/to/your/data/folder"  # Folder with .vtp or .stl files
-PROJECT_NAME = "new-bracket-project"  # Your desired project name
+PROJECT_NAME = "new-bracket-project"  # Your project name
 
 ###############################################################################
 # Create the client
