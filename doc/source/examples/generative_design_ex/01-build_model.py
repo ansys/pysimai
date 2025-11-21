@@ -90,8 +90,8 @@ if len(ready_data) < len(project_data):
 ###############################################################################
 # Configure the model
 # --------------------------
-# To define the configuration for your model, you can either specify the number
-# of epochs directly or use a build preset.
+# To define the configuration for your model, you can either specify the build preset or the number
+# of epochs.
 # To do so, instead of ``build_preset``, you can specify the number of epochs directly. Example: ``nb_epochs=100``.
 #
 # The number of latent parameters defines the complexity of the model's latent space; start with a small number (e.g., 10) and adjust based on your needs.
