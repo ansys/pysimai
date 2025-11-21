@@ -105,7 +105,7 @@ for fname in os.listdir(DATASET_PATH):
         print(f"Skipping non-geometry file: {fname}")
         continue
 
-    # Check if training data already exists
+    # Check if training data already exist
     existing_tds = [td for td in available_tds if td.name == td_name]
     if existing_tds:
         print(f"Training data '{fname}' already exists in the datalake. Skipping upload.")
