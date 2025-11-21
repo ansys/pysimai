@@ -76,7 +76,7 @@ ready_data = [data for data in project_data if data.is_ready]
 print(f"Project has {len(ready_data)}/{len(project_data)} ready training data")
 
 if len(ready_data) < len(project_data):
-    print("Warning: Some training data is not ready. Model may fail to build.")
+    print("Warning: Some training data are not ready. Model may fail to build.")
 
 ###############################################################################
 # Configure the model
