@@ -90,7 +90,7 @@ print(f"Current project: {project.name}")
 # Upload training data to the project
 # -----------------------------------
 # Loop through all geometry files in your dataset folder and upload them.
-# The script handles duplicates by checking if the data already exists.
+# The script handles duplicates by checking if the data already exist.
 
 print("\nUploading training data files:")
 successful_uploads = 0
