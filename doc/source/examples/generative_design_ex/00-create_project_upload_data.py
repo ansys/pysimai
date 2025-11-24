@@ -28,7 +28,7 @@ Creating a GeomAI Project and Uploading Training Data
 This example demonstrates how to connect to the instance, create a new project, and upload geometry files as training data.
 
 Before you begin
-----------------
+-------------------------------------------
 
 Make sure you have:
 
@@ -40,7 +40,7 @@ Make sure you have:
 
 ###############################################################################
 # Import necessary libraries
-# --------------------------
+# -------------------------------------------
 
 import os
 
@@ -49,7 +49,7 @@ from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
 # Configure your settings
-# ------------------
+# -------------------------------------------
 # Update these variables with your specific settings:
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
@@ -58,7 +58,7 @@ PROJECT_NAME = "new-bracket-project"  # Your project name
 
 ###############################################################################
 # Create the client
-# -----------------
+# -------------------------------------------
 # Create a client to use the PySimAI library. This client will be the
 # entrypoint for all Generative Design objects.
 
@@ -74,7 +74,7 @@ available_tds = geomai_client.training_data.list()
 
 ###############################################################################
 # Create or retrieve a project
-# ----------------------------
+# -------------------------------------------
 # Try to get an existing project by name, or create it if it does not exist:
 
 try:
@@ -88,7 +88,7 @@ print(f"Current project: {project.name}")
 
 ###############################################################################
 # Upload training data to the project
-# -----------------------------------
+# -------------------------------------------
 # Loop through all geometry files in your dataset folder and upload them.
 # The script handles duplicates by checking if the data already exist.
 
@@ -132,7 +132,7 @@ print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} fail
 
 ###############################################################################
 # Check and wait for data processing
-# ----------------------------------
+# -------------------------------------------
 # After uploading, the instance needs to process the geometries. This script
 # displays the progress of the data processing.
 
@@ -150,7 +150,7 @@ for data in project_data:
 
 ###############################################################################
 # Display project status summary
-# ------------------------------
+# -------------------------------------------
 # Show a summary of the project's data processing status:
 
 project_data = project.data()
@@ -175,6 +175,6 @@ if not_ready_data:
 
 ###############################################################################
 # Next steps
-# ----------
+# -------------------------------------------
 # Once all data is ready, you can proceed to build a model.
 # See the next example: :ref:`ref_build_model`.

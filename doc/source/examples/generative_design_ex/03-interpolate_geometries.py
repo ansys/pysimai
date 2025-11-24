@@ -34,7 +34,7 @@ Latent space interpolation allows you to:
 - Generate variations that blend features from multiple geometries.
 
 Before you begin
-----------------
+-------------------------------------------
 
 - Complete ":ref:`ref_build_model`" to train a Generative design model.
 - Ensure that the model training has been completed successfully. To do so, verify if a new workspace was created for the trained model.
@@ -44,7 +44,7 @@ Before you begin
 
 ###############################################################################
 # Import necessary libraries
-# --------------------------
+# -------------------------------------------
 
 import json
 import os
@@ -56,7 +56,7 @@ from ansys.simai.core.data.predictions import Prediction
 
 ###############################################################################
 # Configure your settings
-# ------------------
+# -------------------------------------------
 # Update these variables with your specific settings:
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
@@ -73,7 +73,7 @@ GEOM_B_NAME = "geometry_name_b"  # Replace with actual geometry name
 
 ###############################################################################
 # Define functions for interpolation
-# ---------------------------
+# -------------------------------------------
 # Before interpolating between two geometries, we need two key functions:
 #
 # 1. A function to efficiently extract the latent parameters from the training data.
@@ -135,7 +135,7 @@ print(f"Using workspace: {workspace.name}")
 
 ###############################################################################
 # Get latent parameters for all geometries
-# ----------------------------------------
+# -------------------------------------------
 # Download the latent parameters of all training geometries in the workspace:
 
 latent_dict = get_latent_parameters(workspace)
@@ -151,7 +151,7 @@ for i, name in enumerate(latent_dict.keys()):
 
 ###############################################################################
 # Validate selected geometries
-# ----------------------------
+# -------------------------------------------
 # Check if the selected geometries exist:
 
 if GEOM_A_NAME not in latent_dict:
@@ -168,7 +168,7 @@ print(f"\nInterpolating from '{GEOM_A_NAME}' to '{GEOM_B_NAME}' in {NUM_STEPS} s
 
 ###############################################################################
 # Interpolate in latent space and generate geometries
-# ---------------------------------------------------
+# -------------------------------------------
 # Generate intermediate geometries by linearly interpolating in latent space:
 
 vec_a = latent_dict[GEOM_A_NAME]
@@ -191,7 +191,7 @@ for i in range(NUM_STEPS + 1):
 
 ###############################################################################
 # Download generated geometries
-# --------------------------
+# -------------------------------------------
 
 for i, prediction in enumerate(predictions):
     if prediction.wait(timeout=600):  # Wait up to 10 minutes
@@ -217,7 +217,7 @@ for i, prediction in enumerate(predictions):
 
 ###############################################################################
 # Next steps
-# ----------
+# -------------------------------------------
 # To go further, you can:
 #
 # - Interpolate between more than two geometries.
