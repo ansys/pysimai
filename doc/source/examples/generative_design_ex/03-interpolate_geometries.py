@@ -124,7 +124,7 @@ def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> L
 
 ###############################################################################
 # Initialize the client and get the workspace
-# -------------------------------------------
+# --------------------------------------------------
 # Connect to GeomAI and retrieve your trained workspace:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
@@ -135,14 +135,14 @@ print(f"Using workspace: {workspace.name}")
 
 ###############################################################################
 # Get latent parameters for all geometries
-# -------------------------------------------
+# -----------------------------------------------
 # Download the latent parameters of all training geometries in the workspace:
 
 latent_dict = get_latent_parameters(workspace)
 
 ###############################################################################
 # Display available geometries
-# ----------------------------
+# ----------------------------------
 # List all geometries available for interpolation:
 
 print("\nAvailable geometries:")
@@ -168,7 +168,7 @@ print(f"\nInterpolating from '{GEOM_A_NAME}' to '{GEOM_B_NAME}' in {NUM_STEPS} s
 
 ###############################################################################
 # Interpolate in latent space and generate geometries
-# -------------------------------------------
+# ----------------------------------------------------------
 # Generate intermediate geometries by linearly interpolating in latent space:
 
 vec_a = latent_dict[GEOM_A_NAME]
