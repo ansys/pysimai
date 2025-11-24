@@ -7,6 +7,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 env:
   MAIN_PYTHON_VERSION: "3.13"
   DOCUMENTATION_CNAME: "simai.docs.pyansys.com"
@@ -22,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: ansys/actions/code-style@v10.1
+      - uses: ansys/actions/code-style@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -31,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: ansys/actions/doc-style@v10.1
+      - uses: ansys/actions/doc-style@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,7 +49,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: ansys/actions/build-wheelhouse@v10.1
+      - uses: ansys/actions/build-wheelhouse@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
@@ -59,12 +62,22 @@ jobs:
     name: "Check library vulnerabilities"
     runs-on: ubuntu-latest
     steps:
-      - uses: ansys/actions/check-vulnerabilities@v10.1
+      - uses: ansys/actions/check-vulnerabilities@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           python-package-name: ${{ env.LIBRARY_NAME }}
           dev-mode: ${{ github.ref != 'refs/heads/main' }}
+  actions-security:
+    name: "Check actions security"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ansys/actions/check-actions-security@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
+        with:
+          generate-summary: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          auditing-level: "high"
+          trust-ansys-actions: true
   tests:
     name: "Test using Python ${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -77,17 +90,20 @@ jobs:
       fail-fast: false
     steps:
       - name: Setup uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/checkout@v5
+          enable-cache: false
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          persist-credentials: false
       - name: Install dependencies
         run: uv sync
       - name: run tests
         run: uv run pytest --cov=ansys --cov-report=term --cov-report=html:.cov/html
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        if: matrix.python-version ==  ${{ env.MAIN_PYTHON_VERSION }} && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION && matrix.os == 'ubuntu-latest'
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -98,13 +114,16 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Setup uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/checkout@v5
+          enable-cache: false
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          persist-credentials: false
       - name: Generate doc requirements
         run: uv export --only-group docs -o doc_requirements.txt
-      - uses: ansys/actions/doc-build@v10.1
+      - uses: ansys/actions/doc-build@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           checkout: false
@@ -117,7 +136,7 @@ jobs:
     needs: [doc-build, tests]
     timeout-minutes: 10
     steps:
-      - uses: ansys/actions/build-library@v10.1
+      - uses: ansys/actions/build-library@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -129,7 +148,7 @@ jobs:
     timeout-minutes: 10
     if: github.event_name == 'push' && !contains(github.ref, 'refs/tags')
     steps:
-      - uses: ansys/actions/doc-deploy-dev@v10.1
+      - uses: ansys/actions/doc-deploy-dev@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -143,7 +162,7 @@ jobs:
     timeout-minutes: 10
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
-      - uses: ansys/actions/doc-deploy-stable@v10.1
+      - uses: ansys/actions/doc-deploy-stable@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -173,7 +192,7 @@ jobs:
           packages-dir: ${{ env.LIBRARY_NAME }}-artifacts
           skip-existing: false
       - name: "Release to GitHub"
-        uses: ansys/actions/release-github@v10.1
+        uses: ansys/actions/release-github@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}

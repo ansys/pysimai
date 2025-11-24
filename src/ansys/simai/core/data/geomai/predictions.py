@@ -63,6 +63,9 @@ class GeomAIPredictionConfiguration(BaseModel):
     margin: Optional[float] = Field(default=None, ge=0, le=1)
     """A float that sets the size of the isosurface for the reconstruction of the geometry.
 
+    Warning:
+        This feature is deprecated and will be removed in a month.
+
     Note:
         A margin of 0.0 is highly recommended for non-expert users.
 
@@ -194,7 +197,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
                 simai = ansys.simai.core.from_config()
                 workspace = simai.geomai.workspaces.list()[0]
                 prediction = simai.geomai.predictions.run(
-                    dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100), margin=0.0),
+                    dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100)),
                     workspace,
                 )
         """

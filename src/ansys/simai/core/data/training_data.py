@@ -248,9 +248,26 @@ class TrainingDataDirectory(Directory[TrainingData]):
         """
         return list(self.iter(filters))
 
-    def get(self, id) -> TrainingData:
-        """Get a specific :class:`TrainingData` object from the server."""
-        return self._model_from(self._client._api.get_training_data(id))
+    def get(self, id: Optional[str] = None, name: Optional[str] = None) -> TrainingData:
+        """Get a specific :class:`TrainingData` object from the server.
+
+        You can specify either the ID or the name, not both.
+
+        Args:
+            id: ID of the training data.
+            name: Name of the training data.
+
+        Raises:
+            ansys.simai.core.errors.NotFoundError: If the training data doesn't exist
+        """
+        if name and id:
+            raise InvalidArguments("Cannot specify both 'id' and 'name' arguments.")
+        elif name:
+            return self._model_from(self._client._api.get_training_data_by_name(name))
+        elif id:
+            return self._model_from(self._client._api.get_training_data(id))
+        else:
+            raise InvalidArguments("Either 'id' or 'name' argument must be specified.")
 
     def delete(self, training_data: Identifiable[TrainingData]) -> None:
         """Delete a :class:`TrainingData` object and its associated parts from the server.
@@ -280,6 +297,8 @@ class TrainingDataDirectory(Directory[TrainingData]):
         monitor_callback: Optional[MonitorCallback],
     ) -> "TrainingDataPart":
         """Add a part to a :class:`TrainingData` object.
+        Use :meth:`TrainingData.extract_data` after all parts are uploaded (to convert the status of data to Ready for model).
+
 
         Args:
             training_data: ID or :class:`model <TrainingData>` object of the training data to
