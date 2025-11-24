@@ -32,6 +32,7 @@ Latent space interpolation allows you to:
 - Create smooth transitions between existing designs.
 - Explore the design space systematically.
 - Generate variations that blend features from multiple geometries.
+
 Before you begin
 ----------------
 
