@@ -9,7 +9,7 @@ The ``Prediction`` module is in charge of running the *SimAI-powered
 predictions* on the :py:class:`geometries<ansys.simai.core.data.geometries.Geometry>`
 that you have uploaded.
 
-A prediction represents a numerical prediction with geometry and boundary conditions.
+A prediction represents a numerical prediction with geometry and scalars.
 The arguments to the :py:meth:`predictions.run()<PredictionDirectory.run>` method
 depend on your model.
 
