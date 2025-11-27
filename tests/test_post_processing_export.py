@@ -36,7 +36,7 @@ def selection_factory(simai_client) -> Selection:
     """Returns a function to create a :py:class:`Selection`."""
 
     def _factory(predictions=None, **kwargs) -> Selection:
-        selection = Selection(geometries=[], boundary_conditions=[])
+        selection = Selection(geometries=[], scalars=[])
         selection.get_predictions = lambda: predictions or []
         return selection
 

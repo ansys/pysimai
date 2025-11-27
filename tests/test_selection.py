@@ -48,18 +48,18 @@ def four_geometries_test_set(geometry_factory, prediction_factory):
 
 
 def test_selection_content(four_geometries_test_set):
-    """WHEN creating a Selection from a list of geometries and boundary conditions
+    """WHEN creating a Selection from a list of geometries and scalars
     THEN the selection contains all geometry—boundary-condition combinations
     """
     speeds = [20.2, 20.4, 20.6]
-    boundary_conditions = [{"Vx": v} for v in speeds]
-    selection = Selection(four_geometries_test_set, boundary_conditions)
-    # 4 geometries * 3 boundary conditions
+    scalars = [{"Vx": v} for v in speeds]
+    selection = Selection(four_geometries_test_set, scalars)
+    # 4 geometries * 3 scalars
     points = selection.points
     assert len(points) == 12
 
     received_xbow_speed_combinations = {
-        (p.geometry.metadata["xbow"], p.boundary_conditions["Vx"]) for p in points
+        (p.geometry.metadata["xbow"], p.scalars["Vx"]) for p in points
     }
     expected_combinations = set()
     for speed in speeds:
@@ -72,8 +72,8 @@ def test_selection_get_predictions(four_geometries_test_set):
     """WHEN accessing the selection's predictions
     THEN predictions existing for the geometry­—boundary-condition couple are returned
     """
-    boundary_conditions = [{"Vx": v} for v in [20.2, 20.4, 20.6]]
-    selection = Selection(four_geometries_test_set, boundary_conditions)
+    scalars = [{"Vx": v} for v in [20.2, 20.4, 20.6]]
+    selection = Selection(four_geometries_test_set, scalars)
 
     predictions = selection.get_predictions()
     assert len(predictions) == 1
@@ -83,14 +83,14 @@ def test_selection_get_predictions(four_geometries_test_set):
     assert len(points_with_prediction) == 1
     point = points_with_prediction[0]
     assert point.geometry.id == "xbow-21"
-    assert point.boundary_conditions == {"Vx": 20.2}
+    assert point.scalars == {"Vx": 20.2}
 
 
 def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_mock):
     """WHEN calling run_prediction() on a selection
     THEN a POST request is launched for each not-existing prediction
     AND after the call, selection.predictions contains values for
-        all combinations of geometries and boundary condition
+        all combinations of geometries and scalar
     """
     # We create 2 geometries, geom 77777 having 1 prediction, geom 88888 having none
     geometries = [
@@ -103,46 +103,46 @@ def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_m
 
     # Select 3 speeds
     interesting_speeds_x = {4.5, 5.5, 6.5}
-    boundary_conditions = [{"Vx": v} for v in interesting_speeds_x]
+    scalars = [{"Vx": v} for v in interesting_speeds_x]
 
-    selection = Selection(geometries, boundary_conditions)
+    selection = Selection(geometries, scalars)
 
     # Selection contains 6 points (2 geom * 2 BC)
     assert len(selection.points) == 6
     # Selection contains only 1 prediction (geom 0001 - speed 4.5)
     assert len(selection.predictions) == 1
-    assert selection.predictions[0].boundary_conditions["Vx"] == 4.5
+    assert selection.predictions[0].scalars["Vx"] == 4.5
     assert len(selection.get_runnable_predictions()) == 5
 
     # Endpoints for prediction creations
     def geometry1_pred_request_callback(request):
         payload = json.loads(request.content)
-        boundary_conditions = payload["boundary_conditions"]
+        scalars = payload["boundary_conditions"]
         # geometry1 had a pred for speed 4.5, it should not be recreated
-        assert boundary_conditions["Vx"] in {5.5, 6.5}
+        assert scalars["Vx"] in {5.5, 6.5}
         return httpx.Response(
             200,
             json=(
                 {
-                    "id": f"pred{boundary_conditions}",
+                    "id": f"pred{scalars}",
                     "status": "queued",
-                    "boundary_conditions": boundary_conditions,
+                    "boundary_conditions": scalars,
                 }
             ),
         )
 
     def geometry2_pred_request_callback(request):
         payload = json.loads(request.content)
-        boundary_conditions = payload["boundary_conditions"]
+        scalars = payload["boundary_conditions"]
         # geometry2 had no pred, preds for all speed will be created
-        assert boundary_conditions["Vx"] in {4.5, 5.5, 6.5}
+        assert scalars["Vx"] in {4.5, 5.5, 6.5}
         return httpx.Response(
             200,
             json=(
                 {
-                    "id": f"pred{boundary_conditions}",
+                    "id": f"pred{scalars}",
                     "status": "queued",
-                    "boundary_conditions": boundary_conditions,
+                    "boundary_conditions": scalars,
                 }
             ),
         )
@@ -172,9 +172,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_m
         for speed_x in interesting_speeds_x:
             expected_combinations.add((geom.id, speed_x))
     received_combinations = {
-        (p.geometry.id, p.boundary_conditions["Vx"])
-        for p in selection.points_with_prediction
-        if p is not None
+        (p.geometry.id, p.scalars["Vx"]) for p in selection.points_with_prediction if p is not None
     }
     assert expected_combinations == received_combinations
 
@@ -183,7 +181,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_m
 
 def test_selection_tolerance(geometry_factory, prediction_factory):
     """WHEN creating a selection with the default tolerance
-    THEN an prediction with a boundary condition differing from less than
+    THEN an prediction with a scalar differing from less than
         10**-6 is included in the selection
     """
     small_epsilon = 10**-8
@@ -194,9 +192,9 @@ def test_selection_tolerance(geometry_factory, prediction_factory):
             prediction_factory(id="i-am-not", boundary_conditions={"Vx": 11 + big_epsilon}),
         ],
     )
-    boundary_conditions = [{"Vx": 11}, {"Vx": 12}]
+    scalars = [{"Vx": 11}, {"Vx": 12}]
 
-    selection = Selection([geometry], boundary_conditions)
+    selection = Selection([geometry], scalars)
     predictions = selection.get_predictions()
     assert len(predictions) == 1
     assert predictions[0].id == "here-i-am"
@@ -217,7 +215,7 @@ def test_selection_run_prediction_error(geometry_factory, httpx_mock):
         nonlocal nb_calls
         nb_calls += 1
         payload = json.loads(request.content)
-        boundary_conditions = payload["boundary_conditions"]
+        scalars = payload["boundary_conditions"]
         # send 422 error for the first 2 calls, 200 for the last one
         if nb_calls < 3:
             return httpx.Response(
@@ -237,7 +235,7 @@ def test_selection_run_prediction_error(geometry_factory, httpx_mock):
                     {
                         "id": "saturn",
                         "status": "queued",
-                        "boundary_conditions": boundary_conditions,
+                        "boundary_conditions": scalars,
                     }
                 ),
             )
@@ -260,24 +258,24 @@ def test_selection_run_prediction_error(geometry_factory, httpx_mock):
 
 def test_selection_parameters(four_geometries_test_set):
     """WHEN creating a Selection
-    IF I don't pass a Geometry or list thereof, and a BoundaryCondition or list thereof
+    IF I don't pass a Geometry or list thereof, and a Scalar or list thereof
     THEN a TypeError is raised
     """
 
-    boundary_conditions = [{"Vx": v} for v in [-11.9, -5, 0, 50, 900.4]]
+    scalars = [{"Vx": v} for v in [-11.9, -5, 0, 50, 900.4]]
 
-    Selection(four_geometries_test_set, boundary_conditions)
-    Selection(four_geometries_test_set[0], boundary_conditions)
-    Selection(four_geometries_test_set, boundary_conditions[0])
-    Selection(four_geometries_test_set[0], boundary_conditions[0])
+    Selection(four_geometries_test_set, scalars)
+    Selection(four_geometries_test_set[0], scalars)
+    Selection(four_geometries_test_set, scalars[0])
+    Selection(four_geometries_test_set[0], scalars[0])
     Selection(four_geometries_test_set, {"Vx": 1})
 
     with pytest.raises(TypeError):
-        Selection(boundary_conditions, four_geometries_test_set)
+        Selection(scalars, four_geometries_test_set)
     with pytest.raises(TypeError):
-        Selection(None, boundary_conditions)
+        Selection(None, scalars)
     with pytest.raises(TypeError):
-        Selection(12.5, boundary_conditions)
+        Selection(12.5, scalars)
 
     with pytest.raises(TypeError):
         Selection(four_geometries_test_set, [{"Vx": "a", "Vy": "b", "Vz": "c"}])
@@ -289,6 +287,6 @@ def test_selection_parameters(four_geometries_test_set):
     with pytest.raises(TypeError):
         Selection(four_geometries_test_set, 1, 0, 0)
     with pytest.raises(TypeError):
-        Selection(four_geometries_test_set, boundary_conditions, tolerance="")
+        Selection(four_geometries_test_set, scalars, tolerance="")
     with pytest.raises(ValueError):
-        Selection(four_geometries_test_set, boundary_conditions, tolerance=-10)
+        Selection(four_geometries_test_set, scalars, tolerance=-10)

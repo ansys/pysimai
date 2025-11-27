@@ -14,19 +14,19 @@ to run a large number of operations in parallel by manipulating whole collection
 :py:class:`Post-Processings <ansys.simai.core.data.post_processings.PostProcessing>` instances).
 
 You create a selection by combining a list of :class:`Geometry <ansys.simai.core.data.geometries.Geometry>`
-instances with a list of :class:`~ansys.simai.core.data.types.BoundaryConditions` instances:
+instances with a list of :class:`~ansys.simai.core.data.types.Scalars` instances:
 
 .. code-block:: python
 
    from ansys.simai.core.data.selections import Selection
 
    geometries = simai.geometries.list()[:4]
-   boundary_conditions = [dict(Vx=vx) for vx in [12.2, 12.4, 12.6]]
-   selection = Selection(geometries, boundary_conditions)
+   scalars = [dict(Vx=vx) for vx in [12.2, 12.4, 12.6]]
+   selection = Selection(geometries, scalars)
 
 
 The resulting selection contains all possible combinations between the geometries and
-boundary conditions. Each of those combinations is a :class:`~ansys.simai.core.data.selections.Point`
+scalars. Each of those combinations is a :class:`~ansys.simai.core.data.selections.Point`
 instance, which can be viewed as a potential :class:`~ansys.simai.core.data.predictions.Prediction`
 instance.
 

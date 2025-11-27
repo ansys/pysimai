@@ -85,6 +85,7 @@ MODEL_CONF_RAW = {
     "global_coefficients": [
         {"formula": "max(Pressure)", "name": "maxpress", "gc_location": "cells"}
     ],
+    "scalars_to_predict": [{"name": "Vy"}],
     "simulation_volume": {
         "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
         "Y": {"length": 80.0, "type": "absolute", "value": -80},
@@ -281,9 +282,11 @@ def test_build_with_new_config(mocker, simai_client, httpx_mock):
 
     process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
-    model_input = ModelInput(surface=[], boundary_conditions=["Vx"])
+    model_input = ModelInput(surface=[], scalars=["Vx"])
     model_output = ModelOutput(
-        surface=["Pressure", "WallShearStress_0"], volume=["Velocity_0", "Pressure"]
+        surface=["Pressure", "WallShearStress_0"],
+        volume=["Velocity_0", "Pressure"],
+        scalars=["Vy"],
     )
     global_coefficients = [("max(Pressure)", "maxpress")]
     simulation_volume = {
@@ -525,7 +528,7 @@ def test_throw_error_when_volume_is_missing_from_sample(mocker, simai_client, ht
     project: Project = simai_client._project_directory._model_from(raw_project)
     process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
 
-    model_input = ModelInput(surface=[], boundary_conditions=[])
+    model_input = ModelInput(surface=[], scalars=[])
     model_output = ModelOutput(surface=[], volume=["Velocity_0"])
     global_coefficients = []
 

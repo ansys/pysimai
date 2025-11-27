@@ -53,8 +53,8 @@ class ModelManifest:
         return self._raw["geometry"]
 
     @property
-    def boundary_conditions(self) -> Dict[str, Any]:
-        """Information on the boundary conditions expected by the model. For example, the prediction's input."""
+    def scalars(self) -> Dict[str, Any]:
+        """Information on the scalars expected by the model. For example, the prediction's input."""
         return self._raw["boundary_conditions"]
 
     @property

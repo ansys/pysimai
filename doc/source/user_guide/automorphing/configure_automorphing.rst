@@ -54,12 +54,12 @@ Symmetry can be planar or axial:
   should be chosen when the deformation needs to be equal around a specific axis,
   resulting in rotational symmetry.
 
-Boundary conditions
+Scalars
 --------------------
 
-The values of the boundary conditions should remain consistent with those defined in your model configuration,
-so the ``boundary_conditions`` parameter must correspond to the ones defined in the SimAI workspace.
-Frequent changes to boundary conditions can create inconsistencies and reduce the reliability of optimization results.
+The values of the scalars should remain consistent with those defined in your model configuration,
+so the ``scalars`` parameter must correspond to the ones defined in the SimAI workspace.
+Frequent changes to scalars can create inconsistencies and reduce the reliability of optimization results.
 Make adjustments only when necessary to maintain a stable and physically realistic simulation environment.
 
 Number of iterations (n_iters)

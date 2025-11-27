@@ -35,13 +35,13 @@ from ansys.simai.core.data.geometry_utils import (
 )
 from ansys.simai.core.data.post_processings import CustomVolumePointCloud
 from ansys.simai.core.data.types import (
-    BoundaryConditions,
     File,
     Identifiable,
     MonitorCallback,
     NamedFile,
     Range,
-    build_boundary_conditions,
+    Scalars,
+    build_scalars,
     get_id_from_identifiable,
     get_object_from_identifiable,
     unpack_named_file,
@@ -135,9 +135,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         """
         self._client._api.delete_geometry(self.id)
 
-    def run_prediction(
-        self, boundary_conditions: Optional[BoundaryConditions] = None, **kwargs
-    ) -> "Prediction":
+    def run_prediction(self, scalars: Optional[Scalars] = None, **kwargs) -> "Prediction":
         """Run a new prediction or return an existing prediction.
 
         This is a non-blocking method. The prediction object is returned.
@@ -146,13 +144,13 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         The state of the computation can be monitored with the prediction's ``is_ready``
         attribute or waited upon with its ``wait()`` method.
 
-        To learn more about the expected boundary conditions in your workspace, you can use the
-        ``simai.current_workspace.model.boundary_conditions`` or ``simai.predictions.boundary_conditions``,
+        To learn more about the expected scalars in your workspace, you can use the
+        ``simai.current_workspace.model.scalars`` or ``simai.predictions.scalars``,
         where ``ex`` is your `~ansys.simai.core.client.SimAIClient` object.
 
         Args:
-            boundary_conditions: Boundary conditions to apply as a dictionary.
-            **kwargs: Boundary conditions to pass as keyword arguments.
+            scalars: Scalars to apply as a dictionary.
+            **kwargs: Scalars to pass as keyword arguments.
 
         Returns:
             Created prediction object.
@@ -176,7 +174,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
                 prediction = geometry.run_prediction(Vx=10.5, Vy=2)
 
         """
-        bc = build_boundary_conditions(boundary_conditions, **kwargs)
+        bc = build_scalars(scalars, **kwargs)
         prediction_response = self._client._api.run_prediction(self.id, boundary_conditions=bc)
         return self._client.predictions._model_from(prediction_response)
 

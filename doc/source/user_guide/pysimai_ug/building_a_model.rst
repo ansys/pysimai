@@ -60,7 +60,7 @@ Configure and build the model
 
 #.   Set the inputs (:class:`ModelInput<ansys.simai.core.data.model_configuration.ModelInput>`) and outputs (:class:`ModelOutput<ansys.simai.core.data.model_configuration.ModelOutput>`) of the model::
 
-          model_input = ModelInput(surface=["wallShearStress"], boundary_conditions=["Vx"])
+          model_input = ModelInput(surface=["wallShearStress"], scalars=["Vx"])
 
           model_output = ModelOutput(surface=["alpha.water"], volume=["p", "p_rgh"])
 
