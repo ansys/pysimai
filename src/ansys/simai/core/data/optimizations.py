@@ -133,7 +133,7 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry_generation_fn: Callable[..., NamedFile],
         geometry_parameters: Dict[str, Tuple[float, float]],
         n_iters: int,
-        boundary_conditions: Optional[Dict[str, float]] = None,
+        scalars: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
         outcome_constraints: Optional[List[str]] = None,
@@ -150,8 +150,8 @@ class OptimizationDirectory(Directory[Optimization]):
                 with the generated parameters. This parameter should return a
                 :obj:`~ansys.simai.core.data.types.NamedFile` object.
             geometry_parameters: Name of the geometry parameters and their bounds or possible values (choices).
-            boundary_conditions: Values of the boundary conditions to perform the optimization at.
-                The values should map to existing boundary conditions in your project/workspace.
+            scalars: Values of the scalars to perform the optimization at.
+                The values should map to existing scalars in your project/workspace.
             n_iters: Number of iterations of the optimization loop.
             minimize: List of global coefficients to minimize.
                 The global coefficients should map to existing coefficients in your project/workspace.
@@ -199,7 +199,7 @@ class OptimizationDirectory(Directory[Optimization]):
                     "param_b": {"choices": (0, 1)},
                 },
                 minimize=["TotalForceX"],
-                boundary_conditions={"VelocityX": 10.5},
+                scalars={"VelocityX": 10.5},
                 outcome_constraints=["TotalForceY <= 10"],
                 n_iters=100,
             )
@@ -212,7 +212,7 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_outcome_constraints(outcome_constraints)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
-            "boundary_conditions": boundary_conditions or {},
+            "boundary_conditions": scalars or {},
             "n_iters": n_iters,
             "objective": objective,
             "type": "parametric",
@@ -273,7 +273,7 @@ class OptimizationDirectory(Directory[Optimization]):
         n_iters: int,
         symmetries: Optional[List[Literal["x", "y", "z", "X", "Y", "Z"]]] = None,
         axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
-        boundary_conditions: Optional[Dict[str, float]] = None,
+        scalars: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
         max_displacement: Optional[List[float]] = None,
@@ -313,8 +313,8 @@ class OptimizationDirectory(Directory[Optimization]):
                 - The ``axial_symmetry`` is applied to all the ``bounding_boxes`` defined.
                 - ``symmetries`` and ``axial_symmetry`` are mutually exclusive parameters.
 
-            boundary_conditions: Optional. The values of the boundary conditions to perform the optimization at.
-                The values must correspond to existing boundary conditions already defined in your SimAI workspace.
+            scalars: Optional. The values of the scalars to perform the optimization at.
+                The values must correspond to existing scalars already defined in your SimAI workspace.
             minimize: Required if no ``maximize`` parameter is defined. A list of one global coefficient to minimize.
                 This global coefficient must correspond to one of the existing coefficients defined in your model configuration.
             maximize: Required if no ``minimize`` parameter is defined. A list of one global coefficient to maximize.
@@ -348,7 +348,7 @@ class OptimizationDirectory(Directory[Optimization]):
             simai.optimizations.run_non_parametric(
                 geometry,
                 bounding_boxes=[[0, 1, 0, 1, 0, 1]],
-                boundary_conditions={"VelocityX": 10.5},
+                scalars={"VelocityX": 10.5},
                 symmetries=["y"],
                 n_iters=10,
                 minimize=["TotalForceX"],
@@ -367,7 +367,7 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         objective = _build_objective(minimize, maximize)
         optimization_parameters = {
-            "boundary_conditions": boundary_conditions or {},
+            "boundary_conditions": scalars or {},
             "n_iters": n_iters,
             "objective": objective,
             "type": "non_parametric",
