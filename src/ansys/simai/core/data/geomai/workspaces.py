@@ -102,10 +102,10 @@ class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
     Example:
       .. code-block:: python
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.geomai.workspaces.list()
+            simai_client = asc.from_config()
+            simai_client.geomai.workspaces.list()
     """
 
     _data_model = GeomAIWorkspace

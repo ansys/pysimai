@@ -213,10 +213,10 @@ class TrainingDataDirectory(Directory[TrainingData]):
     Example:
         List all of the training data::
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.training_data.list()
+            simai_client = asc.from_config()
+            simai_client.training_data.list()
     """
 
     _data_model = TrainingData

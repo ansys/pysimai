@@ -1,6 +1,6 @@
 
 
-PySimAI examples
+PySimAI utilities
 ----------------
 
 This section provides a collection of practical script examples illustrating SimAI functionalities and use cases.

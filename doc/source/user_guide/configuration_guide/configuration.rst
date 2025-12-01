@@ -12,9 +12,9 @@ instance:
 
 .. code-block:: python
 
-    import ansys.simai.core
+    import ansys.simai.core as asc
 
-    simai = ansys.simai.core.SimAIClient(organization="my-company")
+    simai_client = asc.SimAIClient(organization="my-company")
 
 
 As demonstrated in the preceding code, you configure the instance by
@@ -51,7 +51,7 @@ on client creation:
 
 .. code-block:: python
 
-    simai = ansys.simai.core.SimAIClient(
+    simai_client = ansys.simai.core.SimAIClient(
         organization="company",
         credentials={
             # neither of these are required, but if they are missing you will be

@@ -16,11 +16,11 @@ You create a selection by combining a list of geometries with a list of boundary
 
 .. code-block:: python
 
-   import ansys.simai.core
+   import ansys.simai.core as asc
    from ansys.simai.core.data.selections import Selection
 
-   simai = ansys.simai.core.from_config()
-   geometries = simai.geometries.list()[:4]
+   simai_client = asc.from_config()
+   geometries = simai_client.geometries.list()[:4]
    boundary_conditions = [dict(Vx=vx) for vx in [12.2, 12.4, 12.6]]
    selection = Selection(geometries, boundary_conditions)
 
@@ -78,5 +78,5 @@ geometries with range filters.
 
    from ansys.simai.core.data.types import Range
 
-   geometries = simai.geometries.list(filters={"SINK": Range(-5.1, -4.8)})
+   geometries = simai_client.geometries.list(filters={"SINK": Range(-5.1, -4.8)})
 

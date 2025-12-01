@@ -1,6 +1,6 @@
 .. _ref_automorphing_guide:
 
-How to optimize the geometries using SimAI automorphing
+Optimize geometries
 ========================================================
 
 In SimAI, automorphing is a non-parametric deformation of a surface geometry.

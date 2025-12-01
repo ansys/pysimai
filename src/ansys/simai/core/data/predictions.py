@@ -149,10 +149,10 @@ class PredictionDirectory(Directory[Prediction]):
     Example:
         .. code-block:: python
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.predictions.list()
+            simai_client = asc.from_config()
+            simai_client.predictions.list()
     """
 
     _data_model = Prediction
@@ -179,10 +179,10 @@ class PredictionDirectory(Directory[Prediction]):
             .. code-block:: python
 
                 from pprint import pprint
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                prediction_info = simai.predictions.info
+                simai_client = asc.from_config()
+                prediction_info = simai_client.predictions.info
                 pprint(prediction_info)
         """
         return {
@@ -254,10 +254,11 @@ class PredictionDirectory(Directory[Prediction]):
 
         Examples:
             .. code-block:: python
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                geometry = simai.geometries.list()[0]
-                prediction = simai.predictions.run(geometry, dict(Vx=10.5, Vy=2))
+                simai_client = asc.from_config()
+                geometry = simai_client.geometries.list()[0]
+                prediction = simai_client.predictions.run(geometry, dict(Vx=10.5, Vy=2))
 
             Using kwargs:
 

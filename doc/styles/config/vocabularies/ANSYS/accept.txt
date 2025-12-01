@@ -1,5 +1,6 @@
 (?i)ansys
 (?i)simai
+asc
 [Aa]synchronicity
 csv
 DOE

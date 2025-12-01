@@ -37,13 +37,13 @@ model configuration in a same project.
 
 import ansys.simai.core as asc
 
-simai = asc.from_config()
+simai_client = asc.from_config()
 
 ###############################################################################
 # Get the project from the server
 # -------------------------------
 
-my_project = simai.projects.get(name="old-ps")
+my_project = simai_client.projects.get(name="old-ps")
 
 ###############################################################################
 # Get the model configuration
@@ -63,6 +63,6 @@ is_trainable_check = my_project.is_trainable()
 # If the project met the requirements, launch a model build.
 # Otherwise, print the reasons the project does not meet the requirements.
 if is_trainable_check:
-    new_model = simai.models.build(last_build_config)
+    new_model = simai_client.models.build(last_build_config)
 else:
     print(is_trainable_check.reason)

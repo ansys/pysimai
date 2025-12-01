@@ -64,12 +64,6 @@ PROJECT_NAME = "new-bracket-project"  # Your project name
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
-
-
-###############################################################################
-# List all available training data:
-
-print("\nAvailable training data:")
 available_tds = geomai_client.training_data.list()
 
 ###############################################################################

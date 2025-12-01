@@ -20,9 +20,9 @@ Create a project and upload data
 
 #. Create a :class:`~ansys.simai.core.client.SimAIClient` instance::
 
-     import ansys.simai.core
+     import ansys.simai.core as asc
 
-     simai = ansys.simai.core.SimAIClient()
+     simai_client = asc.SimAIClient()
 
    You are prompted for your credentials.
 

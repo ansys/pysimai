@@ -131,13 +131,13 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
         Examples:
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
                 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 
-                simai = ansys.simai.core.from_config()
-                project = simai.geomai.projects.get("new_secret_project")
+                simai_client = asc.from_config()
+                project = simai_client.geomai.projects.get("new_secret_project")
                 configuration = GeomAIModelConfiguration(build_preset="default", nb_latent_param=10)
-                model = simai.geomai.models.build(project, configuration)
+                model = simai_client.geomai.models.build(project, configuration)
 
 
             Use a previous configuration for a new build in the same project:

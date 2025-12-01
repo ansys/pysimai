@@ -162,9 +162,10 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
         Examples:
             .. code-block:: python
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                geometry = simai.geometries.list()[0]
+                simai_client = asc.from_config()
+                geometry = simai_client.geometries.list()[0]
                 geometry.run_prediction(dict(Vx=10.5, Vy=2))
 
             Use kwargs:
@@ -268,11 +269,10 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
         Example:
             .. code-block:: python
+                import ansys.simai.core as asc
 
-                import ansys.simai.core
-
-                simai = ansys.simai.core.from_config()
-                geom = simai.geometries.get("kz19jyqm")
+                simai_client = asc.from_config()
+                geom = simai_client.geometries.get("kz19jyqm")
                 geometries = geom.sweep(["length"])
         """
         if geometries is None:
@@ -339,10 +339,10 @@ class GeometryDirectory(Directory[Geometry]):
     Example:
         .. code-block:: python
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.geometries.list()
+            simai_client = asc.from_config()
+            simai_client.geometries.list()
     """
 
     _data_model = Geometry
@@ -442,12 +442,11 @@ class GeometryDirectory(Directory[Geometry]):
 
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                geometry = simai.geometries.get("my_geometry.stl")
-                # geometry = simai.geometries.get(name="my_geometry.stl") # is equivalent
-
+                simai_client = asc.from_config()
+                geometry = simai_client.geometries.get("my_geometry.stl")
+                # geometry = simai_client.geometries.get(name="my_geometry.stl") # is equivalent
             Get a geometry by ID.
 
             .. code-block:: python
@@ -574,11 +573,11 @@ class GeometryDirectory(Directory[Geometry]):
         Example:
             .. code-block:: python
 
-                import ansys.simai.core
+                import ansys.simai.core as asc
 
-                simai = ansys.simai.core.from_config()
-                geom = simai.geometries.get("kz19jyqm")
-                geometries = simai.geometries.sweep(geom, ["length"])
+                simai_client = asc.from_config()
+                geom = simai_client.geometries.get("kz19jyqm")
+                geometries = simai_client.geometries.sweep(geom, ["length"])
 
         See Also:
             :func:`Geometry.sweep`
