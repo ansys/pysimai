@@ -269,6 +269,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
         Example:
             .. code-block:: python
+            
                 import ansys.simai.core as asc
 
                 simai_client = asc.from_config()
@@ -451,7 +452,7 @@ class GeometryDirectory(Directory[Geometry]):
 
             .. code-block:: python
 
-                    geometry = simai.geometries.get(id="abcdef12")
+                    geometry = simai_client.geometries.get(id="abcdef12")
         """
         if name and id:
             raise InvalidArguments("Name and ID cannot both be specified.")

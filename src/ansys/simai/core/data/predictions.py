@@ -183,7 +183,7 @@ class PredictionDirectory(Directory[Prediction]):
 
                 simai_client = asc.from_config()
                 prediction_info = simai_client.predictions.info
-                pprint(prediction_info)
+                print(prediction_info)
         """
         return {
             "boundary_conditions": self.boundary_conditions,
@@ -254,6 +254,7 @@ class PredictionDirectory(Directory[Prediction]):
 
         Examples:
             .. code-block:: python
+
                 import ansys.simai.core as asc
 
                 simai_client = asc.from_config()
@@ -264,7 +265,7 @@ class PredictionDirectory(Directory[Prediction]):
 
             .. code-block:: python
 
-                prediction = simai.predictions.run(geometry_id, Vx=10.5, Vy=2)
+                prediction = simai_client.predictions.run(geometry_id, Vx=10.5, Vy=2)
         """
         bc = build_boundary_conditions(boundary_conditions, **kwargs)
         geometry = self._client.geometries.get(id=get_id_from_identifiable(geometry))
