@@ -28,7 +28,7 @@ Building a Generative Design Model
 This example demonstrates how to configure a Generative Design model, start the model training process, and monitor the build progress.
 
 Before you begin
-----------------
+-------------------------------------------
 
 - Complete ":ref:`ref_create_project_upload_data`" to create a project with training data.
 - Ensure all training data in your project are ready (processed successfully).
@@ -37,14 +37,14 @@ Before you begin
 
 ###############################################################################
 # Import necessary libraries
-# --------------------------
+# -------------------------------------------
 
 import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 
 ###############################################################################
 # Configure your settings
-# ------------------
+# -------------------------------------------
 # Update these variables with your specific settings:
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
@@ -53,8 +53,17 @@ NB_LATENT_PARAMS = 15  # Number of latent parameters (2-256)
 BUILD_PRESET = "default"  # Options: "debug", "short", "default", "long"
 
 ###############################################################################
+# The ``BUILD_PRESET`` options correspond to:
+#
+# - ``"debug"``: Fast training for testing (very few epochs).
+# - ``"short"``: Quick training with reduced accuracy.
+# - ``"default"``: Balanced training time and quality.
+# - ``"long"``: Longer training for best quality.
+
+
+###############################################################################
 # Initialize the client and get the project
-# -----------------------------------------
+# -------------------------------------------
 # Connect to the instance:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
@@ -68,7 +77,7 @@ print(f"Using project: {project.name}")
 
 ###############################################################################
 # Verify project data are ready
-# ----------------------------
+# -------------------------------------------
 # Before building a model, ensure all training data are processed:
 
 project_data = project.data()
@@ -76,22 +85,15 @@ ready_data = [data for data in project_data if data.is_ready]
 print(f"Project has {len(ready_data)}/{len(project_data)} ready training data")
 
 if len(ready_data) < len(project_data):
-    print("Warning: Some training data is not ready. Model may fail to build.")
+    print("Warning: Some training data are not ready. Model may fail to build.")
 
 ###############################################################################
 # Configure the model
-# --------------------------
-# Define the configuration for your model. You can either specify the number
-# of epochs directly or use a build preset.
+# -------------------------------------------
+# To define the configuration for your model, you can either specify the build preset or the number
+# of epochs.
+# To do so, instead of ``build_preset``, you can specify the number of epochs directly. Example: ``nb_epochs=100``.
 #
-# Build presets:
-#
-# - "debug": Fast training for testing (very few epochs).
-# - "short": Quick training with reduced accuracy.
-# - "default": Balanced training time and quality.
-# - "long": Longer training for best quality.
-#
-# Instead of ``build_preset``, you can specify the number of epochs directly: ``nb_epochs=100``.
 # The number of latent parameters defines the complexity of the model's latent space; start with a small number (e.g., 10) and adjust based on your needs.
 
 
@@ -102,7 +104,7 @@ configuration = GeomAIModelConfiguration(
 
 ###############################################################################
 # Build the model
-# ---------------
+# -------------------------------------------
 # Start the model training process:
 
 model = geomai_client.models.build(project, configuration)
@@ -110,7 +112,7 @@ print(f"Started build for model {model.id}")
 
 ###############################################################################
 # Wait for model training to complete
-# -----------------------------------
+# -------------------------------------------
 # Monitor the training process and handle completion:
 
 print("Waiting for model training to complete (this may take a while)...")
@@ -124,7 +126,7 @@ else:
 
 ###############################################################################
 # Next steps
-# ----------
+# -------------------------------------------
 # Once your model is trained, you can:
 #
 # - Generate random geometries: :ref:`ref_generate_random_geometries`

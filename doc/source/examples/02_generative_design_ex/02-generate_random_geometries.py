@@ -28,7 +28,7 @@ Generating Random Geometries
 This example demonstrates how to generate random geometries using random latent parameters.
 
 Before you begin
-----------------
+-------------------------------------------
 
 - Complete ":ref:`ref_build_model`" to train a Generative Design model.
 - Ensure the model training completed successfully.
@@ -37,7 +37,7 @@ Before you begin
 
 ###############################################################################
 # Import necessary libraries
-# --------------------------
+# -------------------------------------------
 
 import json
 import os
@@ -50,7 +50,7 @@ from ansys.simai.core.data.predictions import Prediction
 
 ###############################################################################
 # Configure your settings
-# ------------------
+# -------------------------------------------
 # Update these variables with your specific settings:
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
@@ -77,7 +77,7 @@ print(f"Using workspace: {workspace.name}")
 
 ###############################################################################
 # Get the number of latent parameters
-# -----------------------------------
+# -------------------------------------------
 # The number of latent parameters is defined during model training:
 def get_latent_parameters(workspace) -> Dict[str, List[float]]:
     """Download and load latent parameters for all geometries in the workspace.
@@ -108,7 +108,7 @@ print(f"Workspace uses {nb_latent_params} latent parameters")
 
 ###############################################################################
 # Create output directory
-# -----------------------
+# -------------------------------------------
 # Create a directory to save the generated geometries:
 
 output_dir = os.path.join(OUTPUT_DIR, workspace.name)
@@ -117,7 +117,7 @@ print(f"Output directory: {output_dir}")
 
 ###############################################################################
 # Generate random geometries
-# --------------------------
+# -------------------------------------------
 # Generate geometries by creating random latent parameter vectors.
 # Each latent parameter is randomly sampled from a standard normal distribution.
 
@@ -142,13 +142,7 @@ for i in range(NUM_GEOMETRIES):
 
 ###############################################################################
 # Download generated geometries
-# --------------------------
-# The downloaded VTP files can be used for:
-#
-# - Visualization in your usual solver.
-# - SimAI training data or predictions.
-# - Further analysis and post-processing.
-
+# -------------------------------------------
 
 for i, prediction in enumerate(predictions):
     # Wait for prediction to complete
@@ -164,10 +158,16 @@ for i, prediction in enumerate(predictions):
     else:
         print(f"✗ Prediction {i + 1} timed out")
 
+###############################################################################
+# The downloaded VTP files can be used for:
+#
+# - Visualization in your usual solver.
+# - SimAI training data or predictions.
+# - Further analysis and post-processing.
 
 ###############################################################################
 # Tips for better results
-# -----------------------
+# -------------------------------------------
 #
 # - Latent parameters typically range from -3 to +3 for meaningful results.
 # - Adjust the resolution to balance quality and file size.
@@ -176,5 +176,5 @@ for i, prediction in enumerate(predictions):
 
 ###############################################################################
 # Next steps
-# ----------
+# -------------------------------------------
 # To generate geometries with more control, see :ref:`ref_interpolate_geometries`.
