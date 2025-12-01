@@ -162,8 +162,9 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
         Examples:
             .. code-block:: python
+                import ansys.simai.core as asc
 
-                simai_client = ansys.simai.core.from_config()
+                simai_client = asc.from_config()
                 geometry = simai_client.geometries.list()[0]
                 geometry.run_prediction(dict(Vx=10.5, Vy=2))
 
@@ -268,7 +269,6 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
         Example:
             .. code-block:: python
-
                 import ansys.simai.core as asc
 
                 simai_client = asc.from_config()
