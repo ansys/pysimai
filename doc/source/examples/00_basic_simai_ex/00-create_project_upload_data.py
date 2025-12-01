@@ -23,12 +23,12 @@
 """.. _ref_basic_create_project_upload_data:
 
 Creating a SimAI Project and Uploading Training Data
-====================================================
+=======================================================
 
 This example demonstrates how to connect to SimAI, create a new project, and upload training data folders.
 
 Before you begin
-----------------
+-------------------
 
 Make sure you have:
 
@@ -40,7 +40,7 @@ Make sure you have:
 
 ###############################################################################
 # Import necessary libraries
-# --------------------------
+# ----------------------------------
 
 import os
 
@@ -50,7 +50,7 @@ from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
 # Configure your settings
-# ------------------
+# ----------------------------------
 # Update these variables with your specific settings:
 
 ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
@@ -59,14 +59,14 @@ DATASET_PATH = "<PATH_TO_YOUR_DATASET>"  # Directory containing subdirectories w
 
 ###############################################################################
 # Initialize the SimAI client
-# ---------------------------
+# ----------------------------------
 # Create a client to connect to the SimAI platform:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
 ###############################################################################
 # Set up the project
-# ------------------
+# ----------------------------------
 # Try to get an existing project by name, or create it if it doesn't exist:
 
 try:
@@ -86,9 +86,12 @@ print(f"Current project: {simai_client.current_project}")
 
 ###############################################################################
 # Upload training data
-# -------------------
+# ----------------------------------
 # Upload all directories from the dataset path as training data.
 # Each subdirectory should contain the files for one training data sample.
+
+
+available_tds = simai_client.training_data.list()
 
 print("\nUploading training data files:")
 successful_uploads = 0
@@ -98,12 +101,19 @@ for dir in os.listdir(DATASET_PATH):
     complete_path = os.path.join(DATASET_PATH, dir)
     print(f"Uploading {dir}")
 
-    try:
-        # Check if training data with this name already exists
-        td: TrainingData = simai_client.training_data.list({"name": dir})[0]
-        print(f"Training data {dir} already exists. Skipping upload.")
-    except IndexError:
-        # Training data doesn't exist, create and upload it
+    existing_tds = [td for td in available_tds if td.name == dir]
+    if existing_tds:
+        print(f"Training data '{dir}' already exists in the datalake. Skipping upload.")
+        td = existing_tds[0]
+        try:
+            td.add_to_project(project)
+            print(f"✓ Added existing '{dir}' to project '{project.name}'")
+            successful_uploads += 1
+        except Exception as e:
+            print(f"✗ Failed to add existing '{dir}' to project: {e}")
+            failed_uploads += 1
+        continue
+    else:
         try:
             td: TrainingData = simai_client.training_data.create(dir)
             td.upload_folder(complete_path)
@@ -113,26 +123,16 @@ for dir in os.listdir(DATASET_PATH):
             failed_uploads += 1
             continue
 
-    successful_uploads += 1
-    # Add the training data to the project
-    td.add_to_project(project)
 
 print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} failed")
 
 ###############################################################################
 # Check and wait for data processing
-# ---------------------------------
+# -------------------------------------
 # After uploading, SimAI needs to process the training data.
-# Get all data in the current project:
+# Get all data in the current project and wait for them to be ready.
 
 project_data = project.data
-
-print("\nTraining data in project:")
-for data in project_data:
-    print(f"- {data.name}")
-
-###############################################################################
-# Wait for all data to be processed:
 
 print("\nWaiting for data processing to complete...")
 for data in project_data:
@@ -142,7 +142,7 @@ for data in project_data:
 
 ###############################################################################
 # Display project status summary
-# -----------------------------
+# -------------------------------------
 # Show a summary of the project's data processing status:
 
 print("\nProject Summary")
@@ -162,6 +162,6 @@ if not_ready_data:
 
 ###############################################################################
 # Next steps
-# ----------
-# Once all data is ready, you can proceed to configure and build a model.
+# ----------------------------------
+# Once all data are ready, you can proceed to configure and build a model.
 # See the next tutorial: :ref:`ref_basic_build_model`

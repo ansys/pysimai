@@ -23,16 +23,16 @@
 """.. _ref_basic_build_model:
 
 Building a SimAI Model
-======================
+============================================
 
 This example demonstrates how to configure a SimAI model with inputs, outputs, global coefficients,
 and domain of analysis, then start the model training process.
 
 Before you begin
-----------------
+-------------------------------------------
 
 - Complete ":ref:`ref_basic_create_project_upload_data`" to create a project with training data.
-- Ensure all training data in your project is ready (processed successfully).
+- Ensure all training data in your project are ready (processed successfully).
 - Know the names of surfaces and boundary conditions in your training data.
 - Determine which global coefficients you want to compute.
 
@@ -40,7 +40,7 @@ Before you begin
 
 ###############################################################################
 # Import necessary libraries
-# --------------------------
+# -------------------------------------------
 
 import ansys.simai.core as asc
 from ansys.simai.core.data.model_configuration import (
@@ -53,7 +53,7 @@ from ansys.simai.core.data.model_configuration import (
 
 ###############################################################################
 # Configure your settings
-# ------------------
+# -------------------------------------------
 # Update these variables with your specific settings:
 
 ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
@@ -61,7 +61,7 @@ PROJECT_NAME = "<your_project_name>"  # Replace with your project name
 
 ###############################################################################
 # Initialize the client and get the project
-# -----------------------------------------
+# -------------------------------------------
 # Connect to SimAI and retrieve your project:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
@@ -74,7 +74,7 @@ print(f"Using existing project: {PROJECT_NAME}")
 
 ###############################################################################
 # Configure model inputs
-# ----------------------
+# -------------------------------------------
 # Define which surfaces and boundary conditions the model will use as inputs.
 # Replace the placeholder names with the actual names from your training data:
 
@@ -85,7 +85,7 @@ model_input = ModelInput(
 
 ###############################################################################
 # Configure model outputs
-# -----------------------
+# -------------------------------------------
 # Define which surfaces the model will predict.
 # These are typically the same surfaces as the inputs, but you can specify different ones:
 
@@ -95,7 +95,7 @@ model_output = ModelOutput(
 
 ###############################################################################
 # Define global coefficients
-# --------------------------
+# -------------------------------------------
 # Global coefficients are scalar values computed from the prediction results.
 # They can be used to extract key performance indicators from your simulations.
 #
@@ -115,7 +115,7 @@ global_coefficients = [
 
 ###############################################################################
 # Define domain of analysis
-# -------------------------
+# -------------------------------------------
 # The domain of analysis specifies the spatial extent that the model will analyze.
 # Values can be specified as absolute dimensions or relative to minimum values.
 #
@@ -135,7 +135,7 @@ doa = DomainOfAnalysis(
 
 ###############################################################################
 # Create model configuration
-# --------------------------
+# -------------------------------------------
 # Combine all the configuration elements into a ModelConfiguration object.
 #
 # Build presets determine the training duration:
@@ -158,7 +158,7 @@ mdl_conf = ModelConfiguration(
 
 ###############################################################################
 # Verify and build the model
-# --------------------------
+# -------------------------------------------
 # Before building, check if the project meets all requirements for training:
 
 if project.is_trainable():
@@ -170,14 +170,14 @@ if project.is_trainable():
     )
 else:
     print("Project is not trainable. Please check the following:")
-    print("- All training data must be processed successfully")
-    print("- The project must have enough training data")
-    print("- All required surfaces and boundary conditions must exist in the training data")
+    print("- All training data must be processed successfully.")
+    print("- The project must have enough training data.")
+    print("- All required surfaces and boundary conditions must exist in the training data.")
 
 ###############################################################################
 # Next steps
-# ----------
+# -------------------------------------------
 # Once your model is trained, you can:
-# - Monitor the training progress in the SimAI web app
-# - Run predictions on new geometries: :ref:`ref_basic_run_predictions`
-# - Evaluate model performance using validation data
+# - Monitor the training progress in the SimAI web app.
+# - Run predictions on new geometries: :ref:`ref_basic_run_predictions`.
+# - Evaluate model performance using validation data.

@@ -23,14 +23,14 @@
 """.. _ref_basic_run_predictions:
 
 Running Physics Predictions
-======================================
+================================================
 
 This example demonstrates how to upload geometries to a workspace and run predictions
 using a trained SimAI model. It also shows how to extract and save prediction results,
 including global coefficients and confidence scores.
 
 Before you begin
-----------------
+----------------------------------------------------
 
 - Complete ":ref:`ref_basic_build_model`" to train a SimAI model.
 - Ensure the model training completed successfully.
@@ -41,7 +41,7 @@ Before you begin
 
 ###############################################################################
 # Import necessary libraries
-# --------------------------
+# ----------------------------------------------------
 
 import json
 import os
@@ -52,7 +52,7 @@ from ansys.simai.core.data.predictions import Prediction
 
 ###############################################################################
 # Configure your settings
-# ------------------
+# ----------------------------------------------------
 # Update these variables with your specific settings:
 
 ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
@@ -61,7 +61,7 @@ DATASET_PATH = "<your_dataset>"  # Path to your dataset directory
 
 ###############################################################################
 # Initialize the client and set workspace
-# ---------------------------------------
+# ----------------------------------------------------
 # Connect to SimAI and set the workspace to use for predictions:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
@@ -76,7 +76,7 @@ print(f"Using workspace: {current_workspace.name}")
 
 ###############################################################################
 # Prepare data structures
-# -----------------------
+# ----------------------------------------------------
 # Create lists to store geometries and their boundary conditions:
 
 geometries: list[Geometry] = []
@@ -84,16 +84,16 @@ boundary_conditions: list[dict] = []
 
 ###############################################################################
 # Upload geometries and load boundary conditions
-# ----------------------------------------------
+# ----------------------------------------------------
 # Process each subdirectory in the dataset:
 
-for dir in os.listdir(f"{DATASET_PATH}/Dataset"):
+for dir in os.listdir(f"{DATASET_PATH}"):
     print(f"Processing directory: {dir}")
 
     # Define the geometry file path
     # The file is uploaded with a specific name for easy identification
     file = (
-        f"{DATASET_PATH}/Dataset/{dir}/surface.vtp",  # Local file path
+        f"{DATASET_PATH}/{dir}/surface.vtp",  # Local file path
         f"{dir}.vtp",  # Name to use in SimAI
     )
 
@@ -114,12 +114,12 @@ for dir in os.listdir(f"{DATASET_PATH}/Dataset"):
 
     ###########################################################################
     # Load boundary conditions (if applicable)
-    # ----------------------------------------
+    # ----------------------------------------------------
     # This section is optional and only needed if your model requires boundary conditions.
     # If your model doesn't use boundary conditions, you can skip this section.
 
     try:
-        with open(f"{DATASET_PATH}/Dataset/{dir}/boundary_conditions.json", "r") as f:
+        with open(f"{DATASET_PATH}/{dir}/boundary_conditions.json", "r") as f:
             print(f"Loading boundary conditions for {dir}...")
             boundary_conditions_for_geom = json.load(f)
             boundary_conditions.append(boundary_conditions_for_geom)
@@ -129,7 +129,7 @@ for dir in os.listdir(f"{DATASET_PATH}/Dataset"):
 
 ###############################################################################
 # Run predictions on all geometries
-# ---------------------------------
+# ----------------------------------------------------
 # Wait for all geometries to be processed, then run predictions:
 
 preds: list[Prediction] = []
@@ -153,7 +153,7 @@ for geom in geometries:
 
 ###############################################################################
 # Collect prediction results
-# --------------------------
+# ----------------------------------------------------
 # Wait for all predictions to complete and extract results:
 
 results = {}
@@ -171,7 +171,7 @@ for pred in preds:
 
 ###############################################################################
 # Save results to file
-# -------------------
+# ----------------------------------------------------
 # Export all prediction results to a JSON file for further analysis:
 
 print("\nSaving results to results.json...")
@@ -182,7 +182,7 @@ print("Results saved successfully!")
 
 ###############################################################################
 # Understanding the results
-# ------------------------
+# ----------------------------------------------------
 # The results dictionary contains:
 #
 # - Global coefficients: Scalar values computed from the prediction,
@@ -195,7 +195,7 @@ print("Results saved successfully!")
 
 ###############################################################################
 # Example: Download surface VTP for visualization
-# -----------------------------------------------
+# ----------------------------------------------------
 # Run the following code to download the first prediction's surface VTP:
 
 if preds:
@@ -207,7 +207,7 @@ if preds:
 
 ###############################################################################
 # Next steps
-# ----------
+# ----------------------------------------------------
 # With your prediction results, you can:
 #
 # - Analyze global coefficients to evaluate design performance.
