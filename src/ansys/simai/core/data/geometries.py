@@ -162,6 +162,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
         Examples:
             .. code-block:: python
+
                 import ansys.simai.core as asc
 
                 simai_client = asc.from_config()
@@ -173,6 +174,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             .. code-block:: python
 
                 prediction = geometry.run_prediction(Vx=10.5, Vy=2)
+
         """
         bc = build_boundary_conditions(boundary_conditions, **kwargs)
         prediction_response = self._client._api.run_prediction(self.id, boundary_conditions=bc)
@@ -269,12 +271,13 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
 
         Example:
             .. code-block:: python
-            
+
                 import ansys.simai.core as asc
 
                 simai_client = asc.from_config()
                 geom = simai_client.geometries.get("kz19jyqm")
                 geometries = geom.sweep(["length"])
+
         """
         if geometries is None:
             geometries = self._client.geometries.list()
@@ -344,6 +347,7 @@ class GeometryDirectory(Directory[Geometry]):
 
             simai_client = asc.from_config()
             simai_client.geometries.list()
+
     """
 
     _data_model = Geometry
@@ -448,11 +452,13 @@ class GeometryDirectory(Directory[Geometry]):
                 simai_client = asc.from_config()
                 geometry = simai_client.geometries.get("my_geometry.stl")
                 # geometry = simai_client.geometries.get(name="my_geometry.stl") # is equivalent
+
             Get a geometry by ID.
 
             .. code-block:: python
 
                     geometry = simai_client.geometries.get(id="abcdef12")
+
         """
         if name and id:
             raise InvalidArguments("Name and ID cannot both be specified.")

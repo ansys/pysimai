@@ -8,9 +8,10 @@ instance from a configuration file, you use the
 :py:meth:`~ansys.simai.core.client.SimAIClient.from_config` method:
 
 .. code-block:: python
-  import ansys.simai.core as asc
 
-  simai_client = asc.from_config()
+   import ansys.simai.core as asc
+
+   simai_client = asc.from_config()
 
 Location
 --------
