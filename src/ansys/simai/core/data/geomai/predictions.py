@@ -127,6 +127,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
 
             simai_client = asc.from_config()
             simai_client.geomai.predictions.list()
+
     """
 
     _data_model = GeomAIPrediction
@@ -193,6 +194,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
 
         Examples:
             .. code-block:: python
+
                 import ansys.simai.core as asc
 
                 simai_client = asc.from_config()
@@ -201,6 +203,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
                     dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100)),
                     workspace,
                 )
+
         """
         if not isinstance(configuration, GeomAIPredictionConfiguration):
             try:
