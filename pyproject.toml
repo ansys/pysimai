@@ -52,10 +52,10 @@ docs = [
     "sphinx>=7.2.0",
     "autodoc-pydantic>=2.0.0",
     "ansys-sphinx-theme>=0.12.5",
-    "sphinx-gallery==0.19.0",
+    "sphinx-gallery",
     "blacken-docs>=1.16.0",
     "sphinx_design>=0.6.1",
-    "sphinx-copybutton==0.5.2",
+    "sphinx-copybutton>=0.5.2",
 ]
 tests = [
     "pytest>=7.0.0",
