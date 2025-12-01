@@ -34,10 +34,10 @@ Use either of these two parameters to set the training duration or the number of
 
 * | The ``build_preset`` parameter is used for configuring the model training duration between:
   |
-  | - ``debug``: 4 minutes + 15 sec per geometry
-  | - ``short``: 45 minutes + 15 sec per geometry
-  | - ``default``: 3 hours + 15 sec per geometry
-  | - ``long``: 15 hours + 15 sec per geometry
+  | - ``debug``: 4 minutes + 15 sec per geometry.
+  | - ``short``: 45 minutes + 15 sec per geometry.
+  | - ``default``: 3 hours + 15 sec per geometry.
+  | - ``long``: 15 hours + 15 sec per geometry.
 
 * | The ``nb_epochs`` parameter is the number of times each training data is seen by the model during the training, between 1 and 1000.
   |

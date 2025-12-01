@@ -21,7 +21,7 @@ The steps to follow are:
    If the model performs well on the small set, you can try the other build presets:
    short, default, long, depending on the complexity of the geometries used as training data.
 
-For practical examples and scripts to execute yourself, see :ref:`ref_generative_design_model_build_reuse` and :ref:`ref_design_generation_reuse`.
+For practical examples and scripts to execute yourself, see :ref:`ref_examples`.
 
 .. toctree::
    :maxdepth: 2
