@@ -51,7 +51,9 @@ on client creation:
 
 .. code-block:: python
 
-    simai_client = ansys.simai.core.SimAIClient(
+    import ansys.simai.core as asc
+
+    simai_client = asc.SimAIClient(
         organization="company",
         credentials={
             # neither of these are required, but if they are missing you will be
