@@ -8,6 +8,7 @@
 
 * [Arthur Woimbée](https://github.com/awoimbee)
 * [camzeech](https://github.com/camzeech)
+* [Florian Jacta](https://github.com/FlorianJactaAI)
 * [Iason Batzianoulis](https://github.com/yias)
 * [Kathy Pippert](https://github.com/PipKat)
 * [kliment-slice](https://github.com/kliment-slice)
