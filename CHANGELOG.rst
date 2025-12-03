@@ -1,6 +1,28 @@
 Changelog
 ---------
 
+0.3.6 (2025-12-03)
+******************
+
+New:
+
+- Add renaming methods for :py:class:`Workspace<ansys.simai.core.data.workspaces.Workspace>`, :py:class:`Project<ansys.simai.core.data.projects.Project>`, :py:class:`Geometry<ansys.simai.core.data.geometries.Geometry>`, :py:class:`GeomAIWorkspace<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace>` and :py:class:`GeomAIProject<ansys.simai.core.data.geomai.projects.GeomAIProject>`.
+- Allow users to retrieve training data by name.
+- Add GeomAI examples in documentation.
+
+
+Changes:
+
+- ``build_on_top`` parameter is deprecated in :py:class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>`.
+- ``margin`` parameter is deprecated in :py:class:`GeomAIPredictionConfiguration<ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration>`.
+- Documentation improvements
+
+
+Fixes:
+
+- Fix post-processing inputs in model configuration not being included in global coefficients processing.
+- Fix incorrect handling of dictionaries when building a GeomAI model.
+
 0.3.5 (2025-10-14)
 ******************
 
