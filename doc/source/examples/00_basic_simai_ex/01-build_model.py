@@ -96,19 +96,19 @@ model_output = ModelOutput(
 ###############################################################################
 # Define global coefficients
 # -------------------------------------------
+#
 # Global coefficients are scalar values computed from the prediction results.
 # They can be used to extract key performance indicators from your simulations.
 #
-# In this example, we compute the maximum value of a field called "Photometric"
-# at a specific point (``point_id==0``). You can define multiple global coefficients
-# with different formulas.
+# In this example, we compute the integral of a field called "Photometric".
+# You can define multiple global coefficients with different formulas.
 #
-# Available locations: "points" or "cells"
+# Available locations: "points" or "cells".
 
 global_coefficients = [
     GlobalCoefficientDefinition(
         name="<your_global_coefficient_name>",  # Name for this global coefficient
-        formula="max_filter(Photometric, point_id==0)",  # Formula to compute the value
+        formula="integral(Photometric)",  # Formula to compute the value
         gc_location="points",  # Compute on points (or "cells")
     )
 ]
@@ -121,7 +121,7 @@ global_coefficients = [
 #
 # Format: reference_type, min_value, max_value
 #
-# - ``reference_type``: ``"relative_to_min"`` or ``"absolute"``.
+# - ``reference_type``: ``"relative_to_min"``, ``"relative_to_max"``, ``"relative_to_center``" or ``"absolute"``.
 # - ``min_value``: minimum dimension value.
 # - ``max_value``: maximum dimension value.
 #
