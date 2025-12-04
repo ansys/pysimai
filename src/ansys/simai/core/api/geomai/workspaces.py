@@ -102,3 +102,15 @@ class GeomAIWorkspaceClientMixin(ApiClientMixin):
         request_json = {}
         request_json["name"] = name
         self._patch(f"geomai/workspaces/{workspace_id}", json=request_json, return_json=False)
+
+    def get_geomai_workspace_model_configuration(self, workspace_id: str):
+        """Get the model configuration used for the given GeomAI workspace.
+
+        Args:
+            workspace_id: ID of the workspace.
+
+        Raises:
+            ansys.simai.core.errors.NotFoundError: If no workspace with that ID exists.
+            ansys.simai.core.errors.ApiClientError: On other HTTP errors.
+        """
+        return self._get(f"geomai/workspaces/{workspace_id}/model/configuration")
