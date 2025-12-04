@@ -21,8 +21,7 @@
 # SOFTWARE.
 
 import logging
-from inspect import signature
-from typing import Callable, Dict, List, Literal, Optional, Tuple
+from typing import Dict, List, Literal, Optional
 
 from tqdm import tqdm
 from wakepy import keep
@@ -31,11 +30,9 @@ from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.types import (
     Identifiable,
-    NamedFile,
     get_id_from_identifiable,
     get_object_from_identifiable,
 )
-from ansys.simai.core.data.workspaces import Workspace
 from ansys.simai.core.errors import InvalidArguments
 
 logger = logging.getLogger(__name__)
@@ -113,9 +110,7 @@ class OptimizationDirectory(Directory[Optimization]):
             import ansys.simai.core as asc
 
             simai_client = asc.from_config()
-            simai_client.optimizations.run_parametric(
-                ...
-            )  # or simai.optimizations.run_non_parametric(...)
+            simai_client.optimizations.run_non_parametric(...)
     """
 
     _data_model = Optimization
@@ -130,147 +125,6 @@ class OptimizationDirectory(Directory[Optimization]):
             :py:class:`Optimization`.
         """
         return self._model_from(self._client._api.get_optimization(optimization_id))
-
-    def run_parametric(
-        self,
-        geometry_generation_fn: Callable[..., NamedFile],
-        geometry_parameters: Dict[str, Tuple[float, float]],
-        n_iters: int,
-        boundary_conditions: Optional[Dict[str, float]] = None,
-        minimize: Optional[List[str]] = None,
-        maximize: Optional[List[str]] = None,
-        outcome_constraints: Optional[List[str]] = None,
-        show_progress: bool = False,
-        workspace: Optional[Identifiable[Workspace]] = None,
-    ) -> List[Dict]:
-        """Run an optimization loop to generate a parametric geometry, client-side.
-
-        Warning:
-            This feature is deprecated.
-
-        Args:
-            geometry_generation_fn: Function to call to generate a new geometry
-                with the generated parameters. This parameter should return a
-                :obj:`~ansys.simai.core.data.types.NamedFile` object.
-            geometry_parameters: Name of the geometry parameters and their bounds or possible values (choices).
-            boundary_conditions: Values of the boundary conditions to perform the optimization at.
-                The values should map to existing boundary conditions in your project/workspace.
-            n_iters: Number of iterations of the optimization loop.
-            minimize: List of global coefficients to minimize.
-                The global coefficients should map to existing coefficients in your project/workspace.
-            maximize: List of global coefficients to maximize.
-                The global coefficients should map to existing coefficients in your project/workspace.
-            outcome_constraints: List of strings representing a linear inequality constraint
-                on a global coefficient. The outcome constraint should be in the form ``gc >= x``,
-                where:
-
-                - ``gc`` is a valid global coefficient name.
-                - ``x`` is a float bound.
-                - The comparison operator is ``>=`` or ``<=``.
-
-            show_progress: Whether to print progress on stdout.
-            workspace: Workspace to run the optimization in. If a workspace is
-                not specified, the default is the configured workspace.
-
-        Returns:
-            List of dictionaries representing the result of each iteration. when constraints
-            are specified, the list can be shorter than the number of iterations.
-
-        Warning:
-            This is a long-running process and your computer must be powered on to generate the iterations.
-            This method attempts to prevent your computer from sleeping, keeping your computer open
-            during the process.
-
-        Example:
-          .. code-block:: python
-
-            import ansys.simai.core as asc
-
-
-            # Function takes the parameters
-            def my_geometry_generation_function(param_a, param_b):
-                # Implementation
-                return "/path/to/generated/geometry.stl"
-
-
-            simai_client = asc.from_config(workspace="optimization-workspace")
-
-            simai_client.optimizations.run_parametric(
-                geometry_generation_fn=my_geometry_generation_function,
-                geometry_parameters={
-                    "param_a": {"bounds": (-12.5, 12.5)},
-                    "param_b": {"choices": (0, 1)},
-                },
-                minimize=["TotalForceX"],
-                boundary_conditions={"VelocityX": 10.5},
-                outcome_constraints=["TotalForceY <= 10"],
-                n_iters=100,
-            )
-        """
-        workspace_id = get_id_from_identifiable(workspace, True, self._client._current_workspace)
-        outcome_constraints = outcome_constraints or []
-        _validate_n_iters(n_iters)
-        _validate_geometry_parameters(geometry_parameters)
-        _validate_geometry_generation_fn_signature(geometry_generation_fn, geometry_parameters)
-        _validate_outcome_constraints(outcome_constraints)
-        objective = _build_objective(minimize, maximize)
-        optimization_parameters = {
-            "boundary_conditions": boundary_conditions or {},
-            "n_iters": n_iters,
-            "objective": objective,
-            "type": "parametric",
-            "outcome_constraints": outcome_constraints,
-            "geometry_generation": {
-                "geometry_parameters": geometry_parameters,
-            },
-        }
-        with tqdm(total=n_iters, disable=not show_progress) as progress_bar:
-            progress_bar.set_description("Creating optimization definition.")
-            optimization = self._model_from(
-                self._client._api.define_optimization(workspace_id, optimization_parameters)
-            )
-            optimization.wait()
-            geometry_parameters = optimization.fields["initial_geometry_parameters"]
-            logger.debug("Optimization defined. Starting optimization loop.")
-            iterations_results: List[Dict] = []
-            with keep.running(on_fail="warn"):
-                while geometry_parameters:
-                    logger.debug(f"Generating geometry with parameters {geometry_parameters}.")
-                    progress_bar.set_description("Generating geometry.")
-                    # TODO: Somehow keep session alive for long geometry generation
-                    generated_geometry = geometry_generation_fn(**geometry_parameters)
-                    logger.debug("Uploading geometry.")
-                    progress_bar.set_description("Uploading geometry.")
-                    # TODO: Name geometry ourselves ? Then we need to know the output format
-                    geometry = self._client.geometries.upload(
-                        generated_geometry,
-                        metadata=geometry_parameters,
-                        workspace_id=workspace_id,
-                    )
-                    logger.debug("Running trial.")
-                    progress_bar.set_description("Running trial.")
-                    trial_run = optimization._run_iteration(
-                        {
-                            "geometry": geometry.id,
-                            "geometry_parameters": geometry_parameters,
-                        }
-                    )
-                    trial_run.wait()
-                    iteration_result = {
-                        "parameters": geometry_parameters,
-                        "objective": trial_run.fields["outcome_values"],
-                    }
-                    progress_bar.set_postfix(**iteration_result)
-                    if trial_run.fields.get("is_feasible", True):
-                        iterations_results.append(iteration_result)
-                    else:
-                        logger.debug("Trial run results did not match constraints. Skipping.")
-                    geometry_parameters = trial_run.fields["next_geometry_parameters"]
-                    logger.debug("Trial complete.")
-                    progress_bar.update(1)
-                logger.debug("Optimization complete.")
-                progress_bar.set_description("Optimization complete.")
-            return iterations_results
 
     def run_non_parametric(
         self,
@@ -420,30 +274,6 @@ class OptimizationDirectory(Directory[Optimization]):
                 optimization, trial_result["objectives"], trial_result["geometries"]
             )
             return optimization_result
-
-
-def _validate_geometry_parameters(params: Dict):
-    if not isinstance(params, Dict):
-        raise InvalidArguments("geometry_parameters: must be a dict.")
-    if not params:
-        raise InvalidArguments("geometry_parameters: must not be empty.")
-    for key, value in params.items():
-        bounds = value.get("bounds")
-        choices = value.get("choices")
-        if not bounds and not choices:
-            raise InvalidArguments(f"geometry_parameters: no bounds or choices specified for {key}")
-        if bounds and choices:
-            raise InvalidArguments(
-                f"geometry_parameters: only one of bounds or choices must be specified for {key}"
-            )
-
-
-def _validate_geometry_generation_fn_signature(geometry_generation_fn, geometry_parameters):
-    geometry_generation_fn_args = signature(geometry_generation_fn).parameters
-    if geometry_generation_fn_args.keys() != geometry_parameters.keys():
-        raise InvalidArguments(
-            f"geometry_generation_fn requires the following signature: {list(geometry_parameters.keys())}, but got: {list(geometry_generation_fn_args.keys())}"
-        )
 
 
 def _validate_bounding_boxes(bounding_boxes: list[list[float]]) -> None:
