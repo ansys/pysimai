@@ -34,7 +34,7 @@ Make sure you have:
 
 - Valid SimAI credentials and organization access.
 - A dataset folder containing subdirectories with your training data.
-- The ansys-simai-core library installed.
+- The ``ansys-simai-core`` library installed.
 
 """
 
@@ -54,7 +54,7 @@ from ansys.simai.core.errors import NotFoundError
 # Update these variables with your specific settings:
 
 ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
-PROJECT_NAME = "<your_project_name>"  # Your desired project name
+PROJECT_NAME = "<your_project_name>"  # Your project name
 DATASET_PATH = "<PATH_TO_YOUR_DATASET>"  # Directory containing subdirectories with training data
 
 ###############################################################################
@@ -67,7 +67,7 @@ simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 ###############################################################################
 # Set up the project
 # ----------------------------------
-# Try to get an existing project by name, or create it if it doesn't exist:
+# Try to get an existing project by name, or create it if it does not exist:
 
 try:
     project = simai_client.projects.get(name=PROJECT_NAME)
@@ -79,7 +79,7 @@ except NotFoundError:
 ###############################################################################
 # Set as the current working project
 # ----------------------------------
-# Setting the current project allows subsequent operations to default to this project:
+# Setting the current project allows subsequent operations to use this project by default:
 
 simai_client.set_current_project(PROJECT_NAME)
 print(f"Current project: {simai_client.current_project}")

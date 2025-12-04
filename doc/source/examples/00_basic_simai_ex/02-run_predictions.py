@@ -67,12 +67,14 @@ DATASET_PATH = "<your_dataset>"  # Path to your dataset directory
 simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
 ###############################################################################
-# Set the current workspace
-# A workspace contains a trained model and is created when a model build completes successfully:
+# Set the current workspace:
 
 simai_client.set_current_workspace(WORKSPACE_NAME)
 current_workspace = simai_client.current_workspace
 print(f"Using workspace: {current_workspace.name}")
+
+###############################################################################
+# A workspace contains a trained model and is created when a model build completes successfully.
 
 ###############################################################################
 # Prepare data structures
@@ -116,7 +118,7 @@ for dir in os.listdir(f"{DATASET_PATH}"):
     # Load boundary conditions (if applicable)
     # ----------------------------------------------------
     # This section is optional and only needed if your model requires boundary conditions.
-    # If your model doesn't use boundary conditions, you can skip this section.
+    # If your model does not use boundary conditions, you can skip this section.
 
     try:
         with open(f"{DATASET_PATH}/{dir}/boundary_conditions.json", "r") as f:

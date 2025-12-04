@@ -62,7 +62,7 @@ PROJECT_NAME = "<your_project_name>"  # Replace with your project name
 ###############################################################################
 # Initialize the client and get the project
 # -------------------------------------------
-# Connect to SimAI and retrieve your project:
+# Connect to SimAI:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
@@ -103,7 +103,7 @@ model_output = ModelOutput(
 # In this example, we compute the integral of a field called "Photometric".
 # You can define multiple global coefficients with different formulas.
 #
-# Available locations: "points" or "cells".
+# Available locations: ``"points"`` or ``"cells"``.
 
 global_coefficients = [
     GlobalCoefficientDefinition(
@@ -125,7 +125,7 @@ global_coefficients = [
 # - ``min_value``: minimum dimension value.
 # - ``max_value``: maximum dimension value.
 #
-# You can find appropriate values by analyzing your training data in the SimAI web app.
+# You can find appropriate values by analyzing your training data in the SimAI platform.
 
 doa = DomainOfAnalysis(
     length=("relative_to_min", 0.102, 1.219),  # Length bounds
@@ -166,7 +166,7 @@ if project.is_trainable():
     new_model = simai_client.models.build(mdl_conf)
     print(f"Model build started with ID: {new_model.id}")
     print(
-        "The model will take some time to train. You can monitor its progress in the SimAI web app."
+        "The model will take some time to train. You can monitor its progress in the SimAI platform."
     )
 else:
     print("Project is not trainable. Please check the following:")
@@ -178,6 +178,7 @@ else:
 # Next steps
 # -------------------------------------------
 # Once your model is trained, you can:
-# - Monitor the training progress in the SimAI web app.
+#
+# - Monitor the training progress in the SimAI platform.
 # - Run predictions on new geometries: :ref:`ref_basic_run_predictions`.
 # - Evaluate model performance using validation data.
