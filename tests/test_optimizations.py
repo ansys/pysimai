@@ -30,47 +30,12 @@ from httpx_sse import ServerSentEvent
 from ansys.simai.core.data.optimizations import (
     _validate_axial_symmetry,
     _validate_bounding_boxes,
-    _validate_geometry_generation_fn_signature,
     _validate_global_coefficients_for_non_parametric,
     _validate_max_displacement,
     _validate_n_iters,
     _validate_outcome_constraints,
 )
 from ansys.simai.core.errors import InvalidArguments
-
-
-def test_geometry_generation_fn_invalid_signature(simai_client):
-    """WHEN a geometry_generation_fn signature does not match geometry_parameters keys
-    THEN an InvalidArgument error is raised."""
-
-    my_geometry_generation_function = lambda param_a: f"test_geometry/param_{param_a}.vtp"
-
-    geometry_parameters = {
-        "param_a": {"bounds": (-12.5, 12.5)},
-        "param_ski": {"choices": (0.1, 1.0)},
-    }
-
-    with pytest.raises(InvalidArguments) as exc:
-        simai_client.optimizations.run_parametric(
-            geometry_generation_fn=my_geometry_generation_function,
-            geometry_parameters=geometry_parameters,
-            boundary_conditions={"abc": 3.0},
-            n_iters=5,
-        )
-
-    assert "geometry_generation_fn requires the following signature" in str(exc.value)
-
-
-def test_validate_geometry_generation_fn_valid_signature():
-    """WHEN geometry_generation_fn signature matches geometry_parameters keys
-    THEN check passes"""
-
-    my_geometry_generation_function = (
-        lambda param_c, param_d: f"test_geometry/param_{param_c}_{param_d}.vtp"
-    )
-    geometry_parameters = {"param_c": {"bounds": (-12.5, 12.5)}, "param_d": {"choices": (0.1, 1.0)}}
-
-    _validate_geometry_generation_fn_signature(my_geometry_generation_function, geometry_parameters)
 
 
 def test_validate_bounding_boxes_success():
@@ -310,94 +275,6 @@ def test_validate_axial_symmetry_fails(axial_symmetry, symmetries):
         expected_exception=InvalidArguments,
     ):
         _validate_axial_symmetry(axial_symmetry, symmetries)
-
-
-def test_run_parametric_optimization(simai_client, mocker, httpx_mock):
-    workspace_id = "insert_cool_reference"
-    mocker.patch("ansys.simai.core.data.optimizations._validate_geometry_generation_fn_signature")
-    geometry_upload = mocker.patch.object(simai_client.geometries, "upload")
-    geometry_upload.return_value = simai_client.geometries._model_from({"id": "geomx"})
-
-    httpx_mock.add_response(
-        method="POST",
-        url=f"https://test.test/workspaces/{workspace_id}/optimizations",
-        status_code=202,
-        json={"id": "wow", "state": "requested", "trial_runs": []},
-    )
-    httpx_mock.add_response(
-        method="POST",
-        url="https://test.test/optimizations/wow/trial-runs",
-        status_code=202,
-        json={"id": "wow1", "state": "requested"},
-    )
-    httpx_mock.add_response(
-        method="POST",
-        url="https://test.test/optimizations/wow/trial-runs",
-        status_code=202,
-        json={"id": "wow2", "state": "requested"},
-    )
-    httpx_mock.add_response(
-        method="POST",
-        url="https://test.test/optimizations/wow/trial-runs",
-        status_code=202,
-        json={"id": "wow3", "state": "requested"},
-    )
-    threading.Timer(
-        0.1,
-        simai_client._api._handle_sse_event,
-        args=[
-            ServerSentEvent(
-                data=json.dumps(
-                    {
-                        "type": "job",
-                        "status": "successful",
-                        "record": {
-                            "id": "wow",
-                            "state": "successful",
-                            "initial_geometry_parameters": {"a": 1},
-                        },
-                        "target": {"type": "optimization", "id": "wow"},
-                    }
-                )
-            )
-        ],
-    ).start()
-    for i in range(1, 4):
-        threading.Timer(
-            i / 10 + 0.1,
-            simai_client._api._handle_sse_event,
-            args=[
-                ServerSentEvent(
-                    data=json.dumps(
-                        {
-                            "type": "job",
-                            "status": "successful",
-                            "record": {
-                                "id": f"wow{i}",
-                                "state": "successful",
-                                "is_feasible": "true",
-                                "outcome_values": i,
-                                "next_geometry_parameters": {"a": i + 1} if i != 3 else None,
-                            },
-                            "target": {"type": "optimization_trial_run", "id": f"wow{i}"},
-                        }
-                    )
-                )
-            ],
-        ).start()
-    geometry_generation_fn = mocker.stub(name="geometry_gen")
-    results = simai_client.optimizations.run_parametric(
-        geometry_generation_fn=geometry_generation_fn,
-        geometry_parameters={
-            "a": {"bounds": (-12.5, 12.5)},
-        },
-        minimize=["TotalForceX"],
-        boundary_conditions={"VelocityX": 10.5},
-        outcome_constraints=["TotalForceX <= 10"],
-        n_iters=3,
-        workspace=workspace_id,
-    )
-    assert results == [{"objective": i, "parameters": {"a": i}} for i in range(1, 4)]
 
 
 def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_mock):
