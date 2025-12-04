@@ -810,15 +810,16 @@ class PostProcessingDirectory(Directory[PostProcessing]):
                 workspace is not set.
 
         Example:
-            .. code-block:: python
 
-                import ansys.simai.core as asc
+        .. code-block:: python
 
-                simai_client = asc.from_config()
-                prediction = simai_client.predictions.list()[0]
-                post_processings = simai_client.post_processings.list(
-                    asc.SurfaceEvolution, prediction.id
-                )
+            import ansys.simai.core as asc
+
+            simai_client = asc.from_config()
+            prediction = simai_client.predictions.list()[0]
+            post_processings = simai_client.post_processings.list(
+                asc.SurfaceEvolution, prediction.id
+            )
         """
         pp_type_str = post_processing_type._api_name() if post_processing_type else None
         if workspace and prediction:
@@ -861,21 +862,22 @@ class PostProcessingDirectory(Directory[PostProcessing]):
             **kwargs: Unpacked parameters for the postprocessing.
 
         Examples:
-            .. code-block:: python
 
-                import ansys.simai.core as asc
+        .. code-block:: python
 
-                simai_client = asc.from_config()
-                prediction = simai_client.predictions.list()[0]
-                simai_client.post_processings.run(
-                    asc.Slice, prediction, {"axis": "x", "coordinate": 50}
-                )
+            import ansys.simai.core as asc
 
-            Using kwargs:
+            simai_client = asc.from_config()
+            prediction = simai_client.predictions.list()[0]
+            simai_client.post_processings.run(
+                asc.Slice, prediction, {"axis": "x", "coordinate": 50}
+            )
 
-            .. code-block:: python
+        Using kwargs:
 
-                simai.post_processings.run(ansys.simai.core.Slice, prediction, axis="x", coordinate=50)
+        .. code-block:: python
+
+            simai.post_processings.run(ansys.simai.core.Slice, prediction, axis="x", coordinate=50)
         """
         if isinstance(post_processing_type, str):
             post_processing_type = getattr(

@@ -182,7 +182,7 @@ class OptimizationDirectory(Directory[Optimization]):
             during the process.
 
         Example:
-          .. code-block:: python
+        .. code-block:: python
 
             import ansys.simai.core as asc
 
@@ -344,7 +344,7 @@ class OptimizationDirectory(Directory[Optimization]):
                 It is updated each time a new iteration is completed.
 
         Example:
-          .. code-block:: python
+        .. code-block:: python
 
             import ansys.simai.core as asc
 

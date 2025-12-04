@@ -161,19 +161,20 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             ProcessingError: If the server failed to process the request.
 
         Examples:
-            .. code-block:: python
 
-                import ansys.simai.core as asc
+        .. code-block:: python
 
-                simai_client = asc.from_config()
-                geometry = simai_client.geometries.list()[0]
-                geometry.run_prediction(dict(Vx=10.5, Vy=2))
+            import ansys.simai.core as asc
 
-            Use kwargs:
+            simai_client = asc.from_config()
+            geometry = simai_client.geometries.list()[0]
+            geometry.run_prediction(dict(Vx=10.5, Vy=2))
 
-            .. code-block:: python
+        Use kwargs:
 
-                prediction = geometry.run_prediction(Vx=10.5, Vy=2)
+        .. code-block:: python
+
+            prediction = geometry.run_prediction(Vx=10.5, Vy=2)
 
         """
         bc = build_boundary_conditions(boundary_conditions, **kwargs)
@@ -270,13 +271,14 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
                 or mixed numerical and non numerical values.
 
         Example:
-            .. code-block:: python
 
-                import ansys.simai.core as asc
+        .. code-block:: python
 
-                simai_client = asc.from_config()
-                geom = simai_client.geometries.get("kz19jyqm")
-                geometries = geom.sweep(["length"])
+            import ansys.simai.core as asc
+
+            simai_client = asc.from_config()
+            geom = simai_client.geometries.get("kz19jyqm")
+            geometries = geom.sweep(["length"])
 
         """
         if geometries is None:
@@ -457,7 +459,7 @@ class GeometryDirectory(Directory[Geometry]):
 
             .. code-block:: python
 
-                    geometry = simai_client.geometries.get(id="abcdef12")
+                geometry = simai_client.geometries.get(id="abcdef12")
 
         """
         if name and id:

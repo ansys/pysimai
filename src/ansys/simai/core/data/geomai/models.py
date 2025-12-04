@@ -129,33 +129,38 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
             configuration: a :class:`GeomAIModelConfiguration` object that contains the properties to be used in the build.
 
         Examples:
-            .. code-block:: python
+        
+        .. code-block:: python
 
-                import ansys.simai.core as asc
-                from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
+            import ansys.simai.core as asc
+            from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 
-                simai_client = asc.from_config()
-                project = simai_client.geomai.projects.get("new_secret_project")
-                configuration = GeomAIModelConfiguration(build_preset="default", nb_latent_param=10)
-                model = simai_client.geomai.models.build(project, configuration)
+            simai_client = asc.from_config()
+            project = simai_client.geomai.projects.get("new_secret_project")
+            configuration = GeomAIModelConfiguration(build_preset="default", nb_latent_param=10)
+            model = simai_client.geomai.models.build(project, configuration)
 
+            simai = ansys.simai.core.from_config()
+            project = simai.geomai.projects.get("new_secret_project")
+            configuration = GeomAIModelConfiguration(build_preset="default", nb_latent_param=10)
+            model = simai.geomai.models.build(project, configuration)
 
-            Use a previous configuration for a new build in the same project:
+        Use a previous configuration for a new build in the same project:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                a_project = simai.geomai.projects.get("project_A")
-                build_conf = a_project.last_model_configuration
-                new_model = simai.geomai.models.build(build_conf)
+            a_project = simai.geomai.projects.get("project_A")
+            build_conf = a_project.last_model_configuration
+            new_model = simai.geomai.models.build(build_conf)
 
-            Use a previous configuration for a new build in another project:
+        Use a previous configuration for a new build in another project:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                a_project = simai.geomai.projects.get("project_A")
-                build_conf = a_project.last_model_configuration
-                b_project = simai.geomai.projects.get("project_B")
-                new_model = simai.geomai.models.build(build_conf)
+            a_project = simai.geomai.projects.get("project_A")
+            build_conf = a_project.last_model_configuration
+            b_project = simai.geomai.projects.get("project_B")
+            new_model = simai.geomai.models.build(build_conf)
 
         """
         project_id = get_id_from_identifiable(project)
