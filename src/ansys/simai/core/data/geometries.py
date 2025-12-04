@@ -161,17 +161,17 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             ProcessingError: If the server failed to process the request.
 
         Examples:
-            .. code-block:: python
+        .. code-block:: python
 
-                simai = ansys.simai.core.from_config()
-                geometry = simai.geometries.list()[0]
-                geometry.run_prediction(dict(Vx=10.5, Vy=2))
+            simai = ansys.simai.core.from_config()
+            geometry = simai.geometries.list()[0]
+            geometry.run_prediction(dict(Vx=10.5, Vy=2))
 
-            Use kwargs:
+        Use kwargs:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                prediction = geometry.run_prediction(Vx=10.5, Vy=2)
+            prediction = geometry.run_prediction(Vx=10.5, Vy=2)
         """
         bc = build_boundary_conditions(boundary_conditions, **kwargs)
         prediction_response = self._client._api.run_prediction(self.id, boundary_conditions=bc)
@@ -267,13 +267,13 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
                 or mixed numerical and non numerical values.
 
         Example:
-            .. code-block:: python
+        .. code-block:: python
 
-                import ansys.simai.core
+            import ansys.simai.core
 
-                simai = ansys.simai.core.from_config()
-                geom = simai.geometries.get("kz19jyqm")
-                geometries = geom.sweep(["length"])
+            simai = ansys.simai.core.from_config()
+            geom = simai.geometries.get("kz19jyqm")
+            geometries = geom.sweep(["length"])
         """
         if geometries is None:
             geometries = self._client.geometries.list()
@@ -452,7 +452,7 @@ class GeometryDirectory(Directory[Geometry]):
 
             .. code-block:: python
 
-                    geometry = simai.geometries.get(id="abcdef12")
+                geometry = simai.geometries.get(id="abcdef12")
         """
         if name and id:
             raise InvalidArguments("Name and ID cannot both be specified.")

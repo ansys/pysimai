@@ -253,17 +253,17 @@ class PredictionDirectory(Directory[Prediction]):
             ProcessingError: If the server failed to process the request.
 
         Examples:
-            .. code-block:: python
+        .. code-block:: python
 
-                simai = ansys.simai.core.from_config()
-                geometry = simai.geometries.list()[0]
-                prediction = simai.predictions.run(geometry, dict(Vx=10.5, Vy=2))
+            simai = ansys.simai.core.from_config()
+            geometry = simai.geometries.list()[0]
+            prediction = simai.predictions.run(geometry, dict(Vx=10.5, Vy=2))
 
-            Using kwargs:
+        Using kwargs:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                prediction = simai.predictions.run(geometry_id, Vx=10.5, Vy=2)
+            prediction = simai.predictions.run(geometry_id, Vx=10.5, Vy=2)
         """
         bc = build_boundary_conditions(boundary_conditions, **kwargs)
         geometry = self._client.geometries.get(id=get_id_from_identifiable(geometry))

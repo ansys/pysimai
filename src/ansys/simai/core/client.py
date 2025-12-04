@@ -126,14 +126,14 @@ class SimAIClient:
             name: Name of the workspace that the client should switch to.
 
         Example:
-            .. code-block:: python
+        .. code-block:: python
 
-                import ansys.simai.core
+            import ansys.simai.core
 
-                simai = ansys.simai.core.from_config(workspace="old plane")
-                simai.geometries.list()  # will list geometries belonging to the "old plane" workspace
-                simai.set_current_workspace("new plane")
-                simai.geometries.list()  # will list geometries belonging to the "new plane" workspace
+            simai = ansys.simai.core.from_config(workspace="old plane")
+            simai.geometries.list()  # will list geometries belonging to the "old plane" workspace
+            simai.set_current_workspace("new plane")
+            simai.geometries.list()  # will list geometries belonging to the "new plane" workspace
         """
         try:
             # Ensure the workspace exists
