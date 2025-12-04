@@ -56,9 +56,9 @@ from ansys.simai.core.utils.numerical import (
     validate_tolerance_parameter,
 )
 
-BoundaryConditions = Dict[str, Number]
+Scalars = Dict[str, Number]
 """
-:obj:`BoundaryConditions` describes the external conditions of a prediction.
+:obj:`Scalars` describes the external conditions of a prediction.
 """
 
 Path = Union[pathlib.Path, str, os.PathLike]
@@ -109,32 +109,30 @@ D = TypeVar("D", bound=DataModel)
 T_co = TypeVar("T_co", covariant=True)
 
 
-def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = None, **kwargs):
-    bc = boundary_conditions if boundary_conditions else {}
+def build_scalars(scalars: Optional[Dict[str, Number]] = None, **kwargs):
+    bc = scalars if scalars else {}
     bc.update(**kwargs)
     if bc is None:
-        raise ValueError("No boundary condition was specified.")
-    if not is_boundary_conditions(bc):
-        raise ValueError("Boundary conditions must be in a dictionary with numbers as values.")
+        raise ValueError("No scalar was specified.")
+    if not is_scalars(bc):
+        raise ValueError("Scalars must be in a dictionary with numbers as values.")
     return bc
 
 
-def is_boundary_conditions(bc):
+def is_scalars(bc):
     return isinstance(bc, dict) and all(is_number(x) for x in bc.values())
 
 
-def are_boundary_conditions_equal(
-    left: BoundaryConditions,
-    right: BoundaryConditions,
+def are_scalars_equal(
+    left: Scalars,
+    right: Scalars,
     tolerance: Optional[Number] = None,
 ):
-    if not is_boundary_conditions(left):
+    if not is_scalars(left):
+        raise TypeError(f"is_scalars_equal called with incorrect left parameter (received {left})")
+    if not is_scalars(right):
         raise TypeError(
-            f"is_boundary_conditions_equal called with incorrect left parameter (received {left})"
-        )
-    if not is_boundary_conditions(right):
-        raise TypeError(
-            f"is_boundary_conditions_equal called with incorrect right parameter (received {right})"
+            f"is_scalars_equal called with incorrect right parameter (received {right})"
         )
     validate_tolerance_parameter(tolerance)
     if left.keys() != right.keys():
