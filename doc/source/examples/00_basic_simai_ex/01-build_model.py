@@ -34,7 +34,7 @@ Before you begin
 - Complete ":ref:`ref_basic_create_project_upload_data`" to create a project with training data.
 - Ensure all training data in your project are ready (processed successfully).
 - Know the names of surfaces and boundary conditions in your training data.
-- Determine which global coefficients you want to compute.
+- Determine which global coefficients you want to calculate.
 
 """
 
@@ -97,10 +97,10 @@ model_output = ModelOutput(
 # Define global coefficients
 # -------------------------------------------
 #
-# Global coefficients are scalar values computed from the prediction results.
+# Global coefficients are scalar values calculated from the prediction results.
 # They can be used to extract key performance indicators from your simulations.
 #
-# In this example, we compute the integral of a field called "Photometric".
+# In this example, we calculate the integral of a field called "Photometric".
 # You can define multiple global coefficients with different formulas.
 #
 # Available locations: ``"points"`` or ``"cells"``.
@@ -108,8 +108,8 @@ model_output = ModelOutput(
 global_coefficients = [
     GlobalCoefficientDefinition(
         name="<your_global_coefficient_name>",  # Name for this global coefficient
-        formula="integral(Photometric)",  # Formula to compute the value
-        gc_location="points",  # Compute on points (or "cells")
+        formula="integral(Photometric)",  # Formula to calculate the global coefficient value
+        gc_location="points",  # Calculate at points (or at "cells")
     )
 ]
 
