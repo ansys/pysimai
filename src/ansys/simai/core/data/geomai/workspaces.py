@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
 from typing import TYPE_CHECKING, BinaryIO, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
@@ -79,6 +80,14 @@ class GeomAIWorkspace(DataModel):
             ``None`` if a file is specified or a binary file-object otherwise.
         """
         return self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
+
+    def get_latent_parameters(self) -> dict[str, List[float]]:
+        """Get the dictionary mapping geometry names to their latent parameter vectors for the model's training data."""
+        data = self._client._api.download_geomai_workspace_latent_parameters(self.id, None)
+        if data is None:
+            return {}
+        latent_parameters = json.loads(data.read().decode("utf-8"))
+        return latent_parameters
 
     def download_model_evaluation_report(
         self, file: Optional[File] = None
