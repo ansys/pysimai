@@ -253,10 +253,10 @@ class ModelConfiguration:
                 PostProcessInput,
             )
 
-            simai = asc.from_config()
+            simai_client = asc.from_config()
 
             # Get the project of interest
-            aero_dyn_project = simai.projects.get(name="aero-dyn")
+            aero_dyn_project = simai_client.projects.get(name="aero-dyn")
 
             # Define the inputs of the model
             model_input = ModelInput(surface=["Velocity"], boundary_conditions=["Vx"])
@@ -539,7 +539,8 @@ class ModelConfiguration:
     def _from_payload(cls, **kwargs) -> "ModelConfiguration":
         # Retrieve SDK version of build preset from API version of build preset
         build_preset = next(
-            (k for k, v in SupportedBuildPresets.items() if v == kwargs.get("build_preset")), None
+            (k for k, v in SupportedBuildPresets.items() if v == kwargs.get("build_preset")),
+            None,
         )
         kwargs["build_preset"] = build_preset
         if build_on_top := kwargs.pop("continuous", None):

@@ -36,7 +36,7 @@ of a project and use it to launch a model build in another project.
 
 import ansys.simai.core as asc
 
-simai = asc.from_config()
+simai_client = asc.from_config()
 
 ###############################################################################
 # Create a project and allocate training data
@@ -46,7 +46,7 @@ new_project_name = "new-project"
 
 ###############################################################################
 # Create the project.
-new_project = simai.projects.create(new_project_name)
+new_project = simai_client.projects.create(new_project_name)
 
 ###############################################################################
 # Set the names of the data samples to be associated with the created project.
@@ -62,7 +62,7 @@ training_samples_name = [
 # the new project.
 for td_name in training_samples_name:
     filt = {"name": td_name}
-    td = simai.training_data.list(filters=filt)
+    td = simai_client.training_data.list(filters=filt)
     td[0].add_to_project(new_project)
 
 ###############################################################################
@@ -70,7 +70,7 @@ for td_name in training_samples_name:
 # ----------------------------------------------------------------------------
 # Retrieve the model configuration from another project that you wish to reuse.
 old_project = "old-ps"
-my_project = simai.projects.get(name=old_project)
+my_project = simai_client.projects.get(name=old_project)
 
 last_build_config = my_project.last_model_configuration
 
@@ -83,4 +83,4 @@ if new_project.is_trainable():
     last_build_config.project_id = new_project.id
 
     # Launch a model build for the new project
-    new_model = simai.models.build(last_build_config)
+    new_model = simai_client.models.build(last_build_config)

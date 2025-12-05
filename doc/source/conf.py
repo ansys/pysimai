@@ -67,6 +67,7 @@ extensions = [
     "sphinx_design",
     "sphinxcontrib.autodoc_pydantic",
     "sphinx_gallery.gen_gallery",
+    "sphinx_copybutton",
 ]
 # Sphinx Gallery Options
 
@@ -74,9 +75,9 @@ sphinx_gallery_conf = {
     # default png file for thumbnails
     "default_thumb_file": ANSYS_SIMAI_THUMBNAIL,
     # path to your examples scripts
-    "examples_dirs": ["examples/pysimai_ex", "examples/generative_design_ex"],
+    "examples_dirs": ["examples"],
     # path where to save gallery generated examples
-    "gallery_dirs": ["_examples/pysimai_ex", "_examples/generative_design_ex"],
+    "gallery_dirs": ["_examples"],
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
@@ -161,8 +162,9 @@ html_theme_options = {
         "json_url": f"https://{cname}/versions.json",
         "version_match": get_version_match(version),
     },
+    "show_nav_level": 2,
     "navigation_depth": -1,
-    "collapse_navigation": True,
+    "collapse_navigation": False,
 }
 
 # -- Options for LaTeX output -------------------------------

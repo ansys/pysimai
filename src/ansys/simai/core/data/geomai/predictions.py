@@ -123,10 +123,11 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
     Example:
         .. code-block:: python
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.geomai.predictions.list()
+            simai_client = asc.from_config()
+            simai_client.geomai.predictions.list()
+
     """
 
     _data_model = GeomAIPrediction
@@ -194,12 +195,15 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
         Examples:
             .. code-block:: python
 
-                simai = ansys.simai.core.from_config()
-                workspace = simai.geomai.workspaces.list()[0]
-                prediction = simai.geomai.predictions.run(
+                import ansys.simai.core as asc
+
+                simai_client = asc.from_config()
+                workspace = simai_client.geomai.workspaces.list()[0]
+                prediction = simai_client.geomai.predictions.run(
                     dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100)),
                     workspace,
                 )
+
         """
         if not isinstance(configuration, GeomAIPredictionConfiguration):
             try:

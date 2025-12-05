@@ -77,7 +77,10 @@ class OptimizationResult:
     """Result for a non-parametric optimization."""
 
     def __init__(
-        self, optimization: "Optimization", objectives: list[Dict], geometries: list[Dict]
+        self,
+        optimization: "Optimization",
+        objectives: list[Dict],
+        geometries: list[Dict],
     ):
         self._optimization = optimization
         self._objectives: list[Dict] = objectives
@@ -107,10 +110,10 @@ class OptimizationDirectory(Directory[Optimization]):
     Example:
         .. code-block:: python
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config()
-            simai.optimizations.run_parametric(
+            simai_client = asc.from_config()
+            simai_client.optimizations.run_parametric(
                 ...
             )  # or simai.optimizations.run_non_parametric(...)
     """
@@ -181,7 +184,7 @@ class OptimizationDirectory(Directory[Optimization]):
         Example:
           .. code-block:: python
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
 
             # Function takes the parameters
@@ -190,9 +193,9 @@ class OptimizationDirectory(Directory[Optimization]):
                 return "/path/to/generated/geometry.stl"
 
 
-            simai = ansys.simai.core.from_config(workspace="optimization-workspace")
+            simai_client = asc.from_config(workspace="optimization-workspace")
 
-            simai.optimizations.run_parametric(
+            simai_client.optimizations.run_parametric(
                 geometry_generation_fn=my_geometry_generation_function,
                 geometry_parameters={
                     "param_a": {"bounds": (-12.5, 12.5)},
@@ -247,7 +250,10 @@ class OptimizationDirectory(Directory[Optimization]):
                     logger.debug("Running trial.")
                     progress_bar.set_description("Running trial.")
                     trial_run = optimization._run_iteration(
-                        {"geometry": geometry.id, "geometry_parameters": geometry_parameters}
+                        {
+                            "geometry": geometry.id,
+                            "geometry_parameters": geometry_parameters,
+                        }
                     )
                     trial_run.wait()
                     iteration_result = {
@@ -340,12 +346,12 @@ class OptimizationDirectory(Directory[Optimization]):
         Example:
           .. code-block:: python
 
-            import ansys.simai.core
+            import ansys.simai.core as asc
 
-            simai = ansys.simai.core.from_config(workspace="optimization-workspace")
-            geometry = simai.geometries.list()[0]
+            simai_client = asc.from_config(workspace="optimization-workspace")
+            geometry = simai_client.geometries.list()[0]
 
-            simai.optimizations.run_non_parametric(
+            simai_client.optimizations.run_non_parametric(
                 geometry,
                 bounding_boxes=[[0, 1, 0, 1, 0, 1]],
                 boundary_conditions={"VelocityX": 10.5},

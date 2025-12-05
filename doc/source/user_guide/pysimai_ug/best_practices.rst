@@ -27,12 +27,12 @@ for the data to be available and used before requesting the next one.
 .. code-block:: python
    :name: sequential-way
 
-   import ansys.simai.core
+   import ansys.simai.core as asc
 
-   simai = ansys.simai.core.from_config()
+   simai_client = asc.from_config()
    speeds = [5.9, 5.10, 5.11]
 
-   for geom in simai.geometries.list():
+   for geom in simai_client.geometries.list():
        for vx in speeds:
            # Run prediction
            pred = geom.run_prediction(Vx=vx)
@@ -49,13 +49,13 @@ and then processes the data once they are all available.
 .. code-block:: python
    :name: requests-first
 
-   import ansys.simai.core
+   import ansys.simai.core as asc
 
-   simai = ansys.simai.core.from_config()
+   simai_client = asc.from_config()
    speeds = [5.9, 5.10, 5.11]
    predictions = []
 
-   for geom in simai.geometries.list():
+   for geom in simai_client.geometries.list():
        for vx in speeds:
            # Run prediction
            pred = geom.run_prediction(Vx=vx)
@@ -64,7 +64,7 @@ and then processes the data once they are all available.
            pred.post.global_coefficients()
            predictions.append(pred)
 
-   simai.wait()  # Wait for all objects requested locally to be complete
+   simai_client.wait()  # Wait for all objects requested locally to be complete
    for pred in predictions:
        # do something with the data
        print(pred.post.global_coefficients().data)

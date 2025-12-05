@@ -13,9 +13,9 @@ instance:
 
 .. code-block:: python
 
-  import ansys.simai.core
+  import ansys.simai.core as asc
 
-  simai = ansys.simai.core.SimAIClient(https_proxy="http://company_proxy:3128")
+  simai_client = asc.SimAIClient(https_proxy="http://company_proxy:3128")
 
 Alternatively, you can store the proxy information in your :ref:`configuration file<config_file>`.
 
