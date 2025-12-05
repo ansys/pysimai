@@ -75,7 +75,7 @@ class ApiClientMixin:
 
         # TODO: stop following redirects
         self._session = httpx.Client(
-            mounts=mounts, headers=self._get_user_agent(), follow_redirects=True
+            mounts=mounts, headers=self._get_user_agent(), follow_redirects=True, timeout=15.0
         )
         self._url_prefix = config.url
         self._session.auth = Authenticator(config, self._session)
