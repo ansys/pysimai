@@ -22,8 +22,142 @@
 
 from typing import TYPE_CHECKING
 
+from ansys.simai.core.data.model_configuration import ModelConfiguration
+
 if TYPE_CHECKING:
+    from ansys.simai.core.data.projects import Project
     from ansys.simai.core.data.workspaces import Workspace
+
+METADATA_RAW = {
+    "boundary_conditions": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "name": "Vx",
+                "unit": None,
+                "value": -5.569587230682373,
+            }
+        ]
+    },
+    "surface": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "TurbulentViscosity",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "WallShearStress_0",
+                "unit": None,
+            },
+        ]
+    },
+    "volume": {
+        "fields": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Velocity_0",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Velocity_1",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "VolumeFractionWater",
+                "unit": None,
+            },
+        ]
+    },
+}
+
+MODEL_CONF_RAW = {
+    "boundary_conditions": {"Vx": {}},
+    "build_preset": "debug",
+    "continuous": False,
+    "fields": {
+        "surface": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "WallShearStress_0",
+                "unit": None,
+            },
+        ],
+        "surface_input": [],
+        "surface_pp_input": [],
+        "volume": [
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Pressure",
+                "unit": None,
+            },
+            {
+                "format": "value",
+                "keys": None,
+                "location": "cell",
+                "name": "Velocity_0",
+                "unit": None,
+            },
+        ],
+    },
+    "global_coefficients": [
+        {"formula": "max(Pressure)", "name": "maxpress", "gc_location": "cells"}
+    ],
+    "simulation_volume": {
+        "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
+        "Y": {"length": 80.0, "type": "absolute", "value": -80},
+        "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
+    },
+}
+
+SAMPLE_RAW = {
+    "extracted_metadata": METADATA_RAW,
+    "id": "DarkKnight",
+    "is_complete": True,
+    "is_deletable": True,
+    "is_in_a_project_being_trained": False,
+    "is_sample_of_a_project": True,
+    "luggage_version": "52.2.2",
+}
 
 
 def test_workspace_download_mer_data(simai_client, httpx_mock):
@@ -65,3 +199,33 @@ def test_workspace_rename(simai_client, httpx_mock):
 
     workspace.rename("fifi")
     assert workspace.name == "fifi"
+
+
+def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, training_data_factory):
+    workspace: Workspace = simai_client._workspace_directory._model_from(
+        {"id": "0011", "name": "riri", "project": "project101"}
+    )
+
+    raw_project = {
+        "id": "project101",
+        "name": "fifi",
+        "sample": SAMPLE_RAW,
+    }
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/projects/project101",
+        json=raw_project,
+        status_code=200,
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/workspaces/0011/model/configuration",
+        json=MODEL_CONF_RAW,
+        status_code=200,
+    )
+
+    project: Project = simai_client._project_directory._model_from(raw_project)
+    mocker.patch.object(project, "process_gc_formula", autospec=True)
+    assert isinstance(workspace.model_configuration, ModelConfiguration)
+    assert workspace.model_configuration.project == project
+    assert workspace.model_configuration._to_payload() == MODEL_CONF_RAW

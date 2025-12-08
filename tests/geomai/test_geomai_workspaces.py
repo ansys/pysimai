@@ -22,8 +22,16 @@
 
 from typing import TYPE_CHECKING
 
+from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
+
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.workspaces import GeomAIWorkspace
+
+
+NB_EPOCHS = 50
+NB_LATENT_PARAMS = 10
+
+MODEL_CONF_RAW = {"nb_epochs": NB_EPOCHS, "nb_latent_param": NB_LATENT_PARAMS, "build_preset": None}
 
 
 def test_geomai_workspace_download_mer(simai_client, httpx_mock):
@@ -65,3 +73,19 @@ def test_geomai_workspace_rename(simai_client, httpx_mock):
 
     workspace.rename("fifi")
     assert workspace.name == "fifi"
+
+
+def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, training_data_factory):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "0011", "name": "riri"}
+    )
+
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/workspaces/0011/model/configuration",
+        json=MODEL_CONF_RAW,
+        status_code=200,
+    )
+
+    assert workspace.model_configuration.model_dump() == MODEL_CONF_RAW
+    assert isinstance(workspace.model_configuration, GeomAIModelConfiguration)
