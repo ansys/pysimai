@@ -129,7 +129,7 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
             configuration: a :class:`GeomAIModelConfiguration` object that contains the properties to be used in the build.
 
         Examples:
-        
+
         .. code-block:: python
 
             import ansys.simai.core as asc
