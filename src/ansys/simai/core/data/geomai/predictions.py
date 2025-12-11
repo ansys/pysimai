@@ -193,16 +193,17 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
             ProcessingError: If the server failed to process the request.
 
         Examples:
-            .. code-block:: python
 
-                import ansys.simai.core as asc
+        .. code-block:: python
 
-                simai_client = asc.from_config()
-                workspace = simai_client.geomai.workspaces.list()[0]
-                prediction = simai_client.geomai.predictions.run(
-                    dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100)),
-                    workspace,
-                )
+            import ansys.simai.core as asc
+
+            simai_client = asc.from_config()
+            workspace = simai_client.geomai.workspaces.list()[0]
+            prediction = simai_client.geomai.predictions.run(
+                dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100)),
+                workspace,
+            )
 
         """
         if not isinstance(configuration, GeomAIPredictionConfiguration):
