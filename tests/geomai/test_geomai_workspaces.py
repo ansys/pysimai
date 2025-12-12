@@ -65,3 +65,19 @@ def test_geomai_workspace_rename(simai_client, httpx_mock):
 
     workspace.rename("fifi")
     assert workspace.name == "fifi"
+
+
+def test_geomai_workspace_get_latent_parameters(simai_client, httpx_mock):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "abc123", "name": "HL3"}
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
+        text='{"geometry1": [1,2,3]}',
+        status_code=200,
+    )
+
+    latent_parameters = workspace.get_latent_parameters()
+    assert isinstance(latent_parameters, dict)
+    assert latent_parameters == {"geometry1": [1, 2, 3]}
