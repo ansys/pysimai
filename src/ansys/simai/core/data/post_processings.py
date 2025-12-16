@@ -377,9 +377,9 @@ class PredictionPostProcessings:
         return self._get_or_run(GlobalCoefficients, {}, run)
 
     def predict_scalars(self, run: bool = True) -> Optional[PredictScalars]:
-        """Compute or get the global coefficients of the prediction.
+        """Compute or get the predicted scalars of the prediction.
 
-        This is a non-blocking method. It returns the ``GlobalCoefficients``
+        This is a non-blocking method. It returns the ``PredictScalars``
         object without waiting. This object may not have data right away
         if the computation is still in progress. Data is filled
         asynchronously once the computation is finished.
@@ -395,8 +395,8 @@ class PredictionPostProcessings:
                 computed, and ``None`` is returned if it does not exist yet.
 
         Returns:
-            ``GlobalCoefficients`` object that eventually contains
-            the global coefficients with its pressure and velocity components.
+            ``PredictScalars`` object that eventually contains
+            the predicted scalars with its pressure and velocity components.
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
         """
         return self._get_or_run(PredictScalars, {}, run)
