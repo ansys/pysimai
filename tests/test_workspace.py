@@ -142,6 +142,7 @@ MODEL_CONF_RAW = {
     "global_coefficients": [
         {"formula": "max(Pressure)", "name": "maxpress", "gc_location": "cells"}
     ],
+    "scalars_to_predict": [],
     "simulation_volume": {
         "X": {"length": 300.0, "type": "relative_to_min", "value": 15.0},
         "Y": {"length": 80.0, "type": "absolute", "value": -80},
