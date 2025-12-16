@@ -138,6 +138,7 @@ class OptimizationDirectory(Directory[Optimization]):
         maximize: Optional[List[str]] = None,
         max_displacement: Optional[List[float]] = None,
         show_progress: bool = False,
+        boundary_conditions: Optional[Dict[str, float]] = None,
     ) -> OptimizationResult:
         """Run an optimization loop to generate geometries, server-side, using automorphing.
         Automorphing is a non-parametric deformation of a surface geometry.
@@ -196,6 +197,8 @@ class OptimizationDirectory(Directory[Optimization]):
                 Each value limits the displacement within the corresponding bounding box, using the same metric as the bounding box coordinates.
             show_progress: Optional. Whether to print progress bar on stdout.
                 It is updated each time a new iteration is completed.
+            boundary_conditions: Optional. **(Deprecated)** The values of the boundary conditions to perform the optimization at.
+                The values must correspond to existing boundary conditions already defined in your SimAI workspace.
 
         Example:
           .. code-block:: python
@@ -219,6 +222,11 @@ class OptimizationDirectory(Directory[Optimization]):
             An object containing the results of the optimization.
 
         """
+        if scalars is None and boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+            scalars = boundary_conditions
         _validate_n_iters(n_iters)
         _validate_global_coefficients_for_non_parametric(minimize, maximize)
         _validate_bounding_boxes(bounding_boxes)

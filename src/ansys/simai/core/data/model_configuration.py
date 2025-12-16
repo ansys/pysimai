@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, List, Literal, Optional
 
@@ -35,6 +36,9 @@ SupportedBuildPresets = {
     "2_days": "default",
     "7_days": "long",
 }
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -183,10 +187,12 @@ class ModelInput:
     Args:
         surface: Input surface variables.
         scalars: Input Scalars.
+        boundary_conditions: **(Deprecated)** Input Scalars.
     """
 
     surface: list[str] = None
     scalars: list[str] = None
+    boundary_conditions: list[str] = None
 
 
 @dataclass
@@ -396,6 +402,16 @@ class ModelConfiguration:
             self.__validate_surface_variables(model_input.surface)
         self.__dict__["input"] = model_input
 
+        # DEPRECATED
+        if model_input.boundary_conditions:
+            logger.warning(
+                "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+            )
+        self.__dict__["input"].scalars = model_input.scalars or model_input.boundary_conditions
+        self.__dict__["input"].boundary_conditions = (
+            model_input.scalars or model_input.boundary_conditions
+        )
+
     def __get_input(self):
         return self.__dict__.get("input")
 
@@ -448,6 +464,7 @@ class ModelConfiguration:
         domain_of_analysis: Optional[DomainOfAnalysis] = None,
         pp_input: Optional[PostProcessInput] = None,
         scalars_to_predict: Optional[list[dict[str, str]]] = None,
+        boundary_conditions: Optional[dict[str, Any]] = None,
     ):
         """Sets the properties of a build configuration."""
         self.project = project
@@ -462,6 +479,16 @@ class ModelConfiguration:
             self.pp_input = pp_input
         if scalars is not None and self.input.scalars is None:
             self.input.scalars = list(scalars.keys())
+            # DEPRECATED
+            self.input.boundary_conditions = list(scalars.keys())
+        # DEPRECATED
+        if boundary_conditions is not None and self.input.boundary_conditions is None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+            self.input.scalars = list(boundary_conditions.keys())
+            self.input.boundary_conditions = list(boundary_conditions.keys())
+
         if scalars_to_predict is not None and self.output.scalars is None:
             self.output.scalars = [s["name"] for s in scalars_to_predict]
 

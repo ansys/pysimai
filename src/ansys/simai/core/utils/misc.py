@@ -33,6 +33,15 @@ def prompt_for_input(name: str, hide_input: Optional[bool] = False):
     return input(f"{name}:") if not hide_input else getpass.getpass(f"{name}:")
 
 
+# DEPRECATED
+def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Any]] = None, **kwargs):
+    bc = boundary_conditions if boundary_conditions else {}
+    bc.update(**kwargs)
+    if not bc:
+        raise ValueError("No boundary condition was specified.")
+    return bc
+
+
 def build_scalars(scalars: Optional[Dict[str, Any]] = None, **kwargs):
     bc = scalars if scalars else {}
     bc.update(**kwargs)

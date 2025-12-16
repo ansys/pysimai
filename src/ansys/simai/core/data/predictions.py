@@ -27,6 +27,7 @@ from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.post_processings import PredictionPostProcessings
 from ansys.simai.core.data.types import (
+    BoundaryConditions,
     Identifiable,
     Scalars,
     build_scalars,
@@ -70,6 +71,14 @@ class Prediction(ComputableDataModel):
             else:
                 self._geometry = self._client.geometries.get(id=self.geometry_id)
         return self._geometry
+
+    @property
+    def boundary_conditions(self) -> BoundaryConditions:
+        """**(Deprecated)** Boundary conditions of the prediction."""
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
+        return self.fields["boundary_conditions"]
 
     @property
     def scalars(self) -> Scalars:
@@ -159,6 +168,16 @@ class PredictionDirectory(Directory[Prediction]):
     _data_model = Prediction
 
     @property
+    def boundary_conditions(self) -> Dict[str, Any]:
+        """**(Deprecated)** Information on the boundary conditions expected by the model of the current workspace.
+        For example, the prediction's input.
+        """
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
+        return self._client.current_workspace.model_manifest.boundary_conditions
+
+    @property
     def scalars(self) -> Dict[str, Any]:
         """Information on the scalars expected by the model of the current workspace.
         For example, the prediction's input.
@@ -234,6 +253,7 @@ class PredictionDirectory(Directory[Prediction]):
         self,
         geometry: Identifiable[Geometry],
         scalars: Optional[Scalars] = None,
+        boundary_conditions: Optional[BoundaryConditions] = None,
         **kwargs,
     ) -> Prediction:
         """Run a prediction on a given geometry with a given scalars.
@@ -247,6 +267,7 @@ class PredictionDirectory(Directory[Prediction]):
         Args:
             geometry: ID or :class:`model <.geometries.Geometry>` of the target geometry.
             scalars: Scalars to apply in dictionary form.
+            boundary_conditions: **(Deprecated)** Boundary conditions to apply in dictionary form.
 
         Returns:
             Created prediction object.
@@ -270,6 +291,10 @@ class PredictionDirectory(Directory[Prediction]):
                 prediction = simai_client.predictions.run(geometry_id, Vx=10.5, Vy=2)
 
         """
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
         bc = build_scalars(scalars, **kwargs)
         geometry = self._client.geometries.get(id=get_id_from_identifiable(geometry))
         prediction = geometry.run_prediction(scalars=bc)

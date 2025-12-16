@@ -20,12 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
 from typing import Dict, List, Optional, Union
 
 from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.predictions import Prediction
 from ansys.simai.core.data.selection_post_processings import SelectionPostProcessingsMethods
 from ansys.simai.core.data.types import (
+    BoundaryConditions,
     Scalars,
     are_scalars_equal,
     is_scalars,
@@ -37,6 +39,8 @@ from ansys.simai.core.utils.numerical import (
 )
 from ansys.simai.core.utils.validation import _enforce_as_list_passing_predicate
 
+logger = logging.getLogger(__name__)
+
 
 class Point:
     """Provides a ``Point`` object, where a prediction can be run.
@@ -45,15 +49,38 @@ class Point:
     isstance and :class:`~ansys.simai.core.data.types.Scalars` instance.
     """
 
-    def __init__(self, geometry: Geometry, scalars: Scalars):
+    def __init__(
+        self,
+        geometry: Geometry,
+        scalars: Optional[Scalars] = None,
+        boundary_conditions: Optional[BoundaryConditions] = None,
+    ):
+        # DEPRECATED
+        if scalars is None and boundary_conditions is None:
+            raise ValueError("Provide either 'scalars' or 'boundary_conditions'")
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+
         self._geometry = geometry
-        self._scalars = scalars
+        self._scalars = scalars or boundary_conditions
         self._prediction: Optional[Prediction] = None
 
     @property
     def geometry(self) -> Geometry:
         """:class:`~ansys.simai.core.data.geometries.Geometry` object for the :class:`Point` instance."""
         return self._geometry
+
+    @property
+    def boundary_conditions(self) -> Scalars:
+        """**(Deprecated)** :class:`~ansys.simai.core.data.types.BoundaryConditions` object for the :class:`Point`
+        instance.
+        """
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
+        return self._scalars
 
     @property
     def scalars(self) -> Scalars:
@@ -69,8 +96,20 @@ class Point:
         """
         return self._prediction
 
-    def run_prediction(self, scalars: Scalars):
+    def run_prediction(
+        self,
+        scalars: Optional[Scalars] = None,
+        boundary_conditions: Optional[BoundaryConditions] = None,
+    ):
         """Run the prediction on the geometry for this scalar."""
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+            scalars = boundary_conditions
+
+        if scalars is None and boundary_conditions is None:
+            raise ValueError("Provide either 'scalars' or 'boundary_conditions'")
         self._prediction = self._geometry.run_prediction(scalars=scalars)
 
     def __repr__(self):
@@ -100,9 +139,19 @@ class Selection:
     def __init__(
         self,
         geometries: Union[Geometry, List[Geometry]],
-        scalars: Union[Scalars, List[Scalars]],
+        scalars: Optional[Union[Scalars, List[Scalars]]] = None,
         tolerance: Optional[float] = None,
+        boundary_conditions: Optional[Union[Scalars, List[Scalars]]] = None,
     ):
+        # DEPRECATED
+        if scalars is None and boundary_conditions is None:
+            raise ValueError("Provide either 'scalars' or 'boundary_conditions'")
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+            scalars = boundary_conditions
+
         # Validate parameters
         geometries = _enforce_as_list_passing_predicate(
             geometries,
@@ -147,6 +196,16 @@ class Selection:
         instances in the selection.
         """
         return self._geometries
+
+    @property
+    def boundary_conditions(self) -> List[Scalars]:
+        """**(Deprecated)** List of all existing :class:`Boundary conditions <ansys.simai.core.data.types.BoundaryConditions>`
+        instances in the selection.
+        """
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
+        return self._scalars
 
     @property
     def scalars(self) -> List[Scalars]:
