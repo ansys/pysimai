@@ -29,7 +29,8 @@ from ansys.simai.core.data.post_processings import PredictionPostProcessings
 from ansys.simai.core.data.types import (
     BoundaryConditions,
     Identifiable,
-    build_boundary_conditions,
+    Scalars,
+    build_scalars,
     get_id_from_identifiable,
 )
 from ansys.simai.core.data.workspaces import Workspace
@@ -73,7 +74,15 @@ class Prediction(ComputableDataModel):
 
     @property
     def boundary_conditions(self) -> BoundaryConditions:
-        """Boundary conditions of the prediction."""
+        """**(Deprecated)** Boundary conditions of the prediction."""
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
+        return self.fields["boundary_conditions"]
+
+    @property
+    def scalars(self) -> Scalars:
+        """Scalars of the prediction."""
         return self.fields["boundary_conditions"]
 
     @property
@@ -160,10 +169,20 @@ class PredictionDirectory(Directory[Prediction]):
 
     @property
     def boundary_conditions(self) -> Dict[str, Any]:
-        """Information on the boundary conditions expected by the model of the current workspace.
+        """**(Deprecated)** Information on the boundary conditions expected by the model of the current workspace.
         For example, the prediction's input.
         """
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
         return self._client.current_workspace.model_manifest.boundary_conditions
+
+    @property
+    def scalars(self) -> Dict[str, Any]:
+        """Information on the scalars expected by the model of the current workspace.
+        For example, the prediction's input.
+        """
+        return self._client.current_workspace.model_manifest.scalars
 
     @property
     def physical_quantities(self) -> Dict[str, Any]:
@@ -188,7 +207,7 @@ class PredictionDirectory(Directory[Prediction]):
 
         """
         return {
-            "boundary_conditions": self.boundary_conditions,
+            "scalars": self.scalars,
             "physical_quantities": self.physical_quantities,
         }
 
@@ -233,20 +252,22 @@ class PredictionDirectory(Directory[Prediction]):
     def run(  # noqa: D417
         self,
         geometry: Identifiable[Geometry],
+        scalars: Optional[Scalars] = None,
         boundary_conditions: Optional[BoundaryConditions] = None,
         **kwargs,
     ) -> Prediction:
-        """Run a prediction on a given geometry with a given boundary conditions.
+        """Run a prediction on a given geometry with a given scalars.
 
-        Boundary conditions can be passed as a dictionary or as kwargs.
+        Scalars can be passed as a dictionary or as kwargs.
 
-        To learn more about the expected boundary conditions in your workspace, you can use the
-        ``simai.current_workspace.model_manifest.boundary_conditions`` or ``simai.predictions.boundary_conditions``
+        To learn more about the expected scalars in your workspace, you can use the
+        ``simai.current_workspace.model_manifest.scalars`` or ``simai.predictions.scalars``
         method, where ``ex`` is your `~ansys.simai.core.client.SimAIClient` object.
 
         Args:
             geometry: ID or :class:`model <.geometries.Geometry>` of the target geometry.
-            boundary_conditions: Boundary conditions to apply in dictionary form.
+            scalars: Scalars to apply in dictionary form.
+            boundary_conditions: **(Deprecated)** Boundary conditions to apply in dictionary form.
 
         Returns:
             Created prediction object.
@@ -270,9 +291,13 @@ class PredictionDirectory(Directory[Prediction]):
                 prediction = simai_client.predictions.run(geometry_id, Vx=10.5, Vy=2)
 
         """
-        bc = build_boundary_conditions(boundary_conditions, **kwargs)
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+        bc = build_scalars(scalars, **kwargs)
         geometry = self._client.geometries.get(id=get_id_from_identifiable(geometry))
-        prediction = geometry.run_prediction(boundary_conditions=bc)
+        prediction = geometry.run_prediction(scalars=bc)
         for location, warning_message in prediction.fields.get("warnings", {}).items():
             logger.warning(f"{location}: {warning_message}")
         return prediction

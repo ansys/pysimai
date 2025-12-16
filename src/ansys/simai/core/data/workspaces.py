@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
 import warnings
 from pprint import pformat
 from typing import Any, BinaryIO, Dict, List, Optional, Union
@@ -27,6 +28,8 @@ from typing import Any, BinaryIO, Dict, List, Optional, Union
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import File, Identifiable, get_id_from_identifiable
+
+logger = logging.getLogger(__name__)
 
 
 class ModelManifest:
@@ -55,7 +58,15 @@ class ModelManifest:
 
     @property
     def boundary_conditions(self) -> Dict[str, Any]:
-        """Information on the boundary conditions expected by the model. For example, the prediction's input."""
+        """**(Deprecated)** Information on the boundary conditions expected by the model. For example, the prediction's input."""
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
+        return self._raw["boundary_conditions"]
+
+    @property
+    def scalars(self) -> Dict[str, Any]:
+        """Information on the scalars expected by the model. For example, the prediction's input."""
         return self._raw["boundary_conditions"]
 
     @property

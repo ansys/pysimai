@@ -240,6 +240,7 @@ def test_last_model_configuration(simai_client):
             "Y": {"length": 80.0, "type": "absolute", "value": -80},
             "Z": {"length": 40.0, "type": "absolute", "value": -20.0},
         },
+        "scalars_to_predict": [],
     }
 
     raw_project = {

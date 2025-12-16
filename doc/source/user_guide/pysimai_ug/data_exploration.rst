@@ -9,10 +9,10 @@ postprocessings, explore your data, and gather insights from it.
 Selections
 ----------
 
-:ref:`selections` enable you to manipulate a large number of geometries and boundary conditions
+:ref:`selections` enable you to manipulate a large number of geometries and scalars
 simultaneously. They also allow you to easily run many predictions or postprocessings in parallel.
 
-You create a selection by combining a list of geometries with a list of boundary conditions:
+You create a selection by combining a list of geometries with a list of scalars:
 
 .. code-block:: python
 
@@ -21,8 +21,8 @@ You create a selection by combining a list of geometries with a list of boundary
 
    simai_client = asc.from_config()
    geometries = simai_client.geometries.list()[:4]
-   boundary_conditions = [dict(Vx=vx) for vx in [12.2, 12.4, 12.6]]
-   selection = Selection(geometries, boundary_conditions)
+   scalars = [dict(Vx=vx) for vx in [12.2, 12.4, 12.6]]
+   selection = Selection(geometries, scalars)
 
    # run all predictions
    selection.run_predictions()

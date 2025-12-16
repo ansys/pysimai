@@ -41,7 +41,8 @@ from ansys.simai.core.data.types import (
     MonitorCallback,
     NamedFile,
     Range,
-    build_boundary_conditions,
+    Scalars,
+    build_scalars,
     get_id_from_identifiable,
     get_object_from_identifiable,
     unpack_named_file,
@@ -136,7 +137,10 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         self._client._api.delete_geometry(self.id)
 
     def run_prediction(
-        self, boundary_conditions: Optional[BoundaryConditions] = None, **kwargs
+        self,
+        scalars: Optional[Scalars] = None,
+        boundary_conditions: Optional[BoundaryConditions] = None,
+        **kwargs,
     ) -> "Prediction":
         """Run a new prediction or return an existing prediction.
 
@@ -146,13 +150,14 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         The state of the computation can be monitored with the prediction's ``is_ready``
         attribute or waited upon with its ``wait()`` method.
 
-        To learn more about the expected boundary conditions in your workspace, you can use the
-        ``simai.current_workspace.model.boundary_conditions`` or ``simai.predictions.boundary_conditions``,
+        To learn more about the expected scalars in your workspace, you can use the
+        ``simai.current_workspace.model.scalars`` or ``simai.predictions.scalars``,
         where ``ex`` is your `~ansys.simai.core.client.SimAIClient` object.
 
         Args:
-            boundary_conditions: Boundary conditions to apply as a dictionary.
-            **kwargs: Boundary conditions to pass as keyword arguments.
+            scalars: Scalars to apply as a dictionary.
+            boundary_conditions: **(Deprecated)** Boundary conditions to apply as a dictionary.
+            **kwargs: Scalars to pass as keyword arguments.
 
         Returns:
             Created prediction object.
@@ -176,7 +181,11 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
                 prediction = geometry.run_prediction(Vx=10.5, Vy=2)
 
         """
-        bc = build_boundary_conditions(boundary_conditions, **kwargs)
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+        bc = build_scalars(scalars if scalars else boundary_conditions, **kwargs)
         prediction_response = self._client._api.run_prediction(self.id, boundary_conditions=bc)
         return self._client.predictions._model_from(prediction_response)
 

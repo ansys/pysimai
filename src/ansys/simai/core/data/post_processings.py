@@ -193,6 +193,30 @@ class GlobalCoefficients(ExportablePostProcessing):
         }
 
 
+class PredictScalars(ExportablePostProcessing):
+    """Provides the representation of the predicted scalars of a prediction.
+
+    The data attribute contains a dictionary representing the predicted scalars.
+
+    This class is generated through the :meth:`PredictionPostProcessings.predict_scalars()`
+    method.
+    """
+
+    @property
+    def data(self) -> Dict[str, List]:
+        """Dictionary containing the predicted scalars.
+
+        Accessing this property blocks until the data is ready.
+        """
+        self.wait()
+
+        results = self._get_results()
+        return {
+            k: {**v, "data": cast_values_to_float(v["data"])}
+            for k, v in results["data"]["values"].items()
+        }
+
+
 class SurfaceEvolution(ExportablePostProcessing):
     """Provides the representation of the ``SurfaceEvolution`` object.
 
@@ -351,6 +375,31 @@ class PredictionPostProcessings:
             Returns ``None`` if ``run=False`` and the postprocessing does not exist.
         """
         return self._get_or_run(GlobalCoefficients, {}, run)
+
+    def predict_scalars(self, run: bool = True) -> Optional[PredictScalars]:
+        """Compute or get the predicted scalars of the prediction.
+
+        This is a non-blocking method. It returns the ``PredictScalars``
+        object without waiting. This object may not have data right away
+        if the computation is still in progress. Data is filled
+        asynchronously once the computation is finished.
+        The state of computation can be monitored with the ``is_ready`` flag
+        or waited upon with the ``wait()`` method.
+
+        Computation is launched only on first call of this method.
+        Subsequent calls do not relaunch it.
+
+        Args:
+            run: Boolean indicating whether to compute or get the postprocessing.
+                The default is ``True``. If ``False``, the postprocessing is not
+                computed, and ``None`` is returned if it does not exist yet.
+
+        Returns:
+            ``PredictScalars`` object that eventually contains
+            the predicted scalars with its pressure and velocity components.
+            Returns ``None`` if ``run=False`` and the postprocessing does not exist.
+        """
+        return self._get_or_run(PredictScalars, {}, run)
 
     def surface_evolution(
         self, axis: str, delta: float, run: bool = True

@@ -358,7 +358,7 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_m
         bounding_boxes=[[0.1, 1, 0.1, 1, 0.1, 1]],
         symmetries=["x", "y", "z"],
         minimize=["TotalForceX"],
-        boundary_conditions={"VelocityX": 10.5},
+        scalars={"VelocityX": 10.5},
         n_iters=3,
     )
     assert len(results.list_objectives()) == 3

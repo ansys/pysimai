@@ -43,6 +43,11 @@ Available postprocessings
     :inherited-members: PostProcessing
 
 
+.. autoclass:: PredictScalars()
+    :members:
+    :inherited-members: PostProcessing
+
+
 .. autoclass:: SurfaceEvolution()
     :members:
     :inherited-members: PostProcessing

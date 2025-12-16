@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
 from typing import Dict, List, Optional, Union
 
 from ansys.simai.core.data.geometries import Geometry
@@ -27,8 +28,9 @@ from ansys.simai.core.data.predictions import Prediction
 from ansys.simai.core.data.selection_post_processings import SelectionPostProcessingsMethods
 from ansys.simai.core.data.types import (
     BoundaryConditions,
-    are_boundary_conditions_equal,
-    is_boundary_conditions,
+    Scalars,
+    are_scalars_equal,
+    is_scalars,
 )
 from ansys.simai.core.errors import _foreach_despite_errors
 from ansys.simai.core.utils.numerical import (
@@ -37,17 +39,32 @@ from ansys.simai.core.utils.numerical import (
 )
 from ansys.simai.core.utils.validation import _enforce_as_list_passing_predicate
 
+logger = logging.getLogger(__name__)
+
 
 class Point:
     """Provides a ``Point`` object, where a prediction can be run.
 
     A point is at the intersection of a :class:`~ansys.simai.core.data.geometries.Geometry`
-    isstance and :class:`~ansys.simai.core.data.types.BoundaryConditions` instance.
+    isstance and :class:`~ansys.simai.core.data.types.Scalars` instance.
     """
 
-    def __init__(self, geometry: Geometry, boundary_conditions: BoundaryConditions):
+    def __init__(
+        self,
+        geometry: Geometry,
+        scalars: Optional[Scalars] = None,
+        boundary_conditions: Optional[BoundaryConditions] = None,
+    ):
+        # DEPRECATED
+        if scalars is None and boundary_conditions is None:
+            raise ValueError("Provide either 'scalars' or 'boundary_conditions'")
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+
         self._geometry = geometry
-        self._boundary_conditions = boundary_conditions
+        self._scalars = scalars or boundary_conditions
         self._prediction: Optional[Prediction] = None
 
     @property
@@ -56,11 +73,21 @@ class Point:
         return self._geometry
 
     @property
-    def boundary_conditions(self) -> BoundaryConditions:
-        """:class:`~ansys.simai.core.data.types.BoundaryConditions` object for the :class:`Point`
+    def boundary_conditions(self) -> Scalars:
+        """**(Deprecated)** :class:`~ansys.simai.core.data.types.BoundaryConditions` object for the :class:`Point`
         instance.
         """
-        return self._boundary_conditions
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
+        return self._scalars
+
+    @property
+    def scalars(self) -> Scalars:
+        """:class:`~ansys.simai.core.data.types.Scalars` object for the :class:`Point`
+        instance.
+        """
+        return self._scalars
 
     @property
     def prediction(self) -> Union[Prediction, None]:
@@ -69,13 +96,25 @@ class Point:
         """
         return self._prediction
 
-    def run_prediction(self, boundary_conditions: BoundaryConditions):
-        """Run the prediction on the geometry for this boundary condition."""
-        self._prediction = self._geometry.run_prediction(boundary_conditions=boundary_conditions)
+    def run_prediction(
+        self,
+        scalars: Optional[Scalars] = None,
+        boundary_conditions: Optional[BoundaryConditions] = None,
+    ):
+        """Run the prediction on the geometry for this scalar."""
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+            scalars = boundary_conditions
+
+        if scalars is None and boundary_conditions is None:
+            raise ValueError("Provide either 'scalars' or 'boundary_conditions'")
+        self._prediction = self._geometry.run_prediction(scalars=scalars)
 
     def __repr__(self):
-        return "{}(geometry: {}, boundary_condition: {}, prediction: {})".format(
-            self.__class__, self._geometry, self._boundary_conditions, self.prediction
+        return "{}(geometry: {}, scalar: {}, prediction: {})".format(
+            self.__class__, self._geometry, self._scalars, self.prediction
         )
 
 
@@ -83,36 +122,46 @@ class Selection:
     """Provides a ``Selection`` object, which is a collection of :class:`Points <Point>` instances.
 
     Selections are built from a list of :class:`Geometries <ansys.simai.core.data.geometries.Geometry>`
-    instances and a list of :class:`~ansys.simai.core.data.types.BoundaryConditions` instances.
+    instances and a list of :class:`~ansys.simai.core.data.types.Scalars` instances.
 
     The resulting selection contains all combinations between the geometries
-    and the boundary conditions.
+    and the scalars.
 
     Args:
         geometries: Geometries to include in the selection.
-        boundary_conditions: Boundary conditions to include in the selection.
-        tolerance: Optional delta to apply to boundary condition equality.
+        scalars: Scalars to include in the selection.
+        tolerance: Optional delta to apply to scalar equality.
                 The default is ``10**-6``. If the difference between two boundary
-                conditions is lower than the tolerance, the two boundary conditions
+                conditions is lower than the tolerance, the two scalars
                 are considered as equal.
     """
 
     def __init__(
         self,
         geometries: Union[Geometry, List[Geometry]],
-        boundary_conditions: Union[BoundaryConditions, List[BoundaryConditions]],
+        scalars: Optional[Union[Scalars, List[Scalars]]] = None,
         tolerance: Optional[float] = None,
+        boundary_conditions: Optional[Union[Scalars, List[Scalars]]] = None,
     ):
+        # DEPRECATED
+        if scalars is None and boundary_conditions is None:
+            raise ValueError("Provide either 'scalars' or 'boundary_conditions'")
+        if boundary_conditions is not None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+            scalars = boundary_conditions
+
         # Validate parameters
         geometries = _enforce_as_list_passing_predicate(
             geometries,
             lambda g: isinstance(g, Geometry),
             "'geometries' must be a geometry or a list of 'Geometry' objects.",
         )
-        boundary_conditions = _enforce_as_list_passing_predicate(
-            boundary_conditions,
-            lambda bc: is_boundary_conditions(bc),
-            "'boundary_conditions' must be a dictionary of numbers.",
+        scalars = _enforce_as_list_passing_predicate(
+            scalars,
+            lambda bc: is_scalars(bc),
+            "'scalars' must be a dictionary of numbers.",
         )
         if tolerance is None:
             tolerance = DEFAULT_COMPARISON_EPSILON
@@ -121,10 +170,10 @@ class Selection:
 
         points = []
         for geometry in geometries:
-            for boundary_condition in boundary_conditions:
-                points.append(Point(geometry, boundary_condition))
+            for scalar in scalars:
+                points.append(Point(geometry, scalar))
         self._geometries = geometries
-        self._boundary_conditions = boundary_conditions
+        self._scalars = scalars
         self._points = points
         self._post_processings = SelectionPostProcessingsMethods(self)
         self.reload()
@@ -149,11 +198,21 @@ class Selection:
         return self._geometries
 
     @property
-    def boundary_conditions(self) -> List[BoundaryConditions]:
-        """List of all existing :class:`BoundaryConditions <ansys.simai.core.data.types.BoundaryConditions>`
+    def boundary_conditions(self) -> List[Scalars]:
+        """**(Deprecated)** List of all existing :class:`Boundary conditions <ansys.simai.core.data.types.BoundaryConditions>`
         instances in the selection.
         """
-        return self._boundary_conditions
+        logger.warning(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        )
+        return self._scalars
+
+    @property
+    def scalars(self) -> List[Scalars]:
+        """List of all existing :class:`Scalars <ansys.simai.core.data.types.Scalars>`
+        instances in the selection.
+        """
+        return self._scalars
 
     @property
     def points_with_prediction(self) -> List[Optional[Point]]:
@@ -177,7 +236,7 @@ class Selection:
     def run_predictions(self) -> None:
         """Run all missing predictions in the selection."""
         _foreach_despite_errors(
-            lambda point: point.run_prediction(boundary_conditions=point.boundary_conditions),
+            lambda point: point.run_prediction(scalars=point.scalars),
             self.get_runnable_predictions(),
         )
 
@@ -203,14 +262,15 @@ class Selection:
             if geometry.id not in _predictions_by_geometry_id:
                 _predictions_by_geometry_id[geometry.id] = geometry.get_predictions()
             predictions = _predictions_by_geometry_id[geometry.id]
+
             try:
                 point._prediction = next(
                     (
                         s
                         for s in predictions
-                        if are_boundary_conditions_equal(
-                            s.boundary_conditions,
-                            point.boundary_conditions,
+                        if are_scalars_equal(
+                            s.scalars,
+                            point.scalars,
                             self.tolerance,
                         )
                     )

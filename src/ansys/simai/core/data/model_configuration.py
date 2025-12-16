@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, List, Literal, Optional
 
@@ -35,6 +36,9 @@ SupportedBuildPresets = {
     "2_days": "default",
     "7_days": "long",
 }
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -182,10 +186,12 @@ class ModelInput:
 
     Args:
         surface: Input surface variables.
-        boundary_conditions: Boundary conditions.
+        scalars: Input Scalars.
+        boundary_conditions: **(Deprecated)** Input Scalars.
     """
 
     surface: list[str] = None
+    scalars: list[str] = None
     boundary_conditions: list[str] = None
 
 
@@ -196,10 +202,12 @@ class ModelOutput:
     Args:
         surface: the output surface variables.
         volume: the output volume variables.
+        scalars: the output scalars.
     """
 
     surface: list[str] = None
     volume: list[str] = None
+    scalars: list[str] = None
 
 
 @dataclass
@@ -259,7 +267,7 @@ class ModelConfiguration:
             aero_dyn_project = simai_client.projects.get(name="aero-dyn")
 
             # Define the inputs of the model
-            model_input = ModelInput(surface=["Velocity"], boundary_conditions=["Vx"])
+            model_input = ModelInput(surface=["Velocity"], scalars=["Vx"])
 
             # Define the outputs of the model
             model_output = ModelOutput(
@@ -309,9 +317,11 @@ class ModelConfiguration:
                     f"{self.__class__.__name__}: a project must be defined for setting global coefficients."
                 )
 
+            self.__validate_global_coefficient_name(gc_unit.name)
+
             self.project.process_gc_formula(
                 gc_unit.formula,
-                self.input.boundary_conditions,
+                self.input.scalars,
                 (self.output.surface or []) + (self.pp_input.surface or []),
                 gc_unit.gc_location,
             )
@@ -364,6 +374,25 @@ class ModelConfiguration:
             )
         self.__validate_variables(vars_to_validate, "volume")
 
+    def __validate_global_coefficient_name(self, gc_name: str):
+        # Global coefficients can't have the same name as an output scalar variable
+        scalar_names = set(self.output.scalars) if self.output.scalars else set()
+        if gc_name in scalar_names:
+            raise ProcessingError(
+                f"Global Coefficient '{gc_name}' has the same name as an output scalar variable."
+            )
+
+    def __validate_predict_scalar_variables(self, vars_to_validate: list[str]):
+        # Predict scalars can't have the same name as a global coefficient
+        gc_names = (
+            {gc.name for gc in self.global_coefficients} if self.global_coefficients else set()
+        )
+        conflicting_scalars = set(vars_to_validate) & gc_names
+        if conflicting_scalars:
+            raise ProcessingError(
+                f"Scalar variables '{', '.join(conflicting_scalars)}' have the same name as global coefficients."
+            )
+
     def __set_input(self, model_input: ModelInput):
         if not model_input:
             raise InvalidArguments(
@@ -372,6 +401,16 @@ class ModelConfiguration:
         if model_input.surface:
             self.__validate_surface_variables(model_input.surface)
         self.__dict__["input"] = model_input
+
+        # DEPRECATED
+        if model_input.boundary_conditions:
+            logger.warning(
+                "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+            )
+        self.__dict__["input"].scalars = model_input.scalars or model_input.boundary_conditions
+        self.__dict__["input"].boundary_conditions = (
+            model_input.scalars or model_input.boundary_conditions
+        )
 
     def __get_input(self):
         return self.__dict__.get("input")
@@ -388,6 +427,9 @@ class ModelConfiguration:
 
         if model_output.volume:
             self.__validate_volume_variables(model_output.volume)
+
+        if model_output.scalars:
+            self.__validate_predict_scalar_variables(model_output.scalars)
 
         self.__dict__["output"] = model_output
 
@@ -411,7 +453,7 @@ class ModelConfiguration:
     def __init__(
         self,
         project: "Project",
-        boundary_conditions: Optional[dict[str, Any]] = None,
+        scalars: Optional[dict[str, Any]] = None,
         build_preset: Optional[str] = "debug",
         build_on_top: bool = False,
         fields: Optional[dict[str, Any]] = None,
@@ -421,6 +463,8 @@ class ModelConfiguration:
         output: Optional[ModelOutput] = None,
         domain_of_analysis: Optional[DomainOfAnalysis] = None,
         pp_input: Optional[PostProcessInput] = None,
+        scalars_to_predict: Optional[list[dict[str, str]]] = None,
+        boundary_conditions: Optional[dict[str, Any]] = None,
     ):
         """Sets the properties of a build configuration."""
         self.project = project
@@ -433,8 +477,21 @@ class ModelConfiguration:
         self.pp_input = PostProcessInput()
         if pp_input is not None:
             self.pp_input = pp_input
+        if scalars is not None and self.input.scalars is None:
+            self.input.scalars = list(scalars.keys())
+            # DEPRECATED
+            self.input.boundary_conditions = list(scalars.keys())
+        # DEPRECATED
         if boundary_conditions is not None and self.input.boundary_conditions is None:
+            logger.warning(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            )
+            self.input.scalars = list(boundary_conditions.keys())
             self.input.boundary_conditions = list(boundary_conditions.keys())
+
+        if scalars_to_predict is not None and self.output.scalars is None:
+            self.output.scalars = [s["name"] for s in scalars_to_predict]
+
         self.build_preset = build_preset
         self.build_on_top = build_on_top
         if fields is not None:
@@ -481,9 +538,9 @@ class ModelConfiguration:
     def _to_payload(self):
         """Constructs the payload for a build request."""
 
-        bcs = {}
-        if self.input.boundary_conditions is not None:
-            bcs = {bc_name: {} for bc_name in self.input.boundary_conditions}
+        scalars = {}
+        if self.input.scalars is not None:
+            scalars = {scalar_name: {} for scalar_name in self.input.scalars}
 
         sample_metadata = self.project.sample.fields.get("extracted_metadata")
         surface_fields = dict_get(sample_metadata, "surface", "fields", default=[])
@@ -507,6 +564,10 @@ class ModelConfiguration:
         if self.global_coefficients is not None:
             gcs = [asdict(gc) for gc in self.global_coefficients]
 
+        predict_scalars = []
+        if self.output.scalars is not None:
+            predict_scalars = [{"name": scalar} for scalar in self.output.scalars]
+
         surface_pp_input_fld = []
         if self.pp_input.surface is not None:
             surface_pp_input_fld = [
@@ -527,12 +588,13 @@ class ModelConfiguration:
         }
 
         return {
-            "boundary_conditions": bcs,
+            "boundary_conditions": scalars,
             "build_preset": SupportedBuildPresets[self.build_preset],
             "continuous": self.build_on_top,
             "fields": flds,
             "global_coefficients": gcs,
             "simulation_volume": simulation_volume,
+            "scalars_to_predict": predict_scalars,
         }
 
     @classmethod
@@ -545,6 +607,10 @@ class ModelConfiguration:
         kwargs["build_preset"] = build_preset
         if build_on_top := kwargs.pop("continuous", None):
             kwargs["build_on_top"] = build_on_top
+
+        if scalars := kwargs.pop("boundary_conditions", None):
+            kwargs["scalars"] = scalars
+
         return ModelConfiguration(**kwargs)
 
     def compute_global_coefficient(self) -> List[float]:
@@ -556,9 +622,7 @@ class ModelConfiguration:
             )
 
         return [
-            self.project.compute_gc_formula(
-                gc.formula, self.input.boundary_conditions, self.output.surface
-            )
+            self.project.compute_gc_formula(gc.formula, self.input.scalars, self.output.surface)
             for gc in self.global_coefficients
         ]
 

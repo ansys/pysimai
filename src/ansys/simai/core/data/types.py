@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import io
+import logging
 import os
 import pathlib
 from contextlib import contextmanager
@@ -56,9 +57,17 @@ from ansys.simai.core.utils.numerical import (
     validate_tolerance_parameter,
 )
 
+logger = logging.getLogger(__name__)
+
+# DEPRECATED
 BoundaryConditions = Dict[str, Number]
 """
 :obj:`BoundaryConditions` describes the external conditions of a prediction.
+"""
+
+Scalars = Dict[str, Number]
+"""
+:obj:`Scalars` describes the external conditions of a prediction.
 """
 
 Path = Union[pathlib.Path, str, os.PathLike]
@@ -109,7 +118,11 @@ D = TypeVar("D", bound=DataModel)
 T_co = TypeVar("T_co", covariant=True)
 
 
+# DEPRECATED
 def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = None, **kwargs):
+    logger.warning(
+        "'build_boundary_conditions()' is deprecated and will be removed in a future release. Please use 'build_scalars()' instead."
+    )
     bc = boundary_conditions if boundary_conditions else {}
     bc.update(**kwargs)
     if bc is None:
@@ -120,6 +133,9 @@ def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] =
 
 
 def is_boundary_conditions(bc):
+    logger.warning(
+        "'is_boundary_conditions()' is deprecated and will be removed in a future release. Please use 'is_scalars()' instead."
+    )
     return isinstance(bc, dict) and all(is_number(x) for x in bc.values())
 
 
@@ -128,6 +144,9 @@ def are_boundary_conditions_equal(
     right: BoundaryConditions,
     tolerance: Optional[Number] = None,
 ):
+    logger.warning(
+        "'are_boundary_conditions_equal' is deprecated and will be removed in a future release. Please use 'are_scalars_equal()' instead."
+    )
     if not is_boundary_conditions(left):
         raise TypeError(
             f"is_boundary_conditions_equal called with incorrect left parameter (received {left})"
@@ -135,6 +154,43 @@ def are_boundary_conditions_equal(
     if not is_boundary_conditions(right):
         raise TypeError(
             f"is_boundary_conditions_equal called with incorrect right parameter (received {right})"
+        )
+    validate_tolerance_parameter(tolerance)
+    if left.keys() != right.keys():
+        return False
+    for key in left.keys():  # noqa: SIM118
+        if not is_equal_with_tolerance(left[key], right[key], tolerance=tolerance):
+            return False
+    return True
+
+
+# END OF DEPRECATED
+
+
+def build_scalars(scalars: Optional[Dict[str, Number]] = None, **kwargs):
+    bc = scalars if scalars else {}
+    bc.update(**kwargs)
+    if bc is None:
+        raise ValueError("No scalar was specified.")
+    if not is_scalars(bc):
+        raise ValueError("Scalars must be in a dictionary with numbers as values.")
+    return bc
+
+
+def is_scalars(bc):
+    return isinstance(bc, dict) and all(is_number(x) for x in bc.values())
+
+
+def are_scalars_equal(
+    left: Scalars,
+    right: Scalars,
+    tolerance: Optional[Number] = None,
+):
+    if not is_scalars(left):
+        raise TypeError(f"is_scalars_equal called with incorrect left parameter (received {left})")
+    if not is_scalars(right):
+        raise TypeError(
+            f"is_scalars_equal called with incorrect right parameter (received {right})"
         )
     validate_tolerance_parameter(tolerance)
     if left.keys() != right.keys():
