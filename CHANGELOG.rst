@@ -147,7 +147,7 @@ New:
 
 Changes:
 
-- `Optimization.run()` is now :py:meth:`Optimization.run()<ansys.simai.core.data.optimizations.OptimizationDirectory.run_parametric>` and checks that the generation function has a suitable signature
+- `Optimization.run()` is now `Optimization.run_parametric()` and checks that the generation function has a suitable signature
 - Remove deprecated design of experiments feature
 - Resolution steps are now printed upon error if any
 
