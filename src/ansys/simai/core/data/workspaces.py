@@ -25,6 +25,7 @@ from pprint import pformat
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
+from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import File, Identifiable, get_id_from_identifiable
 
 
@@ -76,6 +77,7 @@ class Workspace(DataModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._model_manifest = None
+        self._model_configuration = None
 
     def __repr__(self) -> str:
         return f"<Workspace: {self.id}, {self.name}>"
@@ -104,6 +106,16 @@ class Workspace(DataModel):
                 self._client._api.get_workspace_model_manifest(self.id)
             )
         return self._model_manifest
+
+    @property
+    def model_configuration(self) -> ModelConfiguration:
+        """Model configuration used in the workspace."""
+        if self._model_configuration is None:
+            model_config = self._client._api.get_workspace_model_configuration(self.id)
+            self._model_configuration = ModelConfiguration._from_payload(
+                project=self._client.projects.get(self.fields["project"]), **model_config
+            )
+        return self._model_configuration
 
     def rename(self, new_name: str) -> None:
         """Rename the workspace.

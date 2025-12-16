@@ -24,6 +24,7 @@ import json
 from typing import TYPE_CHECKING, BinaryIO, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
+from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 from ansys.simai.core.data.types import File, Identifiable, get_id_from_identifiable
 
 if TYPE_CHECKING:
@@ -37,6 +38,7 @@ class GeomAIWorkspace(DataModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._model_manifest = None
+        self._model_configuration = None
 
     def __repr__(self) -> str:
         return f"<GeomAIWorkspace: {self.id}, {self.name}>"
@@ -45,6 +47,14 @@ class GeomAIWorkspace(DataModel):
     def name(self) -> str:
         """Name of the workspace."""
         return self.fields["name"]
+
+    @property
+    def model_configuration(self) -> GeomAIModelConfiguration:
+        """Model configuration used in the workspace."""
+        if self._model_configuration is None:
+            model_config = self._client._api.get_workspace_model_configuration(self.id)
+            self._model_configuration = GeomAIModelConfiguration(**model_config)
+        return self._model_configuration
 
     def rename(self, new_name: str) -> None:
         """Rename the workspace.
