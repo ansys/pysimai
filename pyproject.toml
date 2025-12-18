@@ -1,6 +1,6 @@
 [project]
 name = "ansys-simai-core"
-version = "0.3.6"
+version = "0.3.7"
 description = "A python wrapper for Ansys SimAI"
 authors = [
     {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},

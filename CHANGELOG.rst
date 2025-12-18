@@ -1,6 +1,23 @@
 Changelog
 ---------
 
+0.3.7 (2025-12-17)
+******************
+
+New:
+
+- Add basic SimAI examples in documentation.
+- Add method :py:meth:`GeomAIWorkspace.get_latent_parameters()<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace.get_latent_parameters>` to retrieve latent parameters as dict in GeomAIWorkspace.
+- Remove deprecated `Optimization.run_parametric()` optimization method.
+- Add `model_configuration` property in :py:class:`Workspace<ansys.simai.core.data.workspaces.Workspace>` and :py:class:`GeomAIWorkspace<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace>`.
+- Allow users to use scalars in model output in model configuration and add a new post-processing `PredictScalars`.
+
+
+Changes:
+
+- Increase default timeout for long operations.
+- Deprecate `boundary_conditions` in favor of `scalars`.
+
 0.3.6 (2025-12-03)
 ******************
 
