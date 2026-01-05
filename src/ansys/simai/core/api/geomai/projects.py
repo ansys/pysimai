@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -56,6 +56,9 @@ class GeomAIProjectClientMixin(ApiClientMixin):
 
     def get_geomai_project_related_workspaces(self, project_id: str):
         return self._get(f"geomai/projects/{project_id}/workspaces")
+
+    def get_geomai_project_models(self, project_id: str):
+        return self._get(f"geomai/projects/{project_id}/models")
 
     def launch_geomai_build(
         self,

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -63,6 +63,12 @@ class ProjectClientMixin(ApiClientMixin):
             json={"training_data": training_data_id},
             return_json=False,
         )
+
+    def get_project_related_workspaces(self, project_id: str):
+        return self._get(f"projects/{project_id}/workspaces")
+
+    def get_project_models(self, project_id: str):
+        return self._get(f"projects/{project_id}/models")
 
     def delete_project(self, project_id: str):
         self._delete(f"projects/{project_id}", return_json=False)

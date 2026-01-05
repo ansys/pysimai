@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -176,3 +176,20 @@ def test_geometries_rename(simai_client, httpx_mock):
 
     geometry.rename("fifi")
     assert geometry.name == "fifi"
+
+
+def test_geometries_list_predictions(geometry_factory, prediction_factory, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geometries/geom-0/predictions",
+        json=[
+            {"id": "pred-0"},
+            {"id": "pred-1"},
+        ],
+        status_code=200,
+    )
+    geometry = geometry_factory(id="geom-0")
+    predictions = geometry.list_predictions()
+    assert len(predictions) == 2
+    assert predictions[0].id == "pred-0"
+    assert predictions[1].id == "pred-1"

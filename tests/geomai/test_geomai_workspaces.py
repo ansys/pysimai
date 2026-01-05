@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -105,3 +105,23 @@ def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, tra
 
     assert workspace.model_configuration.model_dump() == MODEL_CONF_RAW
     assert isinstance(workspace.model_configuration, GeomAIModelConfiguration)
+
+
+def test_geomai_workspace_list_predictions(simai_client, httpx_mock):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "abc123", "name": "HL3"}
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/predictions",
+        json=[
+            {"id": "pred1", "name": "Prediction 1"},
+            {"id": "pred2", "name": "Prediction 2"},
+        ],
+        status_code=200,
+    )
+
+    predictions = workspace.list_predictions()
+    assert len(predictions) == 2
+    assert predictions[0].id == "pred1"
+    assert predictions[1].id == "pred2"

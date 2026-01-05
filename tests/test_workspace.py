@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -230,3 +230,47 @@ def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, tra
     assert isinstance(workspace.model_configuration, ModelConfiguration)
     assert workspace.model_configuration.project == project
     assert workspace.model_configuration._to_payload() == MODEL_CONF_RAW
+
+
+def test_workspace_list_predictions(simai_client, httpx_mock):
+    workspace: Workspace = simai_client._workspace_directory._model_from(
+        {"id": "0011", "name": "riri"}
+    )
+
+    raw_predictions = [
+        {"id": "pred1"},
+        {"id": "pred2"},
+    ]
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/predictions/?workspace=0011",
+        json=raw_predictions,
+        status_code=200,
+    )
+
+    predictions = workspace.list_predictions()
+    assert len(predictions) == 2
+    assert predictions[0].id == "pred1"
+    assert predictions[1].id == "pred2"
+
+
+def test_workspace_list_geometries(simai_client, httpx_mock):
+    workspace: Workspace = simai_client._workspace_directory._model_from(
+        {"id": "0011", "name": "riri"}
+    )
+
+    raw_geometries = [
+        {"id": "geom1"},
+        {"id": "geom2"},
+    ]
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geometries/?workspace=0011",
+        json=raw_geometries,
+        status_code=200,
+    )
+
+    geometries = workspace.list_geometries()
+    assert len(geometries) == 2
+    assert geometries[0].id == "geom1"
+    assert geometries[1].id == "geom2"

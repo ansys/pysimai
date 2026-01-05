@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -58,6 +58,7 @@ def test_project_list_training_data(simai_client, httpx_mock):
     )
 
     httpx_mock.add_response(
+        is_reusable=True,
         method="GET",
         url="https://test.test/geomai/projects/0011/training-data",
         headers={
@@ -68,13 +69,18 @@ def test_project_list_training_data(simai_client, httpx_mock):
     )
 
     httpx_mock.add_response(
+        is_reusable=True,
         method="GET",
         url="https://test.test/geomai/projects/0011/training-data?last_id=first",
         json=[{"id": "second"}],
         status_code=200,
     )
+    workspaces = project.list_training_data()
 
+    # deprecated
     assert [data.id for data in project.data()] == ["first", "second"]
+
+    assert [data.id for data in workspaces] == ["first", "second"]
 
 
 def test_last_model_configuration(simai_client):
@@ -175,3 +181,37 @@ def test_cancel_inactive_build_from_project(simai_client, httpx_mock):
         project.cancel_build()
         assert "No build pending for this project" in excinfo.value
     assert len(httpx_mock.get_requests()) == 1
+
+
+def test_geomai_project_list_workspaces(simai_client, httpx_mock):
+    project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
+
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/projects/{project.id}/workspaces",
+        json=[{"id": "ws01", "name": "Workspace01"}, {"id": "ws02", "name": "Workspace02"}],
+        status_code=200,
+    )
+
+    workspaces = project.list_workspaces()
+
+    assert len(workspaces) == 2
+    assert workspaces[0].id == "ws01"
+    assert workspaces[1].id == "ws02"
+
+
+def test_geomai_project_list_models(simai_client, httpx_mock):
+    project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
+
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/projects/{project.id}/models",
+        json=[{"id": "model01"}, {"id": "model02"}],
+        status_code=200,
+    )
+
+    models = project.list_models()
+
+    assert len(models) == 2
+    assert models[0].id == "model01"
+    assert models[1].id == "model02"
