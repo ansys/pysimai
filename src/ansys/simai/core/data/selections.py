@@ -64,7 +64,7 @@ class Point:
             )
 
         self._geometry = geometry
-        self._scalars = scalars or boundary_conditions
+        self._scalars = scalars if scalars is not None else boundary_conditions
         self._prediction: Optional[Prediction] = None
 
     @property
