@@ -185,7 +185,7 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
             logger.warning(
                 "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
             )
-        bc = build_scalars(scalars if scalars else boundary_conditions, **kwargs)
+        bc = build_scalars(scalars if scalars is not None else boundary_conditions, **kwargs)
         prediction_response = self._client._api.run_prediction(self.id, boundary_conditions=bc)
         return self._client.predictions._model_from(prediction_response)
 

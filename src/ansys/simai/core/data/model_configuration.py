@@ -407,9 +407,15 @@ class ModelConfiguration:
             logger.warning(
                 "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
             )
-        self.__dict__["input"].scalars = model_input.scalars or model_input.boundary_conditions
+        self.__dict__["input"].scalars = (
+            model_input.scalars
+            if model_input.scalars is not None
+            else model_input.boundary_conditions
+        )
         self.__dict__["input"].boundary_conditions = (
-            model_input.scalars or model_input.boundary_conditions
+            model_input.scalars
+            if model_input.scalars is not None
+            else model_input.boundary_conditions
         )
 
     def __get_input(self):
