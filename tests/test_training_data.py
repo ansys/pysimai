@@ -225,3 +225,24 @@ def test_get_training_data_invalid_arguments(simai_client):
     with pytest.raises(InvalidArguments) as e:
         simai_client.training_data.get(id="td-123", name="My Training Data")
     assert str(e.value) == "Cannot specify both 'id' and 'name' arguments."
+
+
+def test_rename_training_data(simai_client, httpx_mock, training_data_factory):
+    td: TrainingData = training_data_factory(id="39646")
+    httpx_mock.add_response(
+        method="PATCH",
+        url="https://test.test/training-data/39646",
+        status_code=204,
+    )
+    # because rename triggers a reload of the object from the server
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/training-data/39646",
+        json={"id": "39646", "name": "the new name"},
+        status_code=200,
+    )
+
+    td.rename("the new name")
+
+    assert td.id == "39646"
+    assert td.name == "the new name"

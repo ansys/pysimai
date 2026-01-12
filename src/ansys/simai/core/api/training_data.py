@@ -38,6 +38,9 @@ class TrainingDataClientMixin(ApiClientMixin):
     def get_training_data(self, id: str) -> Dict[str, Any]:
         return self._get(f"training-data/{id}")
 
+    def rename_training_data(self, id: str, new_name: str) -> None:
+        self._patch(f"training-data/{id}", json={"name": new_name})
+
     def get_training_data_by_name(self, name: str) -> Dict[str, Any]:
         return self._get(f"training-data/name/{quote(name)}")
 
