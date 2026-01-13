@@ -22,7 +22,7 @@
 
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
-from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
+from pydantic import BaseModel, Field, ValidationError, model_validator
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 
 class GeomAIModelConfiguration(BaseModel):
-    nb_latent_param: Optional[int] = Field(
+    nb_latent_param: int = Field(
         default=512,
         ge=2,
         le=1024,
@@ -84,12 +84,6 @@ class GeomAIModelConfiguration(BaseModel):
         ):
             raise ValueError("Exactly one of nb_epochs or build_preset must have a value")
         return self
-
-    @field_validator("nb_latent_param", mode="before")
-    @classmethod
-    def set_default_if_none(cls, v):
-        """If value is None, set to default value."""
-        return 512 if v is None else v
 
 
 class GeomAIModel(ComputableDataModel):
