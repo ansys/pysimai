@@ -1,6 +1,19 @@
 Changelog
 ---------
 
+0.3.8 (2026-01-16)
+******************
+
+New:
+
+- Make the ``nb_latent_param`` field in :py:class:`GeomAIModelConfiguration<ansys.simai.core.data.geomai.models.GeomAIModelConfiguration>` optional, and update its default and maximum value.
+- Added :py:meth:`rename<ansys.simai.core.data.training_data.TrainingData.rename>` method for training data.
+
+
+Fixes:
+
+- Replace truthy fallback with explicit `None` check.
+
 0.3.7 (2025-12-17)
 ******************
 
