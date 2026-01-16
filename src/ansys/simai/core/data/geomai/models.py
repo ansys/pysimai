@@ -33,7 +33,11 @@ if TYPE_CHECKING:
 
 
 class GeomAIModelConfiguration(BaseModel):
-    nb_latent_param: int = Field(ge=2, le=256)
+    nb_latent_param: int = Field(
+        default=512,
+        ge=2,
+        le=1024,
+    )
     """
     This number defines the number of floats that will be listed in the `latent_params` parameter for prediction.
     It has to be defined according to the complexity and the diversity of the geometries you used as training data.
