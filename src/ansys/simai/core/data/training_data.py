@@ -73,6 +73,15 @@ class TrainingData(ComputableDataModel):
         """Name of the training data."""
         return self.fields["name"]
 
+    def rename(self, new_name: str) -> None:
+        """Change the name of the training data.
+
+        Args:
+            new_name: New name to give to the training data object.
+        """
+        self._client._api.rename_training_data(self.id, new_name=new_name)
+        self.reload()
+
     @property
     def parts(self) -> List["TrainingDataPart"]:
         """List of all :class:`parts<ansys.simai.core.data.training_data_parts.TrainingDataPart>`
