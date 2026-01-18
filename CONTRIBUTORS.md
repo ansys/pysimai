@@ -10,6 +10,7 @@
 * [camzeech](https://github.com/camzeech)
 * [Florian Jacta](https://github.com/FlorianJactaAI)
 * [Iason Batzianoulis](https://github.com/yias)
+* [Jeremie Spiesser](https://github.com/jeremiespiesser-extrality)
 * [Kathy Pippert](https://github.com/PipKat)
 * [kliment-slice](https://github.com/kliment-slice)
 * [Maid Sultanovic](https://github.com/msd-11)
