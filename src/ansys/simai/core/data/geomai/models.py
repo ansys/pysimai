@@ -39,18 +39,19 @@ class GeomAIModelConfiguration(BaseModel):
         le=1024,
     )
     """
-    This number defines the number of floats that will be listed in the `latent_params` parameter for prediction.
-    It has to be defined according to the complexity and the diversity of the geometries you used as training data.
+    An **optional** integer that defines the dimension of the latent space between 2 and 1024.
 
-    You need to find the smallest number of latent parameters enabling the model to rebuild
-    a training data with a similar level of detail as the original geometry.
+    .. warning::
 
-    - If the number is too low, the generated geometries will be too coarse.
-    - If the number is too high, the model will not be able to generate consistent geometries.
+        The default value of 512 is highly recommended if you are a non-expert user.
 
-    The optimal number of latent parameters depends on the complexity and variability of the training geometries.
-    As a general guideline, start with a relatively low number of latent parameters (for example, 10),
-    and gradually increase it if the generated geometries appear oversimplified or lack sufficient detail.
+    If you are an expert user, ready to experiment and assess correctly your models performance for different latent parameter value,
+    and your use case has specific constraints, you can change this parameter, keeping the following in mind:
+
+    - If the number is too low, geometries might become too coarse, and the reconstruction performance might degrade.
+    - If the number is too high, the model will not be able to generate new geometries correctly.
+
+    Defaults to `512` if `None` is provided.
     """
     build_preset: Optional[Literal["debug", "short", "default", "long"]] = None
     """
@@ -140,7 +141,7 @@ class GeomAIModelDirectory(Directory[GeomAIModel]):
 
                 simai_client = asc.from_config()
                 project = simai_client.geomai.projects.get("new_secret_project")
-                configuration = GeomAIModelConfiguration(build_preset="default", nb_latent_param=10)
+                configuration = GeomAIModelConfiguration(build_preset="default")
                 model = simai_client.geomai.models.build(project, configuration)
 
 
