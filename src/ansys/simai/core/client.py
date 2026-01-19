@@ -27,6 +27,7 @@ from pydantic import ValidationError
 
 from ansys.simai.core import __version__
 from ansys.simai.core.api.client import ApiClient
+from ansys.simai.core.data.current_user import CurrentUser
 from ansys.simai.core.data.geomai.client import GeomAIClient
 from ansys.simai.core.data.geometries import GeometryDirectory
 from ansys.simai.core.data.global_coefficients_requests import (
@@ -81,6 +82,7 @@ class SimAIClient:
         except ValidationError as pydandic_exc:
             raise InvalidConfigurationError(pydandic_exc) from None
 
+        self._config = config
         api_client_class = getattr(config, "_api_client_class_override", ApiClient)
         self._api = api_client_class(simai_client=self, config=config)
         self._process_gc_formula_directory = ProcessGlobalCoefficientDirectory(client=self)
@@ -101,6 +103,7 @@ class SimAIClient:
         if config.project is not None:
             self.set_current_project(config.project)
         self._geomai_client = GeomAIClient(self, config)
+        self._me = CurrentUser(client=self)
 
         if not config.skip_version_check:
             self._check_for_new_version()
@@ -261,6 +264,27 @@ class SimAIClient:
     def geomai(self) -> GeomAIClient:
         """Access the GeomAI client."""
         return self._geomai_client
+
+    @property
+    def me(self) -> CurrentUser:
+        """Access current user self-management operations.
+
+        This property provides methods to manage the current user's account,
+        including generating, listing, and revoking offline tokens.
+
+        Example:
+            .. code-block:: python
+
+                # List all offline tokens
+                tokens = simai_client.me.offline_tokens.list()
+
+                # Generate a new offline token
+                token = simai_client.me.offline_tokens.generate()
+
+                # Revoke a specific token
+                simai_client.me.offline_tokens.revoke("sdk")
+        """
+        return self._me
 
     @classmethod
     def from_config(
