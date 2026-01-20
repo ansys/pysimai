@@ -51,24 +51,24 @@ class GeomAIModelConfiguration(BaseModel):
     - If the number is too low, geometries might become too coarse, and the reconstruction performance might degrade.
     - If the number is too high, the model will not be able to generate new geometries correctly.
 
-    Defaults to `512` if `None` is provided.
+    The default value of ``512`` is used if ``nb_latent_param`` is not set.
     """
     build_preset: Optional[Literal["debug", "short", "default", "long"]] = None
     """
     The preset to use for the model training duration. One of `debug`, `short`, `default`, `long`.
 
-    - `debug`: 4 minutes + 15 sec per geometry.
-    - `short`: 45 minutes + 15 sec per geometry.
-    - `default`: 3 hours + 15 sec per geometry.
-    - `long`: 15 hours + 15 sec per geometry.
+    - ``debug``: 4 minutes + 15 sec per geometry.
+    - ``short``: 45 minutes + 15 sec per geometry.
+    - ``default``: 3 hours + 15 sec per geometry.
+    - ``long``: 15 hours + 15 sec per geometry.
 
-    Mutually exclusive with `nb_epochs`.
+    Mutually exclusive with ``nb_epochs``.
     """
     nb_epochs: Optional[int] = Field(default=None, ge=1, le=1000)
     """
     The number of times each training data is seen by the model during the training, between 1 and 1000.
 
-    Mutually exclusive with `build_preset`.
+    Mutually exclusive with ``build_preset``.
     """
 
     def __init__(self, *args, **kwargs):
