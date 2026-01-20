@@ -49,7 +49,6 @@ from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
 PROJECT_NAME = "new-bracket-project"  # Replace with your project name
-NB_LATENT_PARAMS = 15  # Number of latent parameters (2-256)
 BUILD_PRESET = "default"  # Options: "debug", "short", "default", "long"
 
 ###############################################################################
@@ -99,7 +98,6 @@ if len(ready_data) < len(project_data):
 
 configuration = GeomAIModelConfiguration(
     build_preset=BUILD_PRESET,
-    nb_latent_param=NB_LATENT_PARAMS,  # Must be between 2 and 256
 )
 
 ###############################################################################
