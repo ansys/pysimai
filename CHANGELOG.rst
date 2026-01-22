@@ -1,6 +1,13 @@
 Changelog
 ---------
 
+0.3.9 (2026-01-21)
+******************
+
+Changes:
+
+- Update the documentation related to ``nb_latent_param`` field in :py:class:`GeomAIModelConfiguration<ansys.simai.core.data.geomai.models.GeomAIModelConfiguration>`.
+
 0.3.8 (2026-01-16)
 ******************
 
