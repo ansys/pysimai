@@ -64,6 +64,12 @@ class ProjectClientMixin(ApiClientMixin):
             return_json=False,
         )
 
+    def get_project_related_workspaces(self, project_id: str):
+        return self._get(f"projects/{project_id}/workspaces")
+
+    def get_project_models(self, project_id: str):
+        return self._get(f"projects/{project_id}/models")
+
     def delete_project(self, project_id: str):
         self._delete(f"projects/{project_id}", return_json=False)
 
