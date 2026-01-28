@@ -6,7 +6,7 @@ Current user
 .. py:module:: ansys.simai.core.data.current_user
 
 The current user module provides self-management operations for the authenticated user,
-including offline token management.
+including offline token generation and consent management.
 
 You access the current user through the :attr:`SimAIClient.me<ansys.simai.core.client.SimAIClient.me>`
 property.
@@ -20,14 +20,14 @@ Example
 
     simai_client = asc.from_config()
 
-    # List all offline tokens
-    tokens = simai_client.me.offline_tokens.list()
+    # Generate an offline token
+    token = simai_client.me.generate_offline_token()
 
-    # Generate a new offline token
-    token = simai_client.me.offline_tokens.generate()
+    # List all consents
+    consents = simai_client.me.consents.list()
 
-    # Revoke a specific token
-    simai_client.me.offline_tokens.revoke("sdk")
+    # Revoke a specific consent
+    simai_client.me.consents.revoke("sdk")
 
 CurrentUser
 -----------
@@ -35,14 +35,14 @@ CurrentUser
 .. autoclass:: CurrentUser()
     :members:
 
-OfflineTokenDirectory
----------------------
+ConsentDirectory
+----------------
 
-.. autoclass:: OfflineTokenDirectory()
+.. autoclass:: ConsentDirectory()
     :members:
 
-OfflineToken
-------------
+Consent
+-------
 
-.. autoclass:: OfflineToken()
+.. autoclass:: Consent()
     :members:

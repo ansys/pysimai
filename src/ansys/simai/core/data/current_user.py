@@ -31,8 +31,8 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class OfflineToken:
-    """Represents an offline token (persistent app access) for the current user."""
+class Consent:
+    """Represents a consent granted by the current user to a client (like the SDK)."""
 
     client_id: str
     """The client ID that has been granted offline access."""
@@ -44,13 +44,14 @@ class OfflineToken:
     """List of scopes granted to this client."""
 
     def __repr__(self) -> str:
-        return f"<OfflineToken: {self.client_id}, created: {self.created_date!s}, last updated: {self.last_updated_date!s}>"
+        return f"<Consent: {self.client_id}, created: {self.created_date!s}, last updated: {self.last_updated_date!s}>"
 
 
-class OfflineTokenDirectory:
-    """Provides access to offline token management operations.
+class ConsentDirectory:
+    """Provides access to consent management operations.
 
-    This class allows users to list, generate, and revoke offline tokens.
+    Consents represent the authorization records that grant a client (like the SDK)
+    permission to use offline tokens for authentication.
 
     Example:
         .. code-block:: python
@@ -59,72 +60,108 @@ class OfflineTokenDirectory:
 
             simai_client = asc.from_config()
 
-            # List all offline tokens
-            tokens = simai_client.me.offline_tokens.list()
-            for token in tokens:
-                print(f"Client: {token.client_id}, Created: {token.created_date}")
+            # List all consents
+            consents = simai_client.me.consents.list()
+            for consent in consents:
+                print(f"Client: {consent.client_id}, Created: {consent.created_date}")
 
-            # Generate a new offline token
-            token = simai_client.me.offline_tokens.generate()
-
-            # Revoke a specific token
-            simai_client.me.offline_tokens.revoke("my-client-id")
+            # Revoke a specific consent
+            simai_client.me.consents.revoke("sdk")
     """
 
     def __init__(self, client: "SimAIClient"):
         self._client = client
 
-    def list(self) -> List[OfflineToken]:
-        """List all offline tokens for the current user.
+    def list(self) -> List[Consent]:
+        """List all offline access consents for the current user.
 
         Returns:
-            List of :class:`OfflineToken` objects representing the user's offline tokens.
+            List of :class:`Consent` objects representing the user's offline access consents.
 
         Example:
             .. code-block:: python
 
-                tokens = simai_client.me.offline_tokens.list()
-                for token in tokens:
-                    print(f"Client: {token.client_id}")
-                    print(f"  Created: {token.created_date}")
-                    print(f"  Scopes: {token.granted_scopes}")
+                consents = simai_client.me.consents.list()
+                for consent in consents:
+                    print(f"Client: {consent.client_id}")
+                    print(f"  Created: {consent.created_date}")
+                    print(f"  Scopes: {consent.granted_scopes}")
         """
-        raw_tokens = self._client._api.get_offline_tokens()
+        raw_consents = self._client._api.get_offline_tokens()
         return [
-            OfflineToken(
-                client_id=token["client_id"],
-                created_date=datetime.fromisoformat(token["created_date"]),
-                last_updated_date=datetime.fromisoformat(token["last_updated_date"]),
-                granted_scopes=token.get("granted_scopes", []),
+            Consent(
+                client_id=consent["client_id"],
+                created_date=datetime.fromisoformat(consent["created_date"]),
+                last_updated_date=datetime.fromisoformat(consent["last_updated_date"]),
+                granted_scopes=consent.get("granted_scopes", []),
             )
-            for token in raw_tokens
+            for consent in raw_consents
         ]
 
     def revoke(self, client_id: str) -> None:
-        """Revoke an offline token for the current user.
+        """Revoke an offline access consent for the current user.
 
-        This will invalidate the offline token associated with the given client ID,
-        preventing any further use of that token for authentication.
+        This will invalidate the consent associated with the given client ID,
+        preventing any further use of offline tokens for that client.
 
         Args:
-            client_id: The client ID of the token to revoke.
+            client_id: The client ID of the consent to revoke.
 
         Raises:
-            NotFoundError: If no offline token exists for the given client ID.
+            NotFoundError: If no consent exists for the given client ID.
 
         Example:
             .. code-block:: python
 
-                # Revoke a specific offline token
-                simai_client.me.offline_tokens.revoke("sdk")
+                # Revoke consent for the SDK client
+                simai_client.me.consents.revoke("sdk")
 
         Warning:
-            Revoking an offline token that is used by a server-side workflow will
-                prevent that workflow from continuing.
+            Revoking a consent will invalidate any offline tokens associated with
+            that client. Server-side workflows using those tokens will stop working.
         """
         self._client._api.revoke_offline_token(client_id)
 
-    def generate(self) -> str:
+
+class CurrentUser:
+    """Provides access to current user self-management operations.
+
+    This class allows users to manage their own account settings, generate
+    offline tokens, and manage consents.
+
+    Example:
+        .. code-block:: python
+
+            import ansys.simai.core as asc
+
+            simai_client = asc.from_config()
+
+            # Generate an offline token
+            token = simai_client.me.generate_offline_token()
+
+            # List all consents
+            consents = simai_client.me.consents.list()
+            for consent in consents:
+                print(f"Client: {consent.client_id}, Created: {consent.created_date}")
+
+            # Revoke a specific consent
+            simai_client.me.consents.revoke("sdk")
+    """
+
+    def __init__(self, client: "SimAIClient"):
+        self._client = client
+        self._consents = ConsentDirectory(client)
+
+    @property
+    def consents(self) -> ConsentDirectory:
+        """Access consent management operations.
+
+        Returns:
+            :class:`ConsentDirectory` for managing offline access consents.
+        """
+        return self._consents
+
+    def generate_offline_token(self) -> str:
         """Generate a new offline token for the current user.
 
         This creates a long-lived refresh token that can be used for authentication
@@ -138,7 +175,7 @@ class OfflineTokenDirectory:
             .. code-block:: python
 
                 # Generate an offline token
-                token = simai_client.me.offline_tokens.generate()
+                token = simai_client.me.generate_offline_token()
                 print(f"Store this token securely: {token}")
         """
         config = self._client._config
@@ -156,41 +193,3 @@ class OfflineTokenDirectory:
             https_proxy=https_proxy,
             tls_ca_bundle=tls_ca_bundle,
         )
-
-
-class CurrentUser:
-    """Provides access to current user self-management operations.
-
-    This class allows users to manage their own account settings and tokens.
-
-    Example:
-        .. code-block:: python
-
-            import ansys.simai.core as asc
-
-            simai_client = asc.from_config()
-
-            # List all offline tokens
-            tokens = simai_client.me.offline_tokens.list()
-            for token in tokens:
-                print(f"Client: {token.client_id}, Created: {token.created_date}")
-
-            # Generate a new offline token
-            token = simai_client.me.offline_tokens.generate()
-
-            # Revoke a specific token
-            simai_client.me.offline_tokens.revoke("my-client-id")
-    """
-
-    def __init__(self, client: "SimAIClient"):
-        self._client = client
-        self._offline_tokens = OfflineTokenDirectory(client)
-
-    @property
-    def offline_tokens(self) -> OfflineTokenDirectory:
-        """Access offline token management operations.
-
-        Returns:
-            :class:`OfflineTokenDirectory` for managing offline tokens.
-        """
-        return self._offline_tokens

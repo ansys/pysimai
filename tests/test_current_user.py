@@ -24,13 +24,13 @@ from datetime import datetime, timezone
 
 import pytest
 
-from ansys.simai.core.data.current_user import OfflineToken
+from ansys.simai.core.data.current_user import Consent
 from ansys.simai.core.errors import NotFoundError
 
 
-def test_list_offline_tokens(simai_client, httpx_mock):
-    """WHEN listing offline tokens
-    THEN the API is called and tokens are returned as OfflineToken objects.
+def test_list_consents(simai_client, httpx_mock):
+    """WHEN listing consents
+    THEN the API is called and consents are returned as Consent objects.
     """
     httpx_mock.add_response(
         method="GET",
@@ -52,22 +52,22 @@ def test_list_offline_tokens(simai_client, httpx_mock):
         status_code=200,
     )
 
-    tokens = simai_client.me.offline_tokens.list()
+    consents = simai_client.me.consents.list()
 
-    assert len(tokens) == 2
-    assert all(isinstance(t, OfflineToken) for t in tokens)
+    assert len(consents) == 2
+    assert all(isinstance(c, Consent) for c in consents)
 
-    assert tokens[0].client_id == "sdk"
-    assert tokens[0].created_date == datetime(2025, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
-    assert tokens[0].last_updated_date == datetime(2025, 1, 16, 14, 20, 0, tzinfo=timezone.utc)
-    assert tokens[0].granted_scopes == ["openid", "offline_access"]
+    assert consents[0].client_id == "sdk"
+    assert consents[0].created_date == datetime(2025, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
+    assert consents[0].last_updated_date == datetime(2025, 1, 16, 14, 20, 0, tzinfo=timezone.utc)
+    assert consents[0].granted_scopes == ["openid", "offline_access"]
 
-    assert tokens[1].client_id == "webapp"
-    assert tokens[1].granted_scopes == ["openid"]
+    assert consents[1].client_id == "webapp"
+    assert consents[1].granted_scopes == ["openid"]
 
 
-def test_list_offline_tokens_empty(simai_client, httpx_mock):
-    """WHEN listing offline tokens and user has none
+def test_list_consents_empty(simai_client, httpx_mock):
+    """WHEN listing consents and user has none
     THEN an empty list is returned.
     """
     httpx_mock.add_response(
@@ -77,13 +77,13 @@ def test_list_offline_tokens_empty(simai_client, httpx_mock):
         status_code=200,
     )
 
-    tokens = simai_client.me.offline_tokens.list()
+    consents = simai_client.me.consents.list()
 
-    assert tokens == []
+    assert consents == []
 
 
-def test_revoke_offline_token(simai_client, httpx_mock):
-    """WHEN revoking an offline token
+def test_revoke_consent(simai_client, httpx_mock):
+    """WHEN revoking a consent
     THEN the API is called with the correct client_id.
     """
     httpx_mock.add_response(
@@ -92,23 +92,23 @@ def test_revoke_offline_token(simai_client, httpx_mock):
         status_code=204,
     )
 
-    simai_client.me.offline_tokens.revoke("sdk")
+    simai_client.me.consents.revoke("sdk")
 
     request = httpx_mock.get_request()
     assert request.method == "DELETE"
     assert str(request.url) == "https://test.test/users/offline-tokens/sdk"
 
 
-def test_revoke_offline_token_not_found(simai_client, httpx_mock):
-    """WHEN revoking a non-existent offline token
+def test_revoke_consent_not_found(simai_client, httpx_mock):
+    """WHEN revoking a non-existent consent
     THEN a NotFoundError is raised.
     """
     httpx_mock.add_response(
         method="DELETE",
         url="https://test.test/users/offline-tokens/nonexistent",
-        json={"message": "No offline token found for client: nonexistent"},
+        json={"message": "No consent found for client: nonexistent"},
         status_code=404,
     )
 
     with pytest.raises(NotFoundError):
-        simai_client.me.offline_tokens.revoke("nonexistent")
+        simai_client.me.consents.revoke("nonexistent")

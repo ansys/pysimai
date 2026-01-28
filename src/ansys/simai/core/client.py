@@ -270,19 +270,19 @@ class SimAIClient:
         """Access current user self-management operations.
 
         This property provides methods to manage the current user's account,
-        including generating, listing, and revoking offline tokens.
+        including generating offline tokens and managing consents.
 
         Example:
             .. code-block:: python
 
-                # List all offline tokens
-                tokens = simai_client.me.offline_tokens.list()
+                # Generate an offline token
+                token = simai_client.me.generate_offline_token()
 
-                # Generate a new offline token
-                token = simai_client.me.offline_tokens.generate()
+                # List all consents
+                consents = simai_client.me.consents.list()
 
-                # Revoke a specific token
-                simai_client.me.offline_tokens.revoke("sdk")
+                # Revoke a specific consent
+                simai_client.me.consents.revoke("sdk")
         """
         return self._me
 

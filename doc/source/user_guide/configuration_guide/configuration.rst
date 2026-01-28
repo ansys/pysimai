@@ -113,7 +113,7 @@ You can generate an offline token using an authenticated client:
     simai_client = asc.SimAIClient(organization="my-company")
 
     # Generate an offline token
-    token = simai_client.me.offline_tokens.generate()
+    token = simai_client.me.generate_offline_token()
     print(f"Store this token securely: {token}")
 
 .. warning::
@@ -145,20 +145,21 @@ Or in a configuration file:
     offline_token = "your-offline-token-here"
     interactive = false
 
-Managing offline tokens
-^^^^^^^^^^^^^^^^^^^^^^^
+Managing consents
+^^^^^^^^^^^^^^^^^
 
-You can list and revoke offline tokens through the client:
+Consents are the authorization records that grant a client (like the SDK) permission
+to use offline tokens. You can list and revoke consents through the client:
 
 .. code-block:: python
 
-    # List all offline tokens
-    tokens = simai_client.me.offline_tokens.list()
-    for token in tokens:
-        print(f"Client: {token.client_id}, Created: {token.created_date}")
+    # List all consents
+    consents = simai_client.me.consents.list()
+    for consent in consents:
+        print(f"Client: {consent.client_id}, Created: {consent.created_date}")
 
-    # Revoke a specific token
-    simai_client.me.offline_tokens.revoke("sdk")
+    # Revoke a specific consent (invalidates associated offline tokens)
+    simai_client.me.consents.revoke("sdk")
 
 .. note::
 
