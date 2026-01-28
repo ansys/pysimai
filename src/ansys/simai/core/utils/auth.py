@@ -89,6 +89,53 @@ class _AuthTokens(BaseModel):
         return (self.refresh_expiration - datetime.now(timezone.utc)).total_seconds()
 
 
+def _request_tokens_direct_grant(
+    session: httpx.Client,
+    token_url: str,
+    credentials: Credentials,
+    scope: str = "openid",
+) -> _AuthTokens:
+    """Request tokens via username/password (direct grant)."""
+    logger.debug(f"request authentication tokens via direct grant (scope={scope})")
+    request_params = {
+        "client_id": "sdk",
+        "grant_type": "password",
+        "scope": scope,
+        **credentials.model_dump(),
+    }
+    return _AuthTokens(**handle_response(session.post(token_url, data=request_params)))
+
+
+def _request_tokens_device_auth(
+    session: httpx.Client,
+    token_url: str,
+    device_auth_url: str,
+    scope: str = "openid",
+) -> _AuthTokens:
+    """Request tokens via device auth flow (browser-based)."""
+    logger.debug(f"request authentication tokens via device auth (scope={scope})")
+    auth_codes = handle_response(
+        session.post(device_auth_url, data={"client_id": "sdk", "scope": scope})
+    )
+    print(  # noqa: T201
+        f"Go to {auth_codes['verification_uri']} and enter the code {auth_codes['user_code']}"
+    )
+    webbrowser.open(auth_codes["verification_uri_complete"])
+    while True:
+        time.sleep(DEVICE_AUTH_POLLING_INTERVAL)
+        validation = session.post(
+            token_url,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={
+                "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+                "client_id": "sdk",
+                "device_code": auth_codes["device_code"],
+            },
+        )
+        if b"authorization_pending" not in validation.content:
+            return _AuthTokens(**handle_response(validation))
+
+
 class _AuthTokensRetriever:
     """Retrieve tokens via ``get_tokens()``.
     It handles caching and the various auth token sources.
@@ -100,8 +147,10 @@ class _AuthTokensRetriever:
         session: httpx.Client,
         auth_cache_hash: str,
         realm_url: str,
+        offline_token: Optional[str] = None,
     ) -> None:
         self.credentials = credentials
+        self.offline_token = offline_token
         self.session = session
         self.token_url = f"{realm_url}/protocol/openid-connect/token"
         self.device_auth_url = f"{realm_url}/protocol/openid-connect/auth/device"
@@ -119,42 +168,12 @@ class _AuthTokensRetriever:
         return None
 
     def _request_tokens_direct_grant(self) -> "_AuthTokens":
-        logger.debug("request authentication tokens via direct grant")
         if not self.credentials:
             raise RuntimeError("Authentication credentials are missing")
-        request_params = {
-            "client_id": "sdk",
-            "grant_type": "password",
-            "scope": "openid",
-            **self.credentials.model_dump(),
-        }
-        return _AuthTokens(
-            **handle_response(self.session.post(self.token_url, data=request_params))
-        )
+        return _request_tokens_direct_grant(self.session, self.token_url, self.credentials)
 
     def _request_tokens_device_auth(self) -> "_AuthTokens":
-        logger.debug("request authentication tokens via device auth")
-        auth_codes = handle_response(
-            self.session.post(self.device_auth_url, data={"client_id": "sdk", "scope": "openid"})
-        )
-        print(  # noqa: T201
-            f"Go to {auth_codes['verification_uri']} and enter the code {auth_codes['user_code']}"
-        )
-        webbrowser.open(auth_codes["verification_uri_complete"])
-        # loop will exit when auth server returns "400 Device code is expired"
-        while True:
-            time.sleep(DEVICE_AUTH_POLLING_INTERVAL)
-            validation = self.session.post(
-                self.token_url,
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
-                data={
-                    "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
-                    "client_id": "sdk",
-                    "device_code": auth_codes["device_code"],
-                },
-            )
-            if b"authorization_pending" not in validation.content:
-                return _AuthTokens(**handle_response(validation))
+        return _request_tokens_device_auth(self.session, self.token_url, self.device_auth_url)
 
     def _refresh_auth_tokens(self, refresh_token: str) -> Optional[_AuthTokens]:
         logger.debug("Refreshing authentication tokens.")
@@ -200,7 +219,11 @@ class _AuthTokensRetriever:
             if auth and (force_refresh or auth.must_refresh_tokens()):
                 auth = self._refresh_auth_tokens(auth.refresh_token)
             if auth is None:
-                if self.credentials:
+                if self.offline_token:
+                    auth = self._refresh_auth_tokens(self.offline_token)
+                    if not auth:
+                        raise RuntimeError("Could not authenticate user with offline token.")
+                elif self.credentials:
                     auth = self._request_tokens_direct_grant()
                 else:
                     auth = self._request_tokens_device_auth()
@@ -210,6 +233,45 @@ class _AuthTokensRetriever:
             os.replace(self.cache_file_path + "~", self.cache_file_path)
         self._schedule_auth_refresh(auth.refresh_expires_in)
         return auth
+
+
+def get_offline_token(
+    url: str,
+    credentials: Optional[Credentials] = None,
+    https_proxy: Optional[str] = None,
+    tls_ca_bundle: Optional[str] = None,
+) -> str:
+    """Get a Keycloak offline token for the given SimAI instance.
+
+    Args:
+        url: The SimAI API URL (e.g., "https://api.simai.ansys.com")
+        credentials: Username/password credentials. If None, device auth flow is used.
+        https_proxy: Optional HTTPS proxy URL
+        tls_ca_bundle: Optional path to TLS CA bundle
+
+    Returns:
+        The offline token (a refresh_token that doesn't expire with sessions)
+    """
+    realm_url = urljoin(url.rstrip("/") + "/", "/auth/realms/simai")
+    token_url = f"{realm_url}/protocol/openid-connect/token"
+    device_auth_url = f"{realm_url}/protocol/openid-connect/auth/device"
+
+    transport_kwargs: dict[str, Any] = {}
+    if https_proxy:
+        transport_kwargs["proxy"] = https_proxy
+    if tls_ca_bundle:
+        transport_kwargs["verify"] = tls_ca_bundle
+
+    with httpx.Client(**transport_kwargs) as session:
+        if credentials:
+            tokens = _request_tokens_direct_grant(
+                session, token_url, credentials, scope="openid offline_access"
+            )
+        else:
+            tokens = _request_tokens_device_auth(
+                session, token_url, device_auth_url, scope="openid offline_access"
+            )
+        return tokens.refresh_token
 
 
 class Authenticator(httpx.Auth):
@@ -226,7 +288,7 @@ class Authenticator(httpx.Auth):
         self._refresh_timer = None
         auth_hash = config._auth_hash()
         self.tokens_retriever = _AuthTokensRetriever(
-            config.credentials, session, auth_hash, self._realm_url
+            config.credentials, session, auth_hash, self._realm_url, config.offline_token
         )
         self.tokens_retriever.get_tokens(
             force_refresh=True
