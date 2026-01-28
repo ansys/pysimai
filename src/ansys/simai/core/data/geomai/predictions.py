@@ -23,7 +23,7 @@
 import logging
 from typing import Any, BinaryIO, List, Optional, Tuple, Union
 
-from pydantic import BaseModel, Field, PositiveInt, ValidationError
+from pydantic import BaseModel, PositiveInt, ValidationError
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.geomai.workspaces import GeomAIWorkspace
@@ -59,24 +59,6 @@ class GeomAIPredictionConfiguration(BaseModel):
     Defaults to ``[100,100,100]``, if ``None`` is provided.
 
     For the maximum resolution of 900^3, the prediction takes approximately 10 minutes (approximately 1 microsecond per voxel).
-    """
-    margin: Optional[float] = Field(default=None, ge=0, le=1)
-    """A float that sets the size of the isosurface for the reconstruction of the geometry.
-
-    Warning:
-        This feature is deprecated and will be removed in a month.
-
-    Note:
-        A margin of 0.0 is highly recommended for non-expert users.
-
-    If you are an expert user, and if the generated geometry is noisy,
-    you can try to adjust both resolution and margin values to find
-    the right balance between them to generate a smoother geometry.
-
-    | A higher margin gives a coarser surface with less detail.
-    | A lower margin produces a sharper surface.
-
-    Defaults to 0 if none is provided.
     """
 
     def __init__(self, *args, **kwargs):
