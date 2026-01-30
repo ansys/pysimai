@@ -321,7 +321,7 @@ class ModelConfiguration:
 
             self.project.process_gc_formula(
                 gc_unit.formula,
-                self.input.scalars,
+                (self.input.scalars or []) + (self.output.scalars or []),
                 (self.output.surface or []) + (self.pp_input.surface or []),
                 gc_unit.gc_location,
             )
