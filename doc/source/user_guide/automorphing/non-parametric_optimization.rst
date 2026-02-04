@@ -78,3 +78,9 @@ Step 5. Enrich training data
 
 Stop running optimization whenever the performance result obtained on Step 4 is satisfactory.
 The idea is to make the model learn from its previous prediction.
+
+Code example
+-------------
+
+For a complete code example demonstrating non-parametric optimization, see the tutorial
+:ref:`ref_non_parametric_optimization`.
