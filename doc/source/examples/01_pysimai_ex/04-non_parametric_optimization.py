@@ -72,39 +72,36 @@ Only one objective can be defined for non-parametric optimization.
 # -----------------------------------
 # Before running the optimization, you can visualize the bounding boxes
 # on your geometry using PyVista to ensure they cover the correct regions.
-#
-# .. code-block:: python
-#
-#     import pyvista as pv
-#
-#     # Path to the surface mesh file
-#     file_path = "your_geometry.vtp"
-#
-#     # Define bounding boxes as [xmin, xmax, ymin, ymax, zmin, zmax]
-#     bounding_boxes = [[-3100, -1660, 660, 850, 170, 360]]
-#
-#     # Load the mesh from file
-#     mesh = pv.read(file_path)
-#
-#     # Initialize the PyVista plotter
-#     plotter = pv.Plotter()
-#
-#     # Add the mesh to the scene
-#     plotter.add_mesh(mesh, color="white", show_edges=False)
-#
-#     # Add bounding boxes to the scene
-#     for bounds in bounding_boxes:
-#         box = pv.Cube(bounds=bounds)
-#         plotter.add_mesh(box, color="lightblue", opacity=0.3)
-#
-#     # Display the plot
-#     plotter.show()
+
+import pyvista as pv
+
+# Path to the surface mesh file
+file_path = "your_geometry.vtp"
+
+# Define bounding boxes as [xmin, xmax, ymin, ymax, zmin, zmax]
+bounding_boxes = [[-3100, -1660, 660, 850, 170, 360]]
+
+# Load the mesh from file
+mesh = pv.read(file_path)
+
+# Initialize the PyVista plotter
+plotter = pv.Plotter()
+
+# Add the mesh to the scene
+plotter.add_mesh(mesh, color="white", show_edges=False)
+
+# Add bounding boxes to the scene
+for bounds in bounding_boxes:
+    box = pv.Cube(bounds=bounds)
+    plotter.add_mesh(box, color="lightblue", opacity=0.3)
+
+# Display the plot
+plotter.show()
 
 ###############################################################################
 # Import necessary libraries
 # --------------------------
 
-import json
 import os
 
 import ansys.simai.core as asc
