@@ -172,13 +172,14 @@ print(f"Objectives: {optimization_result.list_objectives()}")
 ###############################################################################
 # Run predictions on optimized geometries
 # ---------------------------------------
+# You can get back your optimization from its ID when done asynchronously. 
 # Run predictions on all generated geometries to evaluate their performance:
 
 predictions: list[Prediction] = []
 
 for geom in optimization_result.list_geometries():
     print(f"Running prediction for: {geom.name} (ID: {geom.id})")
-    prediction = geom.run_prediction()
+    prediction = geom.run_prediction(scalars={"Time": 54}) # Scalars must match your workspace configuration
     predictions.append(prediction)
 
 ###############################################################################
@@ -200,8 +201,7 @@ for prediction in predictions:
 
     # Get and save global coefficients as JSON
     global_coeffs = prediction.post.global_coefficients()
-    with open(f"{OUTPUT_FOLDER}/{geom_name}_global_coefficients.json", "w") as f:
-        json.dump(global_coeffs.data, f, indent=4)
+    global_coeffs.export().download(f"{OUTPUT_FOLDER}/{geom_name}_global_coefficients.json")
 
     # Download surface VTP file for visualization
     surface_vtp = prediction.post.surface_vtp()
