@@ -184,7 +184,7 @@ for geom in optimization_result.list_geometries():
 # --------------------------------
 # Download global coefficients and surface VTP files for each prediction:
 
-# Create output folder if it doesn't exist
+# Create output folder if it does not exist
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 for prediction in predictions:
