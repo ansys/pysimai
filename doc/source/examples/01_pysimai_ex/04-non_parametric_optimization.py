@@ -215,7 +215,7 @@ print("All results downloaded successfully!")
 # ensure there is around 4% drag difference between the best and worst training data.
 #
 # **Bounding boxes**: Start with boxes covering areas most likely to influence performance.
-# If results don't improve, increase box size or add more boxes. Avoid excessively large
+# If results do not improve, increase box size or add more boxes. Avoid excessively large
 # boxes that may cause unrealistic deformations.
 #
 # **Baseline geometry**: If optimization doesn't improve after several iterations,
