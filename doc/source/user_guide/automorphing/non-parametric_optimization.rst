@@ -82,5 +82,5 @@ The idea is to make the model learn from its previous prediction.
 Code example
 -------------
 
-For a complete code example demonstrating non-parametric optimization, see the tutorial
+For a complete code example demonstrating non-parametric optimization, see the example
 :ref:`ref_non_parametric_optimization`.
