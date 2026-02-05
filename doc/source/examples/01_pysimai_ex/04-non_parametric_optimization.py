@@ -218,7 +218,7 @@ print("All results downloaded successfully!")
 # If results do not improve, increase box size or add more boxes. Avoid excessively large
 # boxes that may cause unrealistic deformations.
 #
-# **Baseline geometry**: If optimization doesn't improve after several iterations,
+# **Baseline geometry**: If optimization does not improve after several iterations,
 # try a different geometry from the training data. Ensure the geometry is clean
 # and of high quality.
 #
