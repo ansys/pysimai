@@ -43,7 +43,7 @@ Make sure you have:
 - A baseline geometry uploaded to the workspace (supported formats: ``vtp``, ``stl``, ``zip``, ``cgns``).
 - Defined bounding boxes that specify regions where deformations can occur.
 - The ``ansys-simai-core`` library installed.
-- (Optional) The ``pyvista`` library installed for bounding box visualization.
+- (Optional) The ``pyvista`` library (or your preferred CAD tool) installed for bounding box visualization.
 
 Key concepts
 ------------
