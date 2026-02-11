@@ -34,6 +34,7 @@ from ansys.simai.core.data.global_coefficients_requests import (
 )
 from ansys.simai.core.data.models import ModelDirectory
 from ansys.simai.core.data.optimizations import (
+    LegacyOptimizationDirectory,
     OptimizationDirectory,
     _OptimizationTrialRunDirectory,
 )
@@ -86,6 +87,7 @@ class SimAIClient:
         self._process_gc_formula_directory = ProcessGlobalCoefficientDirectory(client=self)
         self._geometry_directory = GeometryDirectory(client=self)
         self._optimization_directory = OptimizationDirectory(client=self)
+        self._legacy_optimization_directory = LegacyOptimizationDirectory(client=self)
         self._optimization_trial_run_directory = _OptimizationTrialRunDirectory(client=self)
         self._post_processing_directory = PostProcessingDirectory(client=self)
         self._project_directory = ProjectDirectory(client=self)
@@ -207,6 +209,13 @@ class SimAIClient:
         For more information, see :ref:`optimizations`.
         """
         return self._optimization_directory
+
+    @property
+    def legacy_optimizations(self):
+        """Representation of all legacy client side optimizations
+        For more information, see :ref:`legacy_optimizations`.
+        """
+        return self._legacy_optimization_directory
 
     @property
     def training_data(self):
