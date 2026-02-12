@@ -126,11 +126,11 @@ class Project(DataModel):
 
     @property
     def data(self) -> list["TrainingData"]:
-        """(**Deprecated**)List of all :class:`~ansys.simai.core.data.training_data.TrainingData` instances in the project."""
-        raw_td_list = self._client._api.iter_training_data_in_project(self.id)
-        return [
-            self._client.training_data._model_from(training_data) for training_data in raw_td_list
-        ]
+        """(**Deprecated**)List of all :class:`~ansys.simai.core.data.training_data.TrainingData` instances in the project.
+
+        Use :py:meth:`.list_training_data` instead.
+        """
+        return self.list_training_data()
 
     @property
     def sample(self) -> Optional["TrainingData"]:

@@ -61,12 +61,11 @@ class GeomAIProject(DataModel):
         ]
 
     def data(self) -> List["GeomAITrainingData"]:
-        """(**Deprecated**) Lists all :class:`~.training_data.GeomAITrainingData` instances in the project."""
-        raw_td_list = self._client._api.iter_training_data_in_geomai_project(self.id)
-        return [
-            self._client.geomai.training_data._model_from(training_data)
-            for training_data in raw_td_list
-        ]
+        """(**Deprecated**) Lists all :class:`~.training_data.GeomAITrainingData` instances in the project.
+
+        Use :py:meth:`.list_training_data` instead.
+        """
+        return self.list_training_data()
 
     def list_workspaces(self) -> List["GeomAIWorkspace"]:
         """Lists all :class:`~.workspaces.GeomAIWorkspace` instances in the project."""
@@ -74,9 +73,11 @@ class GeomAIProject(DataModel):
         return [self._client.geomai.workspaces._model_from(workspace) for workspace in workspaces]
 
     def workspaces(self) -> List["GeomAIWorkspace"]:
-        """(**Deprecated**) Lists all :class:`~.workspaces.GeomAIWorkspace` instances in the project."""
-        workspaces = self._client._api.get_geomai_project_related_workspaces(self.id)
-        return [self._client.geomai.workspaces._model_from(workspace) for workspace in workspaces]
+        """(**Deprecated**) Lists all :class:`~.workspaces.GeomAIWorkspace` instances in the project.
+
+        Use :py:meth:`.list_workspaces` instead.
+        """
+        return self.list_workspaces()
 
     def list_models(self) -> List[GeomAIModel]:
         """Lists all :class:`~.models.GeomAIModel` instances in the project."""
