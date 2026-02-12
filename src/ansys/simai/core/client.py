@@ -36,7 +36,7 @@ from ansys.simai.core.data.models import ModelDirectory
 from ansys.simai.core.data.optimizations import (
     LegacyOptimizationDirectory,
     OptimizationDirectory,
-    _OptimizationTrialRunDirectory,
+    _LegacyOptimizationTrialRunDirectory,
 )
 from ansys.simai.core.data.post_processings import PostProcessingDirectory
 from ansys.simai.core.data.predictions import PredictionDirectory
@@ -88,7 +88,7 @@ class SimAIClient:
         self._geometry_directory = GeometryDirectory(client=self)
         self._optimization_directory = OptimizationDirectory(client=self)
         self._legacy_optimization_directory = LegacyOptimizationDirectory(client=self)
-        self._optimization_trial_run_directory = _OptimizationTrialRunDirectory(client=self)
+        self._optimization_trial_run_directory = _LegacyOptimizationTrialRunDirectory(client=self)
         self._post_processing_directory = PostProcessingDirectory(client=self)
         self._project_directory = ProjectDirectory(client=self)
         self._model_directory = ModelDirectory(client=self)

@@ -39,7 +39,7 @@ from ansys.simai.core.errors import InvalidArguments, NotFoundError
 logger = logging.getLogger(__name__)
 
 
-class _OptimizationTrialRun(ComputableDataModel):
+class _LegacyOptimizationTrialRun(ComputableDataModel):
     """Provides the local representation of an optimization trial run object.
 
     The optimization trial run is an iteration of the optimization process.
@@ -48,8 +48,8 @@ class _OptimizationTrialRun(ComputableDataModel):
 
 
 # Undocumented for now, users don't really need to interact with it
-class _OptimizationTrialRunDirectory(Directory[_OptimizationTrialRun]):
-    _data_model = _OptimizationTrialRun
+class _LegacyOptimizationTrialRunDirectory(Directory[_LegacyOptimizationTrialRun]):
+    _data_model = _LegacyOptimizationTrialRun
 
     def get(self, trial_run_id: str):
         """Get a specific trial run from the server."""
@@ -57,7 +57,7 @@ class _OptimizationTrialRunDirectory(Directory[_OptimizationTrialRun]):
 
     def _run_iteration(
         self, optimization: Identifiable["LegacyOptimization"], parameters: Dict
-    ) -> _OptimizationTrialRun:
+    ) -> _LegacyOptimizationTrialRun:
         optimization_id = get_id_from_identifiable(optimization)
         return self._model_from(
             self._client._api.run_optimization_trial(optimization_id, parameters)
@@ -80,7 +80,7 @@ class Optimization(ComputableDataModel):
 class LegacyOptimization(ComputableDataModel):
     """Provides the local representation of a legacy client side optimization definition object."""
 
-    def _run_iteration(self, parameters: Dict) -> "_OptimizationTrialRun":
+    def _run_iteration(self, parameters: Dict) -> "_LegacyOptimizationTrialRun":
         return self._client._optimization_trial_run_directory._run_iteration(self.id, parameters)
 
 
