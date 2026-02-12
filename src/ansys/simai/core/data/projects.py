@@ -33,7 +33,9 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.global_coefficients_requests import (
         ProcessGlobalCoefficient,
     )
+    from ansys.simai.core.data.models import Model
     from ansys.simai.core.data.training_data import TrainingData
+    from ansys.simai.core.data.workspaces import Workspace
 
 EXTRA_CALCULETTE_FIELDS = ["Area", "Normals", "Centroids"]
 
@@ -124,11 +126,11 @@ class Project(DataModel):
 
     @property
     def data(self) -> list["TrainingData"]:
-        """List of all :class:`~ansys.simai.core.data.training_data.TrainingData` instances in the project."""
-        raw_td_list = self._client._api.iter_training_data_in_project(self.id)
-        return [
-            self._client.training_data._model_from(training_data) for training_data in raw_td_list
-        ]
+        """(**Deprecated**)List of all :class:`~ansys.simai.core.data.training_data.TrainingData` instances in the project.
+
+        Use :py:meth:`.list_training_data` instead.
+        """
+        return self.list_training_data()
 
     @property
     def sample(self) -> Optional["TrainingData"]:
@@ -158,6 +160,23 @@ class Project(DataModel):
         if raw_last_model_configuration is None:
             return None
         return ModelConfiguration._from_payload(project=self, **raw_last_model_configuration)
+
+    def list_workspaces(self) -> list["Workspace"]:
+        """Lists all :class:`~ansys.simai.core.data.workspaces.Workspace` instances in the project."""
+        workspaces = self._client._api.get_project_related_workspaces(self.id)
+        return [self._client.workspaces._model_from(workspace) for workspace in workspaces]
+
+    def list_training_data(self) -> list["TrainingData"]:
+        """List of all :class:`~ansys.simai.core.data.training_data.TrainingData` instances in the project."""
+        raw_td_list = self._client._api.iter_training_data_in_project(self.id)
+        return [
+            self._client.training_data._model_from(training_data) for training_data in raw_td_list
+        ]
+
+    def list_models(self) -> list["Model"]:
+        """List of all :class:`~ansys.simai.core.data.models.Model` instances in the project."""
+        models_data = self._client._api.get_project_models(self.id)
+        return [self._client.models._model_from(model_data) for model_data in models_data]
 
     def is_trainable(self) -> IsTrainableInfo:
         """Check if the project meets the prerequisites to be trained."""
