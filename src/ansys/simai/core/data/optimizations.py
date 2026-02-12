@@ -115,6 +115,13 @@ class LegacyOptimizationResult:
 
 @dataclass
 class OptimizationPartMorphingSchema:
+    """Type definition for specifying part morphing.
+
+    Args:
+        parts_ids:
+        continuity_constraint:
+    """
+
     part_ids: List[int]
     continuity_constraint: float
 

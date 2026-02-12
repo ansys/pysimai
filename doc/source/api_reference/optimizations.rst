@@ -18,6 +18,26 @@ Model
     :members:
     :inherited-members:
 
+.. autoclass:: OptimizationPartMorphingSchema()
+    :members:
+
+LegacyOptimization
+==================
+
+
+Directory
+---------
+
+.. autoclass:: LegacyOptimizationDirectory()
+    :members:
+
+Model
+-----
+
+.. autoclass:: LegacyOptimization()
+    :members:
+    :inherited-members:
+
 ..
    TrialRuns
    =========
@@ -27,16 +47,16 @@ Model
    Directory
    ---------
 
-   .. autoclass:: __OptimizationTrialRunDirectory()
+   .. autoclass:: __LegacyOptimizationTrialRunDirectory()
        :members:
 
 
    Model
    -----
 
-   .. autoclass:: __OptimizationTrialRun()
+   .. autoclass:: __LegacyOptimizationTrialRun()
        :members:
        :inherited-members:
 
-.. autoclass:: OptimizationResult()
+.. autoclass:: LegacyOptimizationResult()
     :members:
