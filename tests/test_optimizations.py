@@ -28,6 +28,8 @@ import pytest
 from httpx_sse import ServerSentEvent
 
 from ansys.simai.core.data.optimizations import (
+    LegacyOptimizationResult,
+    Optimization,
     _validate_axial_symmetry,
     _validate_bounding_boxes,
     _validate_global_coefficients_for_non_parametric,
@@ -277,10 +279,18 @@ def test_validate_axial_symmetry_fails(axial_symmetry, symmetries):
         _validate_axial_symmetry(axial_symmetry, symmetries)
 
 
-def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_mock):
+def test_run_non_parametric_optimization_legacy(
+    simai_client, geometry_factory, model_factory, httpx_mock
+):
     workspace_id = "insert_cool_reference"
     geometry = geometry_factory(workspace_id=workspace_id)
 
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
+        status_code=200,
+        json={"public": {"feature_flags": []}},
+    )
     httpx_mock.add_response(
         method="POST",
         url=f"https://test.test/workspaces/{workspace_id}/optimizations",
@@ -361,8 +371,74 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, httpx_m
         scalars={"VelocityX": 10.5},
         n_iters=3,
     )
+    assert isinstance(results, LegacyOptimizationResult)
     assert len(results.list_objectives()) == 3
     assert results.list_objectives() == [1, 2, 3]
     assert len(results.list_geometries()) == 3
     assert results.list_geometries()[0].name == "x1"
     assert results.optimization.id == "wow"
+
+
+def test_run_non_parametric_optimization(simai_client, geometry_factory, model_factory, httpx_mock):
+    workspace_id = "insert_cool_reference"
+    geometry = geometry_factory(workspace_id=workspace_id)
+
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
+        status_code=200,
+        json={"public": {"feature_flags": ["server_side_optimization"]}},
+    )
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/workspaces/{workspace_id}/server-side-optimizations",
+        status_code=202,
+        json={"id": "theid", "job_id": "the_job_id"},
+    )
+
+    result = simai_client.optimizations.run_non_parametric(
+        geometry=geometry,
+        bounding_boxes=[[0.1, 1, 0.1, 1, 0.1, 1]],
+        symmetries=["x", "y", "z"],
+        minimize=["TotalForceX"],
+        scalars={"VelocityX": 10.5},
+        n_iters=3,
+    )
+
+    assert isinstance(result, Optimization)
+    assert not result.is_ready
+
+    iteration_results = [
+        {
+            "geometry_id": "rf57h5s",
+            "objective_value": {"total_force_x": 123.45},
+            "confidence_score": 0.99,
+        },
+        {
+            "geometry_id": "jhr76rt",
+            "objective_value": {"total_force_x": 120.30},
+            "confidence_score": 0.98,
+        },
+    ]
+
+    simai_client._api._handle_sse_event(
+        ServerSentEvent(
+            data=json.dumps(
+                {
+                    "type": "job",
+                    "status": "successful",
+                    "record": {
+                        "id": "theid",
+                        "state": "successful",
+                        "initial_geometry_parameters": None,
+                    },
+                    "result": {
+                        "iteration_results": iteration_results,
+                    },
+                    "target": {"type": "server_side_optimization", "id": "theid"},
+                }
+            )
+        )
+    )
+    assert result.is_ready
+    assert result.iteration_results == iteration_results

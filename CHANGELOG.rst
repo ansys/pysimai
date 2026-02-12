@@ -87,7 +87,7 @@ New:
 
 Changes:
 
-- Non-parametric optimization now returns :py:class:`OptimizationResult<ansys.simai.core.data.optimizations.OptimizationResult>`
+- Non-parametric optimization now returns `OptimizationResult<ansys.simai.core.data.optimizations.OptimizationResult>`
 - Switch to Niquest built-in SSE support
 - Re-order non-parametric optimization parameters
 - Improve error message when creating client with wrong organization
