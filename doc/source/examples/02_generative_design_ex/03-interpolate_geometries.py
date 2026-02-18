@@ -52,7 +52,7 @@ from typing import Dict, List
 
 import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
-from ansys.simai.core.data.predictions import Prediction
+from ansys.simai.core.data.geomai.predictions import GeomAIPrediction
 
 ###############################################################################
 # Configure your settings
@@ -72,34 +72,9 @@ GEOM_B_NAME = "geometry_name_b"  # Replace with actual geometry name
 
 
 ###############################################################################
-# Define functions for interpolation
+# Define the interpolation function
 # -------------------------------------------
-# Before interpolating between two geometries, we need two key functions:
-#
-# 1. A function to efficiently extract the latent parameters from the training data.
-# 2. A function to interpolate between two latent vectors.
-
-
-def get_latent_parameters(workspace) -> Dict[str, List[float]]:
-    """Download and load latent parameters for all geometries in the workspace.
-
-    Parameters
-    ----------
-    workspace : Workspace
-        The workspace containing the trained model.
-
-    Returns
-    -------
-    Dict[str, List[float]]
-        Dictionary mapping geometry names to their latent parameter vectors.
-    """
-    os.makedirs("latent-parameters", exist_ok=True)
-    path = os.path.join("latent-parameters", f"{workspace.name}.json")
-    workspace.download_latent_parameters_json(path)
-    with open(path, "r") as f:
-        latent_dict = json.load(f)
-    print(f"Loaded {len(latent_dict)} geometries' latent parameters.")
-    return latent_dict
+# Before running predictions, we need a function to interpolate between two latent vectors.
 
 
 def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> List[float]:
@@ -138,7 +113,7 @@ print(f"Using workspace: {workspace.name}")
 # -----------------------------------------------
 # Download the latent parameters of all training geometries in the workspace:
 
-latent_dict = get_latent_parameters(workspace)
+latent_dict = workspace.get_latent_parameters()
 
 ###############################################################################
 # Display available geometries
@@ -174,7 +149,7 @@ print(f"\nInterpolating from '{GEOM_A_NAME}' to '{GEOM_B_NAME}' in {NUM_STEPS} s
 vec_a = latent_dict[GEOM_A_NAME]
 vec_b = latent_dict[GEOM_B_NAME]
 
-predictions: list[Prediction] = []
+predictions: list[GeomAIPrediction] = []
 
 for i in range(NUM_STEPS + 1):
     alpha = i / NUM_STEPS

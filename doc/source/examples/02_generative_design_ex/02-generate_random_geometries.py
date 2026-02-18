@@ -79,29 +79,8 @@ print(f"Using workspace: {workspace.name}")
 # Get the number of latent parameters
 # -------------------------------------------
 # The number of latent parameters is defined during model training:
-def get_latent_parameters(workspace) -> Dict[str, List[float]]:
-    """Download and load latent parameters for all geometries in the workspace.
 
-    Parameters
-    ----------
-    workspace : Workspace
-        The workspace containing the trained model.
-
-    Returns
-    -------
-    Dict[str, List[float]]
-        Dictionary mapping geometry names to their latent parameter vectors.
-    """
-    os.makedirs("latent-parameters", exist_ok=True)
-    path = os.path.join("latent-parameters", f"{workspace.name}.json")
-    workspace.download_latent_parameters_json(path)
-    with open(path, "r") as f:
-        latent_dict = json.load(f)
-    print(f"Loaded {len(latent_dict)} geometries' latent parameters.")
-    return latent_dict
-
-
-latent_dict = get_latent_parameters(workspace)
+latent_dict = workspace.get_latent_parameters()
 
 nb_latent_params = len(next(iter(latent_dict.values())))
 print(f"Workspace uses {nb_latent_params} latent parameters")
