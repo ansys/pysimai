@@ -39,14 +39,11 @@ Before you begin
 # Import necessary libraries
 # -------------------------------------------
 
-import json
 import os
 import random
-from typing import Dict, List
 
 import ansys.simai.core as asc
-from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
-from ansys.simai.core.data.predictions import Prediction
+from ansys.simai.core.data.geomai.predictions import GeomAIPrediction, GeomAIPredictionConfiguration
 
 ###############################################################################
 # Configure your settings
@@ -100,7 +97,7 @@ print(f"Output directory: {output_dir}")
 # Generate geometries by creating random latent parameter vectors.
 # Each latent parameter is randomly sampled from a standard normal distribution.
 
-predictions: list[Prediction] = []
+predictions: list[GeomAIPrediction] = []
 
 print(f"\nGenerating {NUM_GEOMETRIES} random geometries...")
 for i in range(NUM_GEOMETRIES):

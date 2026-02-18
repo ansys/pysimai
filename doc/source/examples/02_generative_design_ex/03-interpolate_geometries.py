@@ -46,13 +46,11 @@ Before you begin
 # Import necessary libraries
 # -------------------------------------------
 
-import json
 import os
-from typing import Dict, List
+from typing import List
 
 import ansys.simai.core as asc
-from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
-from ansys.simai.core.data.geomai.predictions import GeomAIPrediction
+from ansys.simai.core.data.geomai.predictions import GeomAIPrediction, GeomAIPredictionConfiguration
 
 ###############################################################################
 # Configure your settings
