@@ -82,6 +82,13 @@ class Geometry(UploadableResourceMixin, ComputableDataModel):
         """The attached point cloud file information if any."""
         return self.fields.get("point_cloud")
 
+    def list_predictions(self) -> List["Prediction"]:
+        """Lists all the predictions associated with the geometry."""
+        return [
+            self._client.predictions._model_from(prediction)
+            for prediction in self._client._api.get_geometry_predictions(self.id)
+        ]
+
     def rename(self, new_name: str) -> None:
         """Change the name of the geometry.
 

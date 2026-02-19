@@ -55,6 +55,7 @@ def test_project_list_training_data(simai_client, httpx_mock):
     project: Project = simai_client._project_directory._model_from({"id": "0011", "name": "riri"})
 
     httpx_mock.add_response(
+        is_reusable=True,
         method="GET",
         url="https://test.test/projects/0011/data",
         headers={"Link": '<https://test.test/projects/0011/data?last_id=first>; rel="next"'},
@@ -63,13 +64,19 @@ def test_project_list_training_data(simai_client, httpx_mock):
     )
 
     httpx_mock.add_response(
+        is_reusable=True,
         method="GET",
         url="https://test.test/projects/0011/data?last_id=first",
         json=[{"id": "second"}],
         status_code=200,
     )
 
+    tds = project.list_training_data()
+
+    # deprecated
     assert [data.id for data in project.data] == ["first", "second"]
+
+    assert [data.id for data in tds] == ["first", "second"]
 
 
 def test_project_sample(simai_client, httpx_mock):
@@ -407,3 +414,37 @@ def test_cancel_inactive_build_from_project(simai_client, httpx_mock):
         project.cancel_build()
         assert "No build pending for this project" in excinfo.value
     assert len(httpx_mock.get_requests()) == 1
+
+
+def test_project_list_workspaces(simai_client, httpx_mock):
+    project = simai_client.projects._model_from({"id": "0011", "name": "riri"})
+
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}/workspaces",
+        json=[{"id": "ws01", "name": "Workspace01"}, {"id": "ws02", "name": "Workspace02"}],
+        status_code=200,
+    )
+
+    workspaces = project.list_workspaces()
+
+    assert len(workspaces) == 2
+    assert workspaces[0].id == "ws01"
+    assert workspaces[1].id == "ws02"
+
+
+def test_project_list_models(simai_client, httpx_mock):
+    project = simai_client.projects._model_from({"id": "0011", "name": "riri"})
+
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects/{project.id}/models",
+        json=[{"id": "model01", "name": "Model01"}, {"id": "model02", "name": "Model02"}],
+        status_code=200,
+    )
+
+    models = project.list_models()
+
+    assert len(models) == 2
+    assert models[0].id == "model01"
+    assert models[1].id == "model02"

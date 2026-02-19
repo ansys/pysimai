@@ -23,11 +23,15 @@
 import logging
 import warnings
 from pprint import pformat
-from typing import Any, BinaryIO, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, BinaryIO, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import File, Identifiable, get_id_from_identifiable
+
+if TYPE_CHECKING:
+    from ansys.simai.core.data.geometries import Geometry
+    from ansys.simai.core.data.predictions import Prediction
 
 logger = logging.getLogger(__name__)
 
@@ -136,6 +140,20 @@ class Workspace(DataModel):
         """
         self._client._api.update_workspace(self.id, name=new_name)
         self.reload()
+
+    def list_predictions(self) -> List["Prediction"]:
+        """Lists all the predictions in the workspace."""
+        return [
+            self._client.predictions._model_from(prediction)
+            for prediction in self._client._api.predictions(self.id)
+        ]
+
+    def list_geometries(self) -> List["Geometry"]:
+        """Lists all the geometries in the workspace."""
+        return [
+            self._client.geometries._model_from(geometry)
+            for geometry in self._client._api.geometries(self.id)
+        ]
 
     def delete(self):
         """Delete the workspace."""
