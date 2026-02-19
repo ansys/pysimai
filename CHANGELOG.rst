@@ -1,6 +1,19 @@
 Changelog
 ---------
 
+0.3.10 (2026-02-19)
+*******************
+
+New:
+
+- Enable the use of output scalars in global coefficient formula.
+- Added support for generating, managing, and logging in with offline tokens via the current user object :attr:`SimAIClient.me<ansys.simai.core.client.SimAIClient.me>`.
+- Add new set of methods to access lists of objects for :py:class:`Workspace<ansys.simai.core.data.workspaces.Workspace>`, :py:class:`Project<ansys.simai.core.data.projects.Project>`, :py:class:`Geometry<ansys.simai.core.data.geometries.Geometry>` and :py:class:`GeomAIProject<ansys.simai.core.data.geomai.projects.GeomAIProject>`
+
+Changes:
+
+- Remove deprecated ``margin`` field in :py:class:`GeomAIPredictionConfiguration<ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration>`.
+
 0.3.9 (2026-01-21)
 ******************
 
