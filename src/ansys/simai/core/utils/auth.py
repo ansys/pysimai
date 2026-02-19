@@ -250,7 +250,7 @@ def get_offline_token(
         tls_ca_bundle: Optional path to TLS CA bundle
 
     Returns:
-        The offline token (a refresh_token that doesn't expire with sessions)
+        The offline token (a refresh_token that does not expire with sessions)
     """
     realm_url = urljoin(url.rstrip("/") + "/", "/auth/realms/simai")
     token_url = f"{realm_url}/protocol/openid-connect/token"

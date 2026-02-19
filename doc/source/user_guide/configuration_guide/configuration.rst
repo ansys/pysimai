@@ -97,7 +97,7 @@ Offline tokens
 --------------
 
 Offline tokens are long-lived authentication tokens that can be used for non-interactive
-authentication. Unlike regular session tokens, offline tokens don't expire based on session
+authentication. Unlike regular session tokens, offline tokens do not expire based on session
 timeouts, making them ideal for server-side scripts, CI/CD pipelines, and automated workflows.
 
 Generating an offline token
@@ -109,10 +109,8 @@ You can generate an offline token using an authenticated client:
 
     import ansys.simai.core as asc
 
-    # First, authenticate interactively
     simai_client = asc.SimAIClient(organization="my-company")
 
-    # Generate an offline token
     token = simai_client.me.generate_offline_token()
     print(f"Store this token securely: {token}")
 
