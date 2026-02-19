@@ -330,3 +330,91 @@ def test_requests_outside_user_api_are_not_authentified(mocker, tmpdir, httpx_mo
     request = next(auth.auth_flow(request))
     assert request.headers.get("Authorization") is None
     assert request.headers.get("X-Org") is None
+
+
+def test_get_offline_token_direct_grant(httpx_mock):
+    offline_tokens = {
+        "access_token": "access",
+        "expires_in": 300,
+        "refresh_expires_in": 0,
+        "refresh_token": "offline-refresh-token",
+    }
+    httpx_mock.add_response(
+        method="POST",
+        url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
+        json=offline_tokens,
+        status_code=200,
+    )
+    from ansys.simai.core.utils.auth import get_offline_token
+
+    token = get_offline_token(
+        url="https://simai.ansys.com",
+        credentials=Credentials(username="user", password="pass"),
+    )
+    assert token == "offline-refresh-token"
+    request = httpx_mock.get_request()
+    assert b"scope=openid+offline_access" in request.content
+
+
+def test_auth_with_offline_token(mocker, tmpdir, httpx_mock):
+    """WHEN authenticating with an offline token
+    THEN the offline token is used to get access tokens via refresh grant.
+    """
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
+
+    tokens_with_long_expiry = copy.deepcopy(DEFAULT_TOKENS)
+    tokens_with_long_expiry["expires_in"] = 3600
+    tokens_with_long_expiry["refresh_expires_in"] = 7200
+    httpx_mock.add_response(
+        method="POST",
+        url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
+        json=tokens_with_long_expiry,
+        status_code=200,
+    )
+
+    auth = Authenticator(
+        ClientConfig(
+            url="https://simai.ansys.com",
+            organization="test_org",
+            offline_token="my-offline-token",
+        ),
+        httpx.Client(),
+    )
+
+    request = httpx_mock.get_request()
+    assert b"grant_type=refresh_token" in request.content
+    assert b"refresh_token=my-offline-token" in request.content
+
+    req = httpx.Request("GET", "https://simai.ansys.com/v2/models")
+    req = next(auth.auth_flow(req))
+    assert req.headers.get("Authorization") == f"Bearer {tokens_with_long_expiry['access_token']}"
+    assert req.headers.get("X-Org") == "test_org"
+
+
+def test_offline_token_and_credentials_mutually_exclusive():
+    """WHEN both credentials and offline_token are provided
+    THEN a validation error is raised.
+    """
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError, match="auth_conflict"):
+        ClientConfig(
+            url="https://simai.ansys.com",
+            organization="test_org",
+            credentials=Credentials(username="user", password="pass"),
+            offline_token="my-offline-token",
+        )
+
+
+def test_non_interactive_mode_accepts_offline_token():
+    """WHEN non-interactive mode is used with offline_token
+    THEN the config is valid (no credentials required).
+    """
+    config = ClientConfig(
+        url="https://simai.ansys.com",
+        organization="test_org",
+        interactive=False,
+        offline_token="my-offline-token",
+    )
+    assert config.offline_token == "my-offline-token"
+    assert config.credentials is None

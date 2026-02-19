@@ -99,6 +99,8 @@ class ClientConfig(BaseModel, extra="allow"):
         validate_default=True,
     )
     "Authenticate via username/password instead of the device authorization code."
+    offline_token: Optional[str] = None
+    "Authenticate via an offline token instead of credentials or device auth."
     skip_version_check: bool = False
     "Skip checking for updates."
     no_sse_connection: bool = False
@@ -129,6 +131,8 @@ class ClientConfig(BaseModel, extra="allow"):
         hasher.update(str(self.url).encode())
         if self.credentials:
             hasher.update(self.credentials.username.encode())
+        if self.offline_token:
+            hasher.update(self.offline_token.encode())
         config_file_profile = getattr(self, "_config_file_profile", None)
         if config_file_profile:
             hasher.update(config_file_profile.encode())
@@ -142,13 +146,17 @@ class ClientConfig(BaseModel, extra="allow"):
             val = prompt_if_interactive(interactive=info.data["interactive"], name="organization")
         return val
 
-    @field_validator("credentials", mode="before")
-    @classmethod
-    def creds_exist_when_non_interactive(cls, val, info: ValidationInfo):
-        """If interactive mode is OFF and credentials are not set, raise exception."""
-        if not info.data["interactive"] and not val:
+    @model_validator(mode="after")
+    def validate_auth_config(self):
+        """Validate authentication configuration."""
+        if self.credentials and self.offline_token:
             raise PydanticCustomError(
-                "creds_missing_in_non_interactive",
-                """Credentials should exist when interactive is false""",
+                "auth_conflict",
+                """Cannot use both credentials and offline_token - choose one authentication method""",
             )
-        return val
+        if not self.interactive and not self.credentials and not self.offline_token:
+            raise PydanticCustomError(
+                "auth_missing_in_non_interactive",
+                """Either credentials or offline_token must be provided when interactive is false""",
+            )
+        return self
