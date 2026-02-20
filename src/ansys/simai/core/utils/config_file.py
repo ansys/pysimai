@@ -28,12 +28,26 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import tomli
-from pydantic.v1.utils import deep_update
 
 from ansys.simai.core.data.types import Path as PathType
 from ansys.simai.core.errors import ConfigurationNotFoundError, InvalidConfigurationError
 
 logger = logging.getLogger(__name__)
+
+
+def _deep_update(a: Dict[Any, Any], b: Dict[Any, Any]) -> Dict[Any, Any]:
+    """Recursively update a dictionary with one or more dictionaries."""
+    result = a.copy()
+    for key, value in b.items():
+        if (
+            key in result
+            and isinstance(result[key], dict)
+            and isinstance(value, dict)
+        ):
+            result[key] = _deep_update(result[key], value)
+        else:
+            result[key] = value
+    return result
 
 
 def _scan_defaults_config_paths() -> Optional[Path]:
@@ -110,5 +124,5 @@ def get_config(
         )
     config["_config_file_profile"] = profile
     # Apply overrides from kwargs if any
-    config = deep_update(config, kwargs)
+    config = _deep_update(config, kwargs)
     return config
