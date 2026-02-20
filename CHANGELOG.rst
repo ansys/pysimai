@@ -13,6 +13,7 @@ New:
 Changes:
 
 - Remove deprecated ``margin`` field in :py:class:`GeomAIPredictionConfiguration<ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration>`.
+- Update the documentation for best practice with :py:meth:`get_latent_parameters<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace.get_latent_parameters>`.
 
 0.3.9 (2026-01-21)
 ******************
