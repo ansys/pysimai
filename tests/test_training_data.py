@@ -88,7 +88,7 @@ def test_training_data_list_with_filters(simai_client, httpx_mock):
             (
                 "filter[]",
                 json.dumps(
-                    {"field": "size", "operator": "LT", "value": "10000"},
+                    {"field": "size", "operator": "LT", "value": 10000},
                     separators=(",", ":"),
                 ),
             ),
