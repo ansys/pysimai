@@ -39,11 +39,7 @@ def _deep_update(a: Dict[Any, Any], b: Dict[Any, Any]) -> Dict[Any, Any]:
     """Recursively update a dictionary with one or more dictionaries."""
     result = a.copy()
     for key, value in b.items():
-        if (
-            key in result
-            and isinstance(result[key], dict)
-            and isinstance(value, dict)
-        ):
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
             result[key] = _deep_update(result[key], value)
         else:
             result[key] = value
