@@ -1,0 +1,1246 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Selections &#8212; simai</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=d9c7ed7f"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_reference/selections';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://simai.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="TrainingData" href="training_data.html" />
+    <link rel="prev" title="Projects" href="projects.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.3.10" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="AI" />
+  <link rel="canonical" href="https://simai.docs.pyansys.com/version/stable/api_reference/selections.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="simai - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="simai - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="simai home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pysimai" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="simai home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pysimai" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="current_user.html">Current user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geometries.html">Geometries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="global_coefficients_requests.html">Global coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_configuration.html">Model configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizations.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="post_processings.html">Postprocessings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="predictions.html">Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="projects.html">Projects</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Selections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_data.html">TrainingData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_data_parts.html">TrainingDataParts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workspaces.html">Workspaces</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="geomai/client.html">GeomAIClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/models.html">GeomAIModels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/predictions.html">GeomAIPredictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/projects.html">GeomAIProjects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/training_data.html">GeomAITrainingData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/training_data_parts.html">GeomAITrainingDataParts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/workspaces.html">GeomAIWorkspaces</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../api_reference.html" class="nav-link">API reference</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Selections</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="selections">
+<span id="id1"></span><h1>Selections<a class="headerlink" href="#selections" title="Link to this heading">#</a></h1>
+<section id="module-ansys.simai.core.data.selections">
+<span id="selection-basics"></span><h2>Selection basics<a class="headerlink" href="#module-ansys.simai.core.data.selections" title="Link to this heading">#</a></h2>
+<p>The <a class="reference internal" href="#ansys.simai.core.data.selections.Selection" title="ansys.simai.core.data.selections.Selection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Selection</span></code></a> class allows you
+to run a large number of operations in parallel by manipulating whole collections of SimAI models
+(<a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometries</span></code></a>,
+<a class="reference internal" href="predictions.html#ansys.simai.core.data.predictions.Prediction" title="ansys.simai.core.data.predictions.Prediction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Predictions</span></code></a>, and
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.PostProcessing" title="ansys.simai.core.data.post_processings.PostProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">Post-Processings</span></code></a> instances).</p>
+<p>You create a selection by combining a list of <a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+instances with a list of <a class="reference internal" href="data_types.html#ansys.simai.core.data.types.Scalars" title="ansys.simai.core.data.types.Scalars"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scalars</span></code></a> instances:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.simai.core.data.selections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Selection</span>
+
+<span class="n">geometries</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">geometries</span><span class="o">.</span><span class="n">list</span><span class="p">()[:</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">scalars</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">Vx</span><span class="o">=</span><span class="n">vx</span><span class="p">)</span> <span class="k">for</span> <span class="n">vx</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">12.2</span><span class="p">,</span> <span class="mf">12.4</span><span class="p">,</span> <span class="mf">12.6</span><span class="p">]]</span>
+<span class="n">selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">(</span><span class="n">geometries</span><span class="p">,</span> <span class="n">scalars</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting selection contains all possible combinations between the geometries and
+scalars. Each of those combinations is a <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code></a>
+instance, which can be viewed as a potential <a class="reference internal" href="predictions.html#ansys.simai.core.data.predictions.Prediction" title="ansys.simai.core.data.predictions.Prediction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prediction</span></code></a>
+instance.</p>
+<p>At first, all predictions may not exist. However, you can use the <a class="reference internal" href="#ansys.simai.core.data.selections.Selection.run_predictions" title="ansys.simai.core.data.selections.Selection.run_predictions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_predictions()</span></code></a>
+method to run them:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># run all predictions</span>
+<span class="n">selection</span><span class="o">.</span><span class="n">run_predictions</span><span class="p">()</span>
+
+<span class="n">all_predictions</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">predictions</span>
+</pre></div>
+</div>
+</section>
+<section id="selection-api-reference">
+<h2>Selection API reference<a class="headerlink" href="#selection-api-reference" title="Link to this heading">#</a></h2>
+<p>In essence, a <a class="reference internal" href="#ansys.simai.core.data.selections.Selection" title="ansys.simai.core.data.selections.Selection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Selection</span></code></a> instance is a
+collection of <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">points</span></code></a> instances.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Point">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Point</span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Point" title="Link to this definition">#</a></dt>
+<dd><p>Provides a <code class="docutils literal notranslate"><span class="pre">Point</span></code> object, where a prediction can be run.</p>
+<p>A point is at the intersection of a <a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+isstance and <a class="reference internal" href="data_types.html#ansys.simai.core.data.types.Scalars" title="ansys.simai.core.data.types.Scalars"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scalars</span></code></a> instance.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Point.run_prediction">
+<span class="sig-name descname"><span class="pre">run_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><span class="pre">Number</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_conditions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><span class="pre">Number</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.simai.core.data.selections.Point.run_prediction" title="Link to this definition">#</a></dt>
+<dd><p>Run the prediction on the geometry for this scalar.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Point.boundary_conditions">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">boundary_conditions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><span class="pre">Number</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Point.boundary_conditions" title="Link to this definition">#</a></dt>
+<dd><p><strong>(Deprecated)</strong> <a class="reference internal" href="data_types.html#ansys.simai.core.data.types.BoundaryConditions" title="ansys.simai.core.data.types.BoundaryConditions"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoundaryConditions</span></code></a> object for the <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code></a>
+instance.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Point.geometry">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">geometry</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><span class="pre">Geometry</span></a></span><a class="headerlink" href="#ansys.simai.core.data.selections.Point.geometry" title="Link to this definition">#</a></dt>
+<dd><p><a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> object for the <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Point.prediction">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prediction</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="predictions.html#ansys.simai.core.data.predictions.Prediction" title="ansys.simai.core.data.predictions.Prediction"><span class="pre">Prediction</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><a class="headerlink" href="#ansys.simai.core.data.selections.Point.prediction" title="Link to this definition">#</a></dt>
+<dd><p><a class="reference internal" href="predictions.html#ansys.simai.core.data.predictions.Prediction" title="ansys.simai.core.data.predictions.Prediction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prediction</span></code></a> instance
+corresponding to the point or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no prediction has yet been run.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Point.scalars">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scalars</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><span class="pre">Number</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Point.scalars" title="Link to this definition">#</a></dt>
+<dd><p><a class="reference internal" href="data_types.html#ansys.simai.core.data.types.Scalars" title="ansys.simai.core.data.types.Scalars"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scalars</span></code></a> object for the <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code></a>
+instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Selection</span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection" title="Link to this definition">#</a></dt>
+<dd><p>Provides a <code class="docutils literal notranslate"><span class="pre">Selection</span></code> object, which is a collection of <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Points</span></code></a> instances.</p>
+<p>Selections are built from a list of <a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometries</span></code></a>
+instances and a list of <a class="reference internal" href="data_types.html#ansys.simai.core.data.types.Scalars" title="ansys.simai.core.data.types.Scalars"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scalars</span></code></a> instances.</p>
+<p>The resulting selection contains all combinations between the geometries
+and the scalars.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geometries</strong> (<a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><em>Geometry</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><em>Geometry</em></a><em>]</em>) – Geometries to include in the selection.</p></li>
+<li><p><strong>scalars</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><em>Number</em></a><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><em>Number</em></a><em>]</em><em>] </em><em>| </em><em>None</em>) – Scalars to include in the selection.</p></li>
+<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><em>None</em>) – Optional delta to apply to scalar equality.
+The default is <code class="docutils literal notranslate"><span class="pre">10**-6</span></code>. If the difference between two boundary
+conditions is lower than the tolerance, the two scalars
+are considered as equal.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.get_runnable_predictions">
+<span class="sig-name descname"><span class="pre">get_runnable_predictions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><span class="pre">Point</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.get_runnable_predictions" title="Link to this definition">#</a></dt>
+<dd><p>List of all <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Points</span></code></a> instances in the selection where predictions haven’t
+been run yet.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.reload" title="Link to this definition">#</a></dt>
+<dd><p>Refreshes the predictions in the selection.</p>
+<p>This method loads any predictions run from another session and
+removes possible deleted predictions.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.run_predictions">
+<span class="sig-name descname"><span class="pre">run_predictions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.run_predictions" title="Link to this definition">#</a></dt>
+<dd><p>Run all missing predictions in the selection.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.wait">
+<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.wait" title="Link to this definition">#</a></dt>
+<dd><p>Wait for all ongoing operations (predictions and postprocessings)
+in the selection to finish.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="errors.html#ansys.simai.core.errors.SimAIError" title="ansys.simai.core.errors.SimAIError"><strong>ansys.simai.core.errors.SimAIError</strong></a> – If a single error occurred when computing this selection’s operations.</p></li>
+<li><p><a class="reference internal" href="errors.html#ansys.simai.core.errors.MultipleErrors" title="ansys.simai.core.errors.MultipleErrors"><strong>ansys.simai.core.errors.MultipleErrors</strong></a> – If multiple exceptions occurred when computing this selection’s operations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.boundary_conditions">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">boundary_conditions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><span class="pre">Number</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.boundary_conditions" title="Link to this definition">#</a></dt>
+<dd><p><strong>(Deprecated)</strong> List of all existing <a class="reference internal" href="data_types.html#ansys.simai.core.data.types.BoundaryConditions" title="ansys.simai.core.data.types.BoundaryConditions"><code class="xref py py-class docutils literal notranslate"><span class="pre">Boundary</span> <span class="pre">conditions</span></code></a>
+instances in the selection.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.geometries">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">geometries</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><span class="pre">Geometry</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.geometries" title="Link to this definition">#</a></dt>
+<dd><p>List of all existing <a class="reference internal" href="geometries.html#ansys.simai.core.data.geometries.Geometry" title="ansys.simai.core.data.geometries.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometries</span></code></a>
+instances in the selection.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.points">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">points</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><span class="pre">Point</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.points" title="Link to this definition">#</a></dt>
+<dd><p>List of all <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Points</span></code></a> instances in the selection.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.points_with_prediction">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">points_with_prediction</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><span class="pre">Point</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.points_with_prediction" title="Link to this definition">#</a></dt>
+<dd><p>List of all <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Points</span></code></a> instances in the selection where predictions exist.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.points_without_prediction">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">points_without_prediction</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><span class="pre">Point</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.points_without_prediction" title="Link to this definition">#</a></dt>
+<dd><p>List of all <a class="reference internal" href="#ansys.simai.core.data.selections.Point" title="ansys.simai.core.data.selections.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Points</span></code></a> instances in the selection where predictions don’t exist.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.post">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">post</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods" title="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods"><span class="pre">SelectionPostProcessingsMethods</span></a></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.post" title="Link to this definition">#</a></dt>
+<dd><p>Namespace containing methods to access and run postprocessings
+for the predictions in the selection.</p>
+<p>For more information, see the <a class="reference internal" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods" title="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods</span></code></a>
+class.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.predictions">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">predictions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="predictions.html#ansys.simai.core.data.predictions.Prediction" title="ansys.simai.core.data.predictions.Prediction"><span class="pre">Prediction</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.predictions" title="Link to this definition">#</a></dt>
+<dd><p>List of all existing <a class="reference internal" href="predictions.html#ansys.simai.core.data.predictions.Prediction" title="ansys.simai.core.data.predictions.Prediction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prediction</span></code></a>
+instances in the selection.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selections.Selection.scalars">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scalars</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><span class="pre">Number</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.selections.Selection.scalars" title="Link to this definition">#</a></dt>
+<dd><p>List of all existing <a class="reference internal" href="data_types.html#ansys.simai.core.data.types.Scalars" title="ansys.simai.core.data.types.Scalars"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scalars</span></code></a>
+instances in the selection.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="postprocessing-basics">
+<h2>Postprocessing basics<a class="headerlink" href="#postprocessing-basics" title="Link to this heading">#</a></h2>
+<p>The <a class="reference internal" href="#ansys.simai.core.data.selections.Selection.post" title="ansys.simai.core.data.selections.Selection.post"><code class="xref py py-attr docutils literal notranslate"><span class="pre">post</span></code></a> namespace allows you to run and access all postprocessings
+for existing predictions. For available postprocessings, see the
+<a class="reference internal" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods" title="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods</span></code></a>
+class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coeffs</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">global_coefficients</span><span class="p">()</span>
+
+<span class="n">coeffs</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># is a list of results of each post-processings.</span>
+</pre></div>
+</div>
+<p>You can use the <a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList.export" title="ansys.simai.core.data.lists.ExportablePPList.export"><code class="xref py py-meth docutils literal notranslate"><span class="pre">export()</span></code></a>
+method to export results in batch for exportable postprocessings
+(<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.GlobalCoefficients" title="ansys.simai.core.data.post_processings.GlobalCoefficients"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalCoefficients</span></code></a>
+and <a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceEvolution" title="ansys.simai.core.data.post_processings.SurfaceEvolution"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceEvolution</span></code></a> instances):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">selection</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">surface_evolution</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">13.5</span><span class="p">)</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;xlsx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">download</span><span class="p">(</span>
+    <span class="s2">&quot;/path/to/file.xlsx&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that a CSV export generates a ZIP file containing multiple CSV files.
+You can read them directly using Python’s <cite>zipfile&lt;https://docs.python.org/3/library/zipfile.html&gt;</cite>
+module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextIOWrapper</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">global_coefficients</span><span class="p">()</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;csv.zip&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_memory</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">as</span> <span class="n">archive</span><span class="p">:</span>
+    <span class="n">csv_data</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">TextIOWrapper</span><span class="p">(</span><span class="n">archive</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;Global_Coeffs.csv&quot;</span><span class="p">)))</span>
+
+    <span class="c1"># or with pandas:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+    <span class="n">df_geom</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">archive</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;Geometries.csv&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can download binary postprocessings results by looping on the list:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">vtu</span> <span class="ow">in</span> <span class="n">selection</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">volume_vtu</span><span class="p">():</span>
+    <span class="n">vtu</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/path/to/vtu_</span><span class="si">{</span><span class="n">vtu</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="module-ansys.simai.core.data.selection_post_processings">
+<span id="postprocessing-api-reference"></span><h2>Postprocessing API reference<a class="headerlink" href="#module-ansys.simai.core.data.selection_post_processings" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">SelectionPostProcessingsMethods</span></span><a class="headerlink" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods" title="Link to this definition">#</a></dt>
+<dd><p>Acts as a namespace inside <a class="reference internal" href="#ansys.simai.core.data.selections.Selection" title="ansys.simai.core.data.selections.Selection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Selection</span></code></a> objects,
+allowing you to access or run postprocessings on whole selections.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.global_coefficients">
+<span class="sig-name descname"><span class="pre">global_coefficients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList" title="ansys.simai.core.data.lists.ExportablePPList"><span class="pre">ExportablePPList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.GlobalCoefficients" title="ansys.simai.core.data.post_processings.GlobalCoefficients"><span class="pre">GlobalCoefficients</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.global_coefficients" title="Link to this definition">#</a></dt>
+<dd><p>Compute or get the global coefficients of the selected predictions.</p>
+<p>This is a non-blocking method. It returns an
+<a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList" title="ansys.simai.core.data.lists.ExportablePPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportablePPList</span></code></a> instance
+of <a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.GlobalCoefficients" title="ansys.simai.core.data.post_processings.GlobalCoefficients"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalCoefficients</span></code></a>
+objects without waiting. Those <code class="docutils literal notranslate"><span class="pre">PostProcessing</span></code> objects may not have
+data right away if the computation is still in progress. Data is filled
+asynchronously once the computation is finished.
+The state of computation can be waited upon with the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method.</p>
+<p>The computation is launched only on the first call of this method.
+Subsequent calls do not relaunch it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList" title="ansys.simai.core.data.lists.ExportablePPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportablePPList</span></code></a> instance
+of <a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.GlobalCoefficients" title="ansys.simai.core.data.post_processings.GlobalCoefficients"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalCoefficients</span></code></a>
+objects.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList" title="ansys.simai.core.data.lists.ExportablePPList"><em>ExportablePPList</em></a>[<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.GlobalCoefficients" title="ansys.simai.core.data.post_processings.GlobalCoefficients"><em>GlobalCoefficients</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.slice">
+<span class="sig-name descname"><span class="pre">slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><span class="pre">PPList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.Slice" title="ansys.simai.core.data.post_processings.Slice"><span class="pre">Slice</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.slice" title="Link to this definition">#</a></dt>
+<dd><p>Compute or get a slice from each prediction in the selection.</p>
+<p>This is a non-blocking method. It returns a
+<a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> instance of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.Slice" title="ansys.simai.core.data.post_processings.Slice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Slice</span></code></a>
+objects without waiting. Those <code class="docutils literal notranslate"><span class="pre">PostProcessing</span></code> objects may not have
+data right away if the computation is still in progress. Data is filled
+asynchronously once the computation is finished.
+The state of computation can be waited upon with the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method.</p>
+<p>The computation is launched only on the first call of this method
+with a specific set of parameters.
+Subsequent calls with the same parameters do not relaunch it.</p>
+<p>The slices are in the NPZ format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Axis to slice.</p></li>
+<li><p><strong>coordinate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Coordinate along the given axis to slice at.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> list of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.Slice" title="ansys.simai.core.data.post_processings.Slice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Slice</span></code></a> objects.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><em>PPList</em></a>[<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.Slice" title="ansys.simai.core.data.post_processings.Slice"><em>Slice</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_evolution">
+<span class="sig-name descname"><span class="pre">surface_evolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList" title="ansys.simai.core.data.lists.ExportablePPList"><span class="pre">ExportablePPList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceEvolution" title="ansys.simai.core.data.post_processings.SurfaceEvolution"><span class="pre">SurfaceEvolution</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_evolution" title="Link to this definition">#</a></dt>
+<dd><p>Compute or get the SurfaceEvolution of the predictions for specific parameters.</p>
+<p>This is a non-blocking method. It returns an
+<a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList" title="ansys.simai.core.data.lists.ExportablePPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportablePPList</span></code></a> instance
+of <a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceEvolution" title="ansys.simai.core.data.post_processings.SurfaceEvolution"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceEvolution</span></code></a>
+objects without waiting. Those <code class="docutils literal notranslate"><span class="pre">PostProcessing</span></code> objects may not have
+data right away if the computation is still in progress. Data is filled
+asynchronously once the computation is finished.
+The state of computation can be waited upon with the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method.</p>
+<p>The computation is launched only on the first call of this method
+with a specific set of parameters.
+Subsequent calls with the same parameters do not relaunch it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Axis to compute the the SurfaceEvolution on.</p></li>
+<li><p><strong>delta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Increment of the abscissa in meters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList" title="ansys.simai.core.data.lists.ExportablePPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportablePPList</span></code></a> instance of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceEvolution" title="ansys.simai.core.data.post_processings.SurfaceEvolution"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceEvolution</span></code></a> objects.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.simai.core.data.lists.ExportablePPList" title="ansys.simai.core.data.lists.ExportablePPList"><em>ExportablePPList</em></a>[<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceEvolution" title="ansys.simai.core.data.post_processings.SurfaceEvolution"><em>SurfaceEvolution</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_vtp">
+<span class="sig-name descname"><span class="pre">surface_vtp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><span class="pre">PPList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceVTP" title="ansys.simai.core.data.post_processings.SurfaceVTP"><span class="pre">SurfaceVTP</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_vtp" title="Link to this definition">#</a></dt>
+<dd><p>Compute or get the surface results of each prediction within the selection, in VTP format.</p>
+<p>This method associates all data with cells; if a variable is originally
+associated with points in the sample, it would be now associated with cells.</p>
+<p>This is a non-blocking method. It returns a
+<a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> instance of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceVTP" title="ansys.simai.core.data.post_processings.SurfaceVTP"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceVTP</span></code></a>
+objects without waiting. Those <code class="docutils literal notranslate"><span class="pre">PostProcessing</span></code> objects may not have
+data right away if the computation is still in progress. Data is filled
+asynchronously once the computation is finished.
+The state of computation can be waited upon with the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method.</p>
+<p>The computation is launched only on first call of this method.
+Subsequent calls do not relaunch it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> instance of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceVTP" title="ansys.simai.core.data.post_processings.SurfaceVTP"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceVTP</span></code></a> objects.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><em>PPList</em></a>[<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceVTP" title="ansys.simai.core.data.post_processings.SurfaceVTP"><em>SurfaceVTP</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_vtp_td_location">
+<span class="sig-name descname"><span class="pre">surface_vtp_td_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><span class="pre">PPList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceVTPTDLocation" title="ansys.simai.core.data.post_processings.SurfaceVTPTDLocation"><span class="pre">SurfaceVTPTDLocation</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_vtp_td_location" title="Link to this definition">#</a></dt>
+<dd><p>Compute or get the surface results of each prediction within the selection, in the VTP format.</p>
+<p>This method keeps the original data association as they are in the sample.</p>
+<p>It is a non-blocking method. It returns a
+<a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> instance of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceVTPTDLocation" title="ansys.simai.core.data.post_processings.SurfaceVTPTDLocation"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceVTPTDLocation</span></code></a>,
+objects without waiting. Those <code class="docutils literal notranslate"><span class="pre">PostProcessing</span></code> objects may not have
+data right away if the computation is still in progress. Data is filled
+asynchronously once the computation is finished.
+The state of computation can be waited upon with the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method.</p>
+<p>The computation is launched only on first call of this method.
+Subsequent calls do not relaunch it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> instance of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceVTPTDLocation" title="ansys.simai.core.data.post_processings.SurfaceVTPTDLocation"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceVTPTDLocation</span></code></a></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><em>PPList</em></a>[<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.SurfaceVTPTDLocation" title="ansys.simai.core.data.post_processings.SurfaceVTPTDLocation"><em>SurfaceVTPTDLocation</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.volume_vtu">
+<span class="sig-name descname"><span class="pre">volume_vtu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><span class="pre">PPList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.VolumeVTU" title="ansys.simai.core.data.post_processings.VolumeVTU"><span class="pre">VolumeVTU</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.volume_vtu" title="Link to this definition">#</a></dt>
+<dd><p>Compute or get the result of each prediction’s volume in the VTU format.</p>
+<p>This is a non-blocking method. It returns a
+<a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> instance of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.VolumeVTU" title="ansys.simai.core.data.post_processings.VolumeVTU"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolumeVTU</span></code></a>
+objects without waiting. Those <code class="docutils literal notranslate"><span class="pre">PostProcessing</span></code> objects may not have
+data right away if the computation is still in progress. Data is filled
+asynchronously once the computation is finished.
+The state of computation can be waited upon with the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method.</p>
+<p>The computation is launched only on the first call of this method.
+Subsequent calls do not relaunch it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> instance of
+<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.VolumeVTU" title="ansys.simai.core.data.post_processings.VolumeVTU"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolumeVTU</span></code></a> objects.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><em>PPList</em></a>[<a class="reference internal" href="post_processings.html#ansys.simai.core.data.post_processings.VolumeVTU" title="ansys.simai.core.data.post_processings.VolumeVTU"><em>VolumeVTU</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ansys.simai.core.data.lists">
+<span id="collections"></span><h2>Collections<a class="headerlink" href="#module-ansys.simai.core.data.lists" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.lists.PPList">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">PPList</span></span><a class="headerlink" href="#ansys.simai.core.data.lists.PPList" title="Link to this definition">#</a></dt>
+<dd><p>Provides a subclass of the <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> class for storing postprocessings and adding a few shortcut methods.</p>
+<p>As a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> subclass, the <code class="docutils literal notranslate"><span class="pre">PPList</span></code> class supports any list operation.
+Its elements can be iterated on and accessed by index.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.lists.PPList.wait">
+<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ansys.simai.core.data.lists.PPList.wait" title="Link to this definition">#</a></dt>
+<dd><p>Wait for all concerned postprocessings to finish.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.lists.PPList.data">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.simai.core.data.downloads.DownloadableResult" title="ansys.simai.core.data.downloads.DownloadableResult"><span class="pre">DownloadableResult</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#ansys.simai.core.data.lists.PPList.data" title="Link to this definition">#</a></dt>
+<dd><p>List containing the data of the underlying postprocessings.</p>
+<p>This is a blocking method, which returns once the data of all
+postprocessings is ready.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.lists.ExportablePPList">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ExportablePPList</span></span><a class="headerlink" href="#ansys.simai.core.data.lists.ExportablePPList" title="Link to this definition">#</a></dt>
+<dd><p>Provides a subclass of the <a class="reference internal" href="#ansys.simai.core.data.lists.PPList" title="ansys.simai.core.data.lists.PPList"><code class="xref py py-class docutils literal notranslate"><span class="pre">PPList</span></code></a> class for downloading the results of a group of postprocessings.</p>
+<p>As a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> subclass, the <code class="docutils literal notranslate"><span class="pre">ExportablePPList</span></code> class supports any list operation.
+Its elements can be iterated on and accessed by index.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.lists.ExportablePPList.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.simai.core.data.downloads.DownloadableResult" title="ansys.simai.core.data.downloads.DownloadableResult"><span class="pre">DownloadableResult</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.lists.ExportablePPList.export" title="Link to this definition">#</a></dt>
+<dd><p>Export the postprocessing results in the desired format.</p>
+<p>Accessing this property blocks until the data is ready.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – format to exported data in. The default is <code class="docutils literal notranslate"><span class="pre">'json'</span></code>.
+Options are <code class="docutils literal notranslate"><span class="pre">'csv.zip'</span></code>, <code class="docutils literal notranslate"><span class="pre">'json'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'xlsx'</span></code>.
+Note that the <code class="docutils literal notranslate"><span class="pre">'csv.zip'</span></code> option exports a ZIP file containing
+multiple CSV sheets.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ansys.simai.core.data.downloads.DownloadableResult" title="ansys.simai.core.data.downloads.DownloadableResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadableResult</span></code></a> object for
+downloading the exported data into a file or access it in memory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.simai.core.data.downloads.DownloadableResult" title="ansys.simai.core.data.downloads.DownloadableResult"><em>DownloadableResult</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ansys.simai.core.data.downloads">
+<span id="helpers"></span><h2>Helpers<a class="headerlink" href="#module-ansys.simai.core.data.downloads" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.downloads.DownloadableResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DownloadableResult</span></span><a class="headerlink" href="#ansys.simai.core.data.downloads.DownloadableResult" title="Link to this definition">#</a></dt>
+<dd><p>Provides the object representing a result data for a postprocessing in binary format.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.downloads.DownloadableResult.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.BinaryIO" title="(in Python v3.14)"><span class="pre">BinaryIO</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/io.html#io.RawIOBase" title="(in Python v3.14)"><span class="pre">RawIOBase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/io.html#io.BufferedIOBase" title="(in Python v3.14)"><span class="pre">BufferedIOBase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.14)"><span class="pre">PathLike</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.downloads.DownloadableResult.download" title="Link to this definition">#</a></dt>
+<dd><p>Download the postprocessing data to the specified file or path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.BinaryIO" title="(in Python v3.14)"><em>BinaryIO</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/io.html#io.RawIOBase" title="(in Python v3.14)"><em>RawIOBase</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/io.html#io.BufferedIOBase" title="(in Python v3.14)"><em>BufferedIOBase</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.14)"><em>PathLike</em></a>) – Binary file-object or path of the file to download the data into.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.downloads.DownloadableResult.in_memory">
+<span class="sig-name descname"><span class="pre">in_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/io.html#io.BytesIO" title="(in Python v3.14)"><span class="pre">BytesIO</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.downloads.DownloadableResult.in_memory" title="Link to this definition">#</a></dt>
+<dd><p>Load the postprocessing data in memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/io.html#io.BytesIO" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.BytesIO</span></code></a> object containing the postprocessing data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/io.html#io.BytesIO" title="(in Python v3.14)"><em>BytesIO</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ansys.simai.core.data.selections">Selection basics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selection-api-reference">Selection API reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Point"><code class="docutils literal notranslate"><span class="pre">Point</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Point.run_prediction"><code class="docutils literal notranslate"><span class="pre">Point.run_prediction()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Point.boundary_conditions"><code class="docutils literal notranslate"><span class="pre">Point.boundary_conditions</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Point.geometry"><code class="docutils literal notranslate"><span class="pre">Point.geometry</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Point.prediction"><code class="docutils literal notranslate"><span class="pre">Point.prediction</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Point.scalars"><code class="docutils literal notranslate"><span class="pre">Point.scalars</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection"><code class="docutils literal notranslate"><span class="pre">Selection</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.get_runnable_predictions"><code class="docutils literal notranslate"><span class="pre">Selection.get_runnable_predictions()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.reload"><code class="docutils literal notranslate"><span class="pre">Selection.reload()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.run_predictions"><code class="docutils literal notranslate"><span class="pre">Selection.run_predictions()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.wait"><code class="docutils literal notranslate"><span class="pre">Selection.wait()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.boundary_conditions"><code class="docutils literal notranslate"><span class="pre">Selection.boundary_conditions</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.geometries"><code class="docutils literal notranslate"><span class="pre">Selection.geometries</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.points"><code class="docutils literal notranslate"><span class="pre">Selection.points</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.points_with_prediction"><code class="docutils literal notranslate"><span class="pre">Selection.points_with_prediction</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.points_without_prediction"><code class="docutils literal notranslate"><span class="pre">Selection.points_without_prediction</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.post"><code class="docutils literal notranslate"><span class="pre">Selection.post</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.predictions"><code class="docutils literal notranslate"><span class="pre">Selection.predictions</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selections.Selection.scalars"><code class="docutils literal notranslate"><span class="pre">Selection.scalars</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#postprocessing-basics">Postprocessing basics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ansys.simai.core.data.selection_post_processings">Postprocessing API reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods"><code class="docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.global_coefficients"><code class="docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods.global_coefficients()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.slice"><code class="docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods.slice()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_evolution"><code class="docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods.surface_evolution()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_vtp"><code class="docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods.surface_vtp()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.surface_vtp_td_location"><code class="docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods.surface_vtp_td_location()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.selection_post_processings.SelectionPostProcessingsMethods.volume_vtu"><code class="docutils literal notranslate"><span class="pre">SelectionPostProcessingsMethods.volume_vtu()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ansys.simai.core.data.lists">Collections</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.lists.PPList"><code class="docutils literal notranslate"><span class="pre">PPList</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.lists.PPList.wait"><code class="docutils literal notranslate"><span class="pre">PPList.wait()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.lists.PPList.data"><code class="docutils literal notranslate"><span class="pre">PPList.data</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.lists.ExportablePPList"><code class="docutils literal notranslate"><span class="pre">ExportablePPList</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.lists.ExportablePPList.export"><code class="docutils literal notranslate"><span class="pre">ExportablePPList.export()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ansys.simai.core.data.downloads">Helpers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.downloads.DownloadableResult"><code class="docutils literal notranslate"><span class="pre">DownloadableResult</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.downloads.DownloadableResult.download"><code class="docutils literal notranslate"><span class="pre">DownloadableResult.download()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.downloads.DownloadableResult.in_memory"><code class="docutils literal notranslate"><span class="pre">DownloadableResult.in_memory()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api_reference/selections.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.7.0.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

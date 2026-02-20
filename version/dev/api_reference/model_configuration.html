@@ -1,0 +1,967 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Model configuration &#8212; simai</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=d9c7ed7f"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_reference/model_configuration';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://simai.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Models" href="models.html" />
+    <link rel="prev" title="Global coefficients" href="global_coefficients_requests.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.3.10" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="AI" />
+  <link rel="canonical" href="https://simai.docs.pyansys.com/version/stable/api_reference/model_configuration.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="simai - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="simai - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="simai home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pysimai" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="simai home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pysimai" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="current_user.html">Current user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geometries.html">Geometries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="global_coefficients_requests.html">Global coefficients</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Model configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizations.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="post_processings.html">Postprocessings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="predictions.html">Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="projects.html">Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="selections.html">Selections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_data.html">TrainingData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_data_parts.html">TrainingDataParts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workspaces.html">Workspaces</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="geomai/client.html">GeomAIClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/models.html">GeomAIModels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/predictions.html">GeomAIPredictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/projects.html">GeomAIProjects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/training_data.html">GeomAITrainingData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/training_data_parts.html">GeomAITrainingDataParts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomai/workspaces.html">GeomAIWorkspaces</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../api_reference.html" class="nav-link">API reference</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Model configuration</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-ansys.simai.core.data.model_configuration">
+<span id="id1"></span><span id="model-configuration"></span><h1>Model configuration<a class="headerlink" href="#module-ansys.simai.core.data.model_configuration" title="Link to this heading">#</a></h1>
+<p>This module contains a collection of classes for creating a model configuration.
+The model configuration defines the model’s inputs, outputs, Global Coefficients,
+build duration and project. The resulting
+(<a class="reference internal" href="#ansys.simai.core.data.model_configuration.ModelConfiguration" title="ansys.simai.core.data.model_configuration.ModelConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelConfiguration</span></code></a>)
+object is subsequently used to train a model.</p>
+<section id="globalcoefficientdefinition">
+<h2>GlobalCoefficientDefinition<a class="headerlink" href="#globalcoefficientdefinition" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.model_configuration.GlobalCoefficientDefinition">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">GlobalCoefficientDefinition</span></span><a class="headerlink" href="#ansys.simai.core.data.model_configuration.GlobalCoefficientDefinition" title="Link to this definition">#</a></dt>
+<dd><p>Global coefficient definition/parameter field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>formula</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Global Coefficient formula.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Global Coefficient name.</p></li>
+<li><p><strong>gc_location</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><em>Literal</em></a><em>[</em><em>'cells'</em><em>, </em><em>'points'</em><em>]</em>) – Location of the Global Coefficient</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="domainaxisdefinition">
+<h2>DomainAxisDefinition<a class="headerlink" href="#domainaxisdefinition" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.model_configuration.DomainAxisDefinition">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DomainAxisDefinition</span></span><a class="headerlink" href="#ansys.simai.core.data.model_configuration.DomainAxisDefinition" title="Link to this definition">#</a></dt>
+<dd><p>Defines an axis in the Domain of Analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><em>Literal</em></a><em>[</em><em>'relative_to_min'</em><em>, </em><em>'relative_to_max'</em><em>, </em><em>'relative_to_center'</em><em>, </em><em>'absolute'</em><em>]</em>) – <p>Anchor point position.</p>
+<div class="line-block">
+<div class="line"><em>relative_to_min</em>: <cite>VolXmin = xmin - value</cite></div>
+</div>
+<div class="line-block">
+<div class="line"><em>relative_to_max</em>: <cite>VolXmax = xmax + value</cite></div>
+</div>
+<div class="line-block">
+<div class="line"><em>relative_to_center</em>: <cite>(xmin+xmax)/2 - value</cite></div>
+</div>
+<div class="line-block">
+<div class="line"><em>absolute</em>: <cite>VolXmin = value</cite></div>
+</div>
+</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Distance of the anchor from the position.
+When <code class="docutils literal notranslate"><span class="pre">position=absolute</span></code>, the distance can be either positive or negative.
+In any other case, only positive values are accepted.</p></li>
+<li><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the Domain of Analysis along the axis. Only positive numbers are accepted.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Define the Z-axis(i.e., height) in a Domain of Analysis</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.simai.core.data.model_configuration</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DomainAxisDefinition</span><span class="p">,</span>
+    <span class="n">DomainOfAnalysis</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Get the last configuration from a project</span>
+<span class="n">bld_conf</span> <span class="o">=</span> <span class="n">my_project</span><span class="o">.</span><span class="n">last_model_configuration</span>
+
+<span class="c1"># Define a new axis for the Domain of Analysis</span>
+<span class="n">new_doa_height</span> <span class="o">=</span> <span class="n">DomainAxisDefinition</span><span class="p">(</span><span class="s2">&quot;relative_to_min&quot;</span><span class="p">,</span> <span class="mf">180.5</span><span class="p">,</span> <span class="mf">99.1</span><span class="p">)</span>
+
+<span class="c1"># Assign the new Domain of Analysis to the configuration</span>
+<span class="n">bld_conf</span><span class="o">.</span><span class="n">domain_of_analysis</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">new_doa_height</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="domainofanalysis">
+<h2>DomainOfAnalysis<a class="headerlink" href="#domainofanalysis" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.model_configuration.DomainOfAnalysis">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DomainOfAnalysis</span></span><a class="headerlink" href="#ansys.simai.core.data.model_configuration.DomainOfAnalysis" title="Link to this definition">#</a></dt>
+<dd><p>Defines the Domain of Analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<a class="reference internal" href="#ansys.simai.core.data.model_configuration.DomainAxisDefinition" title="ansys.simai.core.data.model_configuration.DomainAxisDefinition"><em>DomainAxisDefinition</em></a>) – Domain of Analysis along the X axis</p></li>
+<li><p><strong>width</strong> (<a class="reference internal" href="#ansys.simai.core.data.model_configuration.DomainAxisDefinition" title="ansys.simai.core.data.model_configuration.DomainAxisDefinition"><em>DomainAxisDefinition</em></a>) – Domain of Analysis along the Y axis</p></li>
+<li><p><strong>height</strong> (<a class="reference internal" href="#ansys.simai.core.data.model_configuration.DomainAxisDefinition" title="ansys.simai.core.data.model_configuration.DomainAxisDefinition"><em>DomainAxisDefinition</em></a>) – Domain of Analysis along the Z axis</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Get the Domain of Analysis from a configuration and replace it with a new one</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.simai.core.data.model_configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">DomainOfAnalysis</span>
+
+<span class="c1"># Get the last configuration from a project</span>
+<span class="n">bld_conf</span> <span class="o">=</span> <span class="n">my_project</span><span class="o">.</span><span class="n">last_model_configuration</span>
+
+<span class="c1"># Define a new Domain of Analysis</span>
+<span class="n">new_doa</span> <span class="o">=</span> <span class="n">DomainOfAnalysis</span><span class="p">(</span>
+    <span class="n">length</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;relative_to_max&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">8.1</span><span class="p">),</span>
+    <span class="n">width</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;relative_to_max&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">8.1</span><span class="p">),</span>
+    <span class="n">height</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;absolute&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Assign the new Domain of Analysis to the configuration</span>
+<span class="n">bld_conf</span><span class="o">.</span><span class="n">domain_of_analysis</span> <span class="o">=</span> <span class="n">new_doa</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="modelinput">
+<h2>ModelInput<a class="headerlink" href="#modelinput" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.model_configuration.ModelInput">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ModelInput</span></span><a class="headerlink" href="#ansys.simai.core.data.model_configuration.ModelInput" title="Link to this definition">#</a></dt>
+<dd><p>Model inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Input surface variables.</p></li>
+<li><p><strong>scalars</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Input Scalars.</p></li>
+<li><p><strong>boundary_conditions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – <strong>(Deprecated)</strong> Input Scalars.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="modeloutput">
+<h2>ModelOutput<a class="headerlink" href="#modeloutput" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.model_configuration.ModelOutput">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ModelOutput</span></span><a class="headerlink" href="#ansys.simai.core.data.model_configuration.ModelOutput" title="Link to this definition">#</a></dt>
+<dd><p>The outputs of a model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – the output surface variables.</p></li>
+<li><p><strong>volume</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – the output volume variables.</p></li>
+<li><p><strong>scalars</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – the output scalars.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="modelconfiguration">
+<h2>ModelConfiguration<a class="headerlink" href="#modelconfiguration" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.model_configuration.ModelConfiguration">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ModelConfiguration</span></span><a class="headerlink" href="#ansys.simai.core.data.model_configuration.ModelConfiguration" title="Link to this definition">#</a></dt>
+<dd><p>Configures the build of a model.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><cite>build_on_top</cite> parameter is deprecated.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="projects.html#ansys.simai.core.data.projects.Project" title="ansys.simai.core.data.projects.Project"><em>Project</em></a>) – the project of the configuration.</p></li>
+<li><p><strong>build_preset</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – <p>indicates the build duration. Available options:</p>
+<div class="line-block">
+<div class="line"><em>debug</em>: &lt; 30 min, only 4 dat</div>
+</div>
+<div class="line-block">
+<div class="line"><em>1_day</em>: &lt; 24 hours</div>
+</div>
+<div class="line-block">
+<div class="line"><em>2_days</em>: &lt; 2 days, default value.</div>
+</div>
+<div class="line-block">
+<div class="line"><em>7_days</em>: &lt; 1 week</div>
+</div>
+</p></li>
+<li><p><strong>build_on_top</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – <strong>(Deprecated)</strong> indicates if build_on_top learning is enabled. Default is False.</p></li>
+<li><p><strong>input</strong> (<a class="reference internal" href="#ansys.simai.core.data.model_configuration.ModelInput" title="ansys.simai.core.data.model_configuration.ModelInput"><em>ModelInput</em></a><em> | </em><em>None</em>) – the inputs of the model.</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="#ansys.simai.core.data.model_configuration.ModelOutput" title="ansys.simai.core.data.model_configuration.ModelOutput"><em>ModelOutput</em></a><em> | </em><em>None</em>) – the outputs of the model.</p></li>
+<li><p><strong>global_coefficients</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="#ansys.simai.core.data.model_configuration.GlobalCoefficientDefinition" title="ansys.simai.core.data.model_configuration.GlobalCoefficientDefinition"><em>GlobalCoefficientDefinition</em></a><em>] </em><em>| </em><em>None</em>) – the Global Coefficients of the model.</p></li>
+<li><p><strong>domain_of_analysis</strong> (<a class="reference internal" href="#ansys.simai.core.data.model_configuration.DomainOfAnalysis" title="ansys.simai.core.data.model_configuration.DomainOfAnalysis"><em>DomainOfAnalysis</em></a><em> | </em><em>None</em>) – The Domain of Analysis of the model configuration.</p></li>
+<li><p><strong>pp_input</strong> (<a class="reference internal" href="#ansys.simai.core.data.model_configuration.PostProcessInput" title="ansys.simai.core.data.model_configuration.PostProcessInput"><em>PostProcessInput</em></a><em> | </em><em>None</em>) – The post-processing input (e.g. a surface variable).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Define a new configuration and launch a build.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.simai.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">asc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.simai.core.data.model_configuration</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DomainAxisDefinition</span><span class="p">,</span>
+    <span class="n">DomainOfAnalysis</span><span class="p">,</span>
+    <span class="n">ModelConfiguration</span><span class="p">,</span>
+    <span class="n">ModelInput</span><span class="p">,</span>
+    <span class="n">ModelOutput</span><span class="p">,</span>
+    <span class="n">PostProcessInput</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">simai_client</span> <span class="o">=</span> <span class="n">asc</span><span class="o">.</span><span class="n">from_config</span><span class="p">()</span>
+
+<span class="c1"># Get the project of interest</span>
+<span class="n">aero_dyn_project</span> <span class="o">=</span> <span class="n">simai_client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;aero-dyn&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define the inputs of the model</span>
+<span class="n">model_input</span> <span class="o">=</span> <span class="n">ModelInput</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">],</span> <span class="n">scalars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Vx&quot;</span><span class="p">])</span>
+
+<span class="c1"># Define the outputs of the model</span>
+<span class="n">model_output</span> <span class="o">=</span> <span class="n">ModelOutput</span><span class="p">(</span>
+    <span class="n">surface</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Pressure&quot;</span><span class="p">,</span> <span class="s2">&quot;WallShearStress_0&quot;</span><span class="p">],</span> <span class="n">volume</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Velocity_0&quot;</span><span class="p">,</span> <span class="s2">&quot;Pressure&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># Define the surface post-processing input</span>
+<span class="n">pp_input</span> <span class="o">=</span> <span class="n">PostProcessInput</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Temperature_1&quot;</span><span class="p">])</span>
+
+<span class="c1"># Define the model coefficients</span>
+<span class="n">global_coefficients</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;max(Pressure)&quot;</span><span class="p">,</span> <span class="s2">&quot;maxpress&quot;</span><span class="p">)]</span>
+
+<span class="c1"># Set the Domain of Analysis</span>
+<span class="n">doa</span> <span class="o">=</span> <span class="n">DomainOfAnalysis</span><span class="p">(</span>
+    <span class="n">length</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;relative_to_max&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">8.1</span><span class="p">),</span>
+    <span class="n">width</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;relative_to_max&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">8.1</span><span class="p">),</span>
+    <span class="n">height</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;absolute&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Define the build configuration for the model</span>
+<span class="n">new_conf</span> <span class="o">=</span> <span class="n">ModelConfiguration</span><span class="p">(</span>
+    <span class="n">project</span><span class="o">=</span><span class="n">aero_dyn_project</span><span class="p">,</span>
+    <span class="n">build_preset</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">,</span>
+    <span class="n">build_on_top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">model_input</span><span class="p">,</span>
+    <span class="n">output</span><span class="o">=</span><span class="n">model_output</span><span class="p">,</span>
+    <span class="n">global_coefficients</span><span class="o">=</span><span class="n">global_coefficients</span><span class="p">,</span>
+    <span class="n">domain_of_analysis</span><span class="o">=</span><span class="n">doa</span><span class="p">,</span>
+    <span class="n">pp_input</span><span class="o">=</span><span class="n">pp_input</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Launch a model build with the new configuration</span>
+<span class="n">new_model</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">new_conf</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sets the properties of a build configuration.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.model_configuration.ModelConfiguration.compute_global_coefficient">
+<span class="sig-name descname"><span class="pre">compute_global_coefficient</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.simai.core.data.model_configuration.ModelConfiguration.compute_global_coefficient" title="Link to this definition">#</a></dt>
+<dd><p>Computes the results of the formula for all global coefficients with respect to the project’s sample.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="postprocessinput">
+<h2>PostProcessInput<a class="headerlink" href="#postprocessinput" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.model_configuration.PostProcessInput">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">PostProcessInput</span></span><a class="headerlink" href="#ansys.simai.core.data.model_configuration.PostProcessInput" title="Link to this definition">#</a></dt>
+<dd><p>Designates the variables to use as post-processing input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – the post-processing input surface variables.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#globalcoefficientdefinition">GlobalCoefficientDefinition</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.model_configuration.GlobalCoefficientDefinition"><code class="docutils literal notranslate"><span class="pre">GlobalCoefficientDefinition</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#domainaxisdefinition">DomainAxisDefinition</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.model_configuration.DomainAxisDefinition"><code class="docutils literal notranslate"><span class="pre">DomainAxisDefinition</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#domainofanalysis">DomainOfAnalysis</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.model_configuration.DomainOfAnalysis"><code class="docutils literal notranslate"><span class="pre">DomainOfAnalysis</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelinput">ModelInput</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.model_configuration.ModelInput"><code class="docutils literal notranslate"><span class="pre">ModelInput</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeloutput">ModelOutput</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.model_configuration.ModelOutput"><code class="docutils literal notranslate"><span class="pre">ModelOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelconfiguration">ModelConfiguration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.model_configuration.ModelConfiguration"><code class="docutils literal notranslate"><span class="pre">ModelConfiguration</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.model_configuration.ModelConfiguration.compute_global_coefficient"><code class="docutils literal notranslate"><span class="pre">ModelConfiguration.compute_global_coefficient()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#postprocessinput">PostProcessInput</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.model_configuration.PostProcessInput"><code class="docutils literal notranslate"><span class="pre">PostProcessInput</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api_reference/model_configuration.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.7.0.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

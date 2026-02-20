@@ -1,0 +1,103 @@
+
+
+.. _sphx_glr__examples_01_pysimai_ex:
+
+
+
+PySimAI utilities
+-------------------------
+
+This section provides a collection of practical script examples illustrating SimAI functionalities and use cases.
+They serve as a reference guide for users to implement similar solutions in their projects.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to retrieve the latest model configuration of a project and use it to launch a model build in another project.">
+
+.. only:: html
+
+  .. image:: /_examples/01_pysimai_ex/images/thumb/sphx_glr_00-model_configuration_reuse_thumb.png
+    :alt:
+
+  :doc:`/_examples/01_pysimai_ex/00-model_configuration_reuse`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model configuration reuse</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to relaunch a model build using the latest model configuration in a same project.">
+
+.. only:: html
+
+  .. image:: /_examples/01_pysimai_ex/images/thumb/sphx_glr_01-model_recomputation_thumb.png
+    :alt:
+
+  :doc:`/_examples/01_pysimai_ex/01-model_recomputation`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model recomputation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to assign a subset to a training data.">
+
+.. only:: html
+
+  .. image:: /_examples/01_pysimai_ex/images/thumb/sphx_glr_02-subset_assignment_thumb.png
+    :alt:
+
+  :doc:`/_examples/01_pysimai_ex/02-subset_assignment`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Subset assignment</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to distribute your dataset between Test and Training subsets using lists.">
+
+.. only:: html
+
+  .. image:: /_examples/01_pysimai_ex/images/thumb/sphx_glr_03-list_based_subset_assignment_thumb.png
+    :alt:
+
+  :doc:`/_examples/01_pysimai_ex/03-list_based_subset_assignment`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">List-based subset assignment</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /_examples/01_pysimai_ex/00-model_configuration_reuse
+   /_examples/01_pysimai_ex/01-model_recomputation
+   /_examples/01_pysimai_ex/02-subset_assignment
+   /_examples/01_pysimai_ex/03-list_based_subset_assignment
+
