@@ -152,6 +152,8 @@ class SSEMixin(ApiClientMixin):
         elif target["type"] == "training_data_part":
             self.simai_client.training_data_parts._handle_sse_event(data)
         elif target["type"] == "optimization":
+            self.simai_client.legacy_optimizations._handle_sse_event(data)
+        elif target["type"] == "server_side_optimization":
             self.simai_client.optimizations._handle_sse_event(data)
         elif target["type"] == "optimization_trial_run":
             self.simai_client._optimization_trial_run_directory._handle_sse_event(data)
