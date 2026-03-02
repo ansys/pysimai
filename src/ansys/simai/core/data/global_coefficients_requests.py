@@ -77,9 +77,19 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
     ) -> dict[str, Any]:
         """Composes the payload for a calculette request."""
 
-        surface_vars_list = EXTRA_CALCULETTE_FIELDS
-        if surface_variables:
-            surface_vars_list += surface_variables
+        surface_vars_list = list(surface_variables or [])
+
+        if "Centroids" not in surface_vars_list:
+            surface_vars_list.append("Centroids")
+
+        if gc_location == "cells" and "Normals" not in surface_vars_list:
+            surface_vars_list.append("Normals")
+
+        surface_vars_list = [
+            name
+            for name in surface_vars_list
+            if name != "Area" and not (gc_location == "points" and name == "Normals")
+        ]
 
         return {
             "formula": gc_formula,
@@ -87,7 +97,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
             "surface_field_list": [
                 fd
                 for fd in sample_metadata.get("surface").get("fields")
-                if fd.get("name") in surface_vars_list
+                if fd.get("name", None) in surface_vars_list
             ],
             "volume_field_list": [],
             "gc_location": gc_location,

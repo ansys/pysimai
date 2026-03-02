@@ -553,10 +553,13 @@ class ModelConfiguration:
         volume_fields = dict_get(sample_metadata, "volume", "fields", default=[])
 
         surface_input_fld = []
+        normals = next((fd for fd in surface_fields if fd.get("name") == "Normals"), None)
         if self.input.surface is not None:
             surface_input_fld = [
                 fd for fd in surface_fields if fd.get("name") in self.input.surface
             ]
+        if normals:
+            surface_input_fld.append(normals)
 
         surface_fld = []
         if self.output.surface is not None:
@@ -575,10 +578,13 @@ class ModelConfiguration:
             predict_scalars = [{"name": scalar} for scalar in self.output.scalars]
 
         surface_pp_input_fld = []
+        centroids = next((fd for fd in surface_fields if fd.get("name") == "Centroids"), None)
         if self.pp_input.surface is not None:
             surface_pp_input_fld = [
                 fd for fd in surface_fields if fd.get("name") in self.pp_input.surface
             ]
+        if centroids:
+            surface_pp_input_fld.append(centroids)
 
         flds = {
             "surface": surface_fld,

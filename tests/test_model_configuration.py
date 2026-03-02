@@ -24,8 +24,11 @@
 import pytest
 
 from ansys.simai.core.data.model_configuration import (
+    DomainAxisDefinition,
+    DomainOfAnalysis,
     GlobalCoefficientDefinition,
     ModelConfiguration,
+    ModelInput,
     ModelOutput,
     SupportedBuildPresets,
 )
@@ -223,3 +226,42 @@ def test_model_output_scalars_same_name_gc(mocker, simai_client):
         str(e.value)
         == "Scalar variables 'conflict_name' have the same name as global coefficients."
     )
+
+
+def test_model_configuration_appends_normals_and_centroids(simai_client):
+    metadata = METADATA_RAW.copy()
+    metadata["surface"] = {
+        "fields": [
+            *METADATA_RAW["surface"]["fields"],
+            {"name": "Normals"},
+            {"name": "Centroids"},
+            {"name": "Area"},
+        ]
+    }
+    raw_project = {
+        "id": "project-123",
+        "name": "fifi",
+        "sample": {
+            **SAMPLE_RAW,
+            "extracted_metadata": metadata,
+        },
+    }
+
+    project = simai_client._project_directory._model_from(raw_project)
+
+    config = ModelConfiguration(
+        project=project,
+        input=ModelInput(surface=["Pressure"]),
+        domain_of_analysis=DomainOfAnalysis(
+            length=DomainAxisDefinition("relative_to_min", 0, 1),
+            width=DomainAxisDefinition("relative_to_min", 0, 1),
+            height=DomainAxisDefinition("relative_to_min", 0, 1),
+        ),
+    )
+
+    fields = config._to_payload()["fields"]
+    surface_input_names = [fd.get("name") for fd in fields["surface_input"]]
+    surface_pp_input_names = [fd.get("name") for fd in fields["surface_pp_input"]]
+
+    assert surface_input_names == ["Pressure", "Normals"]
+    assert surface_pp_input_names == ["Centroids"]

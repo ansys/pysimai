@@ -182,3 +182,41 @@ def test_process_formula_failure(global_coefficient_request_factory, action, htt
 
     assert process_gc.has_failed
     assert all(keyword in process_gc.failure_reason for keyword in [reason_of_failure, gc_formula])
+
+
+@pytest.mark.parametrize(
+    "gc_location,surface_variables,expected_names",
+    [
+        ("points", ["Pressure", "Area", "Normals"], ["Pressure", "Centroids"]),
+        ("cells", ["Pressure", "Area"], ["Pressure", "Normals", "Centroids"]),
+        ("cells", ["Pressure"], ["Pressure", "Normals", "Centroids"]),
+    ],
+)
+def test_surface_field_list_rules(
+    global_coefficient_request_factory,
+    gc_location,
+    surface_variables,
+    expected_names,
+):
+    metadata = {
+        "surface": {
+            "fields": [
+                {"name": "Pressure"},
+                {"name": "Area"},
+                {"name": "Normals"},
+                {"name": "Centroids"},
+            ]
+        }
+    }
+    process_gc = global_coefficient_request_factory(
+        data={"id": f"test-process-max(Pressure)-{gc_location}"},
+        project_id="project-123",
+        gc_formula="max(Pressure)",
+        sample_metadata=metadata,
+        surface_variables=surface_variables,
+        gc_location=gc_location,
+    )
+
+    field_names = [fd.get("name") for fd in process_gc._calculette_payload["surface_field_list"]]
+
+    assert field_names == expected_names
