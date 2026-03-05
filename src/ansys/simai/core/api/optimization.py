@@ -29,6 +29,17 @@ class OptimizationClientMixin(ApiClientMixin):
     def define_optimization(self, workspace_id: str, optimization_parameters: Dict):
         return self._post(f"workspaces/{workspace_id}/optimizations", json=optimization_parameters)
 
+    def run_server_side_optimization(
+        self, workspace_id: str, server_side_optimization_parameters: Dict
+    ):
+        return self._post(
+            f"workspaces/{workspace_id}/server-side-optimizations",
+            json=server_side_optimization_parameters,
+        )
+
+    def get_server_side_optimizations(self, workspace_id: str):
+        return self._get(f"workspaces/{workspace_id}/server-side-optimizations")
+
     def run_optimization_trial(self, optimization_id: str, parameters: Dict):
         return self._post(
             f"optimizations/{optimization_id}/trial-runs",
