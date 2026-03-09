@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import json
 from functools import partial
 from typing import TYPE_CHECKING
+from urllib.parse import urlencode
 
 import pytest
 
@@ -448,3 +450,25 @@ def test_project_list_models(simai_client, httpx_mock):
     assert len(models) == 2
     assert models[0].id == "model01"
     assert models[1].id == "model02"
+
+
+def test_project_list_created_by_me(simai_client, httpx_mock):
+    user_uuid = "user123-abc"
+    simai_client._api._session.auth._user_uuid = user_uuid
+
+    raw_projects = [
+        {"id": "abc123", "name": "This is my name"},
+        {"id": "123abc", "name": "This is also my name"},
+    ]
+
+    raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
+    query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/projects?{query}",
+        json=raw_projects,
+        status_code=200,
+    )
+
+    projects = simai_client.projects.list(created_by_me=True)
+    assert [project.id for project in projects] == ["abc123", "123abc"]

@@ -25,7 +25,13 @@ from typing import TYPE_CHECKING, BinaryIO, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
-from ansys.simai.core.data.types import File, Identifiable, get_id_from_identifiable
+from ansys.simai.core.data.types import (
+    File,
+    Filters,
+    Identifiable,
+    get_id_from_identifiable,
+    to_raw_filters,
+)
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.predictions import GeomAIPrediction
@@ -129,9 +135,26 @@ class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
 
     _data_model = GeomAIWorkspace
 
-    def list(self) -> List[GeomAIWorkspace]:
+    def list(
+        self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
+    ) -> List[GeomAIWorkspace]:
         """List all workspaces from the server."""
-        return [self._model_from(workspace) for workspace in self._client._api.geomai_workspaces()]
+        raw_filters = to_raw_filters(filters)
+        if created_by_me:
+            user_uuid = self._client._api._session.auth._user_uuid
+            if not user_uuid:
+                pass
+            else:
+                created_by_me_filter = to_raw_filters({"created_by": user_uuid})
+                if raw_filters:
+                    raw_filters.extend(created_by_me_filter)
+                else:
+                    raw_filters = created_by_me_filter
+
+        return [
+            self._model_from(workspace)
+            for workspace in self._client._api.geomai_workspaces(raw_filters)
+        ]
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None) -> GeomAIWorkspace:
         """Get a specific workspace object from the server by either ID or name.

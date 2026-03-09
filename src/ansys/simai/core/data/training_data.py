@@ -243,7 +243,9 @@ class TrainingDataDirectory(Directory[TrainingData]):
         raw_iterable = self._client._api.iter_training_data(filters=raw_filters)
         return DataModelIterator(raw_iterable, self)
 
-    def list(self, filters: Optional[Filters] = None) -> List[TrainingData]:
+    def list(
+        self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
+    ) -> List[TrainingData]:
         """List all :class:`TrainingData` objects on the server.
 
         Warning:
@@ -251,11 +253,24 @@ class TrainingDataDirectory(Directory[TrainingData]):
 
         Args:
             filters: Optional :obj:`~.types.Filters` to apply.
+            created_by_me: If True, only list training data created by the user.
 
         Returns:
             List of all :class:`TrainingData` objects on the server.
         """
-        return list(self.iter(filters))
+        raw_filters = to_raw_filters(filters)
+        if created_by_me:
+            user_uuid = self._client._api._session.auth._user_uuid
+            if not user_uuid:
+                pass
+            else:
+                created_by_me_filter = to_raw_filters({"created_by": user_uuid})
+                if raw_filters:
+                    raw_filters.extend(created_by_me_filter)
+                else:
+                    raw_filters = created_by_me_filter
+
+        return list(self.iter(raw_filters))
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None) -> TrainingData:
         """Get a specific :class:`TrainingData` object from the server.

@@ -109,6 +109,29 @@ def test_training_data_list_with_filters(simai_client, httpx_mock):
     assert len(httpx_mock.get_requests()) == 1
 
 
+def test_training_data_list_created_by_me(simai_client, httpx_mock):
+    user_uuid = "user-789"
+    simai_client._api._session.auth._user_uuid = user_uuid
+
+    raw_training_data = [
+        {"id": "td-1", "name": "alpha"},
+        {"id": "td-2", "name": "beta"},
+    ]
+
+    raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
+    query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/training-data?{query}",
+        headers={"X-Pagination": json.dumps({"total_pages": 1})},
+        json=raw_training_data,
+        status_code=200,
+    )
+
+    td_list = simai_client.training_data.list(created_by_me=True)
+    assert [td.id for td in td_list] == ["td-1", "td-2"]
+
+
 def test_training_data_add_to_project(
     simai_client, training_data_factory, project_factory, httpx_mock
 ):
