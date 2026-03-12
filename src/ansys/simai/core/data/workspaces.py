@@ -83,7 +83,7 @@ class ModelManifest:
         """Information on the postprocessings available for the model
         and the accepted parameters when relevant.
         """
-        return self._raw["available-post-processings"]
+        return [x for x in self._raw["available-post-processings"] if x != "SurfaceGradVTP"]
 
 
 class Workspace(DataModel):
