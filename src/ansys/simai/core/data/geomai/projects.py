@@ -131,6 +131,22 @@ class GeomAIProject(DataModel):
         """Configure the client to use this project instead of the one currently configured."""
         self._client.geomai.current_project = self
 
+    def get_last_workspace(self) -> Optional["GeomAIWorkspace"]:
+        """Get the last workspace of the project."""
+        workspace = self._client._api.get_geomai_project_last_workspace(self.id)
+        if not workspace:
+            return None
+        return self._client.geomai.workspaces._model_from(workspace[0])
+
+    def get_last_model(self) -> Optional["GeomAIModel"]:
+        """Get the last model of the project."""
+        model = self.fields.get("latest_model", None)
+        if not model:
+            return None
+
+        model["project_id"] = self.id
+        return self._client.geomai.models._model_from(model)
+
 
 class GeomAIProjectDirectory(Directory[GeomAIProject]):
     """Provides a collection of methods related to projects.
