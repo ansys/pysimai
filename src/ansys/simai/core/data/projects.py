@@ -254,6 +254,22 @@ class Project(DataModel):
         """Configure the client to use this project instead of the one currently configured."""
         self._client.current_project = self
 
+    def get_last_workspace(self) -> Optional["Workspace"]:
+        """Get the last workspace of the project."""
+        workspace = self._client._api.get_project_last_workspace(self.id)
+        if not workspace:
+            return None
+        return self._client.workspaces._model_from(workspace[0])
+
+    def get_last_model(self) -> Optional["Model"]:
+        """Get the last model of the project."""
+        model = self.fields.get("last_model", None)
+        if not model:
+            return None
+
+        model["project_id"] = self.id
+        return self._client.models._model_from(model)
+
 
 class ProjectDirectory(Directory[Project]):
     """Provides a collection of methods related to projects.
