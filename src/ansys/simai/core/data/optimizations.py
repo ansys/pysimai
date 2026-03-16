@@ -75,7 +75,7 @@ class Optimization(ComputableDataModel):
 
 
 class LegacyOptimization(ComputableDataModel):
-    """Provides the local representation of a legacy client side optimization definition object."""
+    """Provides the local representation of a legacy client-side optimization definition object."""
 
     def _run_iteration(self, parameters: Dict) -> "_LegacyOptimizationTrialRun":
         return self._client._optimization_trial_run_directory._run_iteration(self.id, parameters)
@@ -227,19 +227,29 @@ class OptimizationDirectory(Directory[Optimization]):
             boundary_conditions: Optional. **(Deprecated)** The values of the boundary conditions to perform the optimization at.
                 The values must correspond to existing boundary conditions already defined in your SimAI workspace.
             detail_level: Optional. Adjust how much deformation can be applied to the geometry. Integer from 1 to 10.
-            
+
                 - Low: coarse deformation, only rough shape changes.
                 - High: fine details, subtle local adjustments possible.
 
                 Given the baseline geometry and bounding boxes, some level of detail_level might not be possible to achieve (too low to generate deformation or
                 too high leading to Out of memory issues). In those cases, errors will be raised indicating what level you can use for your configuration.
-                When using multiple bounding boxes, using this feature ensure to have the same amount of deformation in the bounding boxes.
+
+                When using multiple bounding boxes, using this feature ensures to have the same amount of deformation in the bounding boxes.
+
+                Example : ``detail_level=4``
 
             part_morphing: Optional. User-defined constraints to perform on the parts to be morphed.
-                The id of the parts to be deformed must be provided as a list of integers given in the input part_ids, and it must correspond to a cell field of the baseline geometry exactly named PartId.
-                continuity_constraint indicates how much the continuity at the interface between deformed and non-deformed parts must be enforced.  It can be set between 0 and 1 included.
-                At 0, the continuity is not constrained at all during the optimization. For a continuity_constraint of 1, the continuity is the best. This parameter also has an impact on the
-                overall magnitude deformation. The more the continuity is enforced, the lower the overall magnitude deformation will be. To overcome that behavior, the user can increase the detail_level value.
+
+                The id of the parts to be deformed must be provided as a list of integers given in the input ``part_ids``, and it must correspond to a cell field of the baseline geometry exactly named ``PartId``.
+
+                ``continuity_constraint`` indicates how much the continuity at the interface between deformed and non-deformed parts must be enforced.  It can be set between 0 and 1 included.
+                At 0, the continuity is not constrained at all during the optimization. For a ``continuity_constraint`` of 1, the continuity is the best. This parameter also has an impact on the
+                overall magnitude deformation. The more the continuity is enforced, the lower the overall magnitude deformation will be. To overcome that behavior, the user can increase the ``detail_level`` value.
+
+                Example: ``part_morphing = {"part_ids":[1,2], "continuity_constraint":0.8}``
+
+        .. warning::
+            The ``boundary_conditions`` parameter is deprecated.
 
         Example:
           .. code-block:: python
@@ -276,7 +286,7 @@ class OptimizationDirectory(Directory[Optimization]):
             warnings.warn(f"Could not find workspace '{workspace_id}'", stacklevel=1)
 
         if use_server_side_optimization:
-            logger.debug("Using server side optimization")
+            logger.debug("Using server-side optimization")
             return self._run_server_side_optimization(
                 workspace_id=workspace_id,
                 geometry=geometry,
@@ -293,15 +303,15 @@ class OptimizationDirectory(Directory[Optimization]):
                 part_morphing=part_morphing,
             )
         else:
-            logger.debug("Falling back to client side optimization loop")
+            logger.debug("Falling back to client-side optimization loop")
             if detail_level:
                 warnings.warn(
-                    "provided detail_level won't be used as server side optimization is not supported on this workspace",
+                    "provided detail_level won't be used as server-side optimization is not supported on this workspace",
                     stacklevel=1,
                 )
             if part_morphing:
                 warnings.warn(
-                    "provided part_morphing won't be used as server side optimization is not supported on this workspace",
+                    "provided part_morphing won't be used as server-side optimization is not supported on this workspace",
                     stacklevel=1,
                 )
             return self._client._legacy_optimization_directory.run_non_parametric(
@@ -381,7 +391,7 @@ class OptimizationDirectory(Directory[Optimization]):
 
 
 class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
-    """Provides a collection of methods related to legacy client side optimizations.
+    """Provides a collection of methods related to legacy client-side optimizations.
 
     This class is accessed through ``client.legacy_optimizations``.
 
@@ -397,7 +407,7 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
     _data_model = LegacyOptimization
 
     def get(self, optimization_id: str) -> LegacyOptimization:
-        """Get a specific (client side) optimization object from the server.
+        """Get a specific (client-side) optimization object from the server.
 
         Args:
             optimization_id: ID of the optimization.

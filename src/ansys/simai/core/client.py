@@ -215,7 +215,7 @@ class SimAIClient:
 
     @property
     def legacy_optimizations(self):
-        """Representation of all legacy client side optimizations
+        """Representation of all legacy client-side optimizations
         For more information, see :ref:`optimizations`.
         """
         return self._legacy_optimization_directory
