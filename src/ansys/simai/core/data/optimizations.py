@@ -155,12 +155,13 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry: Identifiable[Geometry],
         bounding_boxes: List[List[float]],
         n_iters: int,
+        offline_token: Optional[str],
+        max_displacement: List[float],
         symmetries: Optional[List[Literal["x", "y", "z", "X", "Y", "Z"]]] = None,
         axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
         scalars: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
-        max_displacement: Optional[List[float]] = None,
         show_progress: bool = False,
         boundary_conditions: Optional[Dict[str, float]] = None,
         detail_level: Optional[int] = None,
@@ -188,6 +189,9 @@ class OptimizationDirectory(Directory[Optimization]):
 
             n_iters: Required. The number of optimization iterations. This number must be a strictly positive integer.
                 It will define the number of automorphed geometries uploaded to the SimAI workspace.
+            offline_token: Optional. Offline token to use for authentication.
+                If not provided, the method will try to use the offline token defined in the client configuration. If no ``offline_token`` can be passed as function parameter or in the client configuration, server-side optimization will not work.
+                See :ref:`current_user` to generate an offline token.
             symmetries: Optional. The list of symmetry axes, axes being x, y, and z, defining a plane around which the geometry is mirrored.
 
                 - The planar symmetry is applied to all the ``bounding_boxes`` defined.
@@ -213,7 +217,7 @@ class OptimizationDirectory(Directory[Optimization]):
                     - ``minimize`` and ``maximize`` are mutually exclusive objectives; define only one.
                     - The defined objective must be computed from the surface fields because mesh nodes must be involved.
 
-            max_displacement: Optional. User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
+            max_displacement: Required. User-defined constraint on the maximum allowable deformation of the initial mesh in non-parametric optimization.
                 It is specified as a list (``max_displacement``) matching the number of bounding boxes (``bounding_boxes``).
 
                 For example, for two bounding boxes:
@@ -280,18 +284,25 @@ class OptimizationDirectory(Directory[Optimization]):
         workspace_id = actual_geometry._fields["workspace_id"]
         try:
             manifest = self._client._api.get_workspace_model_manifest(workspace_id)
-            if "server_side_optimization" in manifest.get("public", {}).get("feature_flags", []):
+            if "server_side_optimization" in manifest.get("feature_flags", []):
                 use_server_side_optimization = True
         except NotFoundError:
             warnings.warn(f"Could not find workspace '{workspace_id}'", stacklevel=1)
 
         if use_server_side_optimization:
             logger.debug("Using server-side optimization")
+            offline_token = offline_token if offline_token else self._client._config.offline_token
+            if not offline_token:
+                raise InvalidArguments(
+                    "No offline_token specified as argument or client configuration"
+                )
+
             return self._run_server_side_optimization(
                 workspace_id=workspace_id,
                 geometry=geometry,
                 bounding_boxes=bounding_boxes,
                 n_iters=n_iters,
+                offline_token=offline_token,
                 symmetries=symmetries,
                 axial_symmetry=axial_symmetry,
                 scalars=scalars,
@@ -334,12 +345,13 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry: Identifiable[Geometry],
         bounding_boxes: List[List[float]],
         n_iters: int,
+        offline_token: str,
+        max_displacement: List[float],
         symmetries: Optional[List[Literal["x", "y", "z", "X", "Y", "Z"]]] = None,
         axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
         scalars: Optional[Dict[str, float]] = None,
         minimize: Optional[List[str]] = None,
         maximize: Optional[List[str]] = None,
-        max_displacement: Optional[List[float]] = None,
         boundary_conditions: Optional[Dict[str, float]] = None,
         detail_level: Optional[int] = None,
         part_morphing: Optional[OptimizationPartMorphingSchema] = None,
@@ -356,6 +368,7 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_max_displacement(max_displacement, bounding_boxes)
         _validate_axial_symmetry(axial_symmetry, symmetries)
         objective = _build_objective(minimize, maximize)
+        geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         server_side_optimization_parameters = {
             "geometry": geometry.id,
             "bounding_boxes": bounding_boxes,
@@ -364,6 +377,7 @@ class OptimizationDirectory(Directory[Optimization]):
             "axial_symmetry": axial_symmetry,
             "detail_level": detail_level,
             "n_iters": n_iters,
+            "offline_token": offline_token,
             "objective": objective,
             "scalars": scalars or {},
         }
