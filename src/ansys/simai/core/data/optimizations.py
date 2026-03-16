@@ -168,7 +168,7 @@ class OptimizationDirectory(Directory[Optimization]):
     ) -> Union[Optimization, LegacyOptimizationResult]:
         """Run an optimization to generate geometries, using automorphing.
         Automorphing is a non-parametric deformation of a surface geometry.
-        If possible, the function will try to run the optimization loop server side. If not possible the function will fallback to running the optimization loop client side (legacy).
+        If possible, the function will try to run the optimization loop server-side. If not possible, the function will fall back to running the optimization loop client-side (legacy).
 
         Args:
             geometry: Required. The object (Geometry) or the ID (str) of the baseline geometry on which to perform
