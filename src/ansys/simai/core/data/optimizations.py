@@ -227,6 +227,7 @@ class OptimizationDirectory(Directory[Optimization]):
             boundary_conditions: Optional. **(Deprecated)** The values of the boundary conditions to perform the optimization at.
                 The values must correspond to existing boundary conditions already defined in your SimAI workspace.
             detail_level: Optional. Adjust how much deformation can be applied to the geometry. Integer from 1 to 10.
+            
                 - Low: coarse deformation, only rough shape changes.
                 - High: fine details, subtle local adjustments possible.
 
