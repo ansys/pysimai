@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
 from typing import TYPE_CHECKING
+from urllib.parse import urlencode
 
 import pytest
 
@@ -215,3 +217,57 @@ def test_geomai_project_list_models(simai_client, httpx_mock):
     assert len(models) == 2
     assert models[0].id == "model01"
     assert models[1].id == "model02"
+
+
+def test_geomai_project_get_last_workspace(simai_client, httpx_mock):
+    project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
+    expected_query = urlencode(
+        [
+            (
+                "filter[]",
+                json.dumps(
+                    {"field": "project", "operator": "EQ", "value": project.id},
+                    separators=(",", ":"),
+                ),
+            ),
+            (
+                "sort[]",
+                json.dumps(
+                    {"field": "id", "order": "desc"},
+                    separators=(",", ":"),
+                ),
+            ),
+            ("page_size", 1),
+        ]
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/?{expected_query}",
+        json=[{"id": "ws01", "name": "Workspace01"}],
+        status_code=200,
+    )
+
+    workspace = project.get_last_workspace()
+
+    assert workspace is not None
+    assert workspace.id == "ws01"
+
+
+def test_geomai_project_get_last_model(simai_client):
+    project = simai_client.geomai.projects._model_from(
+        {"id": "0011", "name": "riri", "latest_model": {"id": "mdl01"}}
+    )
+
+    model = project.get_last_model()
+
+    assert model is not None
+    assert model.id == "mdl01"
+    assert model.project_id == project.id
+
+
+def test_geomai_project_get_last_model_none(simai_client):
+    project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
+
+    model = project.get_last_model()
+
+    assert model is None
