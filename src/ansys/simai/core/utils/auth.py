@@ -32,6 +32,7 @@ from typing import Any, Optional
 from urllib.parse import urljoin
 
 import httpx
+import jwt
 from filelock import FileLock
 from pydantic import BaseModel, ValidationError, model_validator
 
@@ -49,6 +50,17 @@ DEVICE_AUTH_POLLING_INTERVAL = 5
 # - Accounts for network latency and clock skew
 TOKEN_REFRESH_BUFFER = random.randrange(300, 400)  # noqa: S311 # nosec
 TOKEN_EXPIRATION_BUFFER = random.randrange(5, 15)  # noqa: S311 # nosec
+
+
+def _decode_user_uuid(access_token: str) -> Optional[str]:
+    try:
+        claims = jwt.decode(
+            access_token,
+            options={"verify_signature": False},
+        )
+    except jwt.PyJWTError:
+        return None
+    return claims.get("sub") or claims.get("user_uuid") or claims.get("uuid")
 
 
 class _AuthTokens(BaseModel):
@@ -286,13 +298,18 @@ class Authenticator(httpx.Auth):
         self._realm_url = urljoin(str(config.url), "/auth/realms/simai")
         self._organization_name = config.organization
         self._refresh_timer = None
+        self._user_uuid = None
+        self._last_access_token = None
         auth_hash = config._auth_hash()
         self.tokens_retriever = _AuthTokensRetriever(
             config.credentials, session, auth_hash, self._realm_url, config.offline_token
         )
-        self.tokens_retriever.get_tokens(
-            force_refresh=True
-        )  # start fetching/refreshing auth tokens
+        auth = self.tokens_retriever.get_tokens()
+        self._update_user_uuid(auth.access_token)
+
+    def _update_user_uuid(self, access_token: str) -> None:
+        self._last_access_token = access_token
+        self._user_uuid = _decode_user_uuid(access_token)
 
     def auth_flow(self, request: httpx.Request):
         """Call to prepare the requests.
@@ -316,6 +333,10 @@ class Authenticator(httpx.Auth):
                 "Content-Type", ""
             )
             auth = self.tokens_retriever.get_tokens(force_refresh=is_request_multipart_data)
+
+            if self._last_access_token != auth.access_token:
+                self._update_user_uuid(auth.access_token)
+
             request.headers["Authorization"] = f"Bearer {auth.access_token}"
             request.headers["X-Org"] = self._organization_name
         yield request

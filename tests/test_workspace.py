@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
 from typing import TYPE_CHECKING
+from urllib.parse import urlencode
 
 from ansys.simai.core.data.model_configuration import ModelConfiguration
 
@@ -274,3 +276,25 @@ def test_workspace_list_geometries(simai_client, httpx_mock):
     assert len(geometries) == 2
     assert geometries[0].id == "geom1"
     assert geometries[1].id == "geom2"
+
+
+def test_workspace_list_created_by_me(simai_client, httpx_mock):
+    user_uuid = "user-456"
+    simai_client._api._session.auth._user_uuid = user_uuid
+
+    raw_workspaces = [
+        {"id": "ws-1", "name": "alpha"},
+        {"id": "ws-2", "name": "beta"},
+    ]
+
+    raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
+    query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/workspaces/?{query}",
+        json=raw_workspaces,
+        status_code=200,
+    )
+
+    workspaces = simai_client.workspaces.list(created_by_me=True)
+    assert [workspace.id for workspace in workspaces] == ["ws-1", "ws-2"]

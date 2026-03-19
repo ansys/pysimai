@@ -20,21 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict, Optional
+import json
+from typing import TYPE_CHECKING, Optional
 from urllib.parse import quote
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.data.types import File
 
+if TYPE_CHECKING:
+    from ansys.simai.core.data.types import RawFilters
+
 
 class WorkspaceClientMixin(ApiClientMixin):
     """Provides the client for the Workspace ("/workspaces") part of the API."""
 
-    def workspaces(self):
+    def workspaces(self, filters: Optional["RawFilters"] = None):
         """List all workspaces."""
-        return self._get("workspaces/")
+        params = None
+        if filters is not None:
+            params = {"filter[]": [json.dumps(f, separators=(",", ":")) for f in filters]}
+        return self._get("workspaces/", params=params)
 
-    def get_workspace(self, workspace_id: str) -> Dict[str, Any]:
+    def get_workspace(self, workspace_id: str):
         """Get information on a single workspace.
 
         Args:
