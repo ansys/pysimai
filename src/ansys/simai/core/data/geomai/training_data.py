@@ -230,7 +230,12 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
             Created :class:`GeomAITrainingData` object.
 
         See Also:
-            :meth:`create_from_file` handles all the creation of training data and parts for you
+            :meth:`create_from_file` handles all the creation of training data and parts for you.
+            Indeed, it performs automatically those three steps needed to finalize the upload of the training data:
+
+            1. :class:`create<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.create>`
+            #. :class:`upload_part<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.upload_part>`
+            #. :class:`extract_data<ansys.simai.core.data.geomai.training_data.GeomAITrainingData.extract_data>`
         """
         project_id = get_id_from_identifiable(project, required=False)
         return self._model_from(self._client._api.create_geomai_training_data(name, project_id))
