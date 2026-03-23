@@ -5,7 +5,7 @@ GeomAITrainingDataParts
 
 .. py:module:: ansys.simai.core.data.geomai.training_data_parts
 
-A :class:`GeomAITrainingDataParts<ansys.simai.core.data.geomai.training_data_parts.GeomAITrainingDataPart>` instance
+A :class:`GeomAITrainingDataPart<ansys.simai.core.data.geomai.training_data_parts.GeomAITrainingDataPart>` instance
 is a singular file that is part of a :class:`~ansys.simai.core.data.geomai.training_data.GeomAITrainingData`
 instance.
 
