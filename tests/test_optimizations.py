@@ -387,7 +387,7 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
         method="GET",
         url=f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
         status_code=200,
-        json={"public": {"feature_flags": ["server_side_optimization"]}},
+        json={"feature_flags": ["server_side_optimization"]},
     )
     httpx_mock.add_response(
         method="POST",
@@ -396,8 +396,11 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
         json={"id": "theid", "job_id": "the_job_id"},
     )
 
+    some_string = "1234abcd"  # because setting offline_t0ken directly messes with ruff :facepalm:
     result = simai_client.optimizations.run_non_parametric(
         geometry=geometry,
+        max_displacement=[1.1],
+        offline_token=some_string,
         bounding_boxes=[[0.1, 1, 0.1, 1, 0.1, 1]],
         symmetries=["x", "y", "z"],
         minimize=["TotalForceX"],
@@ -429,10 +432,8 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
                     "status": "successful",
                     "record": {
                         "id": "theid",
+                        "error": None,
                         "state": "successful",
-                        "initial_geometry_parameters": None,
-                    },
-                    "result": {
                         "iteration_results": iteration_results,
                     },
                     "target": {"type": "server_side_optimization", "id": "theid"},

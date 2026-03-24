@@ -49,5 +49,14 @@ class OptimizationClientMixin(ApiClientMixin):
     def get_optimization(self, optimization_id: str):
         return self._get(f"optimizations/{optimization_id}")
 
+    def get_server_side_optimization(self, ss_optimization_id: str):
+        return self._get(f"server-side-optimizations/{ss_optimization_id}")
+
+    def list_server_side_optimization_in_workspace(self, workspace_id: str):
+        return self._get(f"workspaces/{workspace_id}/server-side-optimizations")
+
     def get_optimization_trial_run(self, trial_run_id: str):
         return self._get(f"optimizations/trial-runs/{trial_run_id}")
+
+    def delete_server_side_optimization(self, ss_optimization_id: str):
+        return self._delete(f"server-side-optimizations/{ss_optimization_id}")

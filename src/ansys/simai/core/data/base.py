@@ -273,7 +273,7 @@ class Directory(ABC, Generic[DataModelType]):
             # update with new data
             item.fields = data
         else:
-            constructor = data_model if data_model else self._data_model
+            constructor = data_model or self._data_model
             # item was unknown: create it and save it to the registry
             item = constructor(self._client, self, data, **kwargs)
             self._registry[item_id] = item
