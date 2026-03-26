@@ -367,12 +367,11 @@ print(f"Charts saved to {CHARTS_FOLDER}.")
 
 import imageio.v3 as iio
 
-
 SCREENSHOTS_FOLDER = f"{OUTPUT_FOLDER}/optimization_{optimization_id}/screenshots"
-GIF_FOLDER = f"{OUTPUT_FOLDER}/optimization_{optimization_id}/GIFs"
+GIFS_FOLDER = f"{OUTPUT_FOLDER}/optimization_{optimization_id}/GIFs"
 
 os.makedirs(SCREENSHOTS_FOLDER, exist_ok=True)
-os.makedirs(GIF_FOLDER, exist_ok=True)
+os.makedirs(GIFS_FOLDER, exist_ok=True)
 
 # Output image resolution (width, height) in pixels
 IMG_SIZE = (1920, 1080)
@@ -448,7 +447,7 @@ for vtp_path in all_vtp_paths:
 for angle_name, png_paths in png_index.items():
     if not png_paths:
         continue
-    gif_path = f"{GIF_FOLDER}/{angle_name}.gif"
+    gif_path = f"{GIFS_FOLDER}/{angle_name}.gif"
     frames = [iio.imread(p) for p in png_paths]
     iio.imwrite(gif_path, frames, duration=GIF_FRAME_DURATION_MS, loop=0)
     print(f"  GIF ({len(frames)} frames) → {gif_path}")
