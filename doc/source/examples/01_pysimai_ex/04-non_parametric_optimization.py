@@ -111,7 +111,7 @@ ORGANIZATION_NAME = "<your_organization_name>"
 WORKSPACE_NAME = "<your_workspace_name>"
 CHOSEN_GEOMETRY_NAME = "<your_geometry_file.vtp>"
 
-# A bounding boxes must be defined as [xmin, xmax, ymin, ymax, zmin, zmax]
+# A bounding box must be defined as [xmin, xmax, ymin, ymax, zmin, zmax]
 BOUNDING_BOXES = [[-0.07, 0.15, -0.06, 0.12, -0.09, 0.15]]
 NUMBER_OF_ITERATIONS = 10
 # Symmetry constraints (e.g., ["X"] for YZ plane symmetry)
