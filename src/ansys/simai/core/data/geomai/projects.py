@@ -139,7 +139,7 @@ class GeomAIProject(DataModel):
         return self._client.geomai.workspaces._model_from(workspace[0])
 
     def get_last_model(self) -> Optional["GeomAIModel"]:
-        """Get the last model of the project."""
+        """Get the last model launched in the project."""
         model = self.fields.get("latest_model", None)
         if not model:
             return None
