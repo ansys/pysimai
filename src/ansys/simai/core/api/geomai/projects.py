@@ -20,15 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Dict, Iterator
+import json
+from typing import TYPE_CHECKING, Any, Dict, Iterator, Optional
 from urllib.parse import quote
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 
+if TYPE_CHECKING:
+    from ansys.simai.core.data.types import RawFilters
+
 
 class GeomAIProjectClientMixin(ApiClientMixin):
-    def geomai_projects(self):
-        return self._get("geomai/projects")
+    def geomai_projects(self, filters: Optional["RawFilters"]):
+        params = None
+        if filters is not None:
+            params = {"filter[]": [json.dumps(f, separators=(",", ":")) for f in filters]}
+        return self._get("geomai/projects", params=params)
 
     def get_geomai_project(self, id: str):
         return self._get(f"geomai/projects/{id}")
