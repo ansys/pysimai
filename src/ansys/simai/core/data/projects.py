@@ -262,7 +262,7 @@ class Project(DataModel):
         return self._client.workspaces._model_from(workspace[0])
 
     def get_last_model(self) -> Optional["Model"]:
-        """Get the last model of the project."""
+        """Get the last model launched in the project."""
         model = self.fields.get("last_model", None)
         if not model:
             return None
