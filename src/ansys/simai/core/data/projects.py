@@ -255,7 +255,7 @@ class Project(DataModel):
         self._client.current_project = self
 
     def get_last_workspace(self) -> Optional["Workspace"]:
-        """Get the last workspace of the project."""
+        """Get the last generated workspace of the project."""
         workspace = self._client._api.get_project_last_workspace(self.id)
         if not workspace:
             return None
