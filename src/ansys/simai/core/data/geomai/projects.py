@@ -137,7 +137,7 @@ class GeomAIProject(DataModel):
         self._client.geomai.current_project = self
 
     def get_last_workspace(self) -> Optional["GeomAIWorkspace"]:
-        """Get the last workspace of the project."""
+        """Get the last generated workspace of the project."""
         workspace = self._client._api.get_geomai_project_last_workspace(self.id)
         if not workspace:
             return None
