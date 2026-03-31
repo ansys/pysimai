@@ -1,0 +1,1127 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Non-parametric optimization &#8212; simai</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../_static/documentation_options.js?v=d9c7ed7f"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_examples/01_pysimai_ex/04-non_parametric_optimization';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://simai.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Generative Design" href="../02_generative_design_ex/index.html" />
+    <link rel="prev" title="List-based subset assignment" href="03-list_based_subset_assignment.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.3.10" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="AI" />
+  <link rel="canonical" href="https://simai.docs.pyansys.com/version/stable/_examples/01_pysimai_ex/04-non_parametric_optimization.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="simai - Home"/>
+    <img src="../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="simai - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="simai home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api_reference.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pysimai" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="simai home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api_reference.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pysimai" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../00_basic_simai_ex/index.html">SimAI basics</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../00_basic_simai_ex/00-create_project_upload_data.html">Creating a SimAI Project and Uploading Training Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../00_basic_simai_ex/01-build_model.html">Building a SimAI Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../00_basic_simai_ex/02-run_predictions.html">Running Physics Predictions</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">PySimAI utilities</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="00-model_configuration_reuse.html">Model configuration reuse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01-model_recomputation.html">Model recomputation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02-subset_assignment.html">Subset assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03-list_based_subset_assignment.html">List-based subset assignment</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Non-parametric optimization</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../02_generative_design_ex/index.html">Generative Design</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../02_generative_design_ex/00-create_project_upload_data.html">Creating a GeomAI Project and Uploading Training Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../02_generative_design_ex/01-build_model.html">Building a Generative Design Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../02_generative_design_ex/02-generate_random_geometries.html">Generating Random Geometries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../02_generative_design_ex/03-interpolate_geometries.html">Interpolating Between Geometries</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">Examples</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">PySimAI utilities</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Non-parametric optimization</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-01-pysimai-ex-04-non-parametric-optimization-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="non-parametric-optimization">
+<span id="ref-non-parametric-optimization"></span><span id="sphx-glr-examples-01-pysimai-ex-04-non-parametric-optimization-py"></span><h1>Non-parametric optimization<a class="headerlink" href="#non-parametric-optimization" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how to perform non-parametric optimization in SimAI
+using the automorphing feature. Non-parametric optimization improves the performance
+of a baseline geometry by applying smooth, data-driven deformations based on
+predicted sensitivity maps.</p>
+<p>This approach is especially useful when there are no predefined design parameters,
+as it enables you to optimize the geometry directly by applying smooth and continuous
+deformations without generating new geometries or reparametrizing existing designs.</p>
+<section id="before-you-begin">
+<h2>Before you begin<a class="headerlink" href="#before-you-begin" title="Link to this heading">#</a></h2>
+<p>Make sure you have:</p>
+<ul class="simple">
+<li><p>A trained SimAI model with an associated workspace.</p></li>
+<li><p>A baseline geometry uploaded to the workspace (supported formats: <code class="docutils literal notranslate"><span class="pre">vtp</span></code>, <code class="docutils literal notranslate"><span class="pre">stl</span></code>, <code class="docutils literal notranslate"><span class="pre">zip</span></code>, <code class="docutils literal notranslate"><span class="pre">cgns</span></code>).</p></li>
+<li><p>Defined bounding boxes that specify regions where deformations can occur.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ansys-simai-core</span></code> library installed.</p></li>
+<li><p>(Optional) The <code class="docutils literal notranslate"><span class="pre">pyvista</span></code> library (or your preferred CAD tool) installed for bounding box visualization.</p></li>
+</ul>
+</section>
+<section id="key-concepts">
+<h2>Key concepts<a class="headerlink" href="#key-concepts" title="Link to this heading">#</a></h2>
+<p><strong>Baseline geometry</strong>: The geometry to optimize. Choose a representative geometry from your dataset.</p>
+<p><strong>Bounding boxes</strong>: Define the regions where deformations can occur.
+Bounding boxes are specified as <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">xmax,</span> <span class="pre">ymin,</span> <span class="pre">ymax,</span> <span class="pre">zmin,</span> <span class="pre">zmax]</span></code>.
+Start with boxes covering areas most likely to influence performance improvements.</p>
+<p><strong>Symmetries</strong>: Optional constraints to reduce computational costs. Can be planar (e.g., <code class="docutils literal notranslate"><span class="pre">[&quot;X&quot;]</span></code>
+for YZ plane symmetry) or axial.</p>
+<p><strong>Scalars</strong>: Must correspond to the scalars defined in the SimAI workspace configuration.</p>
+<p><strong>Number of iterations</strong>: Determines how many rounds of improvement are executed.
+Use 5 iterations for quick tests, or 100+ for production runs.</p>
+<p><strong>Objective</strong>: The performance indicator to optimize (e.g., minimize drag, maximize lift).
+Only one objective can be defined for non-parametric optimization.</p>
+</section>
+<section id="visualize-bounding-boxes-optional">
+<h2>Visualize bounding boxes (optional)<a class="headerlink" href="#visualize-bounding-boxes-optional" title="Link to this heading">#</a></h2>
+<p>Before running the optimization, you can visualize the bounding boxes
+on your geometry using PyVista to ensure they cover the correct regions.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
+
+<span class="c1"># Path to the surface mesh file - replace with your geometry file path</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_geometry_file.vtp&gt;&quot;</span>
+
+<span class="c1"># Define bounding boxes as [xmin, xmax, ymin, ymax, zmin, zmax]</span>
+<span class="n">BOUNDING_BOXES</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">]]</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+<span class="n">plotter</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Plotter</span><span class="p">()</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">show_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Add bounding boxes to the scene</span>
+<span class="k">for</span> <span class="n">bounds</span> <span class="ow">in</span> <span class="n">BOUNDING_BOXES</span><span class="p">:</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Cube</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">plotter</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="run-non-parametric-optimization">
+<h2>Run non-parametric optimization<a class="headerlink" href="#run-non-parametric-optimization" title="Link to this heading">#</a></h2>
+<p><strong>This is the only section you need to edit.</strong>
+Update the variables below to match your setup and the rest of the script
+will run automatically without any further changes.</p>
+<p>The one exception is if you want to <strong>minimize</strong> the objective instead of
+maximizing it: replace <code class="docutils literal notranslate"><span class="pre">maximize=OBJECTIVE</span></code> with <code class="docutils literal notranslate"><span class="pre">minimize=OBJECTIVE</span></code>
+in the <code class="docutils literal notranslate"><span class="pre">run_non_parametric</span></code> call further below.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">ansys.simai.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">asc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.simai.core.data.predictions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prediction</span>
+
+<span class="n">ORGANIZATION_NAME</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_organization_name&gt;&quot;</span>
+<span class="n">WORKSPACE_NAME</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_workspace_name&gt;&quot;</span>
+<span class="n">CHOSEN_GEOMETRY_NAME</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_geometry_file.vtp&gt;&quot;</span>
+
+<span class="c1"># A bounding box must be defined as [xmin, xmax, ymin, ymax, zmin, zmax]</span>
+<span class="n">BOUNDING_BOXES</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">]]</span>
+<span class="n">NUMBER_OF_ITERATIONS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="c1"># Symmetry constraints (e.g., [&quot;X&quot;] for YZ plane symmetry)</span>
+<span class="n">SYMMETRIES</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># Objective to maximize (use minimize parameter for minimization)</span>
+<span class="n">OBJECTIVE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;global_coefficient_objective&gt;&quot;</span><span class="p">]</span>
+<span class="c1"># Output folder for results</span>
+<span class="n">OUTPUT_FOLDER</span> <span class="o">=</span> <span class="s2">&quot;simai_output&quot;</span>
+</pre></div>
+</div>
+<section id="initialize-simai-client-and-workspace">
+<h3>Initialize SimAI client and workspace<a class="headerlink" href="#initialize-simai-client-and-workspace" title="Link to this heading">#</a></h3>
+<p>Connect to SimAI and retrieve the workspace and baseline geometry:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">simai</span> <span class="o">=</span> <span class="n">asc</span><span class="o">.</span><span class="n">SimAIClient</span><span class="p">(</span><span class="n">organization</span><span class="o">=</span><span class="n">ORGANIZATION_NAME</span><span class="p">)</span>
+
+<span class="n">workspace</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">workspaces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">WORKSPACE_NAME</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using workspace: </span><span class="si">{</span><span class="n">workspace</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">geometries</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">workspace</span><span class="o">=</span><span class="n">workspace</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">CHOSEN_GEOMETRY_NAME</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Baseline geometry: </span><span class="si">{</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="start-the-optimization">
+<h3>Start the optimization<a class="headerlink" href="#start-the-optimization" title="Link to this heading">#</a></h3>
+<p>Launch the optimization with the configured parameters.
+The optimization will generate new geometries at each iteration
+by applying smooth deformations to the baseline geometry.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">optimization_result</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">optimizations</span><span class="o">.</span><span class="n">run_non_parametric</span><span class="p">(</span>
+    <span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">,</span>
+    <span class="n">bounding_boxes</span><span class="o">=</span><span class="n">BOUNDING_BOXES</span><span class="p">,</span>
+    <span class="n">scalars</span><span class="o">=</span><span class="p">{},</span>  <span class="c1"># Scalars must match your workspace configuration</span>
+    <span class="n">n_iters</span><span class="o">=</span><span class="n">NUMBER_OF_ITERATIONS</span><span class="p">,</span>
+    <span class="n">symmetries</span><span class="o">=</span><span class="n">SYMMETRIES</span><span class="p">,</span>
+    <span class="n">maximize</span><span class="o">=</span><span class="n">OBJECTIVE</span><span class="p">,</span>  <span class="c1"># Use &#39;minimize&#39; parameter for minimization objectives</span>
+    <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="display-optimization-results">
+<h3>Display optimization results<a class="headerlink" href="#display-optimization-results" title="Link to this heading">#</a></h3>
+<p>Print the optimization ID, generated geometries, and objective values:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">optimization_id</span> <span class="o">=</span> <span class="n">optimization_result</span><span class="o">.</span><span class="n">optimization</span><span class="o">.</span><span class="n">id</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimization ID: </span><span class="si">{</span><span class="n">optimization_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated geometries: </span><span class="si">{</span><span class="p">[</span><span class="n">geo</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">geo</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">optimization_result</span><span class="o">.</span><span class="n">list_geometries</span><span class="p">()]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Objectives: </span><span class="si">{</span><span class="n">optimization_result</span><span class="o">.</span><span class="n">list_objectives</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="run-predictions-on-optimized-geometries">
+<h3>Run predictions on optimized geometries<a class="headerlink" href="#run-predictions-on-optimized-geometries" title="Link to this heading">#</a></h3>
+<p>You can get back your optimization from its ID when done asynchronously.
+Run predictions on all generated geometries to evaluate their performance:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">predictions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Prediction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">optimization_result</span><span class="o">.</span><span class="n">list_geometries</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running prediction for: </span><span class="si">{</span><span class="n">geom</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (ID: </span><span class="si">{</span><span class="n">geom</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">prediction</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">run_prediction</span><span class="p">(</span><span class="n">scalars</span><span class="o">=</span><span class="p">{})</span>  <span class="c1"># Scalars must match your workspace configuration</span>
+    <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="analyze-the-results-from-an-optimization-run">
+<h2>Analyze the results from an optimization run<a class="headerlink" href="#analyze-the-results-from-an-optimization-run" title="Link to this heading">#</a></h2>
+<p>Download surface VTP files for each prediction:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">VTPS_FOLDER</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">OUTPUT_FOLDER</span><span class="si">}</span><span class="s2">/optimization_</span><span class="si">{</span><span class="n">optimization_id</span><span class="si">}</span><span class="s2">/VTPs&quot;</span>
+<a href="https://docs.python.org/3/library/os.html#os.makedirs" title="os.makedirs" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span></a><span class="p">(</span><span class="n">VTPS_FOLDER</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">prediction</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">:</span>
+    <span class="c1"># Wait for prediction to complete</span>
+    <span class="n">prediction</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">geometry</span>
+    <span class="n">geom_name</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloading results for: </span><span class="si">{</span><span class="n">geom</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (ID: </span><span class="si">{</span><span class="n">geom</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">surface_vtp</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">surface_vtp</span><span class="p">()</span>
+    <span class="n">surface_vtp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">VTPS_FOLDER</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">geom_name</span><span class="si">}</span><span class="s2">_surface.vtp&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All results downloaded successfully!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="visualize-optimization-progression">
+<h3>Visualize optimization progression<a class="headerlink" href="#visualize-optimization-progression" title="Link to this heading">#</a></h3>
+<p>Plot the objective value at each iteration alongside the baseline and
+±5 % reference bands, then plot mean and maximum displacement per iteration.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</pre></div>
+</div>
+</section>
+<section id="get-the-baseline-objective-value">
+<h3>Get the baseline objective value<a class="headerlink" href="#get-the-baseline-objective-value" title="Link to this heading">#</a></h3>
+<p>Run a prediction on the original baseline geometry to obtain the
+reference objective value used for the ±5 % horizontal bands.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">CHARTS_FOLDER</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">OUTPUT_FOLDER</span><span class="si">}</span><span class="s2">/optimization_</span><span class="si">{</span><span class="n">optimization_id</span><span class="si">}</span><span class="s2">/charts&quot;</span>
+<a href="https://docs.python.org/3/library/os.html#os.makedirs" title="os.makedirs" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span></a><span class="p">(</span><span class="n">CHARTS_FOLDER</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running baseline prediction for visualization reference...&quot;</span><span class="p">)</span>
+<span class="n">baseline_pred</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">run_prediction</span><span class="p">()</span>
+<span class="n">baseline_pred</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+<span class="n">baseline_gc_data</span> <span class="o">=</span> <span class="n">baseline_pred</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">global_coefficients</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+<span class="n">baseline_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">baseline_gc_data</span><span class="p">[</span><span class="n">OBJECTIVE</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Baseline </span><span class="si">{</span><span class="n">OBJECTIVE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">baseline_value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="collect-per-iteration-objective-values">
+<h3>Collect per-iteration objective values<a class="headerlink" href="#collect-per-iteration-objective-values" title="Link to this heading">#</a></h3>
+<p>The optimization records the scalar objective at each iteration.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">raw_objectives</span> <span class="o">=</span> <span class="n">optimization_result</span><span class="o">.</span><span class="n">list_objectives</span><span class="p">()</span>
+<span class="n">obj_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">OBJECTIVE</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">raw_objectives</span><span class="p">]</span>
+
+<span class="n">iterations</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj_values</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="chart-1-objective-progression-over-iterations">
+<h3>Chart 1 – Objective progression over iterations<a class="headerlink" href="#chart-1-objective-progression-over-iterations" title="Link to this heading">#</a></h3>
+<p>The dashed and dotted horizontal lines mark a ±5 % band around the baseline.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iterations</span><span class="p">,</span> <span class="n">obj_values</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">OBJECTIVE</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">baseline_value</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Baseline&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
+    <span class="n">baseline_value</span> <span class="o">*</span> <span class="mf">1.05</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Baseline +5 %&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
+    <span class="n">baseline_value</span> <span class="o">*</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Baseline </span><span class="se">\u2212</span><span class="s2">5 %&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Iteration&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">OBJECTIVE</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Objective progression over optimization iterations&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CHARTS_FOLDER</span><span class="si">}</span><span class="s2">/objective_progression.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="collect-per-iteration-displacement-statistics">
+<h3>Collect per-iteration displacement statistics<a class="headerlink" href="#collect-per-iteration-displacement-statistics" title="Link to this heading">#</a></h3>
+<p>Read the surface VTP file for each generated geometry and extract the
+<code class="docutils literal notranslate"><span class="pre">Delta</span></code> field.  Nodes that did not move (value == 0) are
+filtered out because many surface nodes are intentionally frozen by the
+bounding-box constraints.  Mean and maximum magnitude are then computed
+from the remaining active nodes.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geom_list</span> <span class="o">=</span> <span class="n">optimization_result</span><span class="o">.</span><span class="n">list_geometries</span><span class="p">()</span>
+<span class="n">mean_displacements</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">max_displacements</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">geom_list</span><span class="p">:</span>
+    <span class="n">geom_name</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">vtp_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">VTPS_FOLDER</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">geom_name</span><span class="si">}</span><span class="s2">_surface.vtp&quot;</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">vtp_path</span><span class="p">)</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">point_data</span><span class="p">[</span><span class="s2">&quot;Delta&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Compute per-node magnitude</span>
+    <span class="n">magnitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Exclude nodes that did not move by design</span>
+    <span class="n">nonzero</span> <span class="o">=</span> <span class="n">magnitude</span><span class="p">[</span><span class="n">magnitude</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">mean_displacements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">nonzero</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="k">if</span> <span class="n">nonzero</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">max_displacements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">nonzero</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="k">if</span> <span class="n">nonzero</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="chart-2-displacement-statistics-over-iterations">
+<h3>Chart 2 – Displacement statistics over iterations<a class="headerlink" href="#chart-2-displacement-statistics-over-iterations" title="Link to this heading">#</a></h3>
+<p>Shows how the surface deformation evolves iteration by iteration.
+A growing maximum displacement indicates the optimizer is making increasingly
+bold geometry changes; a plateau suggests convergence.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">iterations</span><span class="p">,</span>
+    <span class="n">mean_displacements</span><span class="p">,</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Mean displacement (active nodes)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">iterations</span><span class="p">,</span>
+    <span class="n">max_displacements</span><span class="p">,</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Max displacement (active nodes)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Iteration&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Delta magnitude&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Surface displacement statistics over optimization iterations&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CHARTS_FOLDER</span><span class="si">}</span><span class="s2">/displacement_statistics.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Charts saved to </span><span class="si">{</span><span class="n">CHARTS_FOLDER</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="tips-for-effective-optimization">
+<h2>Tips for effective optimization<a class="headerlink" href="#tips-for-effective-optimization" title="Link to this heading">#</a></h2>
+<p><strong>Data preparation</strong>: Ensure the maximum magnitude within simulation data matches
+the minimal optimization gain you want. For example, for a 4% drag reduction,
+ensure there is around 4% drag difference between the best and worst training data.</p>
+<p><strong>Bounding boxes</strong>: Start with boxes covering areas most likely to influence performance.
+If results do not improve, increase box size or add more boxes. Avoid excessively large
+boxes that may cause unrealistic deformations.</p>
+<p><strong>Baseline geometry</strong>: If optimization does not improve after several iterations,
+try a different geometry from the training data. Ensure the geometry is clean
+and of high quality.</p>
+<p><strong>Iterative workflow</strong>: For best results, run the optimization, verify results
+with your solver, add optimums as new training data, rebuild the model, and repeat
+at least 3 times.</p>
+</section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Visualize the surface VTP files.</p></li>
+<li><p>Run solver verification on selected optimized geometries.</p></li>
+<li><p>Add validated results as new training data for model improvement.</p></li>
+</ul>
+<p>For more details on configuration options, see the
+<a class="reference internal" href="../../user_guide/automorphing/configure_automorphing.html#configure-automorphing"><span class="std std-ref">automorphing configuration guide</span></a>.</p>
+</section>
+<section id="other-tools-generate-screenshots-and-gifs">
+<h2>Other tools: Generate screenshots and GIFs<a class="headerlink" href="#other-tools-generate-screenshots-and-gifs" title="Link to this heading">#</a></h2>
+<p>For every optimized geometry, render a screenshot from each camera angle.
+Then assemble one GIF per angle so the deformation is
+clearly visible.</p>
+<p>Requirements: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">imageio</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">imageio.v3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">iio</span>
+
+<span class="n">SCREENSHOTS_FOLDER</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">OUTPUT_FOLDER</span><span class="si">}</span><span class="s2">/optimization_</span><span class="si">{</span><span class="n">optimization_id</span><span class="si">}</span><span class="s2">/screenshots&quot;</span>
+<span class="n">GIFS_FOLDER</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">OUTPUT_FOLDER</span><span class="si">}</span><span class="s2">/optimization_</span><span class="si">{</span><span class="n">optimization_id</span><span class="si">}</span><span class="s2">/GIFs&quot;</span>
+
+<a href="https://docs.python.org/3/library/os.html#os.makedirs" title="os.makedirs" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span></a><span class="p">(</span><span class="n">SCREENSHOTS_FOLDER</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/os.html#os.makedirs" title="os.makedirs" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span></a><span class="p">(</span><span class="n">GIFS_FOLDER</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Output image resolution (width, height) in pixels</span>
+<span class="n">IMG_SIZE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">)</span>
+
+<span class="c1"># Visual style</span>
+<span class="n">BACKGROUND_COLOR</span> <span class="o">=</span> <span class="s2">&quot;white&quot;</span>
+<span class="n">MESH_COLOR</span> <span class="o">=</span> <span class="s2">&quot;lightgray&quot;</span>
+
+<span class="n">GIF_FRAME_DURATION_MS</span> <span class="o">=</span> <span class="mi">120</span>
+
+<span class="c1"># Named camera angles</span>
+<span class="n">CAMERA_ANGLES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;front&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">&quot;rear&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+    <span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+    <span class="s2">&quot;isometric&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_apply_camera</span><span class="p">(</span><span class="n">plotter</span><span class="p">:</span> <span class="n">pv</span><span class="o">.</span><span class="n">Plotter</span><span class="p">,</span> <span class="n">camera_angle</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Point the camera in the direction specified by ``camera_angle``.&quot;&quot;&quot;</span>
+    <span class="n">position_dir</span><span class="p">,</span> <span class="n">view_up</span> <span class="o">=</span> <span class="n">CAMERA_ANGLES</span><span class="p">[</span><span class="n">camera_angle</span><span class="p">]</span>
+
+    <span class="n">plotter</span><span class="o">.</span><span class="n">reset_camera</span><span class="p">()</span>
+    <span class="n">focal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">plotter</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">focal_point</span><span class="p">)</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">distance</span>
+    <span class="n">pos_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">position_dir</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">pos_dir</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pos_dir</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">focal</span> <span class="o">+</span> <span class="n">pos_dir</span> <span class="o">*</span> <span class="n">dist</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">focal_point</span> <span class="o">=</span> <span class="n">focal</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="n">view_up</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">screenshot_vtp</span><span class="p">(</span>
+    <span class="n">vtp_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">png_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">camera_angle</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;isometric&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a PNG screenshot with a camera framed on the global bounding box.&quot;&quot;&quot;</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">vtp_path</span><span class="p">)</span>
+    <span class="n">plotter</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Plotter</span><span class="p">(</span><span class="n">off_screen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">IMG_SIZE</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">background_color</span> <span class="o">=</span> <span class="n">BACKGROUND_COLOR</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">MESH_COLOR</span><span class="p">,</span> <span class="n">show_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_apply_camera</span><span class="p">(</span><span class="n">plotter</span><span class="p">,</span> <span class="n">camera_angle</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="mf">1.3</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="n">png_path</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Render screenshots and GIFs</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="n">all_vtp_paths</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">VTPS_FOLDER</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">geom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">_surface.vtp&quot;</span>
+    <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">optimization_result</span><span class="o">.</span><span class="n">list_geometries</span><span class="p">()</span>
+<span class="p">]</span>
+
+<span class="n">png_index</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">angle</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">CAMERA_ANGLES</span><span class="p">}</span>
+
+<span class="k">for</span> <span class="n">vtp_path</span> <span class="ow">in</span> <span class="n">all_vtp_paths</span><span class="p">:</span>
+    <span class="n">stem</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.splitext" title="os.path.splitext" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/os.path.html#os.path.basename" title="os.path.basename" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span></a><span class="p">(</span><span class="n">vtp_path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">angle_name</span> <span class="ow">in</span> <span class="n">CAMERA_ANGLES</span><span class="p">:</span>
+        <span class="n">png_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SCREENSHOTS_FOLDER</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">stem</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">angle_name</span><span class="si">}</span><span class="s2">.png&quot;</span>
+        <span class="n">screenshot_vtp</span><span class="p">(</span><span class="n">vtp_path</span><span class="p">,</span> <span class="n">png_path</span><span class="p">,</span> <span class="n">camera_angle</span><span class="o">=</span><span class="n">angle_name</span><span class="p">)</span>
+        <span class="n">png_index</span><span class="p">[</span><span class="n">angle_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">png_path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Screenshot → </span><span class="si">{</span><span class="n">png_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">for</span> <span class="n">angle_name</span><span class="p">,</span> <span class="n">png_paths</span> <span class="ow">in</span> <span class="n">png_index</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">png_paths</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">gif_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">GIFS_FOLDER</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">angle_name</span><span class="si">}</span><span class="s2">.gif&quot;</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">png_paths</span><span class="p">]</span>
+    <span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">gif_path</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">GIF_FRAME_DURATION_MS</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  GIF (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span><span class="si">}</span><span class="s2"> frames) → </span><span class="si">{</span><span class="n">gif_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">All screenshots and GIFs saved.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-01-pysimai-ex-04-non-parametric-optimization-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/3288c7b1b413131edaf638a4a2023119/04-non_parametric_optimization.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">04-non_parametric_optimization.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/f175466cb384533d8d9313897ba37141/04-non_parametric_optimization.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">04-non_parametric_optimization.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/5d5ea17266f0b40611d825439fee6d21/04-non_parametric_optimization.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">04-non_parametric_optimization.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#before-you-begin">Before you begin</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts">Key concepts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-bounding-boxes-optional">Visualize bounding boxes (optional)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-non-parametric-optimization">Run non-parametric optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initialize-simai-client-and-workspace">Initialize SimAI client and workspace</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#start-the-optimization">Start the optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#display-optimization-results">Display optimization results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-predictions-on-optimized-geometries">Run predictions on optimized geometries</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analyze-the-results-from-an-optimization-run">Analyze the results from an optimization run</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-optimization-progression">Visualize optimization progression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-the-baseline-objective-value">Get the baseline objective value</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#collect-per-iteration-objective-values">Collect per-iteration objective values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chart-1-objective-progression-over-iterations">Chart 1 – Objective progression over iterations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#collect-per-iteration-displacement-statistics">Collect per-iteration displacement statistics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chart-2-displacement-statistics-over-iterations">Chart 2 – Displacement statistics over iterations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tips-for-effective-optimization">Tips for effective optimization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-tools-generate-screenshots-and-gifs">Other tools: Generate screenshots and GIFs</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/_examples/01_pysimai_ex/04-non_parametric_optimization.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.7.0.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
