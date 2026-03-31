@@ -123,7 +123,7 @@ def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] =
     logger.warning(
         "'build_boundary_conditions()' is deprecated and will be removed in a future release. Please use 'build_scalars()' instead."
     )
-    bc = boundary_conditions if boundary_conditions else {}
+    bc = boundary_conditions or {}
     bc.update(**kwargs)
     if bc is None:
         raise ValueError("No boundary condition was specified.")
@@ -168,7 +168,7 @@ def are_boundary_conditions_equal(
 
 
 def build_scalars(scalars: Optional[Dict[str, Number]] = None, **kwargs):
-    bc = scalars if scalars else {}
+    bc = scalars or {}
     bc.update(**kwargs)
     if bc is None:
         raise ValueError("No scalar was specified.")

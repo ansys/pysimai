@@ -83,7 +83,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
 
         return {
             "formula": gc_formula,
-            "bc_list": bc if bc else [],
+            "bc_list": bc or [],
             "surface_field_list": [
                 fd
                 for fd in sample_metadata.get("surface").get("fields")
