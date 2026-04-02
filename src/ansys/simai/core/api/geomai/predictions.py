@@ -21,7 +21,9 @@
 # SOFTWARE.
 
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
+
+from pydantic import PositiveInt
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.data.types import File
@@ -57,6 +59,13 @@ class GeomAIPredictionClientMixin(ApiClientMixin):
 
     def run_geomai_prediction(self, workspace_id: str, configuration: Dict):  # noqa: D417
         return self._post(f"geomai/workspaces/{workspace_id}/predictions", json=configuration)
+
+    def run_geomai_sampling(
+        self, workspace_id: str, resolution: Optional[Tuple[PositiveInt, PositiveInt, PositiveInt]]
+    ):
+        return self._post(
+            f"geomai/workspaces/{workspace_id}/predictions/sample", json={"resolution": resolution}
+        )
 
     def download_geomai_prediction(self, prediction_id: str, file: Optional[File]):
         return self.download_file(f"geomai/predictions/{prediction_id}/download", file)
