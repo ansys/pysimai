@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
 from typing import Any, Dict, Iterator
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 
@@ -69,3 +70,25 @@ class GeomAIProjectClientMixin(ApiClientMixin):
 
     def cancel_geomai_build(self, project_id: str):
         return self._post(f"geomai/projects/{project_id}/cancel-training", return_json=False)
+
+    def get_geomai_project_last_workspace(self, project_id: str):
+        query = urlencode(
+            [
+                (
+                    "filter[]",
+                    json.dumps(
+                        {"field": "project", "operator": "EQ", "value": project_id},
+                        separators=(",", ":"),
+                    ),
+                ),
+                (
+                    "sort[]",
+                    json.dumps(
+                        {"field": "id", "order": "desc"},
+                        separators=(",", ":"),
+                    ),
+                ),
+                ("page_size", 1),
+            ]
+        )
+        return self._get(f"geomai/workspaces/?{query}")
