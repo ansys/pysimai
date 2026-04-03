@@ -222,6 +222,11 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
     ) -> GeomAITrainingData:
         """Create an empty :class:`GeomAITrainingData` object.
 
+        After the creation, you need to:
+
+        1. :class:`upload_part<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.upload_part>`
+        #. :class:`extract_data<ansys.simai.core.data.geomai.training_data.GeomAITrainingData.extract_data>`
+
         Args:
             name: Name to give the new :class:`GeomAITrainingData` object.
             project: :class:`~.projects.Project` object to associate the data with.
@@ -230,7 +235,12 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
             Created :class:`GeomAITrainingData` object.
 
         See Also:
-            :meth:`create_from_file` handles all the creation of training data and parts for you
+            :meth:`create_from_file` handles all the creation of training data and parts for you.
+            Indeed, it performs automatically those three steps needed to finalize the upload of the training data:
+
+            1. :class:`create<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.create>`
+            #. :class:`upload_part<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.upload_part>`
+            #. :class:`extract_data<ansys.simai.core.data.geomai.training_data.GeomAITrainingData.extract_data>`
         """
         project_id = get_id_from_identifiable(project, required=False)
         return self._model_from(self._client._api.create_geomai_training_data(name, project_id))
@@ -242,6 +252,12 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> GeomAITrainingData:
         """Convenience function to create a :class:`GeomAITrainingData` object from a file.
+
+        Indeed, it performs automatically those three steps needed to finalize the upload of the training data:
+
+        1. :class:`create<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.create>`
+        #. :class:`upload_part<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.upload_part>`
+        #. :class:`extract_data<ansys.simai.core.data.geomai.training_data.GeomAITrainingData.extract_data>`
 
         Args:
             file: :obj:`~ansys.simai.core.data.types.NamedFile` to upload.
@@ -270,7 +286,10 @@ class GeomAITrainingDataDirectory(Directory[GeomAITrainingData]):
         file: NamedFile,
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> "GeomAITrainingDataPart":
-        """Add a part to a :class:`GeomAITrainingData` object.
+        """Add a part to a :class:`GeomAITrainingData` object previously created with the
+        :class:`create<ansys.simai.core.data.geomai.training_data.GeomAITrainingDataDirectory.create>` function.
+        Once all parts have been fully uploaded, perform the :class:`extract_data<ansys.simai.core.data.geomai.training_data.GeomAITrainingData.extract_data>`
+        function to process data.
 
         Args:
             training_data: ID or :class:`model <GeomAITrainingData>` object of the training data to
