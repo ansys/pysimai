@@ -325,8 +325,13 @@ class OptimizationDirectory(Directory[Optimization]):
                 )
 
             if not max_displacement:
+                raise InvalidArguments("max_displacement must be provided")
+
+            if part_morphing and not (
+                isinstance(part_morphing, (dict, OptimizationPartMorphingSchema))
+            ):
                 raise InvalidArguments(
-                    "max_displacement must be provided as the model uses server-side optimizations"
+                    "part_morphing must either be a OptimizationPartMorphingSchema or a dict"
                 )
 
             return self._run_server_side_optimization(
@@ -415,15 +420,23 @@ class OptimizationDirectory(Directory[Optimization]):
         }
         if part_morphing:
             server_side_optimization_parameters["part_morphing"] = {
-                "part_ids": part_morphing.part_ids,
-                "continuity_constraint": part_morphing.continuity_constraint,
+                "part_ids": part_morphing["part_ids"]
+                if isinstance(part_morphing, dict)
+                else part_morphing.part_ids,
+                "continuity_constraint": part_morphing["continuity_constraint"]
+                if isinstance(part_morphing, dict)
+                else part_morphing.continuity_constraint,
             }
 
         res = self._client._api.run_server_side_optimization(
             workspace_id, server_side_optimization_parameters
         )
 
-        return self._client._optimization_directory._model_from(data=res, data_model=Optimization)
+        optim = self._client._optimization_directory._model_from(data=res, data_model=Optimization)
+        logger.info(
+            f"Optimization id '{optim.id}' on geometry '{geometry.id}' just started server-side."
+        )
+        return optim
 
     def _handle_sse_event(self, data: dict[str, Any]) -> None:
         item_id: str = f"{data['target']['id']}"

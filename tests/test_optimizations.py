@@ -396,11 +396,11 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
         json={"id": "theid", "job_id": "the_job_id"},
     )
 
-    some_string = "1234abcd"  # because setting offline_t0ken directly messes with ruff :facepalm:
+    # ruff: noqa: S106
     result = simai_client.optimizations.run_non_parametric(
         geometry=geometry,
         max_displacement=[1.1],
-        offline_token=some_string,
+        offline_token="offline_token_example",
         bounding_boxes=[[0.1, 1, 0.1, 1, 0.1, 1]],
         symmetries=["x", "y", "z"],
         minimize=["TotalForceX"],
