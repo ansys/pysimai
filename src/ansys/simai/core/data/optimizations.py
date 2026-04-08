@@ -351,15 +351,15 @@ class OptimizationDirectory(Directory[Optimization]):
                 part_morphing=part_morphing,
             )
         else:
-            logger.debug("Falling back to client-side optimization loop")
+            logger.debug("Falling back to client-side optimization loop.")
             if detail_level:
                 warnings.warn(
-                    "provided detail_level won't be used as server-side optimization is not supported on this workspace",
+                    "Provided detail_level will not be used as this workspace does not support server-side optimizations.",
                     stacklevel=1,
                 )
             if part_morphing:
                 warnings.warn(
-                    "provided part_morphing won't be used as server-side optimization is not supported on this workspace",
+                    "Provided part_morphing will not be used as this workspace does not support server-side optimizations.",
                     stacklevel=1,
                 )
             return self._client._legacy_optimization_directory.run_non_parametric(
