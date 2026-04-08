@@ -40,7 +40,7 @@ Workflow to perform an effective non-parametric optimization
 Step 1. Data upload to SimAI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Select the surface geometries that you want to optimize based on the requirements above.
+1. Select the surface geometries that you want to optimize based on the preceding requirements.
 #. | Prepare the geometry files to be compliant with SimAI.
    | For more information, see the online `SimAI User's Guide`_.
 #. Upload those geometry files to SimAI.
