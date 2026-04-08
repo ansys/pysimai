@@ -117,7 +117,7 @@ class LegacyOptimizationResult:
 
 @dataclass
 class OptimizationPartMorphingSchema:
-    """Type definition for specifying optimization part morphing.
+    """Type used to specify optimization part morphing.
 
     Args:
         parts_ids: The id of the parts to be deformed provided as a list of integers, and it must correspond to a cell field of the baseline geometry exactly named ``PartId``.
@@ -197,6 +197,9 @@ class OptimizationDirectory(Directory[Optimization]):
         """Run an optimization to generate geometries, using automorphing.
         Automorphing is a non-parametric deformation of a surface geometry.
         If possible, the function will try to run the optimization loop server-side. If not possible, the function will fall back to running the optimization loop client-side (legacy).
+
+        .. warning::
+            The ``boundary_conditions`` parameter is deprecated.
 
         Args:
             geometry: Required. The object (Geometry) or the ID (str) of the baseline geometry on which to perform
@@ -278,9 +281,6 @@ class OptimizationDirectory(Directory[Optimization]):
                 overall magnitude deformation. The more the continuity is enforced, the lower the overall magnitude deformation will be. To overcome that behavior, the user can increase the ``detail_level`` value.
 
                 Example: ``part_morphing = {"part_ids":[1,2], "continuity_constraint":0.8}``
-
-        .. warning::
-            The ``boundary_conditions`` parameter is deprecated.
 
         Example:
           .. code-block:: python
