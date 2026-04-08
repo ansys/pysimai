@@ -122,7 +122,7 @@ class OptimizationPartMorphingSchema:
     Args:
         parts_ids: The id of the parts to be deformed provided as a list of integers, and it must correspond to a cell field of the baseline geometry exactly named ``PartId``.
 
-        continuity_constraint: indicates how much the continuity aterface between deformed and non-deformed parts must be enforced. It can be set between 0 and 1 included.
+        continuity_constraint: Indicates how much the continuity at the interface between deformed and non-deformed parts must be enforced. It can be set between 0 and 1 included.
             At 0, the continuity is not constrained at all during the optimization. For a ``continuity_constraint`` of 1, the continuity is the best. This parameter also has an impact on the overall magnitude deformation. The more the continuity is enforced, the lower the overall magnitude deformation will be. To overcome that behavior, the user can increase the ``detail_level`` value.
     """
 
