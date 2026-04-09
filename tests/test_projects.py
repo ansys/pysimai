@@ -508,12 +508,45 @@ def test_project_get_last_workspace(simai_client, httpx_mock):
     assert workspace.id == "ws01"
 
 
-def test_project_get_last_model(simai_client):
-    project = simai_client.projects._model_from(
-        {"id": "0011", "name": "riri", "last_model": {"id": "mdl01"}}
+def test_project_get_last_workspace_empty_returns_none(simai_client, httpx_mock):
+    project = simai_client.projects._model_from({"id": "0011", "name": "riri"})
+    expected_query = urlencode(
+        [
+            (
+                "filter[]",
+                json.dumps(
+                    {"field": "project", "operator": "EQ", "value": project.id},
+                    separators=(",", ":"),
+                ),
+            ),
+            (
+                "sort[]",
+                json.dumps(
+                    {"field": "id", "order": "desc"},
+                    separators=(",", ":"),
+                ),
+            ),
+            ("page_size", 1),
+        ]
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/workspaces/?{expected_query}",
+        json=[],
+        status_code=200,
     )
 
-    model = project.get_last_model()
+    workspace = project.get_last_workspace()
+
+    assert workspace is None
+
+
+def test_project_get_last_model(simai_client):
+    project = simai_client.projects._model_from(
+        {"id": "0011", "name": "riri", "last_model": {"id": "mdl01", "project_id": "0011"}}
+    )
+
+    model = project.last_model
 
     assert model is not None
     assert model.id == "mdl01"
@@ -523,6 +556,6 @@ def test_project_get_last_model(simai_client):
 def test_project_get_last_model_none(simai_client):
     project = simai_client.projects._model_from({"id": "0011", "name": "riri"})
 
-    model = project.get_last_model()
+    model = project.last_model
 
     assert model is None

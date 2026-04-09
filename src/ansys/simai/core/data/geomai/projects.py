@@ -97,6 +97,15 @@ class GeomAIProject(DataModel):
             return None
         return GeomAIModelConfiguration(**raw_last_model_configuration)
 
+    @property
+    def last_model(self) -> Optional["GeomAIModel"]:
+        """Last :class:`model <.models.GeomAIModel>` launched in the project."""
+        model = self.fields.get("latest_model", None)
+        if not model:
+            return None
+
+        return self._client.geomai.models._model_from(model)
+
     def delete(self) -> None:
         """Delete the project."""
         self._client._api.delete_geomai_project(self.id)
@@ -142,15 +151,6 @@ class GeomAIProject(DataModel):
         if not workspace:
             return None
         return self._client.geomai.workspaces._model_from(workspace[0])
-
-    def get_last_model(self) -> Optional["GeomAIModel"]:
-        """Get the last model launched in the project."""
-        model = self.fields.get("latest_model", None)
-        if not model:
-            return None
-
-        model["project_id"] = self.id
-        return self._client.geomai.models._model_from(model)
 
 
 class GeomAIProjectDirectory(Directory[GeomAIProject]):

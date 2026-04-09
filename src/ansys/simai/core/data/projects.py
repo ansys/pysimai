@@ -166,6 +166,15 @@ class Project(DataModel):
             return None
         return ModelConfiguration._from_payload(project=self, **raw_last_model_configuration)
 
+    @property
+    def last_model(self) -> Optional["Model"]:
+        """Last :class:`model <ansys.simai.core.data.models.Model>` launched in the project."""
+        model = self.fields.get("last_model", None)
+        if not model:
+            return None
+
+        return self._client.models._model_from(model)
+
     def list_workspaces(self) -> list["Workspace"]:
         """Lists all :class:`~ansys.simai.core.data.workspaces.Workspace` instances in the project."""
         workspaces = self._client._api.get_project_related_workspaces(self.id)
@@ -260,15 +269,6 @@ class Project(DataModel):
         if not workspace:
             return None
         return self._client.workspaces._model_from(workspace[0])
-
-    def get_last_model(self) -> Optional["Model"]:
-        """Get the last model launched in the project."""
-        model = self.fields.get("last_model", None)
-        if not model:
-            return None
-
-        model["project_id"] = self.id
-        return self._client.models._model_from(model)
 
 
 class ProjectDirectory(Directory[Project]):
