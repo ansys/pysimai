@@ -64,6 +64,16 @@ Use 5 iterations for quick tests, or 100+ for production runs.
 
 **Objective**: The performance indicator to optimize (e.g., minimize drag, maximize lift).
 Only one objective can be defined for non-parametric optimization.
+
+**Offline token**: Required for server-side optimization. Allows the server to authenticate
+on your behalf while uploading geometries at each iteration. Generated via
+``simai.me.generate_offline_token()`` and valid for 30 days.
+
+**Detail level**: Controls deformation refinement (integer from 1 to 10, default: 5).
+Low values produce coarse shape changes; high values allow fine local adjustments.
+
+**Part morphing**: Optional constraint that restricts deformation to specific geometry parts
+identified by a ``PartId`` cell field.
 """
 
 ###############################################################################
@@ -105,6 +115,7 @@ plotter.show()
 import os
 
 import ansys.simai.core as asc
+from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
 from ansys.simai.core.data.predictions import Prediction
 
 ORGANIZATION_NAME = "<your_organization_name>"
@@ -114,12 +125,27 @@ CHOSEN_GEOMETRY_NAME = "<your_geometry_file.vtp>"
 # A bounding box must be defined as [xmin, xmax, ymin, ymax, zmin, zmax]
 BOUNDING_BOXES = [[-0.07, 0.15, -0.06, 0.12, -0.09, 0.15]]
 NUMBER_OF_ITERATIONS = 10
+# Maximum displacement per bounding box (one value per box, same unit as geometry)
+MAX_DISPLACEMENT = [0.1]
 # Symmetry constraints (e.g., ["X"] for YZ plane symmetry)
 SYMMETRIES = []
 # Objective to maximize (use minimize parameter for minimization)
 OBJECTIVE = ["<global_coefficient_objective>"]
+# Detail level controls deformation refinement (integer from 1 to 10, default: 5)
+DETAIL_LEVEL = 5
 # Output folder for results
 OUTPUT_FOLDER = "simai_output"
+
+# Part morphing (optional): restricts deformation to specific parts of the
+# geometry identified by a ``PartId`` cell field. ``continuity_constraint``
+# (0 to 1) controls how smoothly the deformed region blends with the rest.
+# A value of 0 means no continuity enforcement; 1 gives the best continuity
+# but reduces the overall deformation magnitude (increase ``detail_level``
+# to compensate).
+# PART_MORPHING = OptimizationPartMorphingSchema(
+#     part_ids=[0],              # IDs matching the ``PartId`` cell field
+#     continuity_constraint=0.5  # 0 = unconstrained, 1 = maximum continuity
+# )
 
 ###############################################################################
 # Initialize SimAI client and workspace
@@ -135,6 +161,20 @@ geometry = simai.geometries.get(workspace=workspace, name=CHOSEN_GEOMETRY_NAME)
 print(f"Baseline geometry: {geometry.name}")
 
 ###############################################################################
+# Generate an offline token
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The optimization runs server-side. At each iteration the geometry
+# corresponding to the current step is uploaded to your workspace.
+# An ``offline_token`` is required so that the server can authenticate
+# on your behalf during this process.
+#
+# Generating the token requires a one-time manual action (browser login).
+# Once generated, the token is valid for 30 days. You can generate as many
+# tokens as needed.
+
+offline_token = simai.me.generate_offline_token()
+
+###############################################################################
 # Start the optimization
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch the optimization with the configured parameters.
@@ -143,12 +183,16 @@ print(f"Baseline geometry: {geometry.name}")
 
 optimization_result = simai.optimizations.run_non_parametric(
     geometry=geometry,
+    offline_token=offline_token,
     bounding_boxes=BOUNDING_BOXES,
+    max_displacement=MAX_DISPLACEMENT,
     scalars={},  # Scalars must match your workspace configuration
     n_iters=NUMBER_OF_ITERATIONS,
     symmetries=SYMMETRIES,
+    detail_level=DETAIL_LEVEL,
     maximize=OBJECTIVE,  # Use 'minimize' parameter for minimization objectives
     show_progress=True,
+    # part_morphing=PART_MORPHING,  # Uncomment to enable part morphing
 )
 
 ###############################################################################
