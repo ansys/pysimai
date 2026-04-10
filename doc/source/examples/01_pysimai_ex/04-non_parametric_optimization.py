@@ -152,8 +152,8 @@ OUTPUT_FOLDER = "simai_output"
 from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
 
 PART_MORPHING = OptimizationPartMorphingSchema(
-    part_ids=[0],              # IDs matching the ``PartId`` cell field
-    continuity_constraint=0.5  # 0 = no constraint, 1 = maximum continuity
+    part_ids=[0],  # IDs matching the ``PartId`` cell field
+    continuity_constraint=0.5,  # 0 = no constraint, 1 = maximum continuity
 )
 
 ###############################################################################
