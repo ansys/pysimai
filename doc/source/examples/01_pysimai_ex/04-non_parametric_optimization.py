@@ -153,7 +153,7 @@ from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
 
 PART_MORPHING = OptimizationPartMorphingSchema(
     part_ids=[0],              # IDs matching the ``PartId`` cell field
-    continuity_constraint=0.5  # 0 = unconstrained, 1 = maximum continuity
+    continuity_constraint=0.5  # 0 = no constraint, 1 = maximum continuity
 )
 
 ###############################################################################

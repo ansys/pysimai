@@ -181,7 +181,7 @@ exactly named ``PartId``.
 The ``continuity_constraint`` parameter controls how much the continuity at the interface
 between deformed and non-deformed parts is enforced. It can be set between **0** and **1** (inclusive):
 
-- At **0**, the continuity is not constrained at all during the optimization.
+- At **0**, the continuity is not constrained during the optimization.
 - At **1**, the continuity enforcement is at its maximum.
 
 .. note::
