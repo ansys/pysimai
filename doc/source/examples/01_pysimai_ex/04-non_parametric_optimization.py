@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# ruff: noqa: ERA001
+
 """.. _ref_non_parametric_optimization:
 
 Non-parametric optimization
@@ -115,8 +117,9 @@ plotter.show()
 import os
 
 import ansys.simai.core as asc
-from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
 from ansys.simai.core.data.predictions import Prediction
+
+# from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
 
 ORGANIZATION_NAME = "<your_organization_name>"
 WORKSPACE_NAME = "<your_workspace_name>"

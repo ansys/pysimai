@@ -130,7 +130,7 @@ The ``show_progress`` parameter determines whether progress updates are displaye
 It is generally recommended to enable this feature during development and testing phases
 so that you can monitor the process and detect potential issues early.
 
-Detail level (detail_level)
+Detail level
 ----------------------------
 
 The ``detail_level`` parameter adjusts how much deformation can be applied to the geometry.
@@ -168,7 +168,7 @@ In those cases, errors are raised indicating the acceptable range:
       InputValueError: The number of points to be deformed in the geometry ('nb_point') and
       this detail level ('m') might lead to OOM. The maximum detail level is 'n'.
 
-Part morphing (part_morphing)
+Part morphing
 ------------------------------
 
 The ``part_morphing`` parameter provides user-defined constraints to restrict deformation to
