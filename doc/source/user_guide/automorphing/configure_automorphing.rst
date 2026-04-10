@@ -25,7 +25,7 @@ The optimization runs server-side. At each iteration, the geometry corresponding
 current step is uploaded to your workspace. To allow the server to authenticate on your
 behalf during this process, you must provide an ``offline_token``.
 
-Generating the token requires a one-time manual action (a browser login prompt).
+Generating the token requires a manual action (a browser login prompt).
 Once generated, the token is valid for **30 days**. You can generate as many tokens as needed.
 
 .. code-block:: Python
@@ -158,15 +158,15 @@ In those cases, errors are raised indicating the acceptable range:
 
   .. code-block:: text
 
-      InputValueError: The size of box 'i' is too small for the chosen detail level.
-      The minimum detail level is 'n'.
+      InputValueError: The size of box 'box_id' is too small for the chosen detail level.
+      The minimum detail level is 'min_detail_level'.
 
 - If the value is too high:
 
   .. code-block:: text
 
       InputValueError: The number of points to be deformed in the geometry ('nb_point') and
-      this detail level ('m') might lead to OOM. The maximum detail level is 'n'.
+      this detail level ('current_detail_level') might lead to OOM. The maximum detail level is 'max_detail_level'.
 
 Part morphing
 ------------------------------

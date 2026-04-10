@@ -119,8 +119,6 @@ import os
 import ansys.simai.core as asc
 from ansys.simai.core.data.predictions import Prediction
 
-# from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
-
 ORGANIZATION_NAME = "<your_organization_name>"
 WORKSPACE_NAME = "<your_workspace_name>"
 CHOSEN_GEOMETRY_NAME = "<your_geometry_file.vtp>"
@@ -139,16 +137,24 @@ DETAIL_LEVEL = 5
 # Output folder for results
 OUTPUT_FOLDER = "simai_output"
 
-# Part morphing (optional): restricts deformation to specific parts of the
-# geometry identified by a ``PartId`` cell field. ``continuity_constraint``
-# (0 to 1) controls how smoothly the deformed region blends with the rest.
-# A value of 0 means no continuity enforcement; 1 gives the best continuity
-# but reduces the overall deformation magnitude (increase ``detail_level``
-# to compensate).
-# PART_MORPHING = OptimizationPartMorphingSchema(
-#     part_ids=[0],              # IDs matching the ``PartId`` cell field
-#     continuity_constraint=0.5  # 0 = unconstrained, 1 = maximum continuity
-# )
+###############################################################################
+# Part morphing (optional)
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Part morphing restricts deformation to specific parts of the geometry
+# identified by a ``PartId`` cell field. The ``continuity_constraint``
+# parameter (0 to 1) controls how smoothly the deformed region blends
+# with the rest. A value of 0 means no continuity enforcement; 1 gives
+# the best continuity but reduces the overall deformation magnitude.
+# Before adjusting ``detail_level`` to compensate, first experiment with
+# different ``continuity_constraint`` values to find the right balance
+# between interface smoothness and deformation magnitude.
+
+from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
+
+PART_MORPHING = OptimizationPartMorphingSchema(
+    part_ids=[0],              # IDs matching the ``PartId`` cell field
+    continuity_constraint=0.5  # 0 = unconstrained, 1 = maximum continuity
+)
 
 ###############################################################################
 # Initialize SimAI client and workspace
@@ -171,7 +177,7 @@ print(f"Baseline geometry: {geometry.name}")
 # An ``offline_token`` is required so that the server can authenticate
 # on your behalf during this process.
 #
-# Generating the token requires a one-time manual action (browser login).
+# Generating the token requires a manual action (browser login).
 # Once generated, the token is valid for 30 days. You can generate as many
 # tokens as needed.
 
