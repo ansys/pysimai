@@ -25,7 +25,7 @@ The optimization runs server-side. At each iteration, the geometry corresponding
 current step is uploaded to your workspace. To allow the server to authenticate on your
 behalf during this process, you must provide an ``offline_token``.
 
-Generating the token requires a manual action (a browser login prompt).
+Generating the token requires a manual action from you (a browser login prompt).
 Once generated, the token is valid for **30 days**. You can generate as many tokens as needed.
 
 .. code-block:: Python
@@ -166,7 +166,7 @@ In those cases, errors are raised indicating the acceptable range:
   .. code-block:: text
 
       InputValueError: The number of points to be deformed in the geometry ('nb_point') and
-      this detail level ('current_detail_level') might lead to OOM. The maximum detail level is 'max_detail_level'.
+      this detail level ('current_detail_level') might lead to Out of Memory. The maximum detail level is 'max_detail_level'.
 
 Part morphing
 ------------------------------
