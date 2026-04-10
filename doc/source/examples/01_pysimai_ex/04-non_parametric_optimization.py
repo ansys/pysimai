@@ -201,7 +201,7 @@ optimization_result = simai.optimizations.run_non_parametric(
     detail_level=DETAIL_LEVEL,
     maximize=OBJECTIVE,  # Use 'minimize' parameter for minimization objectives
     show_progress=True,
-    # part_morphing=PART_MORPHING,  # Uncomment to enable part morphing
+    part_morphing=PART_MORPHING,  # Comment to disable part morphing
 )
 
 ###############################################################################
