@@ -18,7 +18,7 @@ If the optimization does not show improvement after several optimization process
 try using a different geometry from the training data as the baseline (``geometry``).
 Always make sure the geometry is clean and of high quality, as issues like mesh errors can negatively impact the optimization process.
 
-Offline token (offline_token)
+Offline token
 -----------------------------
 
 The optimization runs server-side. At each iteration, the geometry corresponding to the
