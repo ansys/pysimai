@@ -20,6 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
+from urllib.parse import urlencode
+
 import pytest
 
 from ansys.simai.core.errors import InvalidArguments
@@ -57,3 +60,26 @@ def test_get_geomai_training_data_invalid_arguments(simai_client):
     with pytest.raises(InvalidArguments) as e:
         simai_client.training_data.get(id="td-123", name="My Training Data")
     assert str(e.value) == "Cannot specify both 'id' and 'name' arguments."
+
+
+def test_training_data_list_created_by_me(simai_client, httpx_mock):
+    user_uuid = "user-789"
+    simai_client._api._session.auth._user_uuid = user_uuid
+
+    raw_training_data = [
+        {"id": "td-1", "name": "alpha"},
+        {"id": "td-2", "name": "beta"},
+    ]
+
+    raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
+    query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/training-data?{query}",
+        headers={"X-Pagination": json.dumps({"total_pages": 1})},
+        json=raw_training_data,
+        status_code=200,
+    )
+
+    td_list = simai_client.geomai.training_data.list(created_by_me=True)
+    assert [td.id for td in td_list] == ["td-1", "td-2"]
