@@ -190,7 +190,7 @@ offline_token = simai.me.generate_offline_token()
 # The optimization will generate new geometries at each iteration
 # by applying smooth deformations to the baseline geometry.
 
-optimization_result = simai.optimizations.run_non_parametric(
+optimization = simai.optimizations.run_non_parametric(
     geometry=geometry,
     offline_token=offline_token,
     bounding_boxes=BOUNDING_BOXES,
@@ -203,15 +203,16 @@ optimization_result = simai.optimizations.run_non_parametric(
     show_progress=True,
     part_morphing=PART_MORPHING,  # Comment to disable part morphing
 )
+optimization.wait()
 
 ###############################################################################
 # Display optimization results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Print the optimization ID, generated geometries, and objective values:
-optimization_id = optimization_result.optimization.id
+optimization_id = optimization.optimization.id
 print(f"Optimization ID: {optimization_id}")
-print(f"Generated geometries: {[geo.name for geo in optimization_result.list_geometries()]}")
-print(f"Objectives: {optimization_result.list_objectives()}")
+print(f"Generated geometries: {[geo.name for geo in optimization.list_geometries()]}")
+print(f"Objectives: {optimization.list_objectives()}")
 
 ###############################################################################
 # Run predictions on optimized geometries
@@ -221,7 +222,7 @@ print(f"Objectives: {optimization_result.list_objectives()}")
 
 predictions: list[Prediction] = []
 
-for geom in optimization_result.list_geometries():
+for geom in optimization.list_geometries():
     print(f"Running prediction for: {geom.name} (ID: {geom.id})")
     prediction = geom.run_prediction(scalars={})  # Scalars must match your workspace configuration
     predictions.append(prediction)
@@ -277,7 +278,7 @@ print(f"Baseline {OBJECTIVE[0]}: {baseline_value:.4f}")
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The optimization records the scalar objective at each iteration.
 
-raw_objectives = optimization_result.list_objectives()
+raw_objectives = optimization.list_objectives()
 obj_values = [float(obj[OBJECTIVE[0]]) for obj in raw_objectives]
 
 iterations = range(1, len(obj_values) + 1)
@@ -324,7 +325,7 @@ plt.show()
 # bounding-box constraints.  Mean and maximum magnitude are then computed
 # from the remaining active nodes.
 
-geom_list = optimization_result.list_geometries()
+geom_list = optimization.list_geometries()
 mean_displacements = []
 max_displacements = []
 
@@ -483,7 +484,7 @@ def screenshot_vtp(
 
 all_vtp_paths = [
     f"{VTPS_FOLDER}/{geom.name.split('.')[0]}_surface.vtp"
-    for geom in optimization_result.list_geometries()
+    for geom in optimization.list_geometries()
 ]
 
 png_index: dict[str, list[str]] = {angle: [] for angle in CAMERA_ANGLES}
