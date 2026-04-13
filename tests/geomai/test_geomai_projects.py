@@ -308,7 +308,7 @@ def test_geomai_project_get_last_workspace_empty_returns_none(simai_client, http
     assert workspace is None
 
 
-def test_geomai_project_get_last_model(simai_client):
+def test_geomai_project_last_model(simai_client):
     project = simai_client.geomai.projects._model_from(
         {"id": "0011", "name": "riri", "latest_model": {"id": "mdl01", "project_id": "0011"}}
     )
@@ -320,7 +320,7 @@ def test_geomai_project_get_last_model(simai_client):
     assert model.project_id == project.id
 
 
-def test_geomai_project_get_last_model_none(simai_client):
+def test_geomai_project_last_model_none(simai_client):
     project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
 
     model = project.last_model
