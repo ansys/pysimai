@@ -434,7 +434,7 @@ class OptimizationDirectory(Directory[Optimization]):
         server_side_optimization_parameters = {
             "geometry": geometry.id,
             "bounding_boxes": bounding_boxes,
-            "symmetries": symmetries or [],
+            "symmetries": symmetries,
             "max_displacement": max_displacement,
             "axial_symmetry": axial_symmetry,
             "detail_level": detail_level,
@@ -618,7 +618,7 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
             "geometry_generation": {
                 "geometry": geometry.id,
                 "box_bounds_list": bounding_boxes,
-                "symmetries": symmetries or [],
+                "symmetries": symmetries,
                 "max_displacement": max_displacement,
                 "axial_symmetry": axial_symmetry,
             },
