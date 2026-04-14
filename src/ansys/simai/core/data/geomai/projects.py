@@ -111,10 +111,10 @@ class GeomAIProject(DataModel):
         self._client._api.delete_geomai_project(self.id)
 
     def cancel_build(self):
-        """Cancels a build if there is one pending.
+        """Cancel a build if there is one pending.
 
         Raises:
-            ProcessingError: If there is no build to cancel
+            ProcessingError: If there is no build to cancel.
         """
 
         self.reload()
@@ -123,19 +123,19 @@ class GeomAIProject(DataModel):
         self._client._api.cancel_geomai_build(self.id)
 
     def build_model(self, configuration: Union[dict, GeomAIModelConfiguration]) -> GeomAIModel:
-        """Launches a GeomAI build with the given configuration.
+        """Launche a GeomAI build with the given configuration.
 
         Args:
-            configuration: the configuration to run the model with.
+            configuration: The configuration to run the model with.
                 See :class:`.models.GeomAIModelConfiguration` for details.
         """
         return self._client.geomai.models.build(self.id, configuration)
 
     def create_workspace(self, name: str) -> "GeomAIWorkspace":
-        """Creates a workspace using the latest model trained in this project.
+        """Create a workspace using the latest model trained in this project.
 
         Args:
-            name: Name to give to the new workspace
+            name: Name to give to the new workspace.
         """
         return self._client.geomai.workspaces._model_from(
             self._client._api.create_geomai_workspace(name, self.id)
@@ -204,7 +204,7 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
             :class:`GeomAIProject` instance with the given ID if it exists.
 
         Raises:
-            NotFoundError: If the project doesn't exist
+            NotFoundError: If the project does not exist.
         """
         if name and id:
             raise InvalidArguments("Cannot specify both 'id' and 'name' arguments.")

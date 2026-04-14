@@ -54,7 +54,7 @@ class IsTrainableInfo(NamedTuple):
     in condition statements as in the example:
 
     Example:
-        Verify the project is trainable
+        Verify the project is trainable:
 
         .. code-block:: python
 
@@ -90,8 +90,8 @@ class ContinuousLearningCapabilities:
     """Provides a project's continuous learning capabilities.
 
     Args:
-        able: Is this project able to use continuous learning feature
-        reasons: Reasons why a project can't use continuous learning feature
+        able: Is this project able to use continuous learning feature.
+        reasons: Reasons why a project cannot use continuous learning feature.
     """
 
     able: bool
@@ -252,7 +252,7 @@ class Project(DataModel):
         return gc_process.result
 
     def cancel_build(self):
-        """Cancels a build if there is one pending."""
+        """Cancel a build if there is one pending."""
 
         self.reload()
         if self.fields.get("is_being_trained") is False:
