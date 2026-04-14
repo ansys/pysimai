@@ -35,7 +35,7 @@ def prompt_for_input(name: str, hide_input: Optional[bool] = False):
 
 # DEPRECATED
 def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Any]] = None, **kwargs):
-    bc = boundary_conditions if boundary_conditions else {}
+    bc = boundary_conditions or {}
     bc.update(**kwargs)
     if not bc:
         raise ValueError("No boundary condition was specified.")
@@ -43,7 +43,7 @@ def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Any]] = No
 
 
 def build_scalars(scalars: Optional[Dict[str, Any]] = None, **kwargs):
-    bc = scalars if scalars else {}
+    bc = scalars or {}
     bc.update(**kwargs)
     if not bc:
         raise ValueError("No scalar was specified.")

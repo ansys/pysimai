@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# ruff: noqa: ERA001
+
 """.. _ref_non_parametric_optimization:
 
 Non-parametric optimization
@@ -64,6 +66,16 @@ Use 5 iterations for quick tests, or 100+ for production runs.
 
 **Objective**: The performance indicator to optimize (e.g., minimize drag, maximize lift).
 Only one objective can be defined for non-parametric optimization.
+
+**Offline token**: Required for server-side optimization. Allows the server to authenticate
+on your behalf while uploading geometries at each iteration. Generated via
+``simai.me.generate_offline_token()`` and valid for 30 days.
+
+**Detail level**: Controls deformation refinement (integer from 1 to 10, default: 5).
+Low values produce coarse shape changes; high values allow fine local adjustments.
+
+**Part morphing**: Optional constraint that restricts deformation to specific geometry parts
+identified by a ``PartId`` cell field.
 """
 
 ###############################################################################
@@ -114,12 +126,35 @@ CHOSEN_GEOMETRY_NAME = "<your_geometry_file.vtp>"
 # A bounding box must be defined as [xmin, xmax, ymin, ymax, zmin, zmax]
 BOUNDING_BOXES = [[-0.07, 0.15, -0.06, 0.12, -0.09, 0.15]]
 NUMBER_OF_ITERATIONS = 10
+# Maximum displacement per bounding box (one value per box, same unit as geometry)
+MAX_DISPLACEMENT = [0.1]
 # Symmetry constraints (e.g., ["X"] for YZ plane symmetry)
 SYMMETRIES = []
 # Objective to maximize (use minimize parameter for minimization)
 OBJECTIVE = ["<global_coefficient_objective>"]
+# Detail level controls deformation refinement (integer from 1 to 10, default: 5)
+DETAIL_LEVEL = 5
 # Output folder for results
 OUTPUT_FOLDER = "simai_output"
+
+###############################################################################
+# Part morphing (optional)
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Part morphing restricts deformation to specific parts of the geometry
+# identified by a ``PartId`` cell field. The ``continuity_constraint``
+# parameter (0 to 1) controls how smoothly the deformed region blends
+# with the rest. A value of 0 means no continuity enforcement; 1 gives
+# the best continuity but reduces the overall deformation magnitude.
+# Before adjusting ``detail_level`` to compensate, first experiment with
+# different ``continuity_constraint`` values to find the right balance
+# between interface smoothness and deformation magnitude.
+
+from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
+
+PART_MORPHING = OptimizationPartMorphingSchema(
+    part_ids=[0],  # IDs matching the ``PartId`` cell field
+    continuity_constraint=0.5,  # 0 = no constraint, 1 = maximum continuity
+)
 
 ###############################################################################
 # Initialize SimAI client and workspace
@@ -135,30 +170,49 @@ geometry = simai.geometries.get(workspace=workspace, name=CHOSEN_GEOMETRY_NAME)
 print(f"Baseline geometry: {geometry.name}")
 
 ###############################################################################
+# Generate an offline token
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The optimization runs server-side. At each iteration the geometry
+# corresponding to the current step is uploaded to your workspace.
+# An ``offline_token`` is required so that the server can authenticate
+# on your behalf during this process.
+#
+# Generating the token requires a manual action (browser login).
+# Once generated, the token is valid for 30 days. You can generate as many
+# tokens as needed.
+
+offline_token = simai.me.generate_offline_token()
+
+###############################################################################
 # Start the optimization
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch the optimization with the configured parameters.
 # The optimization will generate new geometries at each iteration
 # by applying smooth deformations to the baseline geometry.
 
-optimization_result = simai.optimizations.run_non_parametric(
+optimization = simai.optimizations.run_non_parametric(
     geometry=geometry,
+    offline_token=offline_token,
     bounding_boxes=BOUNDING_BOXES,
+    max_displacement=MAX_DISPLACEMENT,
     scalars={},  # Scalars must match your workspace configuration
     n_iters=NUMBER_OF_ITERATIONS,
     symmetries=SYMMETRIES,
+    detail_level=DETAIL_LEVEL,
     maximize=OBJECTIVE,  # Use 'minimize' parameter for minimization objectives
     show_progress=True,
+    part_morphing=PART_MORPHING,  # Comment to disable part morphing
 )
+optimization.wait()
 
 ###############################################################################
 # Display optimization results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Print the optimization ID, generated geometries, and objective values:
-optimization_id = optimization_result.optimization.id
+optimization_id = optimization.optimization.id
 print(f"Optimization ID: {optimization_id}")
-print(f"Generated geometries: {[geo.name for geo in optimization_result.list_geometries()]}")
-print(f"Objectives: {optimization_result.list_objectives()}")
+print(f"Generated geometries: {[geo.name for geo in optimization.list_geometries()]}")
+print(f"Objectives: {optimization.list_objectives()}")
 
 ###############################################################################
 # Run predictions on optimized geometries
@@ -168,7 +222,7 @@ print(f"Objectives: {optimization_result.list_objectives()}")
 
 predictions: list[Prediction] = []
 
-for geom in optimization_result.list_geometries():
+for geom in optimization.list_geometries():
     print(f"Running prediction for: {geom.name} (ID: {geom.id})")
     prediction = geom.run_prediction(scalars={})  # Scalars must match your workspace configuration
     predictions.append(prediction)
@@ -224,7 +278,7 @@ print(f"Baseline {OBJECTIVE[0]}: {baseline_value:.4f}")
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The optimization records the scalar objective at each iteration.
 
-raw_objectives = optimization_result.list_objectives()
+raw_objectives = optimization.list_objectives()
 obj_values = [float(obj[OBJECTIVE[0]]) for obj in raw_objectives]
 
 iterations = range(1, len(obj_values) + 1)
@@ -271,7 +325,7 @@ plt.show()
 # bounding-box constraints.  Mean and maximum magnitude are then computed
 # from the remaining active nodes.
 
-geom_list = optimization_result.list_geometries()
+geom_list = optimization.list_geometries()
 mean_displacements = []
 max_displacements = []
 
@@ -430,7 +484,7 @@ def screenshot_vtp(
 
 all_vtp_paths = [
     f"{VTPS_FOLDER}/{geom.name.split('.')[0]}_surface.vtp"
-    for geom in optimization_result.list_geometries()
+    for geom in optimization.list_geometries()
 ]
 
 png_index: dict[str, list[str]] = {angle: [] for angle in CAMERA_ANGLES}

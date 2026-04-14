@@ -18,6 +18,27 @@ If the optimization does not show improvement after several optimization process
 try using a different geometry from the training data as the baseline (``geometry``).
 Always make sure the geometry is clean and of high quality, as issues like mesh errors can negatively impact the optimization process.
 
+Offline token
+-----------------------------
+
+The optimization runs server-side. At each iteration, the geometry corresponding to the
+current step is uploaded to your workspace. To allow the server to authenticate on your
+behalf during this process, you must provide an ``offline_token``.
+
+Generating the token requires a manual action from you (a browser login prompt).
+Once generated, the token is valid for **30 days**. You can generate as many tokens as needed.
+
+.. code-block:: Python
+
+    offline_token = simai_client.me.generate_offline_token()
+
+If no ``offline_token`` is passed as a function parameter or defined in the client configuration,
+server-side optimization will not work.
+
+.. note::
+
+    For more information on managing tokens, see :ref:`current_user`.
+
 Bounding boxes
 ---------------
 
@@ -108,3 +129,77 @@ Show progress
 The ``show_progress`` parameter determines whether progress updates are displayed during the optimization run.
 It is generally recommended to enable this feature during development and testing phases
 so that you can monitor the process and detect potential issues early.
+
+Detail level
+----------------------------
+
+The ``detail_level`` parameter adjusts how much deformation can be applied to the geometry.
+It is an integer from 1 to 10 and defaults to **5** when not provided.
+
+- **Low values** produce coarse deformations with only rough shape changes.
+- **High values** allow fine details and subtle local adjustments.
+
+For a given value of ``detail_level``, the deformation refinement remains the same regardless of
+the bounding box size. When using multiple bounding boxes, this ensures the same amount of
+deformation in each box.
+
+.. code-block:: Python
+
+    detail_level = 4
+
+.. warning::
+
+    The total number of points to be deformed cannot be greater than **6x10⁷**.
+
+Depending on the baseline geometry and bounding boxes, some values of ``detail_level`` may not be achievable.
+In those cases, errors are raised indicating the acceptable range:
+
+- If the value is too low:
+
+  .. code-block:: text
+
+      InputValueError: The size of box 'box_id' is too small for the chosen detail level.
+      The minimum detail level is 'min_detail_level'.
+
+- If the value is too high:
+
+  .. code-block:: text
+
+      InputValueError: The number of points to be deformed in the geometry ('nb_point') and
+      this detail level ('current_detail_level') might lead to Out of Memory. The maximum detail level is 'max_detail_level'.
+
+Part morphing
+------------------------------
+
+The ``part_morphing`` parameter provides user-defined constraints to restrict deformation to
+specific parts of the geometry.
+
+The parts to be deformed are identified by their IDs, provided as a list of integers in
+``part_ids``. These IDs must correspond to a cell field of the baseline geometry
+exactly named ``PartId``.
+
+The ``continuity_constraint`` parameter controls how much the continuity at the interface
+between deformed and non-deformed parts is enforced. It can be set between **0** and **1** (inclusive):
+
+- At **0**, the continuity is not constrained during the optimization.
+- At **1**, the continuity enforcement is at its maximum.
+
+.. note::
+
+    Increasing ``continuity_constraint`` reduces the overall deformation magnitude.
+    To compensate, you can increase the ``detail_level`` value.
+
+.. code-block:: Python
+
+    from ansys.simai.core.data.optimizations import OptimizationPartMorphingSchema
+
+    part_morphing = OptimizationPartMorphingSchema(
+        part_ids=[1, 2],
+        continuity_constraint=0.8
+    )
+
+.. warning::
+
+    For a given configuration of ``detail_level``, ``bounding_boxes``, and other parameters that
+    passes validation, adding ``part_morphing`` may trigger an out-of-memory error. If this occurs,
+    reduce the ``detail_level`` or simplify the bounding box configuration.
