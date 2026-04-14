@@ -123,7 +123,7 @@ class GeomAIProject(DataModel):
         self._client._api.cancel_geomai_build(self.id)
 
     def build_model(self, configuration: Union[dict, GeomAIModelConfiguration]) -> GeomAIModel:
-        """Launche a GeomAI build with the given configuration.
+        """Launch a GeomAI build with the given configuration.
 
         Args:
             configuration: The configuration to run the model with.
