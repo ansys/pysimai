@@ -54,7 +54,7 @@ class IsTrainableInfo(NamedTuple):
     in condition statements as in the example:
 
     Example:
-        Verify the project is trainable
+        Verify the project is trainable:
 
         .. code-block:: python
 
@@ -90,8 +90,8 @@ class ContinuousLearningCapabilities:
     """Provides a project's continuous learning capabilities.
 
     Args:
-        able: Is this project able to use continuous learning feature
-        reasons: Reasons why a project can't use continuous learning feature
+        able: Is this project able to use continuous learning feature.
+        reasons: Reasons why a project cannot use continuous learning feature.
     """
 
     able: bool
@@ -166,8 +166,17 @@ class Project(DataModel):
             return None
         return ModelConfiguration._from_payload(project=self, **raw_last_model_configuration)
 
+    @property
+    def last_model(self) -> Optional["Model"]:
+        """Last :class:`model <ansys.simai.core.data.models.Model>` launched in the project."""
+        model = self.fields.get("last_model", None)
+        if not model:
+            return None
+
+        return self._client.models._model_from(model)
+
     def list_workspaces(self) -> list["Workspace"]:
-        """Lists all :class:`~ansys.simai.core.data.workspaces.Workspace` instances in the project."""
+        """List all :class:`~ansys.simai.core.data.workspaces.Workspace` instances in the project."""
         workspaces = self._client._api.get_project_related_workspaces(self.id)
         return [self._client.workspaces._model_from(workspace) for workspace in workspaces]
 
@@ -243,7 +252,7 @@ class Project(DataModel):
         return gc_process.result
 
     def cancel_build(self):
-        """Cancels a build if there is one pending."""
+        """Cancel a build if there is one pending."""
 
         self.reload()
         if self.fields.get("is_being_trained") is False:
@@ -253,6 +262,13 @@ class Project(DataModel):
     def set_as_current_project(self) -> None:
         """Configure the client to use this project instead of the one currently configured."""
         self._client.current_project = self
+
+    def get_last_workspace(self) -> Optional["Workspace"]:
+        """Get the last generated workspace of the project."""
+        workspace = self._client._api.get_project_last_workspace(self.id)
+        if not workspace:
+            return None
+        return self._client.workspaces._model_from(workspace[0])
 
 
 class ProjectDirectory(Directory[Project]):

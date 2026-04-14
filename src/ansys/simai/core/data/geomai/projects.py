@@ -58,7 +58,7 @@ class GeomAIProject(DataModel):
         self.reload()
 
     def list_training_data(self) -> List["GeomAITrainingData"]:
-        """Lists all :class:`~.training_data.GeomAITrainingData` instances in the project."""
+        """List all :class:`~.training_data.GeomAITrainingData` instances in the project."""
         raw_td_list = self._client._api.iter_training_data_in_geomai_project(self.id)
         return [
             self._client.geomai.training_data._model_from(training_data)
@@ -66,26 +66,26 @@ class GeomAIProject(DataModel):
         ]
 
     def data(self) -> List["GeomAITrainingData"]:
-        """(**Deprecated**) Lists all :class:`~.training_data.GeomAITrainingData` instances in the project.
+        """(**Deprecated**) List all :class:`~.training_data.GeomAITrainingData` instances in the project.
 
         Use :py:meth:`.list_training_data` instead.
         """
         return self.list_training_data()
 
     def list_workspaces(self) -> List["GeomAIWorkspace"]:
-        """Lists all :class:`~.workspaces.GeomAIWorkspace` instances in the project."""
+        """List all :class:`~.workspaces.GeomAIWorkspace` instances in the project."""
         workspaces = self._client._api.get_geomai_project_related_workspaces(self.id)
         return [self._client.geomai.workspaces._model_from(workspace) for workspace in workspaces]
 
     def workspaces(self) -> List["GeomAIWorkspace"]:
-        """(**Deprecated**) Lists all :class:`~.workspaces.GeomAIWorkspace` instances in the project.
+        """(**Deprecated**) List all :class:`~.workspaces.GeomAIWorkspace` instances in the project.
 
         Use :py:meth:`.list_workspaces` instead.
         """
         return self.list_workspaces()
 
     def list_models(self) -> List[GeomAIModel]:
-        """Lists all :class:`~.models.GeomAIModel` instances in the project."""
+        """List all :class:`~.models.GeomAIModel` instances in the project."""
         raw_model_list = self._client._api.get_geomai_project_models(self.id)
         return [self._client.geomai.models._model_from(model) for model in raw_model_list]
 
@@ -97,15 +97,24 @@ class GeomAIProject(DataModel):
             return None
         return GeomAIModelConfiguration(**raw_last_model_configuration)
 
+    @property
+    def last_model(self) -> Optional["GeomAIModel"]:
+        """Last :class:`model <.models.GeomAIModel>` launched in the project."""
+        model = self.fields.get("latest_model", None)
+        if not model:
+            return None
+
+        return self._client.geomai.models._model_from(model)
+
     def delete(self) -> None:
         """Delete the project."""
         self._client._api.delete_geomai_project(self.id)
 
     def cancel_build(self):
-        """Cancels a build if there is one pending.
+        """Cancel a build if there is one pending.
 
         Raises:
-            ProcessingError: If there is no build to cancel
+            ProcessingError: If there is no build to cancel.
         """
 
         self.reload()
@@ -114,19 +123,19 @@ class GeomAIProject(DataModel):
         self._client._api.cancel_geomai_build(self.id)
 
     def build_model(self, configuration: Union[dict, GeomAIModelConfiguration]) -> GeomAIModel:
-        """Launches a GeomAI build with the given configuration.
+        """Launch a GeomAI build with the given configuration.
 
         Args:
-            configuration: the configuration to run the model with.
+            configuration: The configuration to run the model with.
                 See :class:`.models.GeomAIModelConfiguration` for details.
         """
         return self._client.geomai.models.build(self.id, configuration)
 
     def create_workspace(self, name: str) -> "GeomAIWorkspace":
-        """Creates a workspace using the latest model trained in this project.
+        """Create a workspace using the latest model trained in this project.
 
         Args:
-            name: Name to give to the new workspace
+            name: Name to give to the new workspace.
         """
         return self._client.geomai.workspaces._model_from(
             self._client._api.create_geomai_workspace(name, self.id)
@@ -135,6 +144,13 @@ class GeomAIProject(DataModel):
     def set_as_current_project(self) -> None:
         """Configure the client to use this project instead of the one currently configured."""
         self._client.geomai.current_project = self
+
+    def get_last_workspace(self) -> Optional["GeomAIWorkspace"]:
+        """Get the last generated workspace of the project."""
+        workspace = self._client._api.get_geomai_project_last_workspace(self.id)
+        if not workspace:
+            return None
+        return self._client.geomai.workspaces._model_from(workspace[0])
 
 
 class GeomAIProjectDirectory(Directory[GeomAIProject]):
@@ -188,7 +204,7 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
             :class:`GeomAIProject` instance with the given ID if it exists.
 
         Raises:
-            NotFoundError: If the project doesn't exist
+            NotFoundError: If the project does not exist.
         """
         if name and id:
             raise InvalidArguments("Cannot specify both 'id' and 'name' arguments.")

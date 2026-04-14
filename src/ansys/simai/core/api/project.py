@@ -168,3 +168,23 @@ class ProjectClientMixin(ApiClientMixin):
         """
 
         return self._post(f"projects/{project_id}/cancel-training", return_json=True)
+
+    def get_project_last_workspace(self, project_id: str):
+        params = [
+            (
+                "filter[]",
+                json.dumps(
+                    {"field": "project", "operator": "EQ", "value": project_id},
+                    separators=(",", ":"),
+                ),
+            ),
+            (
+                "sort[]",
+                json.dumps(
+                    {"field": "id", "order": "desc"},
+                    separators=(",", ":"),
+                ),
+            ),
+            ("page_size", 1),
+        ]
+        return self._get("workspaces/", params=params)
