@@ -37,6 +37,7 @@ dependencies = [
     "httpx>=0.28.1",
     "httpx-sse>=0.4.1",
     "httpx-retries>=0.4.2",
+    "pyjwt>=2.4.0"
 ]
 
 [dependency-groups]

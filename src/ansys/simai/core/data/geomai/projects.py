@@ -24,7 +24,12 @@ from typing import TYPE_CHECKING, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.geomai.models import GeomAIModel, GeomAIModelConfiguration
-from ansys.simai.core.data.types import Identifiable, get_id_from_identifiable
+from ansys.simai.core.data.types import (
+    Filters,
+    Identifiable,
+    get_id_from_identifiable,
+    to_raw_filters,
+)
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
 if TYPE_CHECKING:
@@ -148,9 +153,23 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
 
     _data_model = GeomAIProject
 
-    def list(self) -> List[GeomAIProject]:
+    def list(
+        self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
+    ) -> List[GeomAIProject]:
         """List all projects available on the server."""
-        return [self._model_from(data) for data in self._client._api.geomai_projects()]
+        raw_filters = to_raw_filters(filters)
+        if created_by_me:
+            user_uuid = self._client._api._session.auth._user_uuid
+            if not user_uuid:
+                pass
+            else:
+                created_by_me_filter = to_raw_filters({"created_by": user_uuid})
+                if raw_filters:
+                    raw_filters.extend(created_by_me_filter)
+                else:
+                    raw_filters = created_by_me_filter
+
+        return [self._model_from(data) for data in self._client._api.geomai_projects(raw_filters)]
 
     def create(self, name: str) -> GeomAIProject:
         """Create a project."""
