@@ -485,7 +485,7 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
             import ansys.simai.core as asc
 
             simai_client = asc.from_config()
-            simai_client.optimizations.run_non_parametric(...)
+            simai_client.legacy_optimizations.run_non_parametric(...)
     """
 
     _data_model = LegacyOptimization
@@ -497,7 +497,7 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
             optimization_id: ID of the optimization.
 
         Returns:
-            :py:class:`Optimization`.
+            :py:class:`LegacyOptimization`.
         """
         return self._model_from(self._client._api.get_optimization(optimization_id))
 
@@ -515,7 +515,7 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
         show_progress: bool = False,
         boundary_conditions: Optional[Dict[str, float]] = None,
     ) -> LegacyOptimizationResult:
-        """Run an optimization loop to generate geometries, server-side, using automorphing.
+        """Run an optimization loop to generate geometries, client-side, using automorphing.
         Automorphing is a non-parametric deformation of a surface geometry.
 
         Args:
@@ -583,7 +583,7 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
             simai_client = asc.from_config(workspace="optimization-workspace")
             geometry = simai_client.geometries.list()[0]
 
-            simai_client.optimizations.run_non_parametric(
+            simai_client.legacy_optimizations.run_non_parametric(
                 geometry,
                 bounding_boxes=[[0, 1, 0, 1, 0, 1]],
                 scalars={"VelocityX": 10.5},
