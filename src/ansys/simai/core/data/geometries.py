@@ -534,10 +534,12 @@ class GeometryDirectory(Directory[Geometry]):
         workspace = get_object_from_identifiable(
             workspace, self._client.workspaces, default=self._client._current_workspace
         )
+
+        accepted_file_formats = ["vtp", "zip", "stl", "cgns"]
         with unpack_named_file(file) as (readable_file, name, extension):
-            if extension not in workspace.model_manifest.geometry["accepted_file_formats"]:
+            if extension not in accepted_file_formats:
                 raise InvalidArguments(
-                    f"Got a file with {extension} extension but expected one of : {workspace.model_manifest.geometry['accepted_file_formats']}"
+                    f"Got a file with {extension} extension but expected one of : {accepted_file_formats}"
                 )
             (geometry_fields, upload_id) = self._client._api.create_geometry(
                 workspace.id, name, extension, metadata
