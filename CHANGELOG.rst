@@ -1,6 +1,24 @@
 Changelog
 ---------
 
+0.4.0 (2026-04-15)
+*******************
+
+New:
+
+- Ease the usability of a SimAI and GeomAI project by adding ``get_last_workspace`` method and ``last_model`` property.
+- Add support for server-side optimizations. Client-side optimizations were moved to the ``LegacyOptimizationDirectory`` for now. You need to train a new model to have server-side optimization support. Running a non-parametric optimization on a model that does not support server-side optimization will automatically fallback to the client-side version.
+- Add support for accessing objects created by the current user.
+- Add code example around automorphing.
+
+Changes:
+
+- Remove beta banner for GeomAI.
+
+Fixes:
+
+- Define accepted file formats list for geometry upload.
+
 0.3.10 (2026-02-19)
 *******************
 
