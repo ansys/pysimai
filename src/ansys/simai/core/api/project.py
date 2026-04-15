@@ -22,9 +22,10 @@
 
 import json
 from typing import TYPE_CHECKING, Any, Dict, Iterator, Optional
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+from ansys.simai.core.utils.pagination import PaginatedAPIRawIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.types import RawFilters
@@ -32,10 +33,13 @@ if TYPE_CHECKING:
 
 class ProjectClientMixin(ApiClientMixin):
     def projects(self, filters: Optional["RawFilters"]):
-        params = None
-        if filters is not None:
-            params = {"filter[]": [json.dumps(f, separators=(",", ":")) for f in filters]}
-        return self._get("projects", params=params)
+        return list(self.iter_projects(filters))
+
+    def iter_projects(self, filters: Optional["RawFilters"]) -> PaginatedAPIRawIterator:
+        query = urlencode(
+            [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
+        )
+        return PaginatedAPIRawIterator(self, f"projects?{query}")
 
     def get_project(self, id: str):
         return self._get(f"projects/{id}")

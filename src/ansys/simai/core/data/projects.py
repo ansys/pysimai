@@ -29,10 +29,12 @@ from ansys.simai.core.data.model_configuration import ModelConfiguration
 from ansys.simai.core.data.types import (
     Filters,
     Identifiable,
+    SizedIterator,
     get_id_from_identifiable,
     to_raw_filters,
 )
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
+from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.global_coefficients_requests import (
@@ -287,6 +289,19 @@ class ProjectDirectory(Directory[Project]):
 
     _data_model = Project
 
+    def iter(self, filters: Optional[Filters] = None) -> SizedIterator[Project]:
+        """Iterate over all :class`Project` objects on the server.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
+
+        Returns:
+            Iterator over all :class:`Project` objects on the server.
+        """
+        raw_filters = to_raw_filters(filters)
+        raw_iterable = self._client._api.iter_projects(raw_filters)
+        return DataModelIterator(raw_iterable, self)
+
     def list(
         self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
     ) -> list[Project]:
@@ -303,7 +318,7 @@ class ProjectDirectory(Directory[Project]):
                 else:
                     raw_filters = created_by_me_filter
 
-        return [self._model_from(data) for data in self._client._api.projects(raw_filters)]
+        return list(self.iter(raw_filters))
 
     def create(self, name: str) -> Project:
         """Create a project."""

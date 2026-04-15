@@ -27,10 +27,12 @@ from ansys.simai.core.data.geomai.models import GeomAIModel, GeomAIModelConfigur
 from ansys.simai.core.data.types import (
     Filters,
     Identifiable,
+    SizedIterator,
     get_id_from_identifiable,
     to_raw_filters,
 )
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
+from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.training_data import GeomAITrainingData
@@ -169,10 +171,23 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
 
     _data_model = GeomAIProject
 
+    def iter(self, filters: Optional[Filters] = None) -> SizedIterator[GeomAIProject]:
+        """Iterate over all :class:`GeomAIProject` objects on the server.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
+
+        Returns:
+            Iterator over all :class:`GeomAIProject` available on the server.
+        """
+        raw_filters = to_raw_filters(filters)
+        raw_iterable = self._client._api.iter_geomai_projects(raw_filters)
+        return DataModelIterator(raw_iterable, self)
+
     def list(
         self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
     ) -> List[GeomAIProject]:
-        """List all projects available on the server."""
+        """List all :class:`GeomAIProject` objects on the server."""
         raw_filters = to_raw_filters(filters)
         if created_by_me:
             user_uuid = self._client._api._session.auth._user_uuid
@@ -185,7 +200,7 @@ class GeomAIProjectDirectory(Directory[GeomAIProject]):
                 else:
                     raw_filters = created_by_me_filter
 
-        return [self._model_from(data) for data in self._client._api.geomai_projects(raw_filters)]
+        return list(self.iter(raw_filters))
 
     def create(self, name: str) -> GeomAIProject:
         """Create a project."""

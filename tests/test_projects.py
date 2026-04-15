@@ -81,6 +81,47 @@ def test_project_list_training_data(simai_client, httpx_mock):
     assert [data.id for data in tds] == ["first", "second"]
 
 
+def test_project_iter(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/projects",
+        headers={"X-Pagination": json.dumps({"total": 999})},
+        json=[{"id": "one", "name": "Project One"}],
+        status_code=200,
+    )
+
+    project_iter = simai_client.projects.iter()
+
+    assert len(project_iter) == 999
+    assert next(project_iter).id == "one"
+    assert len(project_iter) == 998
+    assert next(project_iter, None) is None
+    assert len(project_iter) == 998
+
+
+def test_project_list(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        is_reusable=True,
+        method="GET",
+        url="https://test.test/projects",
+        headers={"Link": '<https://test.test/projects?last_id=one>; rel="next"'},
+        json=[{"id": "one", "name": "Project One"}],
+        status_code=200,
+    )
+    httpx_mock.add_response(
+        is_reusable=True,
+        method="GET",
+        url="https://test.test/projects?last_id=one",
+        json=[{"id": "two", "name": "Project Two"}],
+        status_code=200,
+    )
+
+    projects = simai_client.projects.list()
+
+    assert len(projects) == 2
+    assert [project.id for project in projects] == ["one", "two"]
+
+
 def test_project_sample(simai_client, httpx_mock):
     raw_td = {"id": "28-06-1712", "name": "jean-jacques rousseau"}
     raw_project = {"id": "xX007Xx", "name": "fifi", "sample": None}

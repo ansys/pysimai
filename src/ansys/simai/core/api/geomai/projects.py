@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Any, Dict, Iterator, Optional
 from urllib.parse import quote, urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
+from ansys.simai.core.utils.pagination import PaginatedAPIRawIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.types import RawFilters
@@ -32,10 +33,13 @@ if TYPE_CHECKING:
 
 class GeomAIProjectClientMixin(ApiClientMixin):
     def geomai_projects(self, filters: Optional["RawFilters"]):
-        params = None
-        if filters is not None:
-            params = {"filter[]": [json.dumps(f, separators=(",", ":")) for f in filters]}
-        return self._get("geomai/projects", params=params)
+        return list(self.iter_geomai_projects(filters))
+
+    def iter_geomai_projects(self, filters: Optional["RawFilters"]) -> PaginatedAPIRawIterator:
+        query = urlencode(
+            [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
+        )
+        return PaginatedAPIRawIterator(self, f"geomai/projects?{query}")
 
     def get_geomai_project(self, id: str):
         return self._get(f"geomai/projects/{id}")

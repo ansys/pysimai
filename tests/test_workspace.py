@@ -278,6 +278,47 @@ def test_workspace_list_geometries(simai_client, httpx_mock):
     assert geometries[1].id == "geom2"
 
 
+def test_workspace_iter(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/workspaces/?",
+        headers={"X-Pagination": json.dumps({"total": 999})},
+        json=[{"id": "one", "name": "Workspace One"}],
+        status_code=200,
+    )
+
+    workspace_iter = simai_client.workspaces.iter()
+
+    assert len(workspace_iter) == 999
+    assert next(workspace_iter).id == "one"
+    assert len(workspace_iter) == 998
+    assert next(workspace_iter, None) is None
+    assert len(workspace_iter) == 998
+
+
+def test_workspace_list(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        is_reusable=True,
+        method="GET",
+        url="https://test.test/workspaces/?",
+        headers={"Link": '<https://test.test/workspaces/?last_id=one>; rel="next"'},
+        json=[{"id": "one", "name": "Workspace One"}],
+        status_code=200,
+    )
+    httpx_mock.add_response(
+        is_reusable=True,
+        method="GET",
+        url="https://test.test/workspaces/?last_id=one",
+        json=[{"id": "two", "name": "Workspace Two"}],
+        status_code=200,
+    )
+
+    workspaces = simai_client.workspaces.list()
+
+    assert len(workspaces) == 2
+    assert [workspace.id for workspace in workspaces] == ["one", "two"]
+
+
 def test_workspace_list_created_by_me(simai_client, httpx_mock):
     user_uuid = "user-456"
     simai_client._api._session.auth._user_uuid = user_uuid

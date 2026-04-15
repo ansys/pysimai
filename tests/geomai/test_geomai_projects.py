@@ -85,6 +85,47 @@ def test_project_list_training_data(simai_client, httpx_mock):
     assert [data.id for data in workspaces] == ["first", "second"]
 
 
+def test_geomai_project_iter(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects?",
+        headers={"X-Pagination": json.dumps({"total": 999})},
+        json=[{"id": "one", "name": "Project One"}],
+        status_code=200,
+    )
+
+    project_iter = simai_client.geomai.projects.iter()
+
+    assert len(project_iter) == 999
+    assert next(project_iter).id == "one"
+    assert len(project_iter) == 998
+    assert next(project_iter, None) is None
+    assert len(project_iter) == 998
+
+
+def test_geomai_project_list(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        is_reusable=True,
+        method="GET",
+        url="https://test.test/geomai/projects?",
+        headers={"Link": '<https://test.test/geomai/projects?last_id=one>; rel="next"'},
+        json=[{"id": "one", "name": "Project One"}],
+        status_code=200,
+    )
+    httpx_mock.add_response(
+        is_reusable=True,
+        method="GET",
+        url="https://test.test/geomai/projects?last_id=one",
+        json=[{"id": "two", "name": "Project Two"}],
+        status_code=200,
+    )
+
+    projects = simai_client.geomai.projects.list()
+
+    assert len(projects) == 2
+    assert [project.id for project in projects] == ["one", "two"]
+
+
 def test_last_model_configuration(simai_client):
     """Test last_configuration property."""
 
