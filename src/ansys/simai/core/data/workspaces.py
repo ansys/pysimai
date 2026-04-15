@@ -31,9 +31,11 @@ from ansys.simai.core.data.types import (
     File,
     Filters,
     Identifiable,
+    SizedIterator,
     get_id_from_identifiable,
     to_raw_filters,
 )
+from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geometries import Geometry
@@ -212,10 +214,27 @@ class WorkspaceDirectory(Directory[Workspace]):
 
     _data_model = Workspace
 
+    def iter(self, filters: Optional[Filters] = None) -> SizedIterator[Workspace]:
+        """Iterate over all workspaces from the server.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
+
+        Returns:
+            Iterator over all workspaces from the server.
+        """
+        raw_filters = to_raw_filters(filters)
+        raw_iterable = self._client._api.iter_workspaces(raw_filters)
+        return DataModelIterator(raw_iterable, self)
+
     def list(
         self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
     ) -> List[Workspace]:
-        """List all workspaces from the server."""
+        """List all workspaces from the server.
+
+        Warning:
+            This can take a very long time, consider using :py:meth:`~iter` instead.
+        """
         raw_filters = to_raw_filters(filters)
         if created_by_me:
             user_uuid = self._client._api._session.auth._user_uuid
@@ -228,9 +247,7 @@ class WorkspaceDirectory(Directory[Workspace]):
                 else:
                     raw_filters = created_by_me_filter
 
-        return [
-            self._model_from(workspace) for workspace in self._client._api.workspaces(raw_filters)
-        ]
+        return list(self.iter(raw_filters))
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None) -> Workspace:
         """Get a specific workspace object from the server by either ID or name.

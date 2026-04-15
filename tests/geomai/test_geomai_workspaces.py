@@ -129,6 +129,47 @@ def test_geomai_workspace_list_predictions(simai_client, httpx_mock):
     assert predictions[1].id == "pred2"
 
 
+def test_geomai_workspace_iter(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/workspaces/?",
+        headers={"X-Pagination": json.dumps({"total": 999})},
+        json=[{"id": "one", "name": "Workspace One"}],
+        status_code=200,
+    )
+
+    workspace_iter = simai_client.geomai.workspaces.iter()
+
+    assert len(workspace_iter) == 999
+    assert next(workspace_iter).id == "one"
+    assert len(workspace_iter) == 998
+    assert next(workspace_iter, None) is None
+    assert len(workspace_iter) == 998
+
+
+def test_geomai_workspace_list(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        is_reusable=True,
+        method="GET",
+        url="https://test.test/geomai/workspaces/?",
+        headers={"Link": '<https://test.test/geomai/workspaces/?last_id=one>; rel="next"'},
+        json=[{"id": "one", "name": "Workspace One"}],
+        status_code=200,
+    )
+    httpx_mock.add_response(
+        is_reusable=True,
+        method="GET",
+        url="https://test.test/geomai/workspaces/?last_id=one",
+        json=[{"id": "two", "name": "Workspace Two"}],
+        status_code=200,
+    )
+
+    workspaces = simai_client.geomai.workspaces.list()
+
+    assert len(workspaces) == 2
+    assert [workspace.id for workspace in workspaces] == ["one", "two"]
+
+
 def test_geomai_workspace_list_created_by_me(simai_client, httpx_mock):
     user_uuid = "user-456"
     simai_client._api._session.auth._user_uuid = user_uuid

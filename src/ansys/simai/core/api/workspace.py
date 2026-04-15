@@ -22,10 +22,11 @@
 
 import json
 from typing import TYPE_CHECKING, Optional
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.data.types import File
+from ansys.simai.core.utils.pagination import PaginatedAPIRawIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.types import RawFilters
@@ -36,10 +37,14 @@ class WorkspaceClientMixin(ApiClientMixin):
 
     def workspaces(self, filters: Optional["RawFilters"] = None):
         """List all workspaces."""
-        params = None
-        if filters is not None:
-            params = {"filter[]": [json.dumps(f, separators=(",", ":")) for f in filters]}
-        return self._get("workspaces/", params=params)
+        return list(self.iter_workspaces(filters))
+
+    def iter_workspaces(self, filters: Optional["RawFilters"] = None) -> PaginatedAPIRawIterator:
+        """Iterate over all workspaces."""
+        query = urlencode(
+            [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
+        )
+        return PaginatedAPIRawIterator(self, f"workspaces/?{query}")
 
     def get_workspace(self, workspace_id: str):
         """Get information on a single workspace.
