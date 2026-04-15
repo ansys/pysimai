@@ -138,13 +138,13 @@ class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
     _data_model = GeomAIWorkspace
 
     def iter(self, filters: Optional[Filters] = None) -> SizedIterator[GeomAIWorkspace]:
-        """Iterate over all workspaces from the server.
+        """Iterate over all :class:`GeomAIWorkspace` objects the server.
 
         Args:
             filters: Optional :obj:`~.types.Filters` to apply.
 
         Returns:
-            Iterator over all workspaces from the server.
+            Iterator over all :class:`GeomAIWorkspace` objects on the server.
         """
         raw_filters = to_raw_filters(filters)
         raw_iterable = self._client._api.iter_geomai_workspaces(raw_filters)
@@ -153,11 +153,7 @@ class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
     def list(
         self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
     ) -> List[GeomAIWorkspace]:
-        """List all workspaces from the server.
-
-        Warning:
-            This can take a very long time, consider using :py:meth:`~iter` instead.
-        """
+        """List all workspaces from the server."""
         raw_filters = to_raw_filters(filters)
         if created_by_me:
             user_uuid = self._client._api._session.auth._user_uuid

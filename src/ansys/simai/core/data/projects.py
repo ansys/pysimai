@@ -290,13 +290,13 @@ class ProjectDirectory(Directory[Project]):
     _data_model = Project
 
     def iter(self, filters: Optional[Filters] = None) -> SizedIterator[Project]:
-        """Iterate over all projects available on the server.
+        """Iterate over all :class`Project` objects on the server.
 
         Args:
             filters: Optional :obj:`~.types.Filters` to apply.
 
         Returns:
-            Iterator over all projects available on the server.
+            Iterator over all :class:`Project` objects on the server.
         """
         raw_filters = to_raw_filters(filters)
         raw_iterable = self._client._api.iter_projects(raw_filters)
@@ -305,11 +305,7 @@ class ProjectDirectory(Directory[Project]):
     def list(
         self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
     ) -> list[Project]:
-        """List all projects available on the server.
-
-        Warning:
-            This can take a very long time, consider using :py:meth:`~iter` instead.
-        """
+        """List all projects available on the server."""
         raw_filters = to_raw_filters(filters)
         if created_by_me:
             user_uuid = self._client._api._session.auth._user_uuid
