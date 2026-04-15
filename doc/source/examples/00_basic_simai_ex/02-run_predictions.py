@@ -79,13 +79,13 @@ print(f"Using workspace: {current_workspace.name}")
 ###############################################################################
 # Prepare data structures
 # ----------------------------------------------------
-# Create lists to store geometries and their boundary conditions:
+# Create lists to store geometries and their scalars:
 
 geometries: list[Geometry] = []
-boundary_conditions: list[dict] = []
+scalars: list[dict] = []
 
 ###############################################################################
-# Upload geometries and load boundary conditions
+# Upload geometries and load scalars
 # ----------------------------------------------------
 # Process each subdirectory in the dataset:
 
@@ -115,19 +115,19 @@ for dir in os.listdir(f"{DATASET_PATH}"):
         geometries.append(geom)
 
     ###########################################################################
-    # Load boundary conditions (if applicable)
+    # Load scalars (if applicable)
     # ----------------------------------------------------
-    # This section is optional and only needed if your model requires boundary conditions.
-    # If your model does not use boundary conditions, you can skip this section.
+    # This section is optional and only needed if your model requires scalars.
+    # If your model does not use scalars, you can skip this section.
 
     try:
-        with open(f"{DATASET_PATH}/{dir}/boundary_conditions.json", "r") as f:
-            print(f"Loading boundary conditions for {dir}...")
-            boundary_conditions_for_geom = json.load(f)
-            boundary_conditions.append(boundary_conditions_for_geom)
+        with open(f"{DATASET_PATH}/{dir}/scalars.json", "r") as f:
+            print(f"Loading scalars for {dir}...")
+            scalars_for_geom = json.load(f)
+            scalars.append(scalars_for_geom)
     except FileNotFoundError:
-        print(f"No boundary conditions file found for {dir}, using empty boundary conditions.")
-        boundary_conditions.append({})
+        print(f"No scalars file found for {dir}, using empty scalars.")
+        scalars.append({})
 
 ###############################################################################
 # Run predictions on all geometries
@@ -142,14 +142,14 @@ for geom in geometries:
     geom.wait()
     print(f"Geometry {geom.name} is processed.")
 
-    # Run prediction with boundary conditions if available
-    if boundary_conditions[geometries.index(geom)]:
+    # Run prediction with scalars if available
+    if scalars[geometries.index(geom)]:
         preds.append(
-            geom.run_prediction(boundary_conditions=boundary_conditions[geometries.index(geom)])
+            geom.run_prediction(scalars=scalars[geometries.index(geom)])
         )
-        print(f"Prediction started for geometry {geom.name} with boundary conditions.")
+        print(f"Prediction started for geometry {geom.name} with scalars.")
     else:
-        # Run prediction without boundary conditions
+        # Run prediction without scalars
         preds.append(geom.run_prediction())
         print(f"Prediction started for geometry {geom.name}.")
 
