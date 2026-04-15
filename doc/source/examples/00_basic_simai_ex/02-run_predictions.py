@@ -144,9 +144,7 @@ for geom in geometries:
 
     # Run prediction with scalars if available
     if scalars[geometries.index(geom)]:
-        preds.append(
-            geom.run_prediction(scalars=scalars[geometries.index(geom)])
-        )
+        preds.append(geom.run_prediction(scalars=scalars[geometries.index(geom)]))
         print(f"Prediction started for geometry {geom.name} with scalars.")
     else:
         # Run prediction without scalars
