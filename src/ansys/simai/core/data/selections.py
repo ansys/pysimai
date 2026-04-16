@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-import logging
+import warnings
 from typing import Dict, List, Optional, Union
 
 from ansys.simai.core.data.geometries import Geometry
@@ -32,14 +31,12 @@ from ansys.simai.core.data.types import (
     are_scalars_equal,
     is_scalars,
 )
-from ansys.simai.core.errors import _foreach_despite_errors
+from ansys.simai.core.errors import PySimAIDepreciationWarning, _foreach_despite_errors
 from ansys.simai.core.utils.numerical import (
     DEFAULT_COMPARISON_EPSILON,
     validate_tolerance_parameter,
 )
 from ansys.simai.core.utils.validation import _enforce_as_list_passing_predicate
-
-logger = logging.getLogger(__name__)
 
 
 class Point:
@@ -59,10 +56,11 @@ class Point:
         if scalars is None and boundary_conditions is None:
             raise ValueError("Provide either 'scalars' or 'boundary_conditions'")
         if boundary_conditions is not None:
-            logger.warning(
-                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            warnings.warn(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead.",
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
-
         self._geometry = geometry
         self._scalars = scalars if scalars is not None else boundary_conditions
         self._prediction: Optional[Prediction] = None
@@ -77,8 +75,10 @@ class Point:
         """**(Deprecated)** :class:`~ansys.simai.core.data.types.BoundaryConditions` object for the :class:`Point`
         instance.
         """
-        logger.warning(
-            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        warnings.warn(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead.",
+            PySimAIDepreciationWarning,
+            stacklevel=2,
         )
         return self._scalars
 
@@ -103,8 +103,10 @@ class Point:
     ):
         """Run the prediction on the geometry for this scalar."""
         if boundary_conditions is not None:
-            logger.warning(
-                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            warnings.warn(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead.",
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
             scalars = boundary_conditions
 
@@ -147,8 +149,10 @@ class Selection:
         if scalars is None and boundary_conditions is None:
             raise ValueError("Provide either 'scalars' or 'boundary_conditions'")
         if boundary_conditions is not None:
-            logger.warning(
-                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            warnings.warn(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead.",
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
             scalars = boundary_conditions
 
@@ -202,8 +206,10 @@ class Selection:
         """**(Deprecated)** List of all existing :class:`Boundary conditions <ansys.simai.core.data.types.BoundaryConditions>`
         instances in the selection.
         """
-        logger.warning(
-            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        warnings.warn(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead.",
+            PySimAIDepreciationWarning,
+            stacklevel=2,
         )
         return self._scalars
 

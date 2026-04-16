@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import logging
 import warnings
 from pprint import pformat
 from typing import TYPE_CHECKING, Any, BinaryIO, Dict, List, Optional, Union
@@ -35,13 +34,12 @@ from ansys.simai.core.data.types import (
     get_id_from_identifiable,
     to_raw_filters,
 )
+from ansys.simai.core.errors import PySimAIDepreciationWarning
 from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geometries import Geometry
     from ansys.simai.core.data.predictions import Prediction
-
-logger = logging.getLogger(__name__)
 
 
 class ModelManifest:
@@ -71,8 +69,10 @@ class ModelManifest:
     @property
     def boundary_conditions(self) -> Dict[str, Any]:
         """**(Deprecated)** Information on the boundary conditions expected by the model. For example, the prediction's input."""
-        logger.warning(
-            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        warnings.warn(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead.",
+            PySimAIDepreciationWarning,
+            stacklevel=2,
         )
         return self._raw["boundary_conditions"]
 
@@ -117,6 +117,7 @@ class Workspace(DataModel):
         """Deprecated alias to :py:attr:`~model_manifest`."""
         warnings.warn(
             "workspace.model is deprecated, please use workspace.model_manifest",
+            PySimAIDepreciationWarning,
             stacklevel=2,
         )
         return self.model_manifest

@@ -30,7 +30,12 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.predictions import Prediction
     from ansys.simai.core.data.selections import Selection
 
-from ansys.simai.core.errors import InvalidArguments, _foreach_despite_errors, _map_despite_errors
+from ansys.simai.core.errors import (
+    InvalidArguments,
+    PySimAIDepreciationWarning,
+    _foreach_despite_errors,
+    _map_despite_errors,
+)
 
 T = TypeVar("T", bound=PostProcessing)
 
@@ -92,8 +97,8 @@ class ExportablePPList(PPList, Generic[T]):
         if format == "csv":
             warnings.warn(
                 "The ``csv`` option is being deprecated. Use the ``csv.zip`` option instead",
-                PendingDeprecationWarning,
-                stacklevel=1,
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
         if len(self) < 1:
             raise InvalidArguments("Selection contains no exportable postprocessing.")

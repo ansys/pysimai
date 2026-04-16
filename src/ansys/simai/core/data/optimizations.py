@@ -35,7 +35,7 @@ from ansys.simai.core.data.types import (
     get_id_from_identifiable,
     get_object_from_identifiable,
 )
-from ansys.simai.core.errors import InvalidArguments, NotFoundError
+from ansys.simai.core.errors import InvalidArguments, NotFoundError, PySimAIDepreciationWarning
 
 logger = logging.getLogger(__name__)
 
@@ -421,7 +421,8 @@ class OptimizationDirectory(Directory[Optimization]):
         if scalars is None and boundary_conditions is not None:
             warnings.warn(
                 "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead.",
-                stacklevel=1,
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
             scalars = boundary_conditions
         _validate_n_iters(n_iters)
@@ -600,7 +601,8 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
         if scalars is None and boundary_conditions is not None:
             warnings.warn(
                 "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead.",
-                stacklevel=1,
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
             scalars = boundary_conditions
         _validate_n_iters(n_iters)

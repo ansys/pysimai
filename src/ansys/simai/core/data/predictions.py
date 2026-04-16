@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 import logging
+import warnings
 from typing import Any, Dict, List, Optional
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
@@ -34,6 +34,7 @@ from ansys.simai.core.data.types import (
     get_id_from_identifiable,
 )
 from ansys.simai.core.data.workspaces import Workspace
+from ansys.simai.core.errors import PySimAIDepreciationWarning
 
 logger = logging.getLogger(__name__)
 
@@ -75,8 +76,10 @@ class Prediction(ComputableDataModel):
     @property
     def boundary_conditions(self) -> BoundaryConditions:
         """**(Deprecated)** Boundary conditions of the prediction."""
-        logger.warning(
-            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        warnings.warn(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead.",
+            PySimAIDepreciationWarning,
+            stacklevel=2,
         )
         return self.fields["boundary_conditions"]
 
@@ -172,8 +175,10 @@ class PredictionDirectory(Directory[Prediction]):
         """**(Deprecated)** Information on the boundary conditions expected by the model of the current workspace.
         For example, the prediction's input.
         """
-        logger.warning(
-            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+        warnings.warn(
+            "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead.",
+            PySimAIDepreciationWarning,
+            stacklevel=2,
         )
         return self._client.current_workspace.model_manifest.boundary_conditions
 
@@ -292,10 +297,12 @@ class PredictionDirectory(Directory[Prediction]):
 
         """
         if boundary_conditions is not None:
-            logger.warning(
-                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            warnings.warn(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead.",
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
-        bc = build_scalars(scalars, **kwargs)
+        bc = build_scalars(scalars if scalars is not None else boundary_conditions, **kwargs)
         geometry = self._client.geometries.get(id=get_id_from_identifiable(geometry))
         prediction = geometry.run_prediction(scalars=bc)
         for location, warning_message in prediction.fields.get("warnings", {}).items():

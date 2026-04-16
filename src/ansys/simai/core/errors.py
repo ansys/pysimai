@@ -144,3 +144,7 @@ def _foreach_despite_errors(
         if len(errors) == 1:
             raise errors[0]
         raise MultipleErrors(errors)
+
+
+class PySimAIDepreciationWarning(UserWarning):
+    pass
