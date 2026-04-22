@@ -1,12 +1,23 @@
 Changelog
 ---------
 
+0.4.2 (2026-04-22)
+******************
+
+New:
+
+- Add :py:meth:`sample<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.sample>` method in :py:class:`GeomAIPredictionDirectory<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory>`.
+
+Fixes:
+
+- Fix support for ``boundary_conditions`` in :py:meth:`PredictionDirectory.run<ansys.simai.core.data.predictions.PredictionDirectory.run>` method.
+
 0.4.1 (2026-04-15)
 ******************
 
 Fixes:
 
-- Use pagination for workspaces and projects
+- Use pagination for workspaces and projects.
 
 0.4.0 (2026-04-15)
 ******************
