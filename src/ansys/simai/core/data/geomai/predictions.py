@@ -201,6 +201,29 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
             )
         )
 
+    def sample(
+        self,
+        resolution: Optional[Tuple[PositiveInt, PositiveInt, PositiveInt]] = None,
+        workspace: Optional[Identifiable[GeomAIWorkspace]] = None,
+    ) -> GeomAIPrediction:
+        """Generate a sample GeomAI prediction object, in the given workspace with the given resolution.
+
+        Warning:
+            This feature is in beta.
+
+        Args:
+            resolution: Optional resolution used for sampling.
+            workspace: Optional ID or :class:`model <.workspaces.GeomAIWorkspace>` of the target workspace.
+                Defaults to the current workspace if set.
+
+        Returns:
+            Created prediction object.
+        """
+        workspace_id = get_id_from_identifiable(
+            workspace, default=self._client.geomai._current_workspace
+        )
+        return self._model_from(self._client._api.run_geomai_sampling(workspace_id, resolution))
+
     def download(
         self, prediction: Identifiable[GeomAIPrediction], file: Optional[File] = None
     ) -> Union[None, BinaryIO]:

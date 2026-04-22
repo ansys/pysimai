@@ -119,6 +119,7 @@ nitpicky = True
 nitpick_ignore = [
     ("py:obj", "ansys.simai.core.data.base.DataModelType"),
     ("py:class", "_io.BytesIO"),
+    ("py:class", "gt=0"),
     ("py:class", "pydantic_core._pydantic_core.Url"),
     ("py:class", "pydantic_core._pydantic_core.Annotated"),
     ("py:class", "annotated_types.Gt"),
