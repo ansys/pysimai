@@ -209,7 +209,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
         """Generate a sample GeomAI prediction object, in the given workspace with the given resolution.
 
         Warning:
-            This feature is in alpha. This means that it has not yet been fully tested, documented, or has its intended functionality. This feature could be quickly deprecated and removed. It is meant to be used only upon the guidance of your Ansys representative.
+            This feature is in beta.
 
         Args:
             resolution: Optional resolution used for sampling.

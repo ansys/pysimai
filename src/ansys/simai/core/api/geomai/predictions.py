@@ -63,9 +63,8 @@ class GeomAIPredictionClientMixin(ApiClientMixin):
     def run_geomai_sampling(
         self, workspace_id: str, resolution: Optional[Tuple[PositiveInt, PositiveInt, PositiveInt]]
     ):
-        return self._post(
-            f"geomai/workspaces/{workspace_id}/predictions/sample", json={"resolution": resolution}
-        )
+        payload = {"resolution": resolution} if resolution is not None else {}
+        return self._post(f"geomai/workspaces/{workspace_id}/predictions/sample", json=payload)
 
     def download_geomai_prediction(self, prediction_id: str, file: Optional[File]):
         return self.download_file(f"geomai/predictions/{prediction_id}/download", file)
