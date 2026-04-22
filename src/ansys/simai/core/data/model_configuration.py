@@ -19,12 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-import logging
+import warnings
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, List, Literal, Optional
 
-from ansys.simai.core.errors import InvalidArguments, ProcessingError
+from ansys.simai.core.errors import InvalidArguments, ProcessingError, PySimAIDepreciationWarning
 from ansys.simai.core.utils.misc import dict_get
 
 if TYPE_CHECKING:
@@ -36,9 +35,6 @@ SupportedBuildPresets = {
     "2_days": "default",
     "7_days": "long",
 }
-
-
-logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -404,8 +400,10 @@ class ModelConfiguration:
 
         # DEPRECATED
         if model_input.boundary_conditions:
-            logger.warning(
-                "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead."
+            warnings.warn(
+                "'boundary_conditions' is deprecated and will be removed in a future release. Please use 'scalars' instead.",
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
         self.__dict__["input"].scalars = (
             model_input.scalars
@@ -489,8 +487,10 @@ class ModelConfiguration:
             self.input.boundary_conditions = list(scalars.keys())
         # DEPRECATED
         if boundary_conditions is not None and self.input.boundary_conditions is None:
-            logger.warning(
-                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead."
+            warnings.warn(
+                "The 'boundary_conditions' parameter is deprecated and will be removed in a future release. Please use the 'scalars' parameter instead.",
+                PySimAIDepreciationWarning,
+                stacklevel=2,
             )
             self.input.scalars = list(boundary_conditions.keys())
             self.input.boundary_conditions = list(boundary_conditions.keys())

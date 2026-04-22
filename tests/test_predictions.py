@@ -23,6 +23,7 @@
 import pytest
 
 from ansys.simai.core.data.geometries import Geometry
+from ansys.simai.core.errors import PySimAIDepreciationWarning
 
 
 def test_prediction_failure(simai_client):
@@ -176,6 +177,41 @@ def test_run_no_bc(simai_client, geometry_factory, httpx_mock):
     )
     geometry = geometry_factory(id="geom-0")
     simai_client.predictions.run(geometry.id)
+
+
+def test_run_scalars(simai_client, geometry_factory, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geometries/geom-0",
+        json={"id": "geom-0"},
+        status_code=200,
+    )
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/geometries/geom-0/predictions",
+        json={"id": "pred-0"},
+        status_code=200,
+    )
+    geometry = geometry_factory(id="geom-0")
+    simai_client.predictions.run(geometry.id, scalars={"Vx": 10.5})
+
+
+def test_run_boundary_conditions(simai_client, geometry_factory, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geometries/geom-0",
+        json={"id": "geom-0"},
+        status_code=200,
+    )
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/geometries/geom-0/predictions",
+        json={"id": "pred-0"},
+        status_code=200,
+    )
+    geometry = geometry_factory(id="geom-0")
+    with pytest.warns(PySimAIDepreciationWarning):
+        simai_client.predictions.run(geometry.id, boundary_conditions={"Vx": 10.5})
 
 
 def test_confidence_score(prediction_factory, httpx_mock):

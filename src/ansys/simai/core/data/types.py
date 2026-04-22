@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 import io
-import logging
 import os
 import pathlib
+import warnings
 from contextlib import contextmanager
 from enum import Enum
 from numbers import Number
@@ -47,7 +47,7 @@ from typing import (
 from httpx import Response
 
 from ansys.simai.core.data.base import DataModel, DataModelType, Directory
-from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.errors import InvalidArguments, PySimAIDepreciationWarning
 from ansys.simai.core.utils.files import file_path_to_obj_file
 from ansys.simai.core.utils.numerical import (
     is_bigger_or_equal_with_tolerance,
@@ -56,8 +56,6 @@ from ansys.simai.core.utils.numerical import (
     is_smaller_or_equal_with_tolerance,
     validate_tolerance_parameter,
 )
-
-logger = logging.getLogger(__name__)
 
 # DEPRECATED
 BoundaryConditions = Dict[str, Number]
@@ -120,8 +118,10 @@ T_co = TypeVar("T_co", covariant=True)
 
 # DEPRECATED
 def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] = None, **kwargs):
-    logger.warning(
-        "'build_boundary_conditions()' is deprecated and will be removed in a future release. Please use 'build_scalars()' instead."
+    warnings.warn(
+        "'build_boundary_conditions()' is deprecated and will be removed in a future release. Please use 'build_scalars()' instead.",
+        PySimAIDepreciationWarning,
+        stacklevel=2,
     )
     bc = boundary_conditions or {}
     bc.update(**kwargs)
@@ -133,8 +133,10 @@ def build_boundary_conditions(boundary_conditions: Optional[Dict[str, Number]] =
 
 
 def is_boundary_conditions(bc):
-    logger.warning(
-        "'is_boundary_conditions()' is deprecated and will be removed in a future release. Please use 'is_scalars()' instead."
+    warnings.warn(
+        "'is_boundary_conditions()' is deprecated and will be removed in a future release. Please use 'is_scalars()' instead.",
+        PySimAIDepreciationWarning,
+        stacklevel=2,
     )
     return isinstance(bc, dict) and all(is_number(x) for x in bc.values())
 
@@ -144,8 +146,10 @@ def are_boundary_conditions_equal(
     right: BoundaryConditions,
     tolerance: Optional[Number] = None,
 ):
-    logger.warning(
-        "'are_boundary_conditions_equal' is deprecated and will be removed in a future release. Please use 'are_scalars_equal()' instead."
+    warnings.warn(
+        "'are_boundary_conditions_equal' is deprecated and will be removed in a future release. Please use 'are_scalars_equal()' instead.",
+        PySimAIDepreciationWarning,
+        stacklevel=2,
     )
     if not is_boundary_conditions(left):
         raise TypeError(
