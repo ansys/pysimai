@@ -35,7 +35,7 @@ Before you begin
 - Complete ":ref:`ref_basic_build_model`" to train a SimAI model.
 - Ensure the model training completed successfully.
 - Have a dataset folder with subdirectories containing geometry files. These geometry files can come from a Generative Design model.
-- (Optional) Prepare boundary condition JSON files if your model requires them.
+- (Optional) Prepare scalar JSON files if your model requires them.
 
 """
 
@@ -126,7 +126,7 @@ for dir in os.listdir(f"{DATASET_PATH}"):
             scalars_for_geom = json.load(f)
             scalars.append(scalars_for_geom)
     except FileNotFoundError:
-        print(f"No scalars file found for {dir}, using empty scalars.")
+        print(f"No scalar file found for {dir}, using empty dict.")
         scalars.append({})
 
 ###############################################################################
