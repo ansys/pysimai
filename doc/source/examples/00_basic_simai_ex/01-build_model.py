@@ -80,7 +80,7 @@ print(f"Using existing project: {PROJECT_NAME}")
 
 model_input = ModelInput(
     surface=["<your_surface_name>"],  # List of surface names to use as input
-    boundary_conditions=["<your_BC_name>"],  # List of boundary condition names
+    scalars=["<your_scalar_name>"],  # List of scalar names
 )
 
 ###############################################################################
