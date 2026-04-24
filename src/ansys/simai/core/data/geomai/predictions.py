@@ -209,7 +209,8 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
         """Generate a sample GeomAI prediction object, in the given workspace with the given resolution.
 
         Warning:
-            This feature is in beta.
+            This feature is in beta. It will likely be recast or retired by July 2026.
+            Testing and feedback are encouraged, but it is advised not to include it in a production workflow.
 
         Args:
             resolution: Optional resolution used for sampling.
