@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import json
+from io import BytesIO
 from typing import TYPE_CHECKING
 from urllib.parse import urlencode
 
@@ -91,6 +92,28 @@ def test_geomai_workspace_get_latent_parameters(simai_client, httpx_mock):
     latent_parameters = workspace.get_latent_parameters()
     assert isinstance(latent_parameters, dict)
     assert latent_parameters == {"geometry1": [1, 2, 3]}
+
+
+def test_geomai_workspace_get_latent_parameters_returns_binary_file_when_file_set(
+    simai_client, httpx_mock
+):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "abc123", "name": "HL3"}
+    )
+
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
+        text='{"geometry1": [1,2,3]}',
+        status_code=200,
+    )
+    target_file = BytesIO()
+    returned_file = BytesIO(b'{"geometry1": [1,2,3]}')
+
+    latent_parameters = workspace.get_latent_parameters(target_file)
+
+    assert isinstance(latent_parameters, BytesIO)
+    assert latent_parameters.getvalue() == returned_file.getvalue()
 
 
 def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, training_data_factory):
