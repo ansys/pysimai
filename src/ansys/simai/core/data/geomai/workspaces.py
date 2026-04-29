@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import json
+import warnings
 from typing import TYPE_CHECKING, BinaryIO, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
@@ -29,10 +30,12 @@ from ansys.simai.core.data.types import (
     File,
     Filters,
     Identifiable,
+    Path,
     SizedIterator,
     get_id_from_identifiable,
     to_raw_filters,
 )
+from ansys.simai.core.errors import PySimAIDepreciationWarning
 from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
@@ -91,17 +94,42 @@ class GeomAIWorkspace(DataModel):
     def download_latent_parameters_json(self, file: Optional[File] = None) -> Union[None, BinaryIO]:
         """Download the json file containing the latent parameters for the model's training data.
 
+        Warning:
+            This feature is deprecated and will be retired in August 2026. Please use :py:meth:`~get_latent_parameters` instead.
+
         Args:
             file: Binary file-object or the path of the file to put the content into.
 
         Returns:
             ``None`` if a file is specified or a binary file-object otherwise.
         """
+        warnings.warn(
+            "`download_latent_parameters_json` is deprecated. Use 'get_latent_parameters' instead.",
+            PySimAIDepreciationWarning,
+            stacklevel=2,
+        )
+        # We don't use `get_latent_parameters` here because it doesn't return a binary file-object when file is None
         return self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
 
-    def get_latent_parameters(self) -> dict[str, List[float]]:
-        """Get the dictionary mapping geometry names to their latent parameter vectors for the model's training data."""
-        data = self._client._api.download_geomai_workspace_latent_parameters(self.id, None)
+    def get_latent_parameters(
+        self,
+        file: Optional[File] = None,
+    ) -> dict[str, List[float]] | Union[None, BinaryIO]:
+        """Get mapping geometry names to their latent parameter vectors for the model's training data.
+
+        Args:
+            file: Binary file-object or the path of the file to put the content into.
+
+        Returns:
+            ``None`` or a binary file-object if a file is specified or a dictionary mapping geometry names to latent parameter
+            vectors otherwise.
+        """
+        data = self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
+        if file:
+            if isinstance(file, File) and not isinstance(file, (str, Path)):
+                return file
+            return data
+
         if data is None:
             return {}
         latent_parameters = json.loads(data.read().decode("utf-8"))
