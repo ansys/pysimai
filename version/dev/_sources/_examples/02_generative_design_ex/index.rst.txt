@@ -1,0 +1,104 @@
+
+
+.. _sphx_glr__examples_02_generative_design_ex:
+
+
+
+Generative Design
+---------------------------
+
+This section provides a collection of practical script examples illustrating the Generative Design feature of SimAI.
+They serve as a reference guide for users to implement similar solutions in their projects.
+
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to connect to the instance, create a new project, and upload geometry files as training data.">
+
+.. only:: html
+
+  .. image:: /_examples/02_generative_design_ex/images/thumb/sphx_glr_00-create_project_upload_data_thumb.png
+    :alt:
+
+  :doc:`/_examples/02_generative_design_ex/00-create_project_upload_data`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Creating a GeomAI Project and Uploading Training Data</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to configure a Generative Design model, start the model training process, and monitor the build progress.">
+
+.. only:: html
+
+  .. image:: /_examples/02_generative_design_ex/images/thumb/sphx_glr_01-build_model_thumb.png
+    :alt:
+
+  :doc:`/_examples/02_generative_design_ex/01-build_model`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Building a Generative Design Model</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to generate random geometries using random latent parameters.">
+
+.. only:: html
+
+  .. image:: /_examples/02_generative_design_ex/images/thumb/sphx_glr_02-generate_random_geometries_thumb.png
+    :alt:
+
+  :doc:`/_examples/02_generative_design_ex/02-generate_random_geometries`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Generating Random Geometries</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to interpolate between two geometries in latent space.">
+
+.. only:: html
+
+  .. image:: /_examples/02_generative_design_ex/images/thumb/sphx_glr_03-interpolate_geometries_thumb.png
+    :alt:
+
+  :doc:`/_examples/02_generative_design_ex/03-interpolate_geometries`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Interpolating Between Geometries</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /_examples/02_generative_design_ex/00-create_project_upload_data
+   /_examples/02_generative_design_ex/01-build_model
+   /_examples/02_generative_design_ex/02-generate_random_geometries
+   /_examples/02_generative_design_ex/03-interpolate_geometries
+
