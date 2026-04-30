@@ -49,17 +49,12 @@ class GeomAIPredictionConfiguration(BaseModel):
     Required.
     """
     resolution: Optional[Tuple[PositiveInt, PositiveInt, PositiveInt]] = None
-    """A list of three integers defining the number of voxels along the X, Y, and Z axes.
+    """Auto‑resolution is a system-driven feature that automatically selects the most appropriate reconstruction resolution at inference time based on training data.
 
-    Use higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
+    During training, each dataset is assigned a resolution derived from its mesh characteristics, particularly average edge lengths, so that reconstructed outputs preserve similar geometric fidelity.
+    At inference, the system projects the input into latent space, finds the nearest training example, and reuses its associated resolution.
 
-    The total number of voxels must not exceed 900^3, that is `x`, `y`, `z` multiplied together must be less than or equal to 900^3.
-    If you exceed that value, an error will occur.
-
-    Defaults to ``[100,100,100]``, if ``None`` is provided.
-
-    For the maximum resolution of 900^3, the prediction takes approximately 10 minutes (approximately 1 microsecond per voxel).
-    """
+    As a result, the resolution is not fixed per model but varies per inference, offering a data-driven default that improves quality while remaining editable by the user. """
 
     def __init__(self, *args, **kwargs):
         """Raises :exc:`~ansys.simai.core.errors.InvalidArguments` if the input data cannot be validated to from a valid model."""
@@ -182,7 +177,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
                 simai_client = asc.from_config()
                 workspace = simai_client.geomai.workspaces.list()[0]
                 prediction = simai_client.geomai.predictions.run(
-                    dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100)),
+                    dict(latent_params=[0.1, 1.2, 0.76]),
                     workspace,
                 )
 
