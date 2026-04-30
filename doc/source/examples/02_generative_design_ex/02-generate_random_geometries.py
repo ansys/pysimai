@@ -55,7 +55,6 @@ PROJECT_NAME = "new-bracket-project"  # Replace with your project name
 WORKSPACE_NAME = "new-bracket-project #1"  # Typically "{PROJECT_NAME} #{number}"
 OUTPUT_DIR = "random_geometries"  # Directory to save generated geometries
 NUM_GEOMETRIES = 5  # Number of random geometries to generate
-RESOLUTION = (100, 100, 100)  # Output resolution (x, y, z)
 
 ###############################################################################
 # Initialize the client and get the workspace
@@ -107,7 +106,6 @@ for i in range(NUM_GEOMETRIES):
     # Create prediction configuration
     config = GeomAIPredictionConfiguration(
         latent_params=latent_params,
-        resolution=RESOLUTION,
     )
 
     # Run the prediction
@@ -146,7 +144,6 @@ for i, prediction in enumerate(predictions):
 # -------------------------------------------
 #
 # - Latent parameters typically range from -3 to +3 for meaningful results.
-# - Adjust the resolution to balance quality and file size.
 # - Increase timeout for complex geometries.
 # - Use the workspace's latent space statistics (min, max) for better sampling.
 
