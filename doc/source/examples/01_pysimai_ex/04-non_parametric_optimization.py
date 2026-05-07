@@ -212,7 +212,9 @@ optimization.wait()
 
 from ansys.simai.core.data.optimizations import Optimization
 
-optimization_id = optimization.id if isinstance(optimization, Optimization) else optimization.optimization.id
+optimization_id = (
+    optimization.id if isinstance(optimization, Optimization) else optimization.optimization.id
+)
 
 print(f"Optimization ID: {optimization_id}")
 print(f"Generated geometries: {[geo.name for geo in optimization.list_geometries()]}")
