@@ -209,7 +209,11 @@ optimization.wait()
 # Display optimization results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Print the optimization ID, generated geometries, and objective values:
-optimization_id = optimization.optimization.id
+
+from ansys.simai.core.data.optimizations import Optimization
+
+optimization_id = optimization.id if isinstance(optimization, Optimization) else optimization.optimization.id
+
 print(f"Optimization ID: {optimization_id}")
 print(f"Generated geometries: {[geo.name for geo in optimization.list_geometries()]}")
 print(f"Objectives: {optimization.list_objectives()}")
