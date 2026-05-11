@@ -130,7 +130,7 @@ print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} fail
 # After uploading, the instance needs to process the geometries. This script
 # displays the progress of the data processing.
 
-project_data = project.data()
+project_data = project.list_training_data()
 
 
 print("\nWaiting for data processing to complete...")
@@ -147,7 +147,7 @@ for data in project_data:
 # -------------------------------------------
 # Show a summary of the project's data processing status:
 
-project_data = project.data()
+project_data = project.list_training_data()
 
 print("\nProject Summary")
 print("=" * 50)

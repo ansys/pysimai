@@ -79,7 +79,7 @@ print(f"Using project: {project.name}")
 # -------------------------------------------
 # Before building a model, ensure all training data are processed:
 
-project_data = project.data()
+project_data = project.list_training_data()
 ready_data = [data for data in project_data if data.is_ready]
 print(f"Project has {len(ready_data)}/{len(project_data)} ready training data")
 
