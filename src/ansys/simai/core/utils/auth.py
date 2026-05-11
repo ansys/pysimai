@@ -110,7 +110,7 @@ def _request_tokens_direct_grant(
     """Request tokens via username/password (direct grant)."""
     logger.debug(f"request authentication tokens via direct grant (scope={scope})")
     request_params = {
-        "client_id": "sdk",
+        "client_id": "com.ansys.simai.sdk",
         "grant_type": "password",
         "scope": scope,
         **credentials.model_dump(),
@@ -127,7 +127,7 @@ def _request_tokens_device_auth(
     """Request tokens via device auth flow (browser-based)."""
     logger.debug(f"request authentication tokens via device auth (scope={scope})")
     auth_codes = handle_response(
-        session.post(device_auth_url, data={"client_id": "sdk", "scope": scope})
+        session.post(device_auth_url, data={"client_id": "com.ansys.simai.sdk", "scope": scope})
     )
     print(  # noqa: T201
         f"Go to {auth_codes['verification_uri']} and enter the code {auth_codes['user_code']}"
@@ -140,7 +140,7 @@ def _request_tokens_device_auth(
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data={
                 "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
-                "client_id": "sdk",
+                "client_id": "com.ansys.simai.sdk",
                 "device_code": auth_codes["device_code"],
             },
         )
@@ -190,7 +190,7 @@ class _AuthTokensRetriever:
     def _refresh_auth_tokens(self, refresh_token: str) -> Optional[_AuthTokens]:
         logger.debug("Refreshing authentication tokens.")
         request_params = {
-            "client_id": "sdk",
+            "client_id": "com.ansys.simai.sdk",
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
         }
