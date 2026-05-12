@@ -202,7 +202,7 @@ optimization = simai.optimizations.run_non_parametric(
     detail_level=DETAIL_LEVEL,
     maximize=OBJECTIVE,  # Use 'minimize' parameter for minimization objectives
     show_progress=True,
-    part_morphing=PART_MORPHING,  # Comment to disable part morphing
+    # part_morphing=PART_MORPHING,  # Uncomment to enable part morphing
 )
 optimization.wait()
 
@@ -301,7 +301,7 @@ predictions: list[Prediction] = []
 
 for geom in optimization.list_geometries():
     print(f"Running prediction for: {geom.name} (ID: {geom.id})")
-    prediction = geom.run_prediction(scalars=scalars)  # Scalars must match your workspace configuration
+    prediction = geom.run_prediction(scalars=scalars)
     predictions.append(prediction)
 
 ###############################################################################
