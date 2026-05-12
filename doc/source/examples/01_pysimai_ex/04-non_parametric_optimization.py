@@ -130,6 +130,7 @@ NUMBER_OF_ITERATIONS = 10
 MAX_DISPLACEMENT = [0.1]
 # Symmetry constraints (e.g., ["X"] for YZ plane symmetry)
 SYMMETRIES = []
+scalars = {}  # Scalars must match your workspace configuration
 # Objective to maximize (use minimize parameter for minimization)
 OBJECTIVE = ["<global_coefficient_objective>"]
 # Detail level controls deformation refinement (integer from 1 to 10, default: 5)
@@ -195,7 +196,7 @@ optimization = simai.optimizations.run_non_parametric(
     offline_token=offline_token,
     bounding_boxes=BOUNDING_BOXES,
     max_displacement=MAX_DISPLACEMENT,
-    scalars={},  # Scalars must match your workspace configuration
+    scalars=scalars,
     n_iters=NUMBER_OF_ITERATIONS,
     symmetries=SYMMETRIES,
     detail_level=DETAIL_LEVEL,
@@ -220,44 +221,12 @@ print(f"Optimization ID: {optimization_id}")
 print(f"Generated geometries: {[geo.name for geo in optimization.list_geometries()]}")
 print(f"Objectives: {optimization.list_objectives()}")
 
-###############################################################################
-# Run predictions on optimized geometries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# You can get back your optimization from its ID when done asynchronously.
-# Run predictions on all generated geometries to evaluate their performance:
-
-predictions: list[Prediction] = []
-
-for geom in optimization.list_geometries():
-    print(f"Running prediction for: {geom.name} (ID: {geom.id})")
-    prediction = geom.run_prediction(scalars={})  # Scalars must match your workspace configuration
-    predictions.append(prediction)
-
-###############################################################################
-# Analyze the results from an optimization run
-# ----------------------------------------------
-# Download surface VTP files for each prediction:
-VTPS_FOLDER = f"{OUTPUT_FOLDER}/optimization_{optimization_id}/VTPs"
-os.makedirs(VTPS_FOLDER, exist_ok=True)
-
-for prediction in predictions:
-    # Wait for prediction to complete
-    prediction.wait()
-
-    geom = prediction.geometry
-    geom_name = geom.name.split(".")[0]
-
-    print(f"Downloading results for: {geom.name} (ID: {geom.id})")
-    surface_vtp = prediction.post.surface_vtp()
-    surface_vtp.data.download(f"{VTPS_FOLDER}/{geom_name}_surface.vtp")
-
-print("All results downloaded successfully!")
 
 ###############################################################################
 # Visualize optimization progression
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Plot the objective value at each iteration alongside the baseline and
-# ±5 % reference bands, then plot mean and maximum displacement per iteration.
+# ±5 % reference bands.
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -272,7 +241,7 @@ CHARTS_FOLDER = f"{OUTPUT_FOLDER}/optimization_{optimization_id}/charts"
 os.makedirs(CHARTS_FOLDER, exist_ok=True)
 
 print("Running baseline prediction for visualization reference...")
-baseline_pred = geometry.run_prediction()
+baseline_pred = geometry.run_prediction(scalars=scalars)
 baseline_pred.wait()
 baseline_gc_data = baseline_pred.post.global_coefficients().data
 baseline_value = float(baseline_gc_data[OBJECTIVE[0]]["data"])
@@ -323,67 +292,41 @@ plt.savefig(f"{CHARTS_FOLDER}/objective_progression.png", dpi=150)
 plt.show()
 
 ###############################################################################
-# Collect per-iteration displacement statistics
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Read the surface VTP file for each generated geometry and extract the
-# ``Delta`` field.  Nodes that did not move (value == 0) are
-# filtered out because many surface nodes are intentionally frozen by the
-# bounding-box constraints.  Mean and maximum magnitude are then computed
-# from the remaining active nodes.
+# Run predictions on optimized geometries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# You can get back your optimization from its ID when done asynchronously.
+# Run predictions on all generated geometries to evaluate their performance:
 
-geom_list = optimization.list_geometries()
-mean_displacements = []
-max_displacements = []
+predictions: list[Prediction] = []
 
-for geom in geom_list:
-    geom_name = geom.name.split(".")[0]
-    vtp_path = f"{VTPS_FOLDER}/{geom_name}_surface.vtp"
-    mesh = pv.read(vtp_path)
-    delta = mesh.point_data["Delta"]
-
-    # Compute per-node magnitude
-    magnitude = np.linalg.norm(delta, axis=1)
-
-    # Exclude nodes that did not move by design
-    nonzero = magnitude[magnitude > 0]
-    mean_displacements.append(float(nonzero.mean()) if nonzero.size > 0 else 0.0)
-    max_displacements.append(float(nonzero.max()) if nonzero.size > 0 else 0.0)
+for geom in optimization.list_geometries():
+    print(f"Running prediction for: {geom.name} (ID: {geom.id})")
+    prediction = geom.run_prediction(scalars=scalars)  # Scalars must match your workspace configuration
+    predictions.append(prediction)
 
 ###############################################################################
-# Chart 2 – Displacement statistics over iterations
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Shows how the surface deformation evolves iteration by iteration.
-# A growing maximum displacement indicates the optimizer is making increasingly
-# bold geometry changes; a plateau suggests convergence.
+# Analyze the results from an optimization run
+# ----------------------------------------------
+# Download surface VTP files for each prediction:
 
-fig, ax = plt.subplots(figsize=(10, 5))
+VTPS_FOLDER = f"{OUTPUT_FOLDER}/optimization_{optimization_id}/VTPs"
+os.makedirs(VTPS_FOLDER, exist_ok=True)
 
-ax.plot(
-    iterations,
-    mean_displacements,
-    marker="o",
-    linewidth=2,
-    label="Mean displacement (active nodes)",
-)
-ax.plot(
-    iterations,
-    max_displacements,
-    marker="s",
-    linewidth=2,
-    linestyle="--",
-    label="Max displacement (active nodes)",
-)
+for prediction in predictions:
+    try:
+        # Wait for prediction to complete
+        prediction.wait()
 
-ax.set_xlabel("Iteration")
-ax.set_ylabel("Delta magnitude")
-ax.set_title("Surface displacement statistics over optimization iterations")
-ax.legend()
-ax.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.savefig(f"{CHARTS_FOLDER}/displacement_statistics.png", dpi=150)
-plt.show()
+        geom = prediction.geometry
+        geom_name = geom.name.split(".")[0]
 
-print(f"Charts saved to {CHARTS_FOLDER}.")
+        if not os.path.exists(f"{VTPS_FOLDER}/{geom_name}_surface.vtp"):
+            print(f"Downloading results for: {geom.name} (ID: {geom.id})")
+            surface_vtp = prediction.post.surface_vtp()
+            surface_vtp.data.download(f"{VTPS_FOLDER}/{geom_name}_surface.vtp")
+    except Exception as e:
+        print(f"Error downloading results for {prediction.geometry.name}: {e}")
+
 
 ###############################################################################
 # Tips for effective optimization
@@ -496,12 +439,16 @@ all_vtp_paths = [
 png_index: dict[str, list[str]] = {angle: [] for angle in CAMERA_ANGLES}
 
 for vtp_path in all_vtp_paths:
+    if not os.path.exists(vtp_path):
+        print(f"Warning: VTP file not found, skipping → {vtp_path}")
+        continue
     stem = os.path.splitext(os.path.basename(vtp_path))[0]
     for angle_name in CAMERA_ANGLES:
         png_path = f"{SCREENSHOTS_FOLDER}/{stem}_{angle_name}.png"
-        screenshot_vtp(vtp_path, png_path, camera_angle=angle_name)
+        if not os.path.exists(png_path):
+            screenshot_vtp(vtp_path, png_path, camera_angle=angle_name)
+            print(f"  Screenshot → {png_path}")
         png_index[angle_name].append(png_path)
-        print(f"  Screenshot → {png_path}")
 
 
 for angle_name, png_paths in png_index.items():
