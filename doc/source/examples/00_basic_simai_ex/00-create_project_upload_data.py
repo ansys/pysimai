@@ -132,7 +132,7 @@ print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} fail
 # After uploading, SimAI needs to process the training data.
 # Get all data in the current project and wait for them to be ready.
 
-project_data = project.data
+project_data = project.list_training_data()
 
 print("\nWaiting for data processing to complete...")
 for data in project_data:

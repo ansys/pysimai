@@ -60,7 +60,7 @@ project = simai_client.projects.get(name="My_project_name")
 # --------------
 # Assign a subset to each dataset (list) you created.
 
-td_list = project.data
+td_list = project.list_training_data()
 for td in td_list:
     if td.name in TEST_LIST:
         td.assign_subset(project, "Test")
