@@ -130,7 +130,7 @@ NUMBER_OF_ITERATIONS = 10
 MAX_DISPLACEMENT = [0.1]
 # Symmetry constraints (e.g., ["X"] for YZ plane symmetry)
 SYMMETRIES = []
-scalars = {}  # Scalars must match your workspace configuration
+SCALARS = {}  # Scalars must match your workspace configuration
 # Objective to maximize (use minimize parameter for minimization)
 OBJECTIVE = ["<global_coefficient_objective>"]
 # Detail level controls deformation refinement (integer from 1 to 10, default: 5)
@@ -196,7 +196,7 @@ optimization = simai.optimizations.run_non_parametric(
     offline_token=offline_token,
     bounding_boxes=BOUNDING_BOXES,
     max_displacement=MAX_DISPLACEMENT,
-    scalars=scalars,
+    scalars=SCALARS,
     n_iters=NUMBER_OF_ITERATIONS,
     symmetries=SYMMETRIES,
     detail_level=DETAIL_LEVEL,
@@ -241,7 +241,7 @@ CHARTS_FOLDER = f"{OUTPUT_FOLDER}/optimization_{optimization_id}/charts"
 os.makedirs(CHARTS_FOLDER, exist_ok=True)
 
 print("Running baseline prediction for visualization reference...")
-baseline_pred = geometry.run_prediction(scalars=scalars)
+baseline_pred = geometry.run_prediction(scalars=SCALARS)
 baseline_pred.wait()
 baseline_gc_data = baseline_pred.post.global_coefficients().data
 baseline_value = float(baseline_gc_data[OBJECTIVE[0]]["data"])
@@ -301,7 +301,7 @@ predictions: list[Prediction] = []
 
 for geom in optimization.list_geometries():
     print(f"Running prediction for: {geom.name} (ID: {geom.id})")
-    prediction = geom.run_prediction(scalars=scalars)
+    prediction = geom.run_prediction(scalars=SCALARS)
     predictions.append(prediction)
 
 ###############################################################################
