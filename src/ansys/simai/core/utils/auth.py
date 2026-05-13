@@ -43,7 +43,7 @@ from ansys.simai.core.utils.requests import handle_response
 
 logger = logging.getLogger(__name__)
 
-OIDC_CLIENT_ID = "com.ansys.simai.sdk"
+OIDC_CLIENT_ID = "44a6fc38-d3ac-4e10-b379-9245db066388"
 # polling can't be faster or auth server returns HTTP 400 Slow down
 DEVICE_AUTH_POLLING_INTERVAL = 5
 # Try to refresh tokens 300-400 secs before they go bad
