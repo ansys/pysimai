@@ -25,25 +25,17 @@
 Multiprocess training data upload
 ==================================
 
-**When to use**: uploading a large dataset (hundreds of folders)
-where sequential uploads are too slow. By spawning several worker processes,
-each with its own SimAI connection, transfers run in parallel and overall
-upload time scales down with the number of workers.
-
-For standard datasets, you can refer to :ref:`ref_basic_create_project_upload_data`.
-
-The script compares the local folder list against what is already in the project
-and only uploads the missing items, so it is safe to re-run after an interruption
-without creating duplicates.
+This example demonstrates how to upload training data to a SimAI project using
+multiple parallel processes. It skips items that are already present in the
+project, so it is safe to run repeatedly without creating duplicates.
 
 Before you begin
---------------------------------
+----------------
 
 Make sure you have:
 
 - Valid SimAI credentials and organization access.
-- A dataset folder where each subdirectory is one training data sample
-  (the layout expected by :meth:`upload_folder()<ansys.simai.core.data.training_data.TrainingDataDirectory.upload_folder>`).
+- A dataset folder where each subdirectory is one training data sample.
 - The ``ansys-simai-core`` library installed.
 
 """
@@ -68,68 +60,88 @@ MAX_PROCESSES = 2
 MAX_CHUNK = 2
 
 ###############################################################################
-# Initialize the SimAI client and get the project
-# ----------------------------------------------------
-
-simai = asc.SimAIClient(organization=ORGANIZATION_NAME)
-project = simai.projects.get(name=PROJECT_NAME)
-
-###############################################################################
-# Build the list of items to upload
-# ----------------------------------
-# Compare the local folder contents against what is already in the project
-# and keep only the items that are missing.
-
-all_items = os.listdir(DATASET_PATH)
-existing_names = {td.name for td in project.data}
-items_to_upload = [item for item in all_items if item not in existing_names]
-
-print(f"Dataset size   : {len(all_items)}")
-print(f"Already present: {len(all_items) - len(items_to_upload)}")
-print(f"To upload      : {len(items_to_upload)}")
-
-###############################################################################
 # Define upload functions for multiprocessing
-# ------------------------------------------------------
-# Each worker process receives its own SimAI client so that connections are
-# not shared across processes.
-# A module-level dict is used to store per-worker state.
+# --------------------------------------------
+# ``_worker`` holds per-worker state (one SimAI client per process).
+# The initializer sets up the SimAI client and project for each worker process.
+# The upload function uploads one item and returns any error message instead of
+# raising exceptions, so that one failure does not abort the whole batch.
 
 _worker: dict = {}
 
 
 def _initializer(organization: str, dataset_path: str, project_name: str) -> None:
-    """Set up per-worker state used by every worker in the pool."""
+    """Set up per-worker state. Called once per worker process at pool start."""
     _worker["simai"] = asc.SimAIClient(organization=organization)
     _worker["project"] = _worker["simai"].projects.get(name=project_name)
     _worker["dataset_path"] = dataset_path
 
 
-def _upload_one(item_name: str) -> str:
-    """Create a training-data entry and upload the matching local folder."""
-    simai = _worker["simai"]
-    project = _worker["project"]
-    dataset_path = _worker["dataset_path"]
-    training_data = simai.training_data.create(item_name, project)
-    simai.training_data.upload_folder(
-        training_data, folder_path=os.path.join(dataset_path, item_name)
-    )
-    return item_name
+def _upload_one(item_name: str) -> tuple[str, str | None]:
+    """Upload one training-data folder.
+
+    Returns a ``(item_name, error_message)`` tuple so that a single failed
+    upload does not abort the rest of the batch.
+    """
+    try:
+        simai = _worker["simai"]
+        project = _worker["project"]
+        dataset_path = _worker["dataset_path"]
+        training_data = simai.training_data.create(item_name, project)
+        simai.training_data.upload_folder(
+            training_data, folder_path=os.path.join(dataset_path, item_name)
+        )
+        return item_name, None
+    except Exception as exc:  # noqa: BLE001
+        return item_name, str(exc)
 
 
 ###############################################################################
-# Run the parallel upload
-# --------------------------------
+# Main entry point
+# ----------------
+# All SimAI calls and pool creation are inside ``main()`` and guarded by
+# ``if __name__ == "__main__"``.  This prevents worker processes from
+# re-executing the setup logic when they import this module on Windows/macOS.
 
-if items_to_upload:
+
+def main() -> None:
+    """Run the parallel upload."""
+    simai = asc.SimAIClient(organization=ORGANIZATION_NAME)
+    project = simai.projects.get(name=PROJECT_NAME)
+
+    # Compare the local folder contents against what is already in the project
+    # and keep only the items that are missing.
+    all_items = os.listdir(DATASET_PATH)
+    existing_names = {td.name for td in project.list_training_data()}
+    items_to_upload = [item for item in all_items if item not in existing_names]
+
+    print(f"Dataset size   : {len(all_items)}")
+    print(f"Already present: {len(all_items) - len(items_to_upload)}")
+    print(f"To upload      : {len(items_to_upload)}")
+
+    if not items_to_upload:
+        print("Nothing to upload — project is already up to date.")
+        return
+
+    failed: list[str] = []
+
     with Pool(
         processes=MAX_PROCESSES,
         initializer=_initializer,
         initargs=(ORGANIZATION_NAME, DATASET_PATH, PROJECT_NAME),
     ) as pool:
-        for completed in pool.imap(_upload_one, items_to_upload, chunksize=MAX_CHUNK):
-            print(f"Uploaded: {completed}")
-else:
-    print("Nothing to upload — project is already up to date.")
+        for item_name, error in pool.imap(_upload_one, items_to_upload, chunksize=MAX_CHUNK):
+            if error is None:
+                print(f"  Uploaded : {item_name}")
+            else:
+                print(f"  Failed   : {item_name} — {error}")
+                failed.append(item_name)
 
-print("Upload complete.")
+    if failed:
+        print(f"\n{len(failed)} item(s) failed: {failed}")
+    else:
+        print("\nUpload complete — all items uploaded successfully.")
+
+
+if __name__ == "__main__":
+    main()
