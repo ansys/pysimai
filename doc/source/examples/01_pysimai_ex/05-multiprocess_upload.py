@@ -68,7 +68,7 @@ MAX_PROCESSES = 2
 MAX_CHUNK = 2
 
 ###############################################################################
-# Initialize the SimAI client and resolve the project
+# Initialize the SimAI client and get the project
 # ----------------------------------------------------
 
 simai = asc.SimAIClient(organization=ORGANIZATION_NAME)
@@ -89,7 +89,7 @@ print(f"Already present: {len(all_items) - len(items_to_upload)}")
 print(f"To upload      : {len(items_to_upload)}")
 
 ###############################################################################
-# Define the per-worker initializer and upload function
+# Define upload functions for multiprocessing
 # ------------------------------------------------------
 # Each worker process receives its own SimAI client so that connections are
 # not shared across processes.
