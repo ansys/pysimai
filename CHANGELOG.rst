@@ -10,10 +10,10 @@ Changes:
 
 Documentation:
 
-- replace deprecated ``project.data`` by ``.list_training_data()``
-- Update GeomAI Prediction Sample documentation
-- Rename ``boundary_conditions`` to ``scalars``
-- Documentation around ``GeomaiTrainingDataParts``
+- Replace deprecated ``project.data`` by ``.list_training_data()``.
+- Update GeomAI Prediction Sample documentation.
+- Rename ``boundary_conditions`` to ``scalars``.
+- Documentation around ``GeomaiTrainingDataParts``.
 
 0.4.2 (2026-04-22)
 ******************
