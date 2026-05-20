@@ -117,9 +117,8 @@ plotter.show()
 import os
 
 import ansys.simai.core as asc
-from ansys.simai.core.data.predictions import Prediction
 from ansys.simai.core.data.optimizations import Optimization
-
+from ansys.simai.core.data.predictions import Prediction
 
 ORGANIZATION_NAME = "<your_organization_name>"
 WORKSPACE_NAME = "<your_workspace_name>"
