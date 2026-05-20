@@ -211,7 +211,8 @@ optimization.wait()
 ###############################################################################
 # Display optimization results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Print the optimization ID, generated geometries, and objective values:
+# Get the optimization ID for either a server-side or legacy optimization,
+# and print the generated geometries and objective values:
 
 optimization_id = (
     optimization.id if isinstance(optimization, Optimization) else optimization.optimization.id
