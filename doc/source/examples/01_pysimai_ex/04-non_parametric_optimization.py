@@ -118,6 +118,8 @@ import os
 
 import ansys.simai.core as asc
 from ansys.simai.core.data.predictions import Prediction
+from ansys.simai.core.data.optimizations import Optimization
+
 
 ORGANIZATION_NAME = "<your_organization_name>"
 WORKSPACE_NAME = "<your_workspace_name>"
@@ -210,8 +212,6 @@ optimization.wait()
 # Display optimization results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Print the optimization ID, generated geometries, and objective values:
-
-from ansys.simai.core.data.optimizations import Optimization
 
 optimization_id = (
     optimization.id if isinstance(optimization, Optimization) else optimization.optimization.id
