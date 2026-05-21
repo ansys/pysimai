@@ -117,7 +117,6 @@ plotter.show()
 import os
 
 import ansys.simai.core as asc
-from ansys.simai.core.data.optimizations import Optimization
 from ansys.simai.core.data.predictions import Prediction
 
 ORGANIZATION_NAME = "<your_organization_name>"
@@ -213,9 +212,7 @@ optimization.wait()
 # Get the optimization ID for either a server-side or legacy optimization,
 # and print the generated geometries and objective values:
 
-optimization_id = (
-    optimization.id if isinstance(optimization, Optimization) else optimization.optimization.id
-)
+optimization_id = optimization.optimization.id
 
 print(f"Optimization ID: {optimization_id}")
 print(f"Generated geometries: {[geo.name for geo in optimization.list_geometries()]}")
