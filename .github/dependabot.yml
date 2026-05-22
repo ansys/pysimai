@@ -8,7 +8,7 @@ updates:
       - "maintenance"
       - "dependencies"
     cooldown:
-      default-days: 5
+      default-days: 7
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -17,4 +17,4 @@ updates:
     labels:
       - "maintenance"
     cooldown:
-      default-days: 5
+      default-days: 7
