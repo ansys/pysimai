@@ -114,7 +114,7 @@ class GeomAIWorkspace(DataModel):
     def get_latent_parameters(
         self,
         file: Optional[File] = None,
-    ) -> dict[str, List[float]] | Union[None, BinaryIO]:
+    ) -> Union[dict[str, List[float]], None, BinaryIO]:
         """Get the mapping between geometry names and their latent parameter vectors for the model's training data.
 
         Args:
