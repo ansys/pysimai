@@ -92,7 +92,7 @@ class GeomAIWorkspace(DataModel):
         self._client.geomai.current_workspace = self
 
     def download_latent_parameters_json(self, file: Optional[File] = None) -> Union[None, BinaryIO]:
-        """Download the json file containing the latent parameters for the model's training data.
+        """Download the JSON file containing the latent parameters for the model's training data.
 
         Warning:
             This feature is deprecated and will be retired in August 2026. Please use :py:meth:`~get_latent_parameters` instead.
