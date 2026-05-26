@@ -100,7 +100,7 @@ def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, tra
 
     httpx_mock.add_response(
         method="GET",
-        url="https://test.test/workspaces/0011/model/configuration",
+        url="https://test.test/geomai/workspaces/0011/model/configuration",
         json=MODEL_CONF_RAW,
         status_code=200,
     )

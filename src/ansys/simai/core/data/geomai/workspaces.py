@@ -60,7 +60,7 @@ class GeomAIWorkspace(DataModel):
     def model_configuration(self) -> GeomAIModelConfiguration:
         """Model configuration used in the workspace."""
         if self._model_configuration is None:
-            model_config = self._client._api.get_workspace_model_configuration(self.id)
+            model_config = self._client._api.get_geomai_workspace_model_configuration(self.id)
             self._model_configuration = GeomAIModelConfiguration(**model_config)
         return self._model_configuration
 
