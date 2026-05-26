@@ -115,7 +115,7 @@ class GeomAIWorkspace(DataModel):
         self,
         file: Optional[File] = None,
     ) -> dict[str, List[float]] | Union[None, BinaryIO]:
-        """Get mapping geometry names to their latent parameter vectors for the model's training data.
+        """Get the mapping between geometry names and their latent parameter vectors for the model's training data.
 
         Args:
             file: Binary file-object or the path of the file to put the content into.
