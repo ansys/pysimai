@@ -50,16 +50,14 @@ class ProjectClientMixin(ApiClientMixin):
     def create_project(self, **kwargs):
         return self._post("projects", json=kwargs)
 
-    def update_project(self, project_id: str, name: str):
-        """Update a project name.
+    def update_project(self, project_id: str, **kwargs):
+        """Update a project.
 
         Args:
             project_id: ID of the project.
-            name: New name to give to the project.
+            **kwargs: Project fields to pass as keyword arguments.
         """
-        request_json = {}
-        request_json["name"] = name
-        self._patch(f"projects/{project_id}", json=request_json, return_json=False)
+        self._patch(f"projects/{project_id}", json=kwargs, return_json=False)
 
     def iter_training_data_in_project(self, project_id: str) -> Iterator[Dict[str, Any]]:
         next_page = f"projects/{project_id}/data"
