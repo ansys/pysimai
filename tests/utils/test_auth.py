@@ -37,6 +37,7 @@ from ansys.simai.core.utils.auth import (
     Authenticator,
     _AuthTokens,
     _AuthTokensRetriever,
+    _decode_authorized_party,
 )
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
 
@@ -418,3 +419,20 @@ def test_non_interactive_mode_accepts_offline_token():
     )
     assert config.offline_token == "my-offline-token"
     assert config.credentials is None
+
+
+@pytest.mark.parametrize(
+    ("token", "expected_authorized_party"),
+    [
+        (
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYXpwIjoic2RrIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.amyval0O_iUVxQNx1HbVbzpiIA4LWuMt_JhTLL4n84g",
+            "sdk",
+        ),
+        (
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYXpwIjoiY29tLmFuc3lzLnNpbWFpLnNkayIsImFkbWluIjp0cnVlLCJpYXQiOjE1MTYyMzkwMjJ9.TTDEBC6B6bfLDaF4huBrFnub2UAqw7CGsiWB3tawKs8",
+            "com.ansys.simai.sdk",
+        ),
+    ],
+)
+def test__decode_authorized_party(token, expected_authorized_party):
+    assert _decode_authorized_party(token) == expected_authorized_party

@@ -64,6 +64,17 @@ def _decode_user_uuid(access_token: str) -> Optional[str]:
     return claims.get("sub") or claims.get("user_uuid") or claims.get("uuid")
 
 
+def _decode_authorized_party(access_token: str) -> Optional[str]:
+    try:
+        claims = jwt.decode(
+            access_token,
+            options={"verify_signature": False},
+        )
+    except jwt.PyJWTError:
+        return None
+    return claims.get("azp")
+
+
 class _AuthTokens(BaseModel):
     """Represents the OIDC tokens received from the auth server."""
 
@@ -190,8 +201,11 @@ class _AuthTokensRetriever:
 
     def _refresh_auth_tokens(self, refresh_token: str) -> Optional[_AuthTokens]:
         logger.debug("Refreshing authentication tokens.")
+        requested_client_id = (
+            "sdk" if _decode_authorized_party(refresh_token) == "sdk" else OIDC_CLIENT_ID
+        )
         request_params = {
-            "client_id": OIDC_CLIENT_ID,
+            "client_id": requested_client_id,
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
         }
