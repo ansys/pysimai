@@ -126,7 +126,7 @@ class GeomAIWorkspace(DataModel):
         """
         data = self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
         if file:
-            if isinstance(file, File) and not isinstance(file, (str, Path)):
+            if isinstance(file, File.__args__) and not isinstance(file, Path.__args__):
                 return file
             return data
 
