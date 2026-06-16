@@ -201,6 +201,8 @@ class _AuthTokensRetriever:
 
     def _refresh_auth_tokens(self, refresh_token: str) -> Optional[_AuthTokens]:
         logger.debug("Refreshing authentication tokens.")
+        # temporary fix for refresh while we still have legacy
+        # client_id == "sdk" tokens around
         requested_client_id = (
             "sdk" if _decode_authorized_party(refresh_token) == "sdk" else OIDC_CLIENT_ID
         )
