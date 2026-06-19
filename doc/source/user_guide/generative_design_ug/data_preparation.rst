@@ -99,6 +99,6 @@ The number of training geometries directly impacts what the model can learn:
   richer and more expressive design space.
 
 .. tip::
-   Start with a small number of geometries and the ``debug`` build preset to quickly verify
+   Start with a small number of geometries and the ``short`` build preset to quickly verify
    that the model can learn from your data and that the generated designs are meaningful.
    This helps detect data issues early and saves time.
