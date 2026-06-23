@@ -97,6 +97,8 @@ class SSEMixin(ApiClientMixin):
                                 return
                 except httpx.ReadError as e:
                     logger.info(f"SSE disconnection: {e}")
+                except httpx.RemoteProtocolError as e:
+                    logger.info(f"SSE connection lost (incomplete response): {e}")
                 except httpx.HTTPError as e:
                     if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 403:
                         raise ConnectionError(e.response.text) from e
