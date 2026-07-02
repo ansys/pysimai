@@ -213,3 +213,62 @@ def test_geomai_workspace_list_created_by_me(simai_client, httpx_mock):
 
     workspaces = simai_client.geomai.workspaces.list(created_by_me=True)
     assert [workspace.id for workspace in workspaces] == ["ws-1", "ws-2"]
+
+
+def test_geomai_workspace_description_get(simai_client):
+    """WHEN a GeomAI workspace has a description
+    THEN it can be retrieved via the description property."""
+    workspace = simai_client.geomai.workspaces._model_from(
+        {"id": "ws01", "name": "riri", "description": "My description"}
+    )
+
+    assert workspace.description == "My description"
+
+
+def test_geomai_workspace_description_get_none(simai_client):
+    """WHEN a GeomAI workspace has no description
+    THEN the description property returns None."""
+    workspace = simai_client.geomai.workspaces._model_from({"id": "ws01", "name": "riri"})
+
+    assert workspace.description is None
+
+
+def test_geomai_workspace_description_set(simai_client, httpx_mock):
+    """WHEN setting a GeomAI workspace description
+    THEN a PATCH request is made with the description."""
+    workspace = simai_client.geomai.workspaces._model_from(
+        {"id": "ws01", "name": "riri", "description": None}
+    )
+
+    httpx_mock.add_response(
+        method="PATCH",
+        url="https://test.test/geomai/workspaces/ws01",
+        status_code=204,
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/workspaces/ws01",
+        json={"id": "ws01", "name": "riri", "description": "New description"},
+        status_code=200,
+    )
+
+    workspace.set_description("New description")
+    assert workspace.description == "New description"
+
+
+def test_geomai_workspace_create_with_description(simai_client, httpx_mock):
+    """WHEN creating a GeomAI workspace with a description
+    THEN the description is sent in the request."""
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/geomai/projects/proj01/workspaces",
+        json={"id": "ws01", "name": "my_workspace", "description": "My workspace description"},
+        status_code=200,
+    )
+
+    workspace = simai_client.geomai.workspaces.create(
+        name="my_workspace", project="proj01", description="My workspace description"
+    )
+
+    assert workspace.name == "my_workspace"
+    assert workspace.description == "My workspace description"
