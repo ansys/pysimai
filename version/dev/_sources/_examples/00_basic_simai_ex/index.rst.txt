@@ -1,0 +1,86 @@
+
+
+.. _sphx_glr__examples_00_basic_simai_ex:
+
+
+
+SimAI basics
+---------------------------
+
+This section provides a collection of practical script examples illustrating the basic SimAI workflow.
+They serve as a step-by-step guide for users to get started with SimAI.
+
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to connect to SimAI, create a new project, and upload training data folders.">
+
+.. only:: html
+
+  .. image:: /_examples/00_basic_simai_ex/images/thumb/sphx_glr_00-create_project_upload_data_thumb.png
+    :alt:
+
+  :doc:`/_examples/00_basic_simai_ex/00-create_project_upload_data`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Creating a SimAI Project and Uploading Training Data</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to configure a SimAI model with inputs, outputs, global coefficients, and domain of analysis, then start the model training process.">
+
+.. only:: html
+
+  .. image:: /_examples/00_basic_simai_ex/images/thumb/sphx_glr_01-build_model_thumb.png
+    :alt:
+
+  :doc:`/_examples/00_basic_simai_ex/01-build_model`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Building a SimAI Model</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to upload geometries to a workspace and run predictions using a trained SimAI model. It also shows how to extract and save prediction results, including global coefficients and confidence scores.">
+
+.. only:: html
+
+  .. image:: /_examples/00_basic_simai_ex/images/thumb/sphx_glr_02-run_predictions_thumb.png
+    :alt:
+
+  :doc:`/_examples/00_basic_simai_ex/02-run_predictions`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Running Physics Predictions</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /_examples/00_basic_simai_ex/00-create_project_upload_data
+   /_examples/00_basic_simai_ex/01-build_model
+   /_examples/00_basic_simai_ex/02-run_predictions
+
