@@ -144,6 +144,7 @@ for i, prediction in enumerate(predictions):
 # -------------------------------------------
 #
 # - Latent parameters typically range from -3 to +3 for meaningful results.
+# - Increasing resolution improves the geometry resolution and helps capture finer details. However, this will also increase the prediction time.
 # - Increase timeout for complex geometries.
 # - Use the workspace's latent space statistics (min, max) for better sampling.
 
