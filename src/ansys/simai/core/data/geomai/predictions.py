@@ -49,14 +49,12 @@ class GeomAIPredictionConfiguration(BaseModel):
     Required.
     """
     resolution: Optional[Tuple[PositiveInt, PositiveInt, PositiveInt]] = None
-    """A list of three integers defining the number of voxels along the X, Y, and Z axes.
+    """By default, this parameter is set automatically based on available training data. For more information, see (link to section Resolution in the User guide).
 
-    Use higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
+    If you need to adjust it manually, use a list of three integers defining the number of voxels along the X, Y, and Z axes: higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
 
     The total number of voxels must not exceed 900^3, that is `x`, `y`, `z` multiplied together must be less than or equal to 900^3.
     If you exceed that value, an error will occur.
-
-    Defaults to ``[100,100,100]``, if ``None`` is provided.
 
     For the maximum resolution of 900^3, the prediction takes approximately 10 minutes (approximately 1 microsecond per voxel).
     """
@@ -182,7 +180,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
                 simai_client = asc.from_config()
                 workspace = simai_client.geomai.workspaces.list()[0]
                 prediction = simai_client.geomai.predictions.run(
-                    dict(latent_params=[0.1, 1.2, 0.76], resolution=(100, 100, 100)),
+                    dict(latent_params=[0.1, 1.2, 0.76]),
                     workspace,
                 )
 
