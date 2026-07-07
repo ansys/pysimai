@@ -36,6 +36,7 @@ from ansys.simai.core.data.optimizations import (
     _validate_max_displacement,
     _validate_n_iters,
     _validate_outcome_constraints,
+    _get_expected_client_id_for_coreml_model,
 )
 from ansys.simai.core.errors import InvalidArguments
 
@@ -443,3 +444,21 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
     )
     assert result.is_ready
     assert result.iteration_results == iteration_results
+
+@pytest.mark.parametrize(
+    "coreml_version, expected_result",
+    [
+        ("2.13.4", None),
+        ("3.16.0", "sdk"),
+        ("3.16.3", "sdk"),
+        ("3.16.1", "sdk"),
+        ("3.17.0", "sdk"),
+        ("3.17.2", "sdk"),
+        ("prod-blabla-truc", None),
+        ("3.18.0", "com.ansys.simai.sdk"),
+        ("3.18.2", "com.ansys.simai.sdk"),
+    ],
+)
+def test_get_expected_client_id_for_coreml_model(coreml_version, expected_result):
+    assert _get_expected_client_id_for_coreml_model(coreml_version) == expected_result
+
