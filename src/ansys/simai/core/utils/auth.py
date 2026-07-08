@@ -118,7 +118,7 @@ def _request_tokens_direct_grant(
     token_url: str,
     credentials: Credentials,
     scope: str = "openid",
-    client_id: str | None = OIDC_CLIENT_ID,
+    client_id: Optional[str] = OIDC_CLIENT_ID,
 ) -> _AuthTokens:
     """Request tokens via username/password (direct grant)."""
     logger.debug(f"request authentication tokens via direct grant (scope={scope})")
@@ -136,7 +136,7 @@ def _request_tokens_device_auth(
     token_url: str,
     device_auth_url: str,
     scope: str = "openid",
-    client_id: str | None = OIDC_CLIENT_ID,
+    client_id: Optional[str] = OIDC_CLIENT_ID,
 ) -> _AuthTokens:
     """Request tokens via device auth flow (browser-based)."""
     logger.debug(f"request authentication tokens via device auth (scope={scope})")
