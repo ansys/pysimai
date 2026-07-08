@@ -289,7 +289,7 @@ def get_offline_token(
         credentials=credentials,
         https_proxy=https_proxy,
         tls_ca_bundle=tls_ca_bundle,
-        client_id=OIDC_CLIENT_ID
+        client_id=OIDC_CLIENT_ID,
     )
 
 
@@ -298,7 +298,7 @@ def _get_offline_token_private(
     credentials: Optional[Credentials] = None,
     https_proxy: Optional[str] = None,
     tls_ca_bundle: Optional[str] = None,
-    client_id: Optional[str] = None
+    client_id: Optional[str] = None,
 ) -> str:
     realm_url = urljoin(url.rstrip("/") + "/", "/auth/realms/simai")
     token_url = f"{realm_url}/protocol/openid-connect/token"
@@ -317,7 +317,11 @@ def _get_offline_token_private(
             )
         else:
             tokens = _request_tokens_device_auth(
-                session, token_url, device_auth_url, scope="openid offline_access", client_id=client_id
+                session,
+                token_url,
+                device_auth_url,
+                scope="openid offline_access",
+                client_id=client_id,
             )
         return tokens.refresh_token
 

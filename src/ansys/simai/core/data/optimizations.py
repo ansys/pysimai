@@ -21,19 +21,13 @@
 # SOFTWARE.
 
 import logging
+import re
 import warnings
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Union
-import re
 
 from tqdm import tqdm
-from ansys.simai.core.utils.auth import (
-    _get_offline_token_private,
-    OIDC_CLIENT_ID,
-    _decode_authorized_party,
-)
 from wakepy import keep
-from itertools import chain
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
 from ansys.simai.core.data.geometries import Geometry
@@ -43,6 +37,11 @@ from ansys.simai.core.data.types import (
     get_object_from_identifiable,
 )
 from ansys.simai.core.errors import InvalidArguments, NotFoundError, PySimAIDepreciationWarning
+from ansys.simai.core.utils.auth import (
+    OIDC_CLIENT_ID,
+    _decode_authorized_party,
+    _get_offline_token_private,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -366,16 +365,22 @@ class OptimizationDirectory(Directory[Optimization]):
                     current_client_id = _decode_authorized_party(offline_token)
 
                     if expected_client_id != current_client_id:
-                        logger.warning(f"Provided offline token for optimization has client_id == '{current_client_id}', while model named '{manifest.get("model_name", "")}' only works with client_id == '{expected_client_id}' . Requesting a new token with client_id == '{expected_client_id}'")
+                        logger.warning(
+                            f"Provided offline token for optimization has client_id == '{current_client_id}', while model named '{manifest.get('model_name', '')}' only works with client_id == '{expected_client_id}' . Requesting a new token with client_id == '{expected_client_id}'"
+                        )
 
                         client_config = self._client._config
                         offline_token = _get_offline_token_private(
                             url=str(client_config.url),
                             credentials=client_config.credentials,
-                            https_proxy=str(client_config.https_proxy) if client_config.https_proxy else None,
-                            tls_ca_bundle=str(client_config.tls_ca_bundle) if client_config.tls_ca_bundle else None,
-                            client_id=expected_client_id
-                    )
+                            https_proxy=str(client_config.https_proxy)
+                            if client_config.https_proxy
+                            else None,
+                            tls_ca_bundle=str(client_config.tls_ca_bundle)
+                            if client_config.tls_ca_bundle
+                            else None,
+                            client_id=expected_client_id,
+                        )
 
             if not max_displacement:
                 raise InvalidArguments("max_displacement must be provided")
@@ -819,12 +824,14 @@ def _build_objective(minimize: list[str], maximize: list[str]) -> dict:
             objective[global_coefficient] = {"minimize": False}
     return objective
 
+
 def _get_expected_client_id_for_coreml_model(coreml_version: str) -> Union[str, None]:
     """Returns which client_id you have to use to interact with this model's coreml version
     str : you have to use this specific client_id to interact with this model's coreml version
-    None : the model either tolerates both, the client_id could not be determined or the coreml version is so old that it doesn't need an offline token from the user."""
+    None : the model either tolerates both, the client_id could not be determined or the coreml version is so old that it doesn't need an offline token from the user.
+    """
     if re.fullmatch(r"\d+\.\d+\.\d+", coreml_version):
-        major, minor, _ = coreml_version.split('.')
+        major, minor, _ = coreml_version.split(".")
         major, minor = int(major), int(minor)
         if major <= 2:
             return None
@@ -841,4 +848,3 @@ def _get_expected_client_id_for_coreml_model(coreml_version: str) -> Union[str, 
             return OIDC_CLIENT_ID
     else:
         return None
-
