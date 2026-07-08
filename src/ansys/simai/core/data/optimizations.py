@@ -340,7 +340,7 @@ class OptimizationDirectory(Directory[Optimization]):
         )
         use_server_side_optimization = False
         workspace_id = actual_geometry._fields["workspace_id"]
-        coreml_version: str | None = None
+        coreml_version: Optional[str] = None
         manifest = {}
         try:
             manifest = self._client._api.get_workspace_model_manifest(workspace_id)
