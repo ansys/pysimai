@@ -211,7 +211,7 @@ class GeomAIPredictionDirectory(Directory[GeomAIPrediction]):
             Testing and feedback are encouraged, but it is advised not to include it in a production workflow.
 
         Args:
-            resolution: Optional resolution used for sampling.
+            resolution: Optional resolution used for sampling, if None the resolution will be set automatically based on the closest training sample.
             workspace: Optional ID or :class:`model <.workspaces.GeomAIWorkspace>` of the target workspace.
                 Defaults to the current workspace if set.
 
