@@ -25,7 +25,10 @@ from io import BytesIO
 from typing import TYPE_CHECKING
 from urllib.parse import urlencode
 
+import pytest
+
 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
+from ansys.simai.core.errors import InvalidArguments
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.workspaces import GeomAIWorkspace
@@ -108,12 +111,75 @@ def test_geomai_workspace_get_latent_parameters_returns_binary_file_when_file_se
         status_code=200,
     )
     target_file = BytesIO()
-    returned_file = BytesIO(b'{"geometry1": [1,2,3]}')
+    returned_file = BytesIO(b'{"geometry1": [1, 2, 3]}')
 
     latent_parameters = workspace.get_latent_parameters(target_file)
 
     assert isinstance(latent_parameters, BytesIO)
     assert latent_parameters.getvalue() == returned_file.getvalue()
+
+
+def test_geomai_workspace_get_latent_parameters_with_nb_lp(simai_client, httpx_mock):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "abc123", "name": "HL3"}
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
+        text='{"geometry1": [1,2,3,4,5], "geometry2": [5,4,3,2,1]}',
+        status_code=200,
+    )
+
+    latent_parameters = workspace.get_latent_parameters(nb_lp=3)
+    assert latent_parameters == {"geometry1": [1, 2, 3], "geometry2": [5, 4, 3]}
+
+
+def test_geomai_workspace_get_latent_parameters_nb_lp_exceeds_length(simai_client, httpx_mock):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "abc123", "name": "HL3"}
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
+        text='{"geometry1": [1,2,3]}',
+        status_code=200,
+    )
+
+    with pytest.raises(InvalidArguments, match="nb_lp .* exceeds"):
+        workspace.get_latent_parameters(nb_lp=10)
+
+
+def test_geomai_workspace_get_latent_parameters_nb_lp_none_returns_all(simai_client, httpx_mock):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "abc123", "name": "HL3"}
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
+        text='{"geometry1": [1,2,3,4,5]}',
+        status_code=200,
+    )
+
+    latent_parameters = workspace.get_latent_parameters(nb_lp=None)
+    assert latent_parameters == {"geometry1": [1, 2, 3, 4, 5]}
+
+
+def test_geomai_workspace_get_latent_parameters_with_nb_lp_and_file(simai_client, httpx_mock):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "abc123", "name": "HL3"}
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
+        text='{"geometry1": [1,2,3,4,5]}',
+        status_code=200,
+    )
+
+    target_file = BytesIO()
+    result = workspace.get_latent_parameters(file=target_file, nb_lp=3)
+
+    assert result is target_file
+    assert json.loads(target_file.read().decode("utf-8")) == {"geometry1": [1, 2, 3]}
 
 
 def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, training_data_factory):
