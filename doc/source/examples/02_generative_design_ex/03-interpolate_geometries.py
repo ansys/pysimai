@@ -62,7 +62,6 @@ PROJECT_NAME = "new-bracket-project"  # Replace with your project name
 WORKSPACE_NAME = "new-bracket-project #1"  # Typically "{PROJECT_NAME} #{number}"
 OUTPUT_DIR = "interpolations"  # Directory to save interpolated geometries
 NUM_STEPS = 10  # Number of interpolation steps
-RESOLUTION = (100, 100, 100)  # Output resolution (x, y, z)
 
 # Choose geometries to interpolate between (by name)
 GEOM_A_NAME = "geometry_name_a"  # Replace with actual geometry name
@@ -155,7 +154,6 @@ for i in range(NUM_STEPS + 1):
     print(f"\nGenerating geometry {i}/{NUM_STEPS} (alpha={alpha:.2f})...")
     config = GeomAIPredictionConfiguration(
         latent_params=latent_params,
-        resolution=RESOLUTION,
     )
     prediction = geomai_client.predictions.run(config, workspace)
     print(f"Prediction {i}: {prediction.id} started...")
