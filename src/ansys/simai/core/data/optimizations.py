@@ -26,6 +26,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from tqdm import tqdm
+from typing_extensions import Self
 from wakepy import keep
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
@@ -72,6 +73,11 @@ class Optimization(ComputableDataModel):
         super().__init__(*args, **kwargs)
         self._geometries = None
         self._objectives = None
+
+    @property
+    def optimization(self) -> Self:
+        """Returns self. Present for backwards compatibility with LegacyOptimizationResult."""
+        return self
 
     @property
     def iteration_results(self) -> Optional[List[Dict]]:
