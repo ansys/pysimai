@@ -30,6 +30,7 @@ from httpx_sse import ServerSentEvent
 from ansys.simai.core.data.optimizations import (
     LegacyOptimizationResult,
     Optimization,
+    _get_expected_client_id_for_coreml_model,
     _validate_axial_symmetry,
     _validate_bounding_boxes,
     _validate_global_coefficients_for_non_parametric,
@@ -443,3 +444,21 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
     )
     assert result.is_ready
     assert result.iteration_results == iteration_results
+
+
+@pytest.mark.parametrize(
+    "coreml_version, expected_result",
+    [
+        ("2.13.4", None),
+        ("3.16.0", "sdk"),
+        ("3.16.3", "sdk"),
+        ("3.16.1", "sdk"),
+        ("3.17.0", "sdk"),
+        ("3.17.2", "sdk"),
+        ("prod-blabla-truc", None),
+        ("3.18.0", "com.ansys.simai.sdk"),
+        ("3.18.2", "com.ansys.simai.sdk"),
+    ],
+)
+def test_get_expected_client_id_for_coreml_model(coreml_version, expected_result):
+    assert _get_expected_client_id_for_coreml_model(coreml_version) == expected_result
