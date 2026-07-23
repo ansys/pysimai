@@ -9,7 +9,7 @@ Latent parameters
 The latent parameters (``latent_params``) correspond to a list of numbers (floats) that represent the position of the geometry in the latent space.
 You define this parameter to generate a geometry with a trained model.
 
-The number of floats must match the ``nb_latent_param`` your model was requested with.
+The number of floats can be less than or equal to the ``nb_latent_param`` your model was requested with.
 For more information, see Number of latent parameters.
 
 
