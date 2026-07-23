@@ -13,6 +13,8 @@ The number of floats must match the ``nb_latent_param`` your model was requested
 For more information, see Number of latent parameters.
 
 
+.. _ref_geomai_resolution_section:
+
 Resolution
 -----------
 
@@ -31,7 +33,7 @@ As a result, the resolution is not fixed per model but varies per inference, it 
 a data-driven default to ease user experience. You can still adjust it manually by using
 higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
 
-The total number of voxels must not exceed 900^3, that is x, y, z multiplied together must be less than or equal to 900^3.
-If you exceed that value, an error occurs.
+The total number of voxels must not exceed 900^3 (that is, X × Y × Z ≤ 900^3).
+Exceeding this limit will result in an error.
 
 For the maximum resolution of 900^3, the prediction takes approximately 10 minutes (approximately 1 microsecond per voxel).
