@@ -114,37 +114,37 @@ class GeomAIWorkspace(DataModel):
     def get_latent_parameters(
         self,
         file: Optional[File] = None,
-        nb_lp: Optional[int] = None,
+        n: Optional[int] = None,
     ) -> Union[dict[str, List[float]], None, BinaryIO]:
         """Get the mapping between geometry names and their latent parameter vectors for the model's training data.
 
         Args:
             file: Binary file-object or the path of the file to put the content into.
-            nb_lp: Optional number of latent parameters to retrieve per geometry.
+            n: Optional number of latent parameters to retrieve per geometry (the length of your latent code).
                 If ``None``, all latent parameters are returned.
-                If specified, each vector is truncated to the first ``nb_lp`` elements.
-                Must not exceed the length of the latent parameter vectors.
+                If specified, each vector is truncated to the first ``n`` elements.
+                Must not exceed the number of latent parameters used for model training.
 
         Returns:
             ``None`` or a binary file-object if a file is specified or a dictionary mapping geometry names to latent parameter
             vectors otherwise.
 
         Raises:
-            InvalidArguments: If ``nb_lp`` exceeds the length of the latent parameter vectors.
+            InvalidArguments: If ``n`` exceeds the number of latent parameters used for model training.
         """
         data = self._client._api.download_geomai_workspace_latent_parameters(self.id, None)
         if data is None:
             return {}
         latent_parameters = json.loads(data.read().decode("utf-8"))
 
-        if nb_lp is not None:
+        if n is not None:
             first_key = next(iter(latent_parameters))
             available = len(latent_parameters[first_key])
-            if nb_lp > available:
+            if n > available:
                 raise InvalidArguments(
-                    f"nb_lp ({nb_lp}) exceeds the number of available latent parameters ({available})."
+                    f"n ({n}) exceeds the number of latent parameters used for model training ({available})."
                 )
-            latent_parameters = {key: values[:nb_lp] for key, values in latent_parameters.items()}
+            latent_parameters = {key: values[:n] for key, values in latent_parameters.items()}
 
         if file:
             return write_file(json.dumps(latent_parameters).encode("utf-8"), file)
