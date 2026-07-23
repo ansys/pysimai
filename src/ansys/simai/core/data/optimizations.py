@@ -171,16 +171,22 @@ class OptimizationDirectory(Directory[Optimization]):
 
     _data_model = Optimization
 
-    def get(self, optimization_id: str) -> Optimization:
+    def get(self, id: str, optimization_id: Optional[str] = None) -> Optimization:
         """Get a specific optimization object from the server.
 
+        .. warning::
+            The ``optimization_id`` parameter is deprecated.
+
         Args:
-            optimization_id: ID of the optimization.
+            id: ID of the optimization.
+            optimization_id: (deprecated) ID of the optimization.
 
         Returns:
             :py:class:`Optimization`.
         """
-        return self._model_from(self._client._api.get_server_side_optimization(optimization_id))
+        return self._model_from(
+            self._client._api.get_server_side_optimization(id or optimization_id)
+        )
 
     def list(self, workspace_id: str) -> list[Optimization]:
         """List all optimizations in the workspace available on the server."""
@@ -491,16 +497,20 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
 
     _data_model = LegacyOptimization
 
-    def get(self, optimization_id: str) -> LegacyOptimization:
+    def get(self, id: str, optimization_id: Optional[str] = None) -> LegacyOptimization:
         """Get a specific (client-side) optimization object from the server.
 
+        .. warning::
+            The ``optimization_id`` parameter is deprecated.
+
         Args:
-            optimization_id: ID of the optimization.
+            id: ID of the optimization.
+            optimization_id: (deprecated) ID of the optimization.
 
         Returns:
             :py:class:`LegacyOptimization`.
         """
-        return self._model_from(self._client._api.get_optimization(optimization_id))
+        return self._model_from(self._client._api.get_optimization(id or optimization_id))
 
     def run_non_parametric(
         self,
