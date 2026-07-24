@@ -45,7 +45,6 @@ Make sure you have:
 import os
 
 import ansys.simai.core as asc
-from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
@@ -53,9 +52,9 @@ from ansys.simai.core.errors import NotFoundError
 # ----------------------------------
 # Update these variables with your specific settings:
 
-ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
-PROJECT_NAME = "<your_project_name>"  # Your project name
-DATASET_PATH = "<PATH_TO_YOUR_DATASET>"  # Directory containing subdirectories with training data
+ORGANIZATION_NAME = "your_organization"  # Replace with your organization name
+PROJECT_NAME = "your_project_name"  # Your project name
+DATASET_PATH = "path/to/your/data/folder"  # Directory containing subdirectories with training data
 
 ###############################################################################
 # Initialize the SimAI client
@@ -90,38 +89,46 @@ print(f"Current project: {simai_client.current_project}")
 # Upload all directories from the dataset path as training data.
 # Each subdirectory should contain the files for one training data sample.
 
-
-available_tds = simai_client.training_data.list()
-
 print("\nUploading training data files:")
 successful_uploads = 0
 failed_uploads = 0
 
-for dir in os.listdir(DATASET_PATH):
-    complete_path = os.path.join(DATASET_PATH, dir)
-    print(f"Uploading {dir}")
+for dir_name in os.listdir(DATASET_PATH):
+    complete_path = os.path.join(DATASET_PATH, dir_name)
+    if not os.path.isdir(complete_path):
+        continue
 
-    existing_tds = [td for td in available_tds if td.name == dir]
-    if existing_tds:
-        print(f"Training data '{dir}' already exists in the datalake. Skipping upload.")
-        td = existing_tds[0]
+    print(f"\nProcessing '{dir_name}'...")
+
+    # Check if training data with this name already exists
+    try:
+        existing_td = simai_client.training_data.get(name=dir_name)
+    except NotFoundError:
+        existing_td = None
+
+    if existing_td:
+        # Data already exists on the platform, add it to the project.
+        print(f"  Training data '{dir_name}' already exists. Adding to project.")
         try:
-            td.add_to_project(project)
-            print(f"✓ Added existing '{dir}' to project '{project.name}'")
+            existing_td.add_to_project(project)
             successful_uploads += 1
         except Exception as e:
-            print(f"✗ Failed to add existing '{dir}' to project: {e}")
+            print(f"  Failed to add '{dir_name}' to project: {e}")
             failed_uploads += 1
         continue
-    else:
-        try:
-            td: TrainingData = simai_client.training_data.create(dir)
-            td.upload_folder(complete_path)
-            print(f"Uploaded {dir} successfully.")
-        except Exception as e:
-            print(f"Failed to upload {dir}: {e}")
-            failed_uploads += 1
-            continue
+        # Alternative actions for existing data:
+        #   - Skip entirely:  continue
+        #   - Delete and re-upload:  existing_td.delete()  (then let it fall through)
+
+    # Upload new training data
+    try:
+        td = simai_client.training_data.create(dir_name, project=project)
+        td.upload_folder(complete_path)
+        successful_uploads += 1
+        print(f"  Uploaded '{dir_name}' successfully.")
+    except Exception as e:
+        print(f"  Failed to upload '{dir_name}': {e}")
+        failed_uploads += 1
 
 
 print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} failed")

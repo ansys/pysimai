@@ -50,9 +50,9 @@ from multiprocessing import Pool
 
 import ansys.simai.core as asc
 
-ORGANIZATION_NAME = "<your_organization_name>"
-PROJECT_NAME = "<your_project_name>"
-DATASET_PATH = "<path_to_your_dataset_folder>"
+ORGANIZATION_NAME = "your_organization"
+PROJECT_NAME = "your_project_name"
+DATASET_PATH = "path_to_your_dataset_folder"
 
 # Maximum number of parallel upload workers
 MAX_PROCESSES = 2

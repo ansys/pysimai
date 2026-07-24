@@ -108,7 +108,7 @@ model_output = ModelOutput(
 global_coefficients = [
     GlobalCoefficientDefinition(
         name="<your_global_coefficient_name>",  # Name for this global coefficient
-        formula="integral(Photometric)",  # Formula to calculate the global coefficient value
+        formula="integral(...)",  # Formula to calculate the global coefficient value
         gc_location="points",  # Calculate at points (or at "cells")
     )
 ]
