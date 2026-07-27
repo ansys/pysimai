@@ -115,10 +115,11 @@ for dir_name in os.listdir(DATASET_PATH):
         except Exception as e:
             print(f"  Failed to add '{dir_name}' to project: {e}")
             failed_uploads += 1
-        continue
+            
         # Alternative actions for existing data:
         #   - Skip entirely:  continue
         #   - Delete and re-upload:  existing_td.delete()  (then let it fall through)
+        continue
 
     # Upload new training data
     try:
