@@ -113,7 +113,7 @@ for fname in os.listdir(DATASET_PATH):
         except Exception as e:
             print(f"  Failed to add '{fname}' to project: {e}")
             failed_uploads += 1
-            
+
         # Alternative actions for existing data:
         #   - Skip entirely:  continue
         #   - Delete and re-upload:  existing_td.delete()  (then let it fall through)
