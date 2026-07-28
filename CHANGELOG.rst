@@ -1,6 +1,22 @@
 Changelog
 ---------
 
+0.4.5 (2026-07-28)
+******************
+
+New:
+
+- Add GeomAI prediction auto-resolution.
+- Handle remote protocol error in SSE stream.
+
+Changes:
+
+- Update timeout value and chunk size for file upload.
+
+Documentation:
+
+- Update GeomAI resolution documentation.
+
 0.4.4 (2026-06-19)
 ******************
 
