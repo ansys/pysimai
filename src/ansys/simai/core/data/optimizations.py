@@ -184,6 +184,8 @@ class OptimizationDirectory(Directory[Optimization]):
         Returns:
             :py:class:`Optimization`.
         """
+        if optimization_id:
+            warnings.warn("'optimization_id' parameter is deprecated. Please use 'id' parameter instead", PySimAIDepreciationWarning, stacklevel=2)
         return self._model_from(
             self._client._api.get_server_side_optimization(id or optimization_id)
         )
@@ -510,6 +512,8 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
         Returns:
             :py:class:`LegacyOptimization`.
         """
+        if optimization_id:
+            warnings.warn("'optimization_id' parameter is deprecated. Please use 'id' parameter instead", PySimAIDepreciationWarning, stacklevel=2)
         return self._model_from(self._client._api.get_optimization(id or optimization_id))
 
     def run_non_parametric(
