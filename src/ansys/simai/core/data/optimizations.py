@@ -836,15 +836,18 @@ def _get_expected_client_id_for_coreml_model(coreml_version: str) -> Union[str, 
         if major <= 2:
             return None
         if major == 3:
-            if minor == 16 or minor == 17:
-                return "sdk"
-            elif minor < 16:
+            # model doesn't support server side optim so client_id is irrelevant
+            if minor < 16:
                 return None
-            else:
-                # TODO : update when coreml can start supporting both
+            elif minor == 16 or minor == 17:
+                return "sdk"
+            elif minor <= 19:
                 return OIDC_CLIENT_ID
+            # from 3.20 onwards : both are supported
+            else:
+                return None
         if major > 3:
             # TODO : update when coreml can start supporting both
-            return OIDC_CLIENT_ID
+            return None
     else:
         return None

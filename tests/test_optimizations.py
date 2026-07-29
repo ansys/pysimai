@@ -458,6 +458,10 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
         ("prod-blabla-truc", None),
         ("3.18.0", "com.ansys.simai.sdk"),
         ("3.18.2", "com.ansys.simai.sdk"),
+        ("3.19.2", "com.ansys.simai.sdk"),
+        ("3.20.0", None),
+        ("3.20.1", None),
+        ("4.1.2", None),
     ],
 )
 def test_get_expected_client_id_for_coreml_model(coreml_version, expected_result):
