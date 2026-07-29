@@ -7,11 +7,14 @@ Changelog
 New:
 
 - Add GeomAI prediction auto-resolution.
-- Handle remote protocol error in SSE stream.
 
 Changes:
 
-- Update timeout value and chunk size for file upload.
+- Update timeout value and chunk size for file upload. This should improve upload stability.
+
+Fixes:
+
+- Handle remote protocol error in SSE stream.
 
 Documentation:
 
