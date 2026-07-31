@@ -847,7 +847,6 @@ def _get_expected_client_id_for_coreml_model(coreml_version: str) -> Union[str, 
             else:
                 return None
         if major > 3:
-            # TODO : update when coreml can start supporting both
             return None
     else:
         return None
