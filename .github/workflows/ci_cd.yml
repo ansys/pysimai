@@ -123,7 +123,7 @@ jobs:
           persist-credentials: false
       - name: Generate doc requirements
         run: uv export --only-group docs -o doc_requirements.txt
-      - uses: ansys/actions/doc-build@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/doc-build@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           checkout: false
