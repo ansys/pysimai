@@ -26,4 +26,5 @@ ModelOutput
 [Aa]utomorph(?:ing|ed)?
 [Rr]eparametriz(?:ing)?
 n_iters
-[Ss]ynopsys
+Synopsys
+synopsys
