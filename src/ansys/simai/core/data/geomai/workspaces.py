@@ -60,6 +60,20 @@ class GeomAIWorkspace(DataModel):
         return self.fields["name"]
 
     @property
+    def description(self) -> Optional[str]:
+        """Description of the workspace."""
+        return self.fields.get("description")
+
+    def set_description(self, new_description: Optional[str]) -> None:
+        """Set the workspace description.
+
+        Args:
+            new_description: New description for the workspace.
+        """
+        self._client._api.update_geomai_workspace(self.id, description=new_description)
+        self.reload()
+
+    @property
     def model_configuration(self) -> GeomAIModelConfiguration:
         """Model configuration used in the workspace."""
         if self._model_configuration is None:
@@ -219,15 +233,20 @@ class GeomAIWorkspaceDirectory(Directory[GeomAIWorkspace]):
             return self._model_from(self._client._api.get_geomai_workspace(id))
         raise ValueError("Either 'id' or 'name' must be specified.")
 
-    def create(self, name: str, project: Identifiable["GeomAIProject"]) -> GeomAIWorkspace:
+    def create(
+        self, name: str, project: Identifiable["GeomAIProject"], description: Optional[str] = None
+    ) -> GeomAIWorkspace:
         """Create a workspace.
 
         Args:
             name: Name to give the new workspace.
             project: ID or :class:`project <.projects.GeomAIProject>` of the workspace.
+            description: Optional description for the workspace.
         """
         return self._model_from(
-            self._client._api.create_geomai_workspace(name, get_id_from_identifiable(project))
+            self._client._api.create_geomai_workspace(
+                name, get_id_from_identifiable(project), description=description
+            )
         )
 
     def delete(self, workspace: Identifiable[GeomAIWorkspace]) -> None:
