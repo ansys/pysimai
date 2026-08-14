@@ -1,6 +1,27 @@
 Changelog
 ---------
 
+0.4.6 (2026-08-14)
+******************
+
+New:
+
+- Add GeomAI prediction dimension reduction support.
+
+Changes:
+
+- Standardize the :py:meth:`optimizations.get<ansys.simai.core.data.optimizations.OptimizationDirectory.get>` method to use `id` as argument instead of `optimization_id`. `optimization_id` is now deprecated.
+- Added an `optimization` property to the :py:meth:`Optimization<ansys.simai.core.data.optimizations.Optimization>` class to match API with `LegacyOptimization`. This will be removed in the future, along with `LegacyOptimization`.
+
+Fixes:
+
+- Use correct ``client_id`` when using server side optimization based on model's version.
+
+Documentation:
+
+- Refactor resolution section in ``Generative Design`` documentation.
+- Update PySimAI upload examples.
+
 0.4.5 (2026-07-28)
 ******************
 
