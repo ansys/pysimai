@@ -44,7 +44,7 @@ class GeomAIPredictionConfiguration(BaseModel):
     """A list of floats that represent the position of the geometry in the latent space.
 
     These parameters describe the shape in a compressed form.
-    The number of floats should match the ``nb_latent_param`` your model was requested with.
+    The number of floats can be less than or equal to the ``nb_latent_param`` your model was requested with.
 
     Required.
     """
