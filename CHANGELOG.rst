@@ -1,6 +1,42 @@
 Changelog
 ---------
 
+0.4.5 (2026-07-28)
+******************
+
+New:
+
+- Add GeomAI prediction auto-resolution.
+
+Changes:
+
+- Update timeout value and chunk size for file upload. This should improve upload stability.
+
+Fixes:
+
+- Handle remote protocol error in SSE stream.
+
+Documentation:
+
+- Update GeomAI resolution documentation.
+
+0.4.4 (2026-06-19)
+******************
+
+Changes:
+
+- Deprecate ``download_latent_parameters_json`` method from GeomAI workspace.
+
+Fixes:
+
+- Fix API endpoint called when retrieving GeomAI workspace model configuration.
+- Preserve legacy ``client_id`` when refreshing tokens issued with it.
+
+Documentation:
+
+- Fix compatibility issue with new optimization object.
+- Add new example for bulk upload.
+
 0.4.3 (2026-05-19)
 ******************
 

@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import json
+import warnings
 from typing import TYPE_CHECKING, BinaryIO, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
@@ -33,6 +34,8 @@ from ansys.simai.core.data.types import (
     get_id_from_identifiable,
     to_raw_filters,
 )
+from ansys.simai.core.errors import InvalidArguments, PySimAIDepreciationWarning
+from ansys.simai.core.utils.files import write_file
 from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
@@ -60,7 +63,7 @@ class GeomAIWorkspace(DataModel):
     def model_configuration(self) -> GeomAIModelConfiguration:
         """Model configuration used in the workspace."""
         if self._model_configuration is None:
-            model_config = self._client._api.get_workspace_model_configuration(self.id)
+            model_config = self._client._api.get_geomai_workspace_model_configuration(self.id)
             self._model_configuration = GeomAIModelConfiguration(**model_config)
         return self._model_configuration
 
@@ -89,7 +92,10 @@ class GeomAIWorkspace(DataModel):
         self._client.geomai.current_workspace = self
 
     def download_latent_parameters_json(self, file: Optional[File] = None) -> Union[None, BinaryIO]:
-        """Download the json file containing the latent parameters for the model's training data.
+        """Download the JSON file containing the latent parameters for the model's training data.
+
+        Warning:
+            This feature is deprecated and will be retired in August 2026. Please use :py:meth:`~get_latent_parameters` instead.
 
         Args:
             file: Binary file-object or the path of the file to put the content into.
@@ -97,14 +103,52 @@ class GeomAIWorkspace(DataModel):
         Returns:
             ``None`` if a file is specified or a binary file-object otherwise.
         """
+        warnings.warn(
+            "`download_latent_parameters_json` is deprecated. Use 'get_latent_parameters' instead.",
+            PySimAIDepreciationWarning,
+            stacklevel=2,
+        )
+        # We don't use `get_latent_parameters` here because it doesn't return a binary file-object when file is None
         return self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
 
-    def get_latent_parameters(self) -> dict[str, List[float]]:
-        """Get the dictionary mapping geometry names to their latent parameter vectors for the model's training data."""
+    def get_latent_parameters(
+        self,
+        file: Optional[File] = None,
+        n: Optional[int] = None,
+    ) -> Union[dict[str, List[float]], None, BinaryIO]:
+        """Get the mapping between geometry names and their latent parameter vectors for the model's training data.
+
+        Args:
+            file: Binary file-object or the path of the file to put the content into.
+            n: Optional number of latent parameters to retrieve per geometry (the length of your latent code).
+                If ``None``, all latent parameters are returned.
+                If specified, each vector is truncated to the first ``n`` elements.
+                Must not exceed the number of latent parameters used for model training.
+
+        Returns:
+            ``None`` or a binary file-object if a file is specified or a dictionary mapping geometry names to latent parameter
+            vectors otherwise.
+
+        Raises:
+            InvalidArguments: If ``n`` exceeds the number of latent parameters used for model training.
+        """
         data = self._client._api.download_geomai_workspace_latent_parameters(self.id, None)
         if data is None:
             return {}
         latent_parameters = json.loads(data.read().decode("utf-8"))
+
+        if n is not None:
+            first_key = next(iter(latent_parameters))
+            available = len(latent_parameters[first_key])
+            if n > available:
+                raise InvalidArguments(
+                    f"n ({n}) exceeds the number of latent parameters used for model training ({available})."
+                )
+            latent_parameters = {key: values[:n] for key, values in latent_parameters.items()}
+
+        if file:
+            return write_file(json.dumps(latent_parameters).encode("utf-8"), file)
+
         return latent_parameters
 
     def download_model_evaluation_report(
