@@ -82,7 +82,11 @@ class Optimization(ComputableDataModel):
 
     @property
     def optimization(self) -> Self:
-        """Returns self. Present for backwards compatibility with LegacyOptimizationResult."""
+        """Returns self. Present for backwards compatibility with LegacyOptimizationResult.
+
+        .. warning::
+            This method will be deprecated in the future.
+        """
         return self
 
     @property
