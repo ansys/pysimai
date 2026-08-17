@@ -222,7 +222,11 @@ class ApiClientMixin:
         filename = getattr(file, "name", "")
         files = {"file": (filename, file, "application/octet-stream")}
         self._post(
-            presigned_post["url"], files=files, data=presigned_post["fields"], return_json=False
+            presigned_post["url"],
+            files=files,
+            data=presigned_post["fields"],
+            return_json=False,
+            timeout=240.0,
         )
 
     def upload_parts(
@@ -230,7 +234,7 @@ class ApiClientMixin:
         url: str,
         file: BinaryIO,
         upload_id: str,
-        part_size: int = int(100e6),
+        part_size: int = int(12e6),
         monitor_callback: Optional[MonitorCallback] = None,
     ) -> List[Dict[str, Any]]:
         """Upload parts using the given endpoints to get presigned ``PUT`` URLs.
@@ -245,8 +249,12 @@ class ApiClientMixin:
             if len(part_data) == 0:
                 break
             logger.debug(f"Uploading part {part_number}, sizeof {len(part_data)} bytes")
-            create_part = self._put(url, json={"part_number": part_number, "upload_id": upload_id})
-            uploaded_part = self._put(create_part["url"], data=part_data, return_json=False)
+            create_part = self._put(
+                url, json={"part_number": part_number, "upload_id": upload_id}, timeout=240.0
+            )
+            uploaded_part = self._put(
+                create_part["url"], data=part_data, return_json=False, timeout=240.0
+            )
             parts.append({"PartNumber": part_number, "ETag": uploaded_part.headers["ETag"]})
             part_number += 1
             if monitor_callback is not None:

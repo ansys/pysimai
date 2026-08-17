@@ -44,17 +44,17 @@ class GeomAIPredictionConfiguration(BaseModel):
     """A list of floats that represent the position of the geometry in the latent space.
 
     These parameters describe the shape in a compressed form.
-    The number of floats should match the ``nb_latent_param`` your model was requested with.
+    The number of floats can be less than or equal to the ``nb_latent_param`` your model was requested with.
 
     Required.
     """
     resolution: Optional[Tuple[PositiveInt, PositiveInt, PositiveInt]] = None
-    """By default, this parameter is set automatically based on available training data. For more information, see (link to section Resolution in the User guide).
+    """By default, this parameter is set automatically based on available training data. For more information, see :ref:`ref_geomai_resolution_section`.
 
     If you need to adjust it manually, use a list of three integers defining the number of voxels along the X, Y, and Z axes: higher resolution for complex or precise geometries, and lower resolution for simple shapes or quick previews.
 
-    The total number of voxels must not exceed 900^3, that is `x`, `y`, `z` multiplied together must be less than or equal to 900^3.
-    If you exceed that value, an error will occur.
+    The total number of voxels must not exceed 900^3 (that is, X × Y × Z ≤ 900^3).
+    Exceeding this limit will result in an error.
 
     For the maximum resolution of 900^3, the prediction takes approximately 10 minutes (approximately 1 microsecond per voxel).
     """

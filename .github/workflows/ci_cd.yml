@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: ansys/actions/code-style@a5b0351dc277d68c2dc1beca2d2674c7dfa4fc55 # v10.3.3
+      - uses: ansys/actions/code-style@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: ansys/actions/doc-style@a5b0351dc277d68c2dc1beca2d2674c7dfa4fc55 # v10.3.3
+      - uses: ansys/actions/doc-style@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -49,7 +49,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: ansys/actions/build-wheelhouse@a5b0351dc277d68c2dc1beca2d2674c7dfa4fc55 # v10.3.3
+      - uses: ansys/actions/build-wheelhouse@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
@@ -62,7 +62,7 @@ jobs:
     name: "Check library vulnerabilities"
     runs-on: ubuntu-latest
     steps:
-      - uses: ansys/actions/check-vulnerabilities@a5b0351dc277d68c2dc1beca2d2674c7dfa4fc55 # v10.3.3
+      - uses: ansys/actions/check-vulnerabilities@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -72,7 +72,7 @@ jobs:
     name: "Check actions security"
     runs-on: ubuntu-latest
     steps:
-      - uses: ansys/actions/check-actions-security@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/check-actions-security@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           generate-summary: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -90,11 +90,11 @@ jobs:
       fail-fast: false
     steps:
       - name: Setup uv
-        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: false
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Install dependencies
@@ -114,16 +114,16 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Setup uv
-        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: false
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Generate doc requirements
         run: uv export --only-group docs -o doc_requirements.txt
-      - uses: ansys/actions/doc-build@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/doc-build@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           checkout: false
@@ -136,7 +136,7 @@ jobs:
     needs: [doc-build, tests]
     timeout-minutes: 10
     steps:
-      - uses: ansys/actions/build-library@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/build-library@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -150,7 +150,7 @@ jobs:
     permissions:
       contents: write  # to allow GitHub Pages deployment
     steps:
-      - uses: ansys/actions/doc-deploy-dev@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/doc-deploy-dev@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -166,7 +166,7 @@ jobs:
     permissions:
       contents: write # to allow GitHub Pages deployment
     steps:
-      - uses: ansys/actions/doc-deploy-stable@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/doc-deploy-stable@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -189,14 +189,14 @@ jobs:
           name: ${{ env.LIBRARY_NAME }}-artifacts
           path: ${{ env.LIBRARY_NAME }}-artifacts
       - name: "Upload artifacts to PyPI using trusted publisher"
-        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         with:
           repository-url: "https://upload.pypi.org/legacy/"
           print-hash: true
           packages-dir: ${{ env.LIBRARY_NAME }}-artifacts
           skip-existing: false
       - name: "Release to GitHub"
-        uses: ansys/actions/release-github@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+        uses: ansys/actions/release-github@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}

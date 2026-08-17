@@ -30,12 +30,12 @@ from ansys.simai.core.data.types import (
     File,
     Filters,
     Identifiable,
-    Path,
     SizedIterator,
     get_id_from_identifiable,
     to_raw_filters,
 )
-from ansys.simai.core.errors import PySimAIDepreciationWarning
+from ansys.simai.core.errors import InvalidArguments, PySimAIDepreciationWarning
+from ansys.simai.core.utils.files import write_file
 from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
@@ -114,25 +114,41 @@ class GeomAIWorkspace(DataModel):
     def get_latent_parameters(
         self,
         file: Optional[File] = None,
+        n: Optional[int] = None,
     ) -> Union[dict[str, List[float]], None, BinaryIO]:
         """Get the mapping between geometry names and their latent parameter vectors for the model's training data.
 
         Args:
             file: Binary file-object or the path of the file to put the content into.
+            n: Optional number of latent parameters to retrieve per geometry (the length of your latent code).
+                If ``None``, all latent parameters are returned.
+                If specified, each vector is truncated to the first ``n`` elements.
+                Must not exceed the number of latent parameters used for model training.
 
         Returns:
             ``None`` or a binary file-object if a file is specified or a dictionary mapping geometry names to latent parameter
             vectors otherwise.
-        """
-        data = self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
-        if file:
-            if isinstance(file, File.__args__) and not isinstance(file, Path.__args__):
-                return file
-            return data
 
+        Raises:
+            InvalidArguments: If ``n`` exceeds the number of latent parameters used for model training.
+        """
+        data = self._client._api.download_geomai_workspace_latent_parameters(self.id, None)
         if data is None:
             return {}
         latent_parameters = json.loads(data.read().decode("utf-8"))
+
+        if n is not None:
+            first_key = next(iter(latent_parameters))
+            available = len(latent_parameters[first_key])
+            if n > available:
+                raise InvalidArguments(
+                    f"n ({n}) exceeds the number of latent parameters used for model training ({available})."
+                )
+            latent_parameters = {key: values[:n] for key, values in latent_parameters.items()}
+
+        if file:
+            return write_file(json.dumps(latent_parameters).encode("utf-8"), file)
+
         return latent_parameters
 
     def download_model_evaluation_report(

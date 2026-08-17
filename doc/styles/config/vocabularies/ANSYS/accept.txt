@@ -27,3 +27,4 @@ ModelOutput
 [Rr]eparametriz(?:ing)?
 n_iters
 Synopsys
+synopsys
