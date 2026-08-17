@@ -411,6 +411,7 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
 
     assert isinstance(result, Optimization)
     assert not result.is_ready
+    assert result.optimization.id == "theid"
 
     iteration_results = [
         {
