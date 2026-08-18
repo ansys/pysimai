@@ -21,11 +21,13 @@
 # SOFTWARE.
 
 import logging
+import re
 import warnings
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from tqdm import tqdm
+from typing_extensions import Self
 from wakepy import keep
 
 from ansys.simai.core.data.base import ComputableDataModel, Directory
@@ -36,6 +38,11 @@ from ansys.simai.core.data.types import (
     get_object_from_identifiable,
 )
 from ansys.simai.core.errors import InvalidArguments, NotFoundError, PySimAIDepreciationWarning
+from ansys.simai.core.utils.auth import (
+    OIDC_CLIENT_ID,
+    _decode_authorized_party,
+    _get_offline_token_private,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +79,15 @@ class Optimization(ComputableDataModel):
         super().__init__(*args, **kwargs)
         self._geometries = None
         self._objectives = None
+
+    @property
+    def optimization(self) -> Self:
+        """Returns self. Present for backwards compatibility with LegacyOptimizationResult.
+
+        .. warning::
+            This method will be deprecated in the future.
+        """
+        return self
 
     @property
     def iteration_results(self) -> Optional[List[Dict]]:
@@ -171,16 +187,28 @@ class OptimizationDirectory(Directory[Optimization]):
 
     _data_model = Optimization
 
-    def get(self, optimization_id: str) -> Optimization:
+    def get(self, id: str, optimization_id: Optional[str] = None) -> Optimization:
         """Get a specific optimization object from the server.
 
+        .. warning::
+            The ``optimization_id`` parameter is deprecated.
+
         Args:
-            optimization_id: ID of the optimization.
+            id: ID of the optimization.
+            optimization_id: (deprecated) ID of the optimization.
 
         Returns:
             :py:class:`Optimization`.
         """
-        return self._model_from(self._client._api.get_server_side_optimization(optimization_id))
+        if optimization_id:
+            warnings.warn(
+                "'optimization_id' parameter is deprecated. Please use 'id' parameter instead",
+                PySimAIDepreciationWarning,
+                stacklevel=2,
+            )
+        return self._model_from(
+            self._client._api.get_server_side_optimization(id or optimization_id)
+        )
 
     def list(self, workspace_id: str) -> list[Optimization]:
         """List all optimizations in the workspace available on the server."""
@@ -334,9 +362,13 @@ class OptimizationDirectory(Directory[Optimization]):
         )
         use_server_side_optimization = False
         workspace_id = actual_geometry._fields["workspace_id"]
+        coreml_version: Optional[str] = None
+        manifest = {}
         try:
             manifest = self._client._api.get_workspace_model_manifest(workspace_id)
             if "server_side_optimization" in manifest.get("feature_flags", []):
+                use_server_side_optimization = True
+            if "coreml_version" in manifest.get("coreml_version", []):
                 use_server_side_optimization = True
         except NotFoundError:
             warnings.warn(f"Could not find workspace '{workspace_id}'", stacklevel=1)
@@ -348,6 +380,29 @@ class OptimizationDirectory(Directory[Optimization]):
                 raise InvalidArguments(
                     "No offline_token specified as argument or client configuration"
                 )
+
+            if coreml_version := manifest.get("coreml_version", None):
+                expected_client_id = _get_expected_client_id_for_coreml_model(coreml_version)
+                if expected_client_id is not None:
+                    current_client_id = _decode_authorized_party(offline_token)
+
+                    if expected_client_id != current_client_id:
+                        logger.warning(
+                            f"Provided offline token for optimization has client_id == '{current_client_id}', while model named '{manifest.get('model_name', '')}' only works with client_id == '{expected_client_id}' . Requesting a new token with client_id == '{expected_client_id}'"
+                        )
+
+                        client_config = self._client._config
+                        offline_token = _get_offline_token_private(
+                            url=str(client_config.url),
+                            credentials=client_config.credentials,
+                            https_proxy=str(client_config.https_proxy)
+                            if client_config.https_proxy
+                            else None,
+                            tls_ca_bundle=str(client_config.tls_ca_bundle)
+                            if client_config.tls_ca_bundle
+                            else None,
+                            client_id=expected_client_id,
+                        )
 
             if not max_displacement:
                 raise InvalidArguments("max_displacement must be provided")
@@ -491,16 +546,26 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
 
     _data_model = LegacyOptimization
 
-    def get(self, optimization_id: str) -> LegacyOptimization:
+    def get(self, id: str, optimization_id: Optional[str] = None) -> LegacyOptimization:
         """Get a specific (client-side) optimization object from the server.
 
+        .. warning::
+            The ``optimization_id`` parameter is deprecated.
+
         Args:
-            optimization_id: ID of the optimization.
+            id: ID of the optimization.
+            optimization_id: (deprecated) ID of the optimization.
 
         Returns:
             :py:class:`LegacyOptimization`.
         """
-        return self._model_from(self._client._api.get_optimization(optimization_id))
+        if optimization_id:
+            warnings.warn(
+                "'optimization_id' parameter is deprecated. Please use 'id' parameter instead",
+                PySimAIDepreciationWarning,
+                stacklevel=2,
+            )
+        return self._model_from(self._client._api.get_optimization(id or optimization_id))
 
     def run_non_parametric(
         self,
@@ -790,3 +855,30 @@ def _build_objective(minimize: list[str], maximize: list[str]) -> dict:
         for global_coefficient in maximize:
             objective[global_coefficient] = {"minimize": False}
     return objective
+
+
+def _get_expected_client_id_for_coreml_model(coreml_version: str) -> Union[str, None]:
+    """Returns which client_id you have to use to interact with this model's coreml version
+    str : you have to use this specific client_id to interact with this model's coreml version
+    None : the model either tolerates both, the client_id could not be determined or the coreml version is so old that it doesn't need an offline token from the user.
+    """
+    if re.fullmatch(r"\d+\.\d+\.\d+", coreml_version):
+        major, minor, _ = coreml_version.split(".")
+        major, minor = int(major), int(minor)
+        if major <= 2:
+            return None
+        if major == 3:
+            # model doesn't support server side optim so client_id is irrelevant
+            if minor < 16:
+                return None
+            elif minor == 16 or minor == 17:
+                return "sdk"
+            elif minor <= 19:
+                return OIDC_CLIENT_ID
+            # from 3.20 onwards : both are supported
+            else:
+                return None
+        if major > 3:
+            return None
+    else:
+        return None

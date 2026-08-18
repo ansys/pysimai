@@ -100,7 +100,7 @@ model_output = ModelOutput(
 # Global coefficients are scalar values calculated from the prediction results.
 # They can be used to extract key performance indicators from your simulations.
 #
-# In this example, we calculate the integral of a field called "Photometric".
+# In this example, we calculate the integral of a field called "Pressure".
 # You can define multiple global coefficients with different formulas.
 #
 # Available locations: ``"points"`` or ``"cells"``.
@@ -108,7 +108,7 @@ model_output = ModelOutput(
 global_coefficients = [
     GlobalCoefficientDefinition(
         name="<your_global_coefficient_name>",  # Name for this global coefficient
-        formula="integral(Photometric)",  # Formula to calculate the global coefficient value
+        formula="integral(Pressure)",  # Formula to calculate the global coefficient value
         gc_location="points",  # Calculate at points (or at "cells")
     )
 ]

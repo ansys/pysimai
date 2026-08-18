@@ -118,11 +118,12 @@ def _request_tokens_direct_grant(
     token_url: str,
     credentials: Credentials,
     scope: str = "openid",
+    client_id: Optional[str] = OIDC_CLIENT_ID,
 ) -> _AuthTokens:
     """Request tokens via username/password (direct grant)."""
     logger.debug(f"request authentication tokens via direct grant (scope={scope})")
     request_params = {
-        "client_id": OIDC_CLIENT_ID,
+        "client_id": client_id or OIDC_CLIENT_ID,
         "grant_type": "password",
         "scope": scope,
         **credentials.model_dump(),
@@ -135,11 +136,13 @@ def _request_tokens_device_auth(
     token_url: str,
     device_auth_url: str,
     scope: str = "openid",
+    client_id: Optional[str] = OIDC_CLIENT_ID,
 ) -> _AuthTokens:
     """Request tokens via device auth flow (browser-based)."""
     logger.debug(f"request authentication tokens via device auth (scope={scope})")
+    client_id = client_id or OIDC_CLIENT_ID
     auth_codes = handle_response(
-        session.post(device_auth_url, data={"client_id": OIDC_CLIENT_ID, "scope": scope})
+        session.post(device_auth_url, data={"client_id": client_id, "scope": scope})
     )
     print(  # noqa: T201
         f"Go to {auth_codes['verification_uri']} and enter the code {auth_codes['user_code']}"
@@ -152,7 +155,7 @@ def _request_tokens_device_auth(
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data={
                 "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
-                "client_id": OIDC_CLIENT_ID,
+                "client_id": client_id,
                 "device_code": auth_codes["device_code"],
             },
         )
@@ -281,6 +284,22 @@ def get_offline_token(
     Returns:
         The offline token (a refresh_token that does not expire with sessions)
     """
+    return _get_offline_token_private(
+        url=url,
+        credentials=credentials,
+        https_proxy=https_proxy,
+        tls_ca_bundle=tls_ca_bundle,
+        client_id=OIDC_CLIENT_ID,
+    )
+
+
+def _get_offline_token_private(
+    url: str,
+    credentials: Optional[Credentials] = None,
+    https_proxy: Optional[str] = None,
+    tls_ca_bundle: Optional[str] = None,
+    client_id: Optional[str] = None,
+) -> str:
     realm_url = urljoin(url.rstrip("/") + "/", "/auth/realms/simai")
     token_url = f"{realm_url}/protocol/openid-connect/token"
     device_auth_url = f"{realm_url}/protocol/openid-connect/auth/device"
@@ -294,11 +313,15 @@ def get_offline_token(
     with httpx.Client(**transport_kwargs) as session:
         if credentials:
             tokens = _request_tokens_direct_grant(
-                session, token_url, credentials, scope="openid offline_access"
+                session, token_url, credentials, scope="openid offline_access", client_id=client_id
             )
         else:
             tokens = _request_tokens_device_auth(
-                session, token_url, device_auth_url, scope="openid offline_access"
+                session,
+                token_url,
+                device_auth_url,
+                scope="openid offline_access",
+                client_id=client_id,
             )
         return tokens.refresh_token
 

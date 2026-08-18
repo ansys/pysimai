@@ -35,7 +35,7 @@ from ansys.simai.core.data.types import (
     to_raw_filters,
 )
 from ansys.simai.core.errors import InvalidArguments, PySimAIDepreciationWarning
-from ansys.simai.core.utils.files import file_path_to_obj_file
+from ansys.simai.core.utils.files import write_file
 from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
@@ -158,14 +158,7 @@ class GeomAIWorkspace(DataModel):
         latent_parameters = {key: values[:n] for key, values in latent_parameters.items()}
 
         if file:
-            content = json.dumps(latent_parameters).encode("utf-8")
-            if hasattr(file, "write"):
-                file.write(content)
-                return file
-            else:
-                with file_path_to_obj_file(file, "wb") as f:
-                    f.write(content)
-                return None
+            return write_file(json.dumps(latent_parameters).encode("utf-8"), file)
 
         return latent_parameters
 
