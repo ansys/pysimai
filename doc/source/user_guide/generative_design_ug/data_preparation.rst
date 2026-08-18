@@ -49,10 +49,10 @@ How to check and fix your geometries
 
 Before uploading, validate your geometries to avoid processing failures.
 
-Check watertightness with PyVista
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Check watertightness and manifoldness with PyVista
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can use `PyVista <https://docs.pyvista.org/>`_ to check if your geometry is watertight:
+You can use `PyVista <https://docs.pyvista.org/>`_ to check if your geometry is watertight and manifold:
 
 .. code-block:: python
 
@@ -60,11 +60,11 @@ You can use `PyVista <https://docs.pyvista.org/>`_ to check if your geometry is 
 
    mesh = pv.read("my_geometry.vtp")
 
-   # Check if the mesh is watertight
-   if mesh.is_manifold:
-       print("Geometry is manifold (watertight).")
+   # A watertight manifold mesh has no open edges and every edge shared by exactly two faces
+   if mesh.is_manifold and mesh.n_open_edges == 0:
+       print("Geometry is manifold and watertight.")
    else:
-       print("Geometry is NOT manifold. Please fix holes or gaps before uploading.")
+       print("Geometry has issues. Please fix holes, open edges, or non-manifold edges before uploading.")
 
    # Visualize the mesh to inspect for issues
    mesh.plot(show_edges=True)
@@ -85,6 +85,35 @@ If your geometry is not watertight or manifold, you can:
    Generative Design. Check the geometry file for watertightness and manifold issues.
 
 
+Uploading your geometries
+--------------------------
+
+Once your geometries pass validation, create a project and upload them as training data:
+
+.. code-block:: python
+
+   import ansys.simai.core as asc
+   from ansys.simai.core.errors import NotFoundError
+
+   simai_client = asc.SimAIClient(organization="my_organization")
+   geomai_client = simai_client.geomai
+
+   # Create or retrieve a project
+   try:
+       project = geomai_client.projects.get(name="my-project")
+   except NotFoundError:
+       project = geomai_client.projects.create("my-project")
+
+   # Upload a geometry file and wait for it to be processed
+   training_data = geomai_client.training_data.create_from_file(
+       file="path/to/my_geometry.vtp", project=project
+   )
+   training_data.wait()
+
+For a complete example that uploads an entire folder and handles duplicates,
+see :ref:`ref_create_project_upload_data`.
+
+
 How much training data do you need?
 ------------------------------------
 
@@ -97,8 +126,3 @@ The number of training geometries directly impacts what the model can learn:
   starting point for most projects.
 - **Large dataset (50+)**: the model can capture complex variations and fine details, producing a
   richer and more expressive design space.
-
-.. tip::
-   Start with a small number of geometries and the ``short`` build preset to quickly verify
-   that the model can learn from your data and that the generated designs are meaningful.
-   This helps detect data issues early and saves time.

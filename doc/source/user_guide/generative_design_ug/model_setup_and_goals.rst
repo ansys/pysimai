@@ -7,6 +7,24 @@ Learn how to configure your model depending on the goal you want to achieve, and
 the balance between reconstruction quality and interpolation quality.
 
 
+Know your use case
+-------------------
+
+Before configuring your model, decide what you are trying to achieve:
+
+- **Design exploration**: you want to generate many diverse geometries. Provide diverse training
+  data and prioritize interpolation quality by using a moderate build preset.
+- **Optimization**: you want to use GeomAI inside an optimization loop (for example with optiSLang).
+  Provide training data that covers the region of interest and prioritize smooth interpolations.
+  See :ref:`evaluation_workflows_geomai` for guidance on workflow integration.
+- **Capturing complex geometric features**: your geometries have fine details or intricate shapes
+  that must be faithfully reproduced. Provide enough training data to represent those features
+  and use a longer build preset to focus on reconstruction quality.
+
+.. tip::
+   The model captures implicit constraints from your data. See :ref:`data_preparation_geomai` for details.
+
+
 Understanding reconstruction vs. interpolation
 -----------------------------------------------
 
@@ -64,11 +82,15 @@ Number of epochs
 You can also configure the number of training iterations directly through the ``nb_epochs`` parameter.
 ``nb_epochs`` corresponds to the number of times each training geometry is seen by the model, between 1 and 1000.
 
+``nb_epochs`` is mutually exclusive with ``build_preset``: exactly one of the two must be set.
 ``nb_epochs`` should only be used by experienced users.
 While it enables finer customization, it requires prior knowledge of the model's behavior on your data.
 A good approach is to start with ``build_preset`` and switch to ``nb_epochs`` only when further tuning is needed.
 
-- **Poor reconstruction quality**: try increasing the number of epochs to give the model more time to learn.
+- **Poor reconstruction quality**: try increasing the number of epochs to give the model more
+  training time.
+- **Void or garbled geometries during interpolation**: try decreasing the number of epochs.
+  The model may be overfitting to the training data, which degrades interpolation quality.
 
 
 Number of latent parameters
@@ -76,6 +98,7 @@ Number of latent parameters
 
 The number of latent parameters (``nb_latent_param``) defines the dimension of the latent space.
 It determines the length of the code that represents each geometry.
+Valid values are between 2 and 1024.
 
 Unless your use case has specific constraints, **it is strongly recommended to rely on the default value (512)**.
 
@@ -84,27 +107,24 @@ fine geometric details, but raises the risk of overfitting. If the number is too
 underfit and fail to capture the necessary complexity.
 
 
-Know your use case
--------------------
-
-Before configuring your model, consider what you are trying to achieve:
-
-- **Design exploration**: you want to generate many diverse geometries. Focus on providing diverse
-  training data and use a moderate build preset to prioritize interpolation quality.
-- **Optimization**: you want to use GeomAI within an optimization loop (for example with optiSLang).
-  Provide training data that covers the region of interest and prioritize smooth interpolations.
-  See :ref:`evaluation_workflows_geomai` for guidance on workflow integration.
-- **Capturing complex geometric features**: your geometries have fine details or intricate shapes
-  that must be faithfully reproduced. Provide enough training data to represent those features
-  and use a longer build preset to focus on reconstruction quality.
-
-.. tip::
-   The model captures implicit constraints from your data. If all your training geometries share a
-   common feature (such as a symmetry plane), the model will enforce that constraint across all
-   generated designs. Use this to your advantage by curating your training data intentionally.
-
-
 Configuration example
 ---------------------
 
-For a complete example showing how to configure and build a model, see :ref:`ref_build_model`.
+.. code-block:: python
+
+   import ansys.simai.core as asc
+   from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
+
+   simai_client = asc.SimAIClient(organization="my_organization")
+   geomai_client = simai_client.geomai
+
+   project = geomai_client.projects.get(name="my-project")
+
+   configuration = GeomAIModelConfiguration(build_preset="default")
+   model = geomai_client.models.build(project, configuration)
+
+   # Wait for training to complete
+   model.wait()
+
+For a more detailed example including progress monitoring and error handling,
+see :ref:`ref_build_model`.
