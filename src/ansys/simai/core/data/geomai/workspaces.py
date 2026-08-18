@@ -132,30 +132,19 @@ class GeomAIWorkspace(DataModel):
         Raises:
             InvalidArguments: If ``n`` exceeds the number of latent parameters used for model training.
         """
-        if n is None:
-            # No truncation: stream directly from the API without re-serializing
-            data = self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
-            if file:
-                if hasattr(file, "write"):
-                    return file
-                return data
-            if data is None:
-                return {}
-            return json.loads(data.read().decode("utf-8"))
-
-        # Truncation needed: download to memory first, then slice
         data = self._client._api.download_geomai_workspace_latent_parameters(self.id, None)
         if data is None:
             return {}
         latent_parameters = json.loads(data.read().decode("utf-8"))
 
-        first_key = next(iter(latent_parameters))
-        available = len(latent_parameters[first_key])
-        if n > available:
-            raise InvalidArguments(
-                f"n ({n}) exceeds the number of latent parameters used for model training ({available})."
-            )
-        latent_parameters = {key: values[:n] for key, values in latent_parameters.items()}
+        if n is not None:
+            first_key = next(iter(latent_parameters))
+            available = len(latent_parameters[first_key])
+            if n > available:
+                raise InvalidArguments(
+                    f"n ({n}) exceeds the number of latent parameters used for model training ({available})."
+                )
+            latent_parameters = {key: values[:n] for key, values in latent_parameters.items()}
 
         if file:
             return write_file(json.dumps(latent_parameters).encode("utf-8"), file)
