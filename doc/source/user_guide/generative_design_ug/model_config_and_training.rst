@@ -26,8 +26,11 @@ For large datasets or geometries with high polygon count, use longer presets (``
 Number of epochs
 ^^^^^^^^^^^^^^^^
 
-You can also configure the number of training iterations for building your model through the ``nb_epochs`` parameter.
-``nb_epochs`` corresponds to the number of times each training data is seen by the model during the training, between 1 and 1000.
+You can also configure the number of training iterations used to build your model through the ``nb_epochs`` parameter.
+``nb_epochs`` represents the number of times the model processes the entire training dataset during training.
+A minimum of 1 epoch is required.
+To ensure training remains within the maximum allowed duration, the requested epoch count may be automatically capped.
+As a result, the actual number of epochs used during training may be lower than the value specified.
 
 ``nb_epochs`` should only be used by expert users.
 While it enables finer customization, it requires prior knowledge on the model's performance.

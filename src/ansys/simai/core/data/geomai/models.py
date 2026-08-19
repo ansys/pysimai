@@ -64,9 +64,14 @@ class GeomAIModelConfiguration(BaseModel):
 
     Mutually exclusive with ``nb_epochs``.
     """
-    nb_epochs: Optional[int] = Field(default=None, ge=1, le=1000)
+    nb_epochs: Optional[int] = Field(default=None, ge=1)
     """
-    The number of times each training data is seen by the model during the training, between 1 and 1000.
+    The number of times the model processes the training dataset during training.
+    A minimum of 1 epoch is required.
+
+    To keep training within the maximum allowed duration, the system may automatically
+    reduce the requested epoch count. Consequently, the actual number of epochs used may
+    be lower than the configured value.
 
     Mutually exclusive with ``build_preset``.
     """
