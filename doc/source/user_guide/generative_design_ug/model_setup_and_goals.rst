@@ -123,8 +123,5 @@ Configuration example
    configuration = GeomAIModelConfiguration(build_preset="default")
    model = geomai_client.models.build(project, configuration)
 
-   # Wait for training to complete
-   model.wait()
-
 For a more detailed example including progress monitoring and error handling,
 see :ref:`ref_build_model`.
