@@ -112,16 +112,14 @@ class WorkspaceClientMixin(ApiClientMixin):
     def download_workspace_mer_data(self, workspace_id: str, file: Optional[File]):
         return self.download_file(f"workspaces/{workspace_id}/mer-data", file)
 
-    def update_workspace(self, workspace_id: str, name: str):
-        """Update a workspace name.
+    def update_workspace(self, workspace_id: str, **kwargs):
+        """Update a workspace.
 
         Args:
             workspace_id: ID of the workspace.
-            name: New name to give to the workspace.
+            **kwargs: Workspace fields to pass as keyword arguments.
         """
-        request_json = {}
-        request_json["name"] = name
-        self._patch(f"workspaces/{workspace_id}", json=request_json, return_json=False)
+        self._patch(f"workspaces/{workspace_id}", json=kwargs, return_json=False)
 
     def get_workspace_model_configuration(self, workspace_id: str):
         """Get the model configuration used for the given workspace.
