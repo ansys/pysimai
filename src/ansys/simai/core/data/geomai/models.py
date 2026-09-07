@@ -55,14 +55,20 @@ class GeomAIModelConfiguration(BaseModel):
     """
     build_preset: Optional[Literal["debug", "short", "default", "long"]] = None
     """
-    The preset to use for the model training duration. One of `debug`, `short`, `default`, `long`.
+    The preset to use for the model training duration. One of ``debug``, ``short``, ``default``, ``long``.
 
-    - ``debug``: 4 minutes + 15 sec per geometry.
-    - ``short``: 45 minutes + 15 sec per geometry.
-    - ``default``: 3 hours + 15 sec per geometry.
-    - ``long``: 15 hours + 15 sec per geometry.
+    - ``"debug"``: 4 minutes + 15 sec per geometry.
+    - ``"short"``: 45 minutes + 15 sec per geometry.
+    - ``"default"``: 3 hours + 15 sec per geometry.
+    - ``"long"``: 15 hours + 15 sec per geometry.
 
     Mutually exclusive with ``nb_epochs``.
+
+    .. note::
+
+        For pipeline testing and debugging, use ``debug`` mode.
+        The execution is limited to a subset of four training data and one epoch,
+        reducing runtime while allowing verification of the processing workflow.
     """
     nb_epochs: Optional[int] = Field(default=None, ge=1, le=1000)
     """
