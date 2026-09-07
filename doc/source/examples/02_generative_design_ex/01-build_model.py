@@ -54,7 +54,7 @@ BUILD_PRESET = "default"  # Options: "debug", "short", "default", "long"
 ###############################################################################
 # The ``BUILD_PRESET`` options correspond to:
 #
-# - ``"debug"``: Fast training for testing (very few epochs).
+# - ``"debug"``: Fast training for testing (only four geometries and one epoch).
 # - ``"short"``: Quick training with reduced accuracy.
 # - ``"default"``: Balanced training time and quality.
 # - ``"long"``: Longer training for best quality.
