@@ -19,9 +19,11 @@ To select the right build preset, consider the size of the training dataset and 
 In this context, the number of polygons in a mesh is a rough estimate of the complexity of the geometry it represents:
 simple geometries can be modeled with few polygons, while complex ones need more polygons.
 
-For small datasets with simple geometries (low polygon count), use ``short`` preset.
-
-For large datasets or geometries with high polygon count, use longer presets (``default`` or ``long``).
+- For pipeline testing and debugging, use ``debug`` mode.
+  The execution is limited to a subset of four geometries and one epoch,
+  reducing runtime while allowing verification of the processing workflow.
+- For small datasets with simple geometries (low polygon count), use ``short`` preset.
+- For large datasets or geometries with high polygon count, use longer presets (``default`` or ``long``).
 
 Number of epochs
 ^^^^^^^^^^^^^^^^
