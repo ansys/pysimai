@@ -289,7 +289,7 @@ def test_geomai_project_get_last_workspace(simai_client, httpx_mock):
             (
                 "filter[]",
                 json.dumps(
-                    {"field": "project", "operator": "EQ", "value": project.id},
+                    {"field": "project_id", "operator": "EQ", "value": project.id},
                     separators=(",", ":"),
                 ),
             ),
@@ -323,7 +323,7 @@ def test_geomai_project_get_last_workspace_empty_returns_none(simai_client, http
             (
                 "filter[]",
                 json.dumps(
-                    {"field": "project", "operator": "EQ", "value": project.id},
+                    {"field": "project_id", "operator": "EQ", "value": project.id},
                     separators=(",", ":"),
                 ),
             ),
