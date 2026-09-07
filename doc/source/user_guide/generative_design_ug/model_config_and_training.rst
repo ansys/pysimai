@@ -20,7 +20,7 @@ In this context, the number of polygons in a mesh is a rough estimate of the com
 simple geometries can be modeled with few polygons, while complex ones need more polygons.
 
 - For pipeline testing and debugging, use ``debug`` mode.
-  The execution is limited to a subset of four geometries and one epoch,
+  The execution is limited to a subset of four training data and one epoch,
   reducing runtime while allowing verification of the processing workflow.
 - For small datasets with simple geometries (low polygon count), use ``short`` preset.
 - For large datasets or geometries with high polygon count, use longer presets (``default`` or ``long``).

@@ -67,7 +67,7 @@ class GeomAIModelConfiguration(BaseModel):
     .. note::
 
         For pipeline testing and debugging, use ``debug`` mode.
-        The execution is limited to a subset of four geometries and one epoch,
+        The execution is limited to a subset of four training data and one epoch,
         reducing runtime while allowing verification of the processing workflow.
     """
     nb_epochs: Optional[int] = Field(default=None, ge=1, le=1000)
