@@ -87,7 +87,7 @@ class GeomAIProjectClientMixin(ApiClientMixin):
                 (
                     "filter[]",
                     json.dumps(
-                        {"field": "project", "operator": "EQ", "value": project_id},
+                        {"field": "project_id", "operator": "EQ", "value": project_id},
                         separators=(",", ":"),
                     ),
                 ),
