@@ -40,7 +40,7 @@ NB_LATENT_PARAMS = 10
 MODEL_CONF_RAW = {"nb_epochs": NB_EPOCHS, "nb_latent_param": NB_LATENT_PARAMS, "build_preset": None}
 
 
-def test_geomai_workspace_download_mer(simai_client, httpx_mock):
+def test_geomai_workspace_download_mer(simai_client, httpx2_mock):
     """WHEN downloading mer zip file
     THEN the content of the file matches the content of the response.
     """
@@ -48,7 +48,7 @@ def test_geomai_workspace_download_mer(simai_client, httpx_mock):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/{workspace.id}/model-evaluation-report",
         text="mer-geomai",
@@ -60,17 +60,17 @@ def test_geomai_workspace_download_mer(simai_client, httpx_mock):
     assert data_in_file.decode("ascii") == "mer-geomai"
 
 
-def test_geomai_workspace_rename(simai_client, httpx_mock):
+def test_geomai_workspace_rename(simai_client, httpx2_mock):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="PATCH",
         url="https://test.test/geomai/workspaces/0011",
         status_code=204,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geomai/workspaces/0011",
         json={"id": "0011", "name": "fifi"},
@@ -81,11 +81,11 @@ def test_geomai_workspace_rename(simai_client, httpx_mock):
     assert workspace.name == "fifi"
 
 
-def test_geomai_workspace_get_latent_parameters(simai_client, httpx_mock):
+def test_geomai_workspace_get_latent_parameters(simai_client, httpx2_mock):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
         text='{"geometry1": [1,2,3]}',
@@ -98,13 +98,13 @@ def test_geomai_workspace_get_latent_parameters(simai_client, httpx_mock):
 
 
 def test_geomai_workspace_get_latent_parameters_returns_binary_file_when_file_set(
-    simai_client, httpx_mock
+    simai_client, httpx2_mock
 ):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
         text='{"geometry1": [1,2,3]}',
@@ -119,11 +119,11 @@ def test_geomai_workspace_get_latent_parameters_returns_binary_file_when_file_se
     assert latent_parameters.getvalue() == returned_file.getvalue()
 
 
-def test_geomai_workspace_get_latent_parameters_with_n(simai_client, httpx_mock):
+def test_geomai_workspace_get_latent_parameters_with_n(simai_client, httpx2_mock):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
         text='{"geometry1": [1,2,3,4,5], "geometry2": [5,4,3,2,1]}',
@@ -134,11 +134,11 @@ def test_geomai_workspace_get_latent_parameters_with_n(simai_client, httpx_mock)
     assert latent_parameters == {"geometry1": [1, 2, 3], "geometry2": [5, 4, 3]}
 
 
-def test_geomai_workspace_get_latent_parameters_n_exceeds_length(simai_client, httpx_mock):
+def test_geomai_workspace_get_latent_parameters_n_exceeds_length(simai_client, httpx2_mock):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
         text='{"geometry1": [1,2,3]}',
@@ -149,11 +149,11 @@ def test_geomai_workspace_get_latent_parameters_n_exceeds_length(simai_client, h
         workspace.get_latent_parameters(n=10)
 
 
-def test_geomai_workspace_get_latent_parameters_n_none_returns_all(simai_client, httpx_mock):
+def test_geomai_workspace_get_latent_parameters_n_none_returns_all(simai_client, httpx2_mock):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
         text='{"geometry1": [1,2,3,4,5]}',
@@ -164,11 +164,11 @@ def test_geomai_workspace_get_latent_parameters_n_none_returns_all(simai_client,
     assert latent_parameters == {"geometry1": [1, 2, 3, 4, 5]}
 
 
-def test_geomai_workspace_get_latent_parameters_with_n_and_file(simai_client, httpx_mock):
+def test_geomai_workspace_get_latent_parameters_with_n_and_file(simai_client, httpx2_mock):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/{workspace.id}/model/latent-parameters-json",
         text='{"geometry1": [1,2,3,4,5]}',
@@ -182,12 +182,14 @@ def test_geomai_workspace_get_latent_parameters_with_n_and_file(simai_client, ht
     assert json.loads(target_file.read().decode("utf-8")) == {"geometry1": [1, 2, 3]}
 
 
-def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, training_data_factory):
+def test_get_workspace_model_configuration(
+    mocker, simai_client, httpx2_mock, training_data_factory
+):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geomai/workspaces/0011/model/configuration",
         json=MODEL_CONF_RAW,
@@ -198,11 +200,11 @@ def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, tra
     assert isinstance(workspace.model_configuration, GeomAIModelConfiguration)
 
 
-def test_geomai_workspace_list_predictions(simai_client, httpx_mock):
+def test_geomai_workspace_list_predictions(simai_client, httpx2_mock):
     workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
         {"id": "abc123", "name": "HL3"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/{workspace.id}/predictions",
         json=[
@@ -218,8 +220,8 @@ def test_geomai_workspace_list_predictions(simai_client, httpx_mock):
     assert predictions[1].id == "pred2"
 
 
-def test_geomai_workspace_iter(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_geomai_workspace_iter(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geomai/workspaces/?",
         headers={"X-Pagination": json.dumps({"total": 999})},
@@ -236,8 +238,8 @@ def test_geomai_workspace_iter(simai_client, httpx_mock):
     assert len(workspace_iter) == 998
 
 
-def test_geomai_workspace_list(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_geomai_workspace_list(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         is_reusable=True,
         method="GET",
         url="https://test.test/geomai/workspaces/?",
@@ -245,7 +247,7 @@ def test_geomai_workspace_list(simai_client, httpx_mock):
         json=[{"id": "one", "name": "Workspace One"}],
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         is_reusable=True,
         method="GET",
         url="https://test.test/geomai/workspaces/?last_id=one",
@@ -259,7 +261,7 @@ def test_geomai_workspace_list(simai_client, httpx_mock):
     assert [workspace.id for workspace in workspaces] == ["one", "two"]
 
 
-def test_geomai_workspace_list_created_by_me(simai_client, httpx_mock):
+def test_geomai_workspace_list_created_by_me(simai_client, httpx2_mock):
     user_uuid = "user-456"
     simai_client._api._session.auth._user_uuid = user_uuid
 
@@ -270,7 +272,7 @@ def test_geomai_workspace_list_created_by_me(simai_client, httpx_mock):
 
     raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
     query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/?{query}",
         json=raw_workspaces,

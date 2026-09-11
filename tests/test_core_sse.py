@@ -25,7 +25,7 @@ from threading import Event
 from typing import NamedTuple
 from unittest.mock import Mock
 
-import httpx
+import httpx2
 import pytest
 
 from ansys.simai.core.api.client import ApiClient
@@ -35,7 +35,7 @@ from ansys.simai.core.utils.configuration import ClientConfig
 
 
 @pytest.mark.parametrize("sse_disabled", [True, False])
-def test_api_client_connects_to_sse_if_flag(httpx_mock, sse_disabled):
+def test_api_client_connects_to_sse_if_flag(httpx2_mock, sse_disabled):
     """WHEN ApiClient is created
     THEN it connects to the SSE URL if and only if no_sse_connection is not False
     """
@@ -46,9 +46,9 @@ def test_api_client_connects_to_sse_if_flag(httpx_mock, sse_disabled):
 
         def sse_connection(request):
             did_connect_to_sse_url.set()
-            return httpx.Response(200, headers={"Content-Type": "text/event-stream"}, text="{}")
+            return httpx2.Response(200, headers={"Content-Type": "text/event-stream"}, text="{}")
 
-        httpx_mock.add_callback(
+        httpx2_mock.add_callback(
             sse_connection,
             method="GET",
             url="https://test.test/sessions/events",
@@ -72,11 +72,11 @@ def test_api_client_connects_to_sse_if_flag(httpx_mock, sse_disabled):
     api.check_for_sse_error()
 
 
-def test_api_client_sse_endpoint_unreachable(httpx_mock):
+def test_api_client_sse_endpoint_unreachable(httpx2_mock):
     """WHEN ApiClient is created, if SSE endpoint is not reachable
     THEN a ConnectionError is raised
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/sessions/events",
         text="Not found",
@@ -92,11 +92,11 @@ def test_api_client_sse_endpoint_unreachable(httpx_mock):
         )
 
 
-def test_api_client_sse_endpoint_wrong_organization(httpx_mock):
+def test_api_client_sse_endpoint_wrong_organization(httpx2_mock):
     """WHEN ApiClient is created, if SSE endpoint returns 403
     THEN a ConnectionError is raised with correct error message
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/sessions/events",
         text="User does not belong to the organization not_extrality or the organization does not exist.",
@@ -115,18 +115,18 @@ def test_api_client_sse_endpoint_wrong_organization(httpx_mock):
         )
 
 
-def test_wait_non_blocking_for_non_loading_items(simai_client, httpx_mock):
+def test_wait_non_blocking_for_non_loading_items(simai_client, httpx2_mock):
     """WHEN Creating Mesh, prediction, post-processing objects that are finished
     THEN wait can be called and are not blocking
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/7412/predictions",
         json={"id": "2222", "state": "successful"},
         status_code=200,
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/2222/post-processings/GlobalCoefficients",
         json={"id": "3333", "state": "successful"},
@@ -216,11 +216,11 @@ def test_sse_event_update_prediction_failure(sse_mixin, prediction_factory):
         pred.wait()
 
 
-def test_wait_timeout_false(simai_client, httpx_mock):
+def test_wait_timeout_false(simai_client, httpx2_mock):
     """WHEN wait timed out
     THEN the return value reflects that to the user (is False)
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/7412/predictions",
         json={"id": "2222", "state": "pending"},

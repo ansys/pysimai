@@ -43,7 +43,7 @@ def test_prediction_failure(simai_client):
     assert prediction.failure_reason == "Drink was spilled over"
 
 
-def test_prediction_delete(simai_client, httpx_mock):
+def test_prediction_delete(simai_client, httpx2_mock):
     """WHEN deleting a Prediction
     THEN a DELETE query on predictions/id endpoint is called
     ALSO the prediction doesn't exist anymore in its Directory's registry
@@ -55,7 +55,7 @@ def test_prediction_delete(simai_client, httpx_mock):
 
     assert simai_client._prediction_directory._registry[pred_id] == prediction
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE",
         url=f"https://test.test/predictions/{pred_id}?confirm=true",
         status_code=204,
@@ -65,14 +65,14 @@ def test_prediction_delete(simai_client, httpx_mock):
     assert pred_id not in simai_client._prediction_directory._registry
 
 
-def test_prediction_wait_deleted(simai_client, httpx_mock):
+def test_prediction_wait_deleted(simai_client, httpx2_mock):
     """WHEN deleting a Prediction that is not done
     THEN prediction.wait() immediately returns
     """
     pred_id = "uninteresting-prediction-002"
     prediction = simai_client._prediction_directory._model_from({"id": pred_id, "state": "pending"})
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE",
         url=f"https://test.test/predictions/{pred_id}?confirm=true",
         status_code=204,
@@ -81,12 +81,12 @@ def test_prediction_wait_deleted(simai_client, httpx_mock):
     prediction.wait()
 
 
-def test_prediction_geometry_attribute(prediction_factory, httpx_mock):
+def test_prediction_geometry_attribute(prediction_factory, httpx2_mock):
     """WHEN accessing a Prediction's geometry attribute
     THEN the geometry object is returned
     """
     prediction = prediction_factory(geometry_id="mexico")
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/mexico",
         json={"id": "mexico", "state": "successful"},
@@ -97,12 +97,12 @@ def test_prediction_geometry_attribute(prediction_factory, httpx_mock):
     assert prediction.geometry.id == "mexico"
 
 
-def test_prediction_call_geometry_attribute_twice(prediction_factory, httpx_mock):
+def test_prediction_call_geometry_attribute_twice(prediction_factory, httpx2_mock):
     """WHEN accessing twice the geometry attribute of a Prediction
     THEN the endpoint is called only once
     """
     prediction = prediction_factory(geometry_id="cuba")
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/cuba",
         json={"id": "cuba", "state": "successful"},
@@ -112,11 +112,11 @@ def test_prediction_call_geometry_attribute_twice(prediction_factory, httpx_mock
     prediction.geometry  # noqa: B018
     prediction.geometry  # noqa: B018
 
-    assert len(httpx_mock.get_requests()) == 1
+    assert len(httpx2_mock.get_requests()) == 1
 
 
 def test_prediction_call_geometry_attribute_already_registered(
-    geometry_factory, prediction_factory, httpx_mock
+    geometry_factory, prediction_factory, httpx2_mock
 ):
     """WHEN accessing the geometry attribute of a prediction when the geometry exists locally
     THEN no query is ran
@@ -125,17 +125,17 @@ def test_prediction_call_geometry_attribute_already_registered(
     prediction = prediction_factory(geometry_id="registered_geometry")
 
     prediction.geometry  # noqa: B018
-    assert len(httpx_mock.get_requests()) == 0
+    assert len(httpx2_mock.get_requests()) == 0
 
 
-def test_run(simai_client, geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_run(simai_client, geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/geom-0",
         json={"id": "geom-0"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
@@ -145,14 +145,14 @@ def test_run(simai_client, geometry_factory, httpx_mock):
     simai_client.predictions.run(geometry.id, Vx=10.5)
 
 
-def test_run_dict_bc(simai_client, geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_run_dict_bc(simai_client, geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/geom-0",
         json={"id": "geom-0"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
@@ -162,14 +162,14 @@ def test_run_dict_bc(simai_client, geometry_factory, httpx_mock):
     simai_client.predictions.run(geometry.id, {"Vx": 10.5})
 
 
-def test_run_no_bc(simai_client, geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_run_no_bc(simai_client, geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/geom-0",
         json={"id": "geom-0"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
@@ -179,14 +179,14 @@ def test_run_no_bc(simai_client, geometry_factory, httpx_mock):
     simai_client.predictions.run(geometry.id)
 
 
-def test_run_scalars(simai_client, geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_run_scalars(simai_client, geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/geom-0",
         json={"id": "geom-0"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
@@ -196,14 +196,14 @@ def test_run_scalars(simai_client, geometry_factory, httpx_mock):
     simai_client.predictions.run(geometry.id, scalars={"Vx": 10.5})
 
 
-def test_run_boundary_conditions(simai_client, geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_run_boundary_conditions(simai_client, geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/geom-0",
         json={"id": "geom-0"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
@@ -214,7 +214,7 @@ def test_run_boundary_conditions(simai_client, geometry_factory, httpx_mock):
         simai_client.predictions.run(geometry.id, boundary_conditions={"Vx": 10.5})
 
 
-def test_confidence_score(prediction_factory, httpx_mock):
+def test_confidence_score(prediction_factory, httpx2_mock):
     """WHEN accessing a Prediction's confidence score properties
     THEN the corresponding values are returned
     """
