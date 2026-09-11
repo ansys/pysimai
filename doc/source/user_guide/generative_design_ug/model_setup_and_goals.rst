@@ -14,7 +14,7 @@ Before configuring your model, decide what you are trying to achieve:
 
 - **Design exploration**: you want to generate many diverse geometries. Provide diverse training
   data and prioritize interpolation quality by using a moderate build preset.
-- **Optimization**: you want to use GeomAI inside an optimization loop (for example with optiSLang).
+- **Optimization**: you want to use GeomAI inside an optimization loop (for example with Ansys optiSLang).
   Provide training data that covers the region of interest and prioritize smooth interpolations.
   See :ref:`evaluation_workflows_geomai` for guidance on workflow integration.
 - **Capturing complex geometric features**: your geometries have fine details or intricate shapes
@@ -83,7 +83,7 @@ You can also configure the number of training iterations directly through the ``
 ``nb_epochs`` corresponds to the number of times each training geometry is seen by the model, between 1 and 1000.
 
 ``nb_epochs`` is mutually exclusive with ``build_preset``: exactly one of the two must be set.
-``nb_epochs`` should only be used by experienced users.
+Only experienced users should use``nb_epochs``.
 While it enables finer customization, it requires prior knowledge of the model's behavior on your data.
 A good approach is to start with ``build_preset`` and switch to ``nb_epochs`` only when further tuning is needed.
 

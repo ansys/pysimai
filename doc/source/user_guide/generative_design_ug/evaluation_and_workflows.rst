@@ -38,7 +38,7 @@ Understanding the chamfer distance
 The chamfer distance measures how close a reconstructed geometry is to the original. A lower value
 means better reconstruction.
 
-The MER includes a threshold that indicate whether each geometry's chamfer distance falls
+The MER includes a threshold that indicates whether each geometry's chamfer distance falls
 in the acceptable range for your model.
 
 Inspect the **histogram** of chamfer distances across all training geometries:
@@ -72,7 +72,7 @@ of what your model can produce.
 For a complete example, see :ref:`ref_generate_random_geometries`.
 
 .. warning::
-   The ``sample`` method is in beta. It will likely be recast or retired by July 2026.
+   The ``sample`` method is in beta. It will likely be recast or retired by October 2026.
    Testing and feedback are encouraged, but it is advised not to include it in a production workflow.
 
 Generate linear interpolations
@@ -107,7 +107,7 @@ along each axis:
 - **Medium resolution** (for example ``(100, 100, 100)``): good balance for most use cases.
 - **High resolution** (for example ``(200, 200, 200)`` or above): captures fine details and sharp edges.
 
-The total number of voxels must not exceed 900\ :sup:`3` (that is, ``x * y * z <= 729,000,000``).
+The total number of voxels must not exceed 900 :sup:`3` (that is, ``x * y * z <= 729,000,000``).
 For the maximum resolution, prediction takes approximately 10 minutes.
 
 .. tip::
@@ -200,7 +200,7 @@ Generated geometries are void or garbled
   training geometries rather than specifying arbitrary latent parameters.
 - If you are specifying latent parameters manually, check that all values stay within the
   approximate range of your training codes (typically -3 to +3). Values far outside this range
-  land outside the region the model has learned.
+  land outside of the region learned by the model.
 - If void geometries appear even with the ``sample`` method, the model may have overfit. Try
   reducing the build preset or the number of epochs.
 
@@ -229,7 +229,7 @@ Model results do not improve after rebuilding
 - Remove persistent outliers: if the MER consistently flags the same geometries across builds,
   and those geometries are not critical to your use case, removing them often improves overall
   model quality.
-- Verify you are comparing builds of the same preset. Comparing a ``short`` build against a
+- Make sure that you are comparing builds of the same preset. Comparing a ``short`` build against a
   previous ``default`` build will naturally show different results.
 
 
@@ -239,7 +239,7 @@ Workflow integration
 Using GeomAI with optimization tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-GeomAI can be integrated into optimization workflows (for example with optiSLang) by using the
+GeomAI can be integrated into optimization workflows (for example with Ansys optiSLang) by using the
 latent parameters as design variables. Working in a reduced latent space — keeping only the most
 important dimensions — lowers the dimensionality of the optimization problem and speeds up
 convergence. See :ref:`reduced_latent_spaces_geomai` for how to retrieve reduced latent codes and

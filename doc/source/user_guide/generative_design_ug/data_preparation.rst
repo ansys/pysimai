@@ -34,8 +34,7 @@ Geometry requirements
 The geometries used as training data must comply with the following requirements to be correctly processed:
 
 - **File formats**: ``.vtp`` or ``.stl``.
-- **Watertight**: the geometry must form a completely closed surface with no holes or gaps.
-  Each edge must be shared by exactly two faces.
+- **Watertight**: the geometry must form a completely closed surface with no holes or gaps (no open/boundary edges).
 - **Manifold**: every edge must be connected to exactly two faces, and each vertex must have
   a well-defined, continuous neighborhood without branching or overlaps.
 - **No self-penetration**: no part of the surface should pass through another part of the same object.
@@ -49,7 +48,7 @@ How to check and fix your geometries
 
 Before uploading, validate your geometries to avoid processing failures.
 
-Check watertightness and manifoldness with PyVista
+Check watertightness and manifoldness with PyVista.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can use `PyVista <https://docs.pyvista.org/>`_ to check if your geometry is watertight and manifold:

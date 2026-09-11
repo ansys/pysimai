@@ -19,17 +19,17 @@ The principle is that:
 
 **Key concepts**
 
-A **project** holds your training data — the set of geometries the model learns from.
-A **workspace** holds a trained model and its predictions. One project can have multiple workspaces,
-each corresponding to a different build configuration.
+- A **project** holds your training data — the set of geometries the model learns from.
+- A **workspace** holds a trained model and its predictions. One project can have multiple workspaces,
+  each corresponding to a different build configuration.
 
 The steps to follow are:
 
-1. Prepare and validate your geometries
-#. Upload them as training data and assign them to a project
-#. Configure and build your AI model
-#. Evaluate the model quality
-#. Generate new designs and integrate them into your workflow
+1. Prepare and validate your geometries.
+#. Upload them as training data and assign them to a project.
+#. Configure and build your AI model.
+#. Evaluate the model quality.
+#. Generate new designs and integrate them into your workflow.
 
 .. tip::
    Start with a small number of training geometries and the ``short`` build preset to quickly check
