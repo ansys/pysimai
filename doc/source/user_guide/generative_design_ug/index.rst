@@ -3,7 +3,7 @@
 Generate new designs
 ========================================================
 
-With SimAI, you generate new geometries based on existing ones using Generative Design (GeomAI).
+With SimAI, you generate new geometries based on existing ones using GeomAI.
 
 .. note::
    GeomAI is designed to **generate geometries**. It does not use physical response data (forces,
@@ -12,14 +12,14 @@ With SimAI, you generate new geometries based on existing ones using Generative 
 
 The principle is that:
 
-- Given a dataset of geometries provided by you,
-- The AI model is trained to find a compressed representation of those geometries (the latent space).
-- Once the representation is computed, the model can generate new geometries by working in this
-  compressed representation space.
+1. You provide a dataset of geometries.
+2. The AI model is trained to find a compressed representation of those geometries (the latent space).
+3. Once the representation is computed, the model can generate new geometries by working in this
+   compressed representation space.
 
 **Key concepts**
 
-- A **project** holds your training data — the set of geometries the model learns from.
+- A **project** holds your training data. The set of geometries the model learns from.
 - A **workspace** holds a trained model and its predictions. One project can have multiple workspaces,
   each corresponding to a different build configuration.
 

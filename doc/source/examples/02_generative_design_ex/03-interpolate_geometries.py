@@ -36,7 +36,7 @@ Latent space interpolation allows you to:
 Before you begin
 -------------------------------------------
 
-- Complete ":ref:`ref_build_model`" to train a Generative design model.
+- Complete ":ref:`ref_build_model`" to train a GeomAI model.
 - Ensure that the model training has been completed successfully. To do so, verify if a new workspace was created for the trained model.
 
 """

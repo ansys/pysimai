@@ -59,7 +59,7 @@ PROJECT_NAME = "your_project_name"  # Replace with your project name
 # Create the client
 # -------------------------------------------
 # Create a client to use the PySimAI library. This client will be the
-# entrypoint for all Generative Design objects.
+# entrypoint for all GeomAI objects.
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
@@ -119,7 +119,7 @@ print("\nAll training data uploaded.")
 #
 # .. note::
 #    An "invalid geometry" failure means the geometry is not compatible with
-#    Generative Design. Check the file for watertightness and manifold issues.
+#    GeomAI. Check the file for watertightness and manifold issues.
 
 project_data = project.list_training_data()
 

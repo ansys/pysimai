@@ -22,10 +22,10 @@
 
 """.. _ref_build_model:
 
-Building a Generative Design Model
+Building a GeomAI Model
 ================================================
 
-This example demonstrates how to configure a Generative Design model, start the model training process, and monitor the build progress.
+This example demonstrates how to configure a GeomAI model, start the model training process, and monitor the build progress.
 
 Before you begin
 -------------------------------------------

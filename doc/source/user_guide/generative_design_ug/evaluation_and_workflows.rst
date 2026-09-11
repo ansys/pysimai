@@ -97,7 +97,7 @@ by specifying new positions in the latent space.
   known training codes may produce garbled or void geometries.
 - You can retrieve the latent codes of all training geometries with ``workspace.get_latent_parameters()``.
   These serve as reference points for interpolation and exploration. Pass an optional ``n`` argument
-  to truncate each vector to its first ``n`` (most important) dimensions — see
+  to truncate each vector to its first ``n`` (most important) dimensions; see
   :ref:`reduced_latent_spaces_geomai`.
 
 The resolution parameter is a tuple of three integers ``(x, y, z)`` defining the number of voxels
@@ -122,7 +122,7 @@ Working with reduced latent spaces
 
 GeomAI orders latent dimensions by importance: the first dimensions capture the largest sources of
 variation in the training data, while later dimensions capture increasingly finer details.
-For many workflows — exploration, interpolation, optimization — you can work with a small subset of
+For many workflows (exploration, interpolation, optimization), you can work with a small subset of
 the most informative dimensions rather than the full latent vector.
 
 Choosing the right number of dimensions
@@ -155,7 +155,7 @@ Generating geometries from reduced codes
 
 Reduced latent vectors can be passed directly to :class:`GeomAIPredictionConfiguration
 <ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration>`.
-The remaining dimensions are automatically discarded — no additional handling is required.
+The remaining dimensions are automatically discarded; no additional handling is required.
 
 .. code-block:: python
 
@@ -191,7 +191,7 @@ Geometries are not correctly reconstructed
    no self-penetration). See :ref:`data_preparation_geomai`.
 4. If mesh quality is not the issue, try a longer build preset.
 5. If the geometry is valid but structurally very different from the rest of the dataset,
-   consider whether it should be included — it may be pulling the model in conflicting directions.
+   consider whether it should be included; it may be pulling the model in conflicting directions.
 
 Generated geometries are void or garbled
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -240,8 +240,8 @@ Using GeomAI with optimization tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 GeomAI can be integrated into optimization workflows (for example with Ansys optiSLang) by using the
-latent parameters as design variables. Working in a reduced latent space — keeping only the most
-important dimensions — lowers the dimensionality of the optimization problem and speeds up
+latent parameters as design variables. Working in a reduced latent space enables you to keep only the most
+important dimensions. This lowers the dimensionality of the optimization problem and speeds up
 convergence. See :ref:`reduced_latent_spaces_geomai` for how to retrieve reduced latent codes and
 use them as design variables.
 

@@ -49,7 +49,7 @@ How to check and fix your geometries
 Before uploading, validate your geometries to avoid processing failures.
 
 Check watertightness and manifoldness with PyVista.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can use `PyVista <https://docs.pyvista.org/>`_ to check if your geometry is watertight and manifold:
 
@@ -73,7 +73,7 @@ Fix common issues
 
 If your geometry is not watertight or manifold, you can:
 
-- **Use a CAD tool**: open your geometry in a tool like SpaceClaim or Meshmixer to identify and
+- **Use a CAD tool**: open your geometry in a tool like Ansys SpaceClaim to identify and
   fill holes, remove duplicate faces, or fix non-manifold edges.
 - **Fill holes programmatically**: some mesh processing libraries (such as PyVista or trimesh)
   provide utilities to fill small holes automatically.
@@ -81,7 +81,7 @@ If your geometry is not watertight or manifold, you can:
 
 .. warning::
    An "invalid geometry" error during processing means the geometry is not compatible with
-   Generative Design. Check the geometry file for watertightness and manifold issues.
+   GeomAI. Check the geometry file for watertightness and manifold issues.
 
 
 Uploading your geometries
@@ -122,6 +122,6 @@ The number of training geometries directly impacts what the model can learn:
   general geometric features. In this case, using a lower build preset (``short``) often
   produces better interpolations.
 - **Moderate dataset (10-30)**: the model begins to capture patterns and variations. This is a good
-  starting point for most projects.
+  starting point for most projects. At this stage, using a moderate build preset (``default``) is often recommended.
 - **Large dataset (50+)**: the model can capture complex variations and fine details, producing a
-  richer and more expressive design space.
+  richer and more expressive design space. It might be beneficial to use a higher build preset (``long``) to fully capture the complexity of the dataset.
