@@ -64,7 +64,8 @@ before integrating it into any workflow.
 Generate random samples
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use the ``sample`` method to generate random geometries from the learned design space.
+Use the :meth:`sample()<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.sample>`
+method to generate random geometries from the learned design space.
 Under the hood, this method picks random latent parameters using a smart sampling strategy that
 stays within the bounds of the training data. This makes it the simplest way to get an overview 
 of what your model can produce.
@@ -72,7 +73,8 @@ of what your model can produce.
 For a complete example, see :ref:`ref_generate_random_geometries`.
 
 .. warning::
-   The ``sample`` method is in beta. It will likely be recast or retired by October 2026.
+   The :meth:`sample()<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.sample>`
+   method is in beta. It will likely be recast or retired by October 2026.
    Testing and feedback are encouraged, but it is advised not to include it in a production workflow.
 
 Generate linear interpolations
@@ -95,7 +97,8 @@ by specifying new positions in the latent space.
 - The number of floats must match the ``nb_latent_param`` the model was configured with (default: 512).
 - Latent parameters typically range between -3 and +3 for meaningful results. Values too far from
   known training codes may produce garbled or void geometries.
-- You can retrieve the latent codes of all training geometries with ``workspace.get_latent_parameters()``.
+- You can retrieve the latent codes of all training geometries with
+  :meth:`workspace.get_latent_parameters()<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace.get_latent_parameters>`.
   These serve as reference points for interpolation and exploration. Pass an optional ``n`` argument
   to truncate each vector to its first ``n`` (most important) dimensions; see
   :ref:`reduced_latent_spaces_geomai`.
@@ -136,7 +139,8 @@ space with minimal loss of geometric fidelity.
 Retrieving reduced latent codes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``workspace.get_latent_parameters()`` accepts an optional ``n`` parameter that truncates each
+:meth:`workspace.get_latent_parameters()<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace.get_latent_parameters>`
+accepts an optional ``n`` parameter that truncates each
 latent vector to its first ``n`` elements. ``n`` must not exceed the number of latent parameters
 the model was trained with.
 
@@ -196,13 +200,15 @@ Geometries are not correctly reconstructed
 Generated geometries are void or garbled
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Stay close to known latent codes. Use the ``sample`` method or construct interpolations between
-  training geometries rather than specifying arbitrary latent parameters.
+- Stay close to known latent codes. Use the
+  :meth:`sample()<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.sample>` method or
+  construct interpolations between training geometries rather than specifying arbitrary latent parameters.
 - If you are specifying latent parameters manually, check that all values stay within the
   approximate range of your training codes (typically -3 to +3). Values far outside this range
   land outside of the region learned by the model.
-- If void geometries appear even with the ``sample`` method, the model may have overfit. Try
-  reducing the build preset or the number of epochs.
+- If void geometries appear even with the
+  :meth:`sample()<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.sample>` method,
+  the model may have overfit. Try reducing the build preset or the number of epochs.
 
 Lack of sharpness or explosion of parts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

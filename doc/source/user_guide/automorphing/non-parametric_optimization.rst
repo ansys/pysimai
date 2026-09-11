@@ -18,7 +18,9 @@ directly applied to non-parameterized baseline geometries.
 Unlike traditional parametric methods, this approach requires no predefined design variables and
 enables you to optimize existing geometries seamlessly, directly within the SimAI platform.
 
-Please note that the feature is currently available via SDK only through the method ``run_non_parametric``.
+Please note that the feature is currently available via SDK only through the
+:meth:`run_non_parametric()<ansys.simai.core.data.optimizations.OptimizationDirectory.run_non_parametric>`
+method.
 For more information, see :ref:`Optimization<optimizations>`.
 
 How to perform non-parametric optimization
@@ -57,7 +59,9 @@ Step 2. Train SimAI model
 Step 3. Optimization
 ^^^^^^^^^^^^^^^^^^^^^
 
-1. Perform a non-parametric optimization by calling the ``run_non_parametric`` function.
+1. Perform a non-parametric optimization by calling the
+   :meth:`run_non_parametric()<ansys.simai.core.data.optimizations.OptimizationDirectory.run_non_parametric>`
+   function.
 #. | At each optimization loop, automorphed geometries are uploaded to the workspace.
    | The number of automorphed geometries uploaded to the workspace depends on the ``n_iters`` configured.
 #. Run predictions, postprocessings, etc. on the generated geometries, if needed.
@@ -73,7 +77,9 @@ Step 5. Enrich training data
 
 1. Add the chosen optimums as new training data to your model.
 #. Build a new AI model with those new data.
-#. Use again the SDK non-parametric optimization feature by calling the ``run_non_parametric`` function.
+#. Use again the SDK non-parametric optimization feature by calling the
+   :meth:`run_non_parametric()<ansys.simai.core.data.optimizations.OptimizationDirectory.run_non_parametric>`
+   function.
 #. Repeat the workflow from Step 3 at least three times. It is usually the number needed to achieve good results.
 
 Stop running optimization whenever the performance result obtained on Step 4 is satisfactory.
