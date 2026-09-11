@@ -106,16 +106,14 @@ class GeomAIWorkspaceClientMixin(ApiClientMixin):
     ):
         return self.download_file(f"geomai/workspaces/{workspace_id}/model-evaluation-report", file)
 
-    def update_geomai_workspace(self, workspace_id: str, name: str):
-        """Update a GeomAI workspace name.
+    def update_geomai_workspace(self, workspace_id: str, **kwargs):
+        """Update a GeomAI workspace.
 
         Args:
             workspace_id: ID of the workspace.
-            name: New name to give to the workspace.
+            **kwargs: Workspace fields to pass as keyword arguments.
         """
-        request_json = {}
-        request_json["name"] = name
-        self._patch(f"geomai/workspaces/{workspace_id}", json=request_json, return_json=False)
+        self._patch(f"geomai/workspaces/{workspace_id}", json=kwargs, return_json=False)
 
     def get_geomai_workspace_model_configuration(self, workspace_id: str):
         """Get the model configuration used for the given GeomAI workspace.
