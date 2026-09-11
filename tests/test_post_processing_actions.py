@@ -21,12 +21,12 @@
 # SOFTWARE.
 
 
-def test_post_processing_delete(simai_client, post_processing_factory, httpx_mock):
+def test_post_processing_delete(simai_client, post_processing_factory, httpx2_mock):
     """WHEN Calling delete() on a post-processing
     THEN the /delete endpoint is called
     ALSO the post-processing is not anymore registered in the Directory
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE",
         url="https://test.test/post-processings/uninteresting-coeffs",
         status_code=204,
@@ -39,13 +39,13 @@ def test_post_processing_delete(simai_client, post_processing_factory, httpx_moc
     assert "uninteresting-coeffs" not in simai_client._post_processing_directory._registry
 
 
-def test_post_processing_global_coefficients_delete(prediction_factory, httpx_mock):
+def test_post_processing_global_coefficients_delete(prediction_factory, httpx2_mock):
     """WHEN deleting a GlobalCoefficients post-processing from a prediction
     THEN there is a call to the DELETE endpoint
     ALSO a new call to pred.post.global_coefficients() re-runs the post-processing
     """
     pred = prediction_factory()
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
         json={
@@ -55,7 +55,7 @@ def test_post_processing_global_coefficients_delete(prediction_factory, httpx_mo
         },
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/predictions/{pred.id}/post-processings/GlobalCoefficients",
         json={
@@ -65,7 +65,7 @@ def test_post_processing_global_coefficients_delete(prediction_factory, httpx_mo
         },
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE",
         url="https://test.test/post-processings/pp-instance-one",
         status_code=204,
@@ -80,13 +80,13 @@ def test_post_processing_global_coefficients_delete(prediction_factory, httpx_mo
     assert global_coefficients.id == "pp-instance-two"
 
 
-def test_post_processing_surface_evolution_delete(prediction_factory, httpx_mock):
+def test_post_processing_surface_evolution_delete(prediction_factory, httpx2_mock):
     """WHEN deleting a SurfaceEvolution post-processing from a prediction
     THEN there is a call to the DELETE endpoint
     ALSO a new call to pred.post.surface_evolution() re-runs the post-processing
     """
     pred = prediction_factory()
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/predictions/{pred.id}/post-processings/SurfaceEvol",
         json={
@@ -98,7 +98,7 @@ def test_post_processing_surface_evolution_delete(prediction_factory, httpx_mock
         headers={},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/predictions/{pred.id}/post-processings/SurfaceEvol",
         json={
@@ -110,7 +110,7 @@ def test_post_processing_surface_evolution_delete(prediction_factory, httpx_mock
         headers={},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE",
         url="https://test.test/post-processings/im-the-first-one",
         status_code=204,

@@ -25,7 +25,7 @@ from http import HTTPStatus
 from json.decoder import JSONDecodeError
 from typing import Literal, overload
 
-import httpx
+import httpx2
 
 from ansys.simai.core.data.types import JSON, APIResponse
 from ansys.simai.core.errors import ApiClientError, NotFoundError
@@ -33,7 +33,7 @@ from ansys.simai.core.errors import ApiClientError, NotFoundError
 logger = logging.getLogger(__name__)
 
 
-def handle_http_errors(response: httpx.Response) -> None:
+def handle_http_errors(response: httpx2.Response) -> None:
     """Raise an error if the response status code is an error.
 
     Args:
@@ -46,10 +46,10 @@ def handle_http_errors(response: httpx.Response) -> None:
     logger.debug("Checking for HTTP errors.")
     try:
         response.raise_for_status()
-    except httpx.HTTPError as e:
+    except httpx2.HTTPError as e:
         try:
             json_response = response.json()
-        except (ValueError, JSONDecodeError, httpx.ResponseNotRead):
+        except (ValueError, JSONDecodeError, httpx2.ResponseNotRead):
             # raise the errors from None
             # as we want to ignore the JSONDecodeError
             if response.status_code == HTTPStatus.NOT_FOUND:
@@ -84,18 +84,18 @@ def handle_http_errors(response: httpx.Response) -> None:
 
 
 @overload
-def handle_response(response: httpx.Response, return_json: Literal[True]) -> JSON: ...
+def handle_response(response: httpx2.Response, return_json: Literal[True]) -> JSON: ...
 
 
 @overload
-def handle_response(response: httpx.Response, return_json: Literal[False]) -> httpx.Response: ...
+def handle_response(response: httpx2.Response, return_json: Literal[False]) -> httpx2.Response: ...
 
 
 @overload
-def handle_response(response: httpx.Response, return_json: bool) -> APIResponse: ...
+def handle_response(response: httpx2.Response, return_json: bool) -> APIResponse: ...
 
 
-def handle_response(response: httpx.Response, return_json: bool = True) -> APIResponse:
+def handle_response(response: httpx2.Response, return_json: bool = True) -> APIResponse:
     """Handle HTTP errors and return the relevant data from the response.
 
     Args:
@@ -104,7 +104,7 @@ def handle_response(response: httpx.Response, return_json: bool = True) -> APIRe
 
     Returns:
         JSON dict of the response if :py:args:`return_json` is ``True`` or the raw
-            :py:class:`httpx.Response` otherwise.
+            :py:class:`httpx2.Response` otherwise.
     """
     handle_http_errors(response)
 

@@ -44,7 +44,7 @@ from typing import (
     overload,
 )
 
-from httpx import Response
+from httpx2 import Response
 
 from ansys.simai.core.data.base import DataModel, DataModelType, Directory
 from ansys.simai.core.errors import InvalidArguments, PySimAIDepreciationWarning

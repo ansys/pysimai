@@ -34,21 +34,21 @@ from ansys.simai.core.data.post_processings import (
 )
 
 
-def test_post_processing_result_global_coefficients(simai_client, httpx_mock):
+def test_post_processing_result_global_coefficients(simai_client, httpx2_mock):
     """WHEN Running a GlobalCoefficients post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a dictionary containing the GlobalCoefficients data
     ALSO multiple accesses to .data don't call the endpoint multiple times
     """
     # Mock request for PP creation
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/7546/post-processings/GlobalCoefficients",
         json={"id": "7167", "state": "successful"},
         status_code=200,
     )
     # Mock request for PP data
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/post-processings/7167",
         json={
@@ -92,18 +92,18 @@ def test_post_processing_result_global_coefficients(simai_client, httpx_mock):
     assert global_coefficients.data["IsoStaticPressureForce"]["type"] == "base"
 
     # check despite 2 access to global_coefficients.data, only 1 call to API endpoint
-    requests = httpx_mock.get_requests()
+    requests = httpx2_mock.get_requests()
     assert len([r for r in requests if r.url == "https://test.test/post-processings/7167"]) == 1
 
 
-def test_post_processing_result_surface_evolution(simai_client, httpx_mock):
+def test_post_processing_result_surface_evolution(simai_client, httpx2_mock):
     """WHEN Running a SurfaceEvolution post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a dictionary containing the expected data
     ALSO multiple accesses to .data don't call the endpoint multiple times
     """
     # Mock request for PP creation
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/r26g04j8/post-processings/SurfaceEvol",
         json={"id": "4c7r4c", "state": "successful"},
@@ -111,7 +111,7 @@ def test_post_processing_result_surface_evolution(simai_client, httpx_mock):
     )
     for _ in range(2):
         # Mock request for PP data
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url="https://test.test/post-processings/4c7r4c",
             json={
@@ -123,7 +123,7 @@ def test_post_processing_result_surface_evolution(simai_client, httpx_mock):
             },
             status_code=200,
         )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://s3.test/some/path/to/json",
         json={
@@ -185,11 +185,11 @@ def test_post_processing_result_surface_evolution(simai_client, httpx_mock):
     assert surface_evolution_dict["WallShearStress"]["data"]["X"][0] == 107167.4091582841
 
     # we have used surface_evolution.data twice, generating 2 hits to the endpoint
-    requests = httpx_mock.get_requests()
+    requests = httpx2_mock.get_requests()
     assert len([r for r in requests if r.url == "https://test.test/post-processings/4c7r4c"]) == 2
 
 
-def test_post_processing_result_slice(simai_client, httpx_mock):
+def test_post_processing_result_slice(simai_client, httpx2_mock):
     """WHEN Running a Slice post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a DownloadableResult object,
@@ -198,7 +198,7 @@ def test_post_processing_result_slice(simai_client, httpx_mock):
     """
     location = {"plane": [0, 1, 0, 20], "output_format": "png"}
     # Mock request for PP creation
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/7546/post-processings/Slice",
         json={"id": "98413534", "state": "successful", "location": location},
@@ -206,7 +206,7 @@ def test_post_processing_result_slice(simai_client, httpx_mock):
     )
     for _ in range(2):
         # Mock request for PP data
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url="https://test.test/post-processings/98413534",
             json={
@@ -219,7 +219,7 @@ def test_post_processing_result_slice(simai_client, httpx_mock):
             status_code=200,
         )
     # Mock request for slice binary download
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://s3.test.test/slice.png?key=9988776655",
         content=b"this-is-slice-binary-data",
@@ -239,18 +239,18 @@ def test_post_processing_result_slice(simai_client, httpx_mock):
     assert data_line.decode("ascii") == "this-is-slice-binary-data"
 
     # we have used slice.data twice, generating 2 hits to the endpoint
-    requests = httpx_mock.get_requests()
+    requests = httpx2_mock.get_requests()
     assert len([r for r in requests if r.url == "https://test.test/post-processings/98413534"]) == 2
 
 
-def test_post_processing_result_volume_vtu(simai_client, httpx_mock):
+def test_post_processing_result_volume_vtu(simai_client, httpx2_mock):
     """WHEN Running a VolumeVTU post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a DownloadableResult object
         we can call a .binary_io method on
     """
     # Mock request for PP creation
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/7546/post-processings/VolumeVTU",
         json={"id": "01010101654", "state": "successful"},
@@ -258,7 +258,7 @@ def test_post_processing_result_volume_vtu(simai_client, httpx_mock):
     )
     for _ in range(2):
         # Mock request for PP data
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url="https://test.test/post-processings/01010101654",
             json={
@@ -271,7 +271,7 @@ def test_post_processing_result_volume_vtu(simai_client, httpx_mock):
             status_code=200,
         )
     # Mock request for npz binary download
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://s3.test.test/slice.npz?key=445461321",
         content=b"this-is-vtu-binary-data",
@@ -290,20 +290,20 @@ def test_post_processing_result_volume_vtu(simai_client, httpx_mock):
     assert data_line.decode("ascii") == "this-is-vtu-binary-data"
 
     # we have used vtu.data twice, generating 2 hits to the endpoint
-    requests = httpx_mock.get_requests()
+    requests = httpx2_mock.get_requests()
     assert (
         len([r for r in requests if r.url == "https://test.test/post-processings/01010101654"]) == 2
     )
 
 
-def test_post_processing_result_surface_vtp(simai_client, httpx_mock):
+def test_post_processing_result_surface_vtp(simai_client, httpx2_mock):
     """WHEN Running a SurfaceVTP post-processing on a prediction and calling its .data field,
     THEN a GET request is made on the post-processings/<id> endpoint
     ALSO the .data attribute is a DownloadableResult object
         we can call a .binary_io method on
     """
     # Mock request for PP creation
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/7546/post-processings/SurfaceVTP",
         json={"id": "01010101654", "state": "successful"},
@@ -311,7 +311,7 @@ def test_post_processing_result_surface_vtp(simai_client, httpx_mock):
     )
     for _ in range(2):
         # Mock request for PP data
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url="https://test.test/post-processings/01010101654",
             json={
@@ -324,7 +324,7 @@ def test_post_processing_result_surface_vtp(simai_client, httpx_mock):
             status_code=200,
         )
     # Mock request for npz binary download
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://s3.test.test/slice.npz?key=445461321",
         content=b"this-is-vtp-binary-data",
@@ -343,13 +343,13 @@ def test_post_processing_result_surface_vtp(simai_client, httpx_mock):
     assert data_line.decode("ascii") == "this-is-vtp-binary-data"
 
     # we have used vtp.data twice, generating 2 hits to the endpoint
-    requests = httpx_mock.get_requests()
+    requests = httpx2_mock.get_requests()
     assert (
         len([r for r in requests if r.url == "https://test.test/post-processings/01010101654"]) == 2
     )
 
 
-def test_post_processing_result_surface_vtp_td_location(simai_client, httpx_mock):
+def test_post_processing_result_surface_vtp_td_location(simai_client, httpx2_mock):
     """WHEN Running a surface_vtp post-processing on a prediction
     WITH predict-as-learnt option (location is PPSurfaceLocation.AS_LEARNT)
     AND calling its .data field,
@@ -357,7 +357,7 @@ def test_post_processing_result_surface_vtp_td_location(simai_client, httpx_mock
     AND the returned instance is of type SurfaceVTPTDLocation.
     """
     # Mock request for PP creation
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/7546/post-processings/SurfaceVTPTDLocation",
         json={"id": "01010101654", "state": "successful"},
@@ -366,7 +366,7 @@ def test_post_processing_result_surface_vtp_td_location(simai_client, httpx_mock
 
     pred = simai_client._prediction_directory._model_from({"id": "7546", "state": "successful"})
     surface_vtp = pred.post.surface_vtp_td_location()
-    requests = httpx_mock.get_requests()
+    requests = httpx2_mock.get_requests()
     assert (
         len(
             [
@@ -381,8 +381,8 @@ def test_post_processing_result_surface_vtp_td_location(simai_client, httpx_mock
     assert isinstance(surface_vtp, SurfaceVTPTDLocation)
 
 
-def test_post_processing_result_point_cloud(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_post_processing_result_point_cloud(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/7546/post-processings/CustomVolumePointCloud",
         json={"id": "01010101654", "state": "successful"},
@@ -390,7 +390,7 @@ def test_post_processing_result_point_cloud(simai_client, httpx_mock):
     )
     for _ in range(2):
         # Mock request for PP data
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url="https://test.test/post-processings/01010101654",
             json={
@@ -404,13 +404,13 @@ def test_post_processing_result_point_cloud(simai_client, httpx_mock):
             },
             status_code=200,
         )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://s3.test.test/point_cloud.vtp?key=445461321",
         status_code=200,
         content=b"this-is-vtp-binary-data",
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/4321",
         json={"id": "4321", "point_cloud": {"id": "2345"}},
@@ -429,7 +429,7 @@ def test_post_processing_result_point_cloud(simai_client, httpx_mock):
     assert data_line.decode("ascii") == "this-is-vtp-binary-data"
 
     # we have used vtp.data twice, generating 2 hits to the endpoint
-    requests = httpx_mock.get_requests()
+    requests = httpx2_mock.get_requests()
     assert (
         len([r for r in requests if r.url == "https://test.test/post-processings/01010101654"]) == 2
     )
