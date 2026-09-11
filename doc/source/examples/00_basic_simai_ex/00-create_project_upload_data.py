@@ -45,7 +45,6 @@ Make sure you have:
 import os
 
 import ansys.simai.core as asc
-from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
@@ -53,9 +52,9 @@ from ansys.simai.core.errors import NotFoundError
 # ----------------------------------
 # Update these variables with your specific settings:
 
-ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
-PROJECT_NAME = "<your_project_name>"  # Your project name
-DATASET_PATH = "<PATH_TO_YOUR_DATASET>"  # Directory containing subdirectories with training data
+ORGANIZATION_NAME = "your_organization"  # Replace with your organization name
+PROJECT_NAME = "your_project_name"  # Your project name
+DATASET_PATH = "path/to/your/data/folder"  # Directory containing subdirectories with training data
 
 ###############################################################################
 # Initialize the SimAI client
@@ -77,88 +76,62 @@ except NotFoundError:
     print(f"Created new project: {PROJECT_NAME}")
 
 ###############################################################################
-# Set as the current working project
-# ----------------------------------
-# Setting the current project allows subsequent operations to use this project by default:
-
-simai_client.set_current_project(PROJECT_NAME)
-print(f"Current project: {simai_client.current_project}")
-
-###############################################################################
 # Upload training data
 # ----------------------------------
 # Upload all directories from the dataset path as training data.
 # Each subdirectory should contain the files for one training data sample.
-
-
-available_tds = simai_client.training_data.list()
+#
+# .. note::
+#    If training data with the same name already exists, the API will raise an error.
+#    You can use ``simai_client.training_data.get(name=dir_name)`` to check beforehand.
 
 print("\nUploading training data files:")
-successful_uploads = 0
-failed_uploads = 0
 
-for dir in os.listdir(DATASET_PATH):
-    complete_path = os.path.join(DATASET_PATH, dir)
-    print(f"Uploading {dir}")
-
-    existing_tds = [td for td in available_tds if td.name == dir]
-    if existing_tds:
-        print(f"Training data '{dir}' already exists in the datalake. Skipping upload.")
-        td = existing_tds[0]
-        try:
-            td.add_to_project(project)
-            print(f"✓ Added existing '{dir}' to project '{project.name}'")
-            successful_uploads += 1
-        except Exception as e:
-            print(f"✗ Failed to add existing '{dir}' to project: {e}")
-            failed_uploads += 1
+for dir_name in os.listdir(DATASET_PATH):
+    complete_path = os.path.join(DATASET_PATH, dir_name)
+    if not os.path.isdir(complete_path):
         continue
-    else:
-        try:
-            td: TrainingData = simai_client.training_data.create(dir)
-            td.upload_folder(complete_path)
-            print(f"Uploaded {dir} successfully.")
-        except Exception as e:
-            print(f"Failed to upload {dir}: {e}")
-            failed_uploads += 1
-            continue
 
+    # Skip if already uploaded
+    try:
+        existing_td = simai_client.training_data.get(name=dir_name)
+        print(f"  '{dir_name}' already exists, adding to project.")
+        existing_td.add_to_project(project)
+        continue
+    except NotFoundError:
+        pass
 
-print(f"\nUpload summary: {successful_uploads} successful, {failed_uploads} failed")
+    print(f"  Uploading '{dir_name}'...")
+    td = simai_client.training_data.create(dir_name, project=project)
+    td.upload_folder(complete_path)
+    print(f"  '{dir_name}' uploaded successfully.")
+
+print("\nAll training data uploaded.")
 
 ###############################################################################
-# Check and wait for data processing
+# Wait for data processing
 # -------------------------------------
-# After uploading, SimAI needs to process the training data.
-# Get all data in the current project and wait for them to be ready.
+# After uploading, SimAI processes the training data.
+# Wait for all data in the project to be ready.
 
 project_data = project.list_training_data()
 
 print("\nWaiting for data processing to complete...")
 for data in project_data:
-    print(f"Processing {data.name}...")
+    print(f"  Processing '{data.name}'...")
     data.wait()
-    print(f"Data '{data.name}' is ready")
+
+    if data.is_ready:
+        print(f"  '{data.name}' is ready.")
+    else:
+        print(f"  '{data.name}' failed: {data.failure_reason}")
 
 ###############################################################################
-# Display project status summary
+# Display project summary
 # -------------------------------------
-# Show a summary of the project's data processing status:
 
-print("\nProject Summary")
-print("=" * 50)
-
-ready_data = [data for data in project_data if data.is_ready]
-not_ready_data = [data for data in project_data if not data.is_ready]
-
-print(f"Total data in project: {len(project_data)}")
-print(f"Ready data: {len(ready_data)} of {len(project_data)}")
-print(f"Not ready data: {len(not_ready_data)} of {len(project_data)}")
-
-if not_ready_data:
-    print("\nFailed data processing details:")
-    for data in not_ready_data:
-        print(f"- {data.name}: {data.failure_reason}")
+ready_count = sum(1 for d in project_data if d.is_ready)
+print(f"\nProject '{PROJECT_NAME}': {ready_count}/{len(project_data)} training data ready.")
 
 ###############################################################################
 # Next steps

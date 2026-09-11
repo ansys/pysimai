@@ -25,12 +25,12 @@ import os
 import pathlib
 import platform
 import time
-from typing import IO, TYPE_CHECKING, Any
+from typing import IO, TYPE_CHECKING, Any, BinaryIO, Optional
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from ansys.simai.core.data.types import Path
+    from ansys.simai.core.data.types import File, Path
 
 
 def _expand_user_path(file_path: "Path") -> pathlib.Path:
@@ -47,6 +47,28 @@ def file_path_to_obj_file(file_path: "Path", mode: str) -> IO[Any]:
     file_path.parent.mkdir(parents=True, exist_ok=True)
     logger.debug(f"Opening file {file_path}")
     return open(file_path, mode=mode)  # noqa: SIM115
+
+
+def write_file(content: bytes, file: "File") -> Optional[BinaryIO]:
+    """Write content to a file path or file-like object.
+
+    Args:
+        content: The bytes to write.
+        file: A binary file-object or the path of the file to write into.
+
+    Returns:
+        The file-object if ``file`` is a binary file-object, ``None`` if ``file`` is a path.
+    """
+    if isinstance(file, (pathlib.Path, os.PathLike, str)):
+        output_file = file_path_to_obj_file(file, "wb")
+        output_file.write(content)
+        output_file.close()
+        return None
+    else:
+        file.write(content)
+        if file.seekable():
+            file.seek(0)
+        return file
 
 
 def get_cache_dir() -> pathlib.Path:

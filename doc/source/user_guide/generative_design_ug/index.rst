@@ -15,11 +15,11 @@ The steps to follow are:
 #. Export those geometries to check if they correspond to your expectations
 
 .. tip::
-   | Start with a small number of training geometries and the debug build preset to quickly check if the model can learn and if the generated designs are meaningful.
+   | Start with a small number of training geometries and the ``short`` build preset to quickly check if the model can learn and if the generated designs are meaningful.
    | This helps detect issues early and saves time.
 
    If the model performs well on the small set, you can try the other build presets:
-   short, default, long, depending on the complexity of the geometries used as training data.
+   ``default`` or ``long``, depending on the complexity of the geometries used as training data.
 
 For practical examples and scripts to execute yourself, see :ref:`ref_examples`.
 

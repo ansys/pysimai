@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import io
 import os
 import platform
 import time
@@ -27,7 +28,7 @@ from pathlib import Path
 
 import pytest
 
-from ansys.simai.core.utils.files import get_cache_dir
+from ansys.simai.core.utils.files import get_cache_dir, write_file
 
 
 @pytest.mark.skipif(
@@ -49,3 +50,27 @@ def test_get_cache_dir_linux(tmpdir, monkeypatch):
     cache_dir = get_cache_dir()
     assert new_file.is_file()
     assert not old_file.is_file()
+
+
+def test_write_to_path(tmp_path):
+    """write_file writes content to a file path and returns None"""
+    target = tmp_path / "output.bin"
+    result = write_file(b"hello", target)
+    assert result is None
+    assert target.read_bytes() == b"hello"
+
+
+def test_write_to_string_path(tmp_path):
+    """write_file accepts a string path"""
+    target = str(tmp_path / "output.bin")
+    result = write_file(b"data", target)
+    assert result is None
+    assert Path(target).read_bytes() == b"data"
+
+
+def test_write_to_file_object():
+    """write_file writes to a file-like object and returns it"""
+    buf = io.BytesIO()
+    result = write_file(b"content", buf)
+    assert result is buf
+    assert buf.read() == b"content"

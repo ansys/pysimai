@@ -6,6 +6,7 @@
 
 ## Individual Contributors
 
+* [Alexandre This](https://github.com/alth-ansys)
 * [Arthur Woimbée](https://github.com/awoimbee)
 * [camzeech](https://github.com/camzeech)
 * [Florian Jacta](https://github.com/FlorianJactaAI)
