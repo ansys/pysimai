@@ -29,8 +29,7 @@ from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 from urllib.parse import urljoin
 
-import httpx
-from httpx_retries import RetryTransport
+import httpx2
 
 from ansys.simai.core import __version__
 from ansys.simai.core.data.types import APIResponse, File, MonitorCallback
@@ -39,6 +38,7 @@ from ansys.simai.core.utils.auth import Authenticator
 from ansys.simai.core.utils.configuration import ClientConfig
 from ansys.simai.core.utils.files import file_path_to_obj_file
 from ansys.simai.core.utils.requests import handle_response
+from ansys.simai.core.utils.transport import RetryTransport
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class ApiClientMixin:
 
     def __init__(self, *args, config: ClientConfig):  # noqa: D107
         def new_transport(**kw):
-            return RetryTransport(transport=httpx.HTTPTransport(**kw))
+            return RetryTransport(transport=httpx2.HTTPTransport(**kw))
 
         transport_args = {"retries": 3}
 
@@ -69,12 +69,12 @@ class ApiClientMixin:
             logger.debug(f"Connecting using specified proxy: {proxy_str}")
             mounts["https://"] = new_transport(**transport_args, proxy=proxy_str)
         else:
-            proxies = httpx.Client._get_proxy_map(None, None, True)
+            proxies = httpx2.Client._get_proxy_map(None, None, True)
             for k, v in proxies.items():
                 mounts[k] = new_transport(**transport_args, proxy=v)
 
         # TODO: stop following redirects
-        self._session = httpx.Client(
+        self._session = httpx2.Client(
             mounts=mounts, headers=self._get_user_agent(), follow_redirects=True, timeout=15.0
         )
         self._url_prefix = config.url
@@ -132,7 +132,7 @@ class ApiClientMixin:
 
         Returns:
             JSON dictionary of the response if :py:args:`return_json` is True. The raw
-                :py:class:`httpx.Response` otherwise.
+                :py:class:`httpx2.Response` otherwise.
         """
         logger.debug(f"Request {method} on {url}")
         full_url = self.build_full_url_for_endpoint(url)
@@ -141,7 +141,7 @@ class ApiClientMixin:
                 self._session.request(method, full_url, *args, **kwargs),
                 return_json=return_json,
             )
-        except httpx.RequestError as e:
+        except httpx2.RequestError as e:
             raise ConnectionError(str(e)) from None
 
     def download_file(
@@ -195,7 +195,7 @@ class ApiClientMixin:
                     bytes_read_delta = output_file.write(chunk)
                     if monitor_callback is not None:
                         monitor_callback(bytes_read_delta)
-        except httpx.RequestError as e:
+        except httpx2.RequestError as e:
             logger.debug("Error {e} happened during download stream.")
             if close_file is True:
                 output_file.close()
@@ -253,7 +253,7 @@ class ApiClientMixin:
                 url, json={"part_number": part_number, "upload_id": upload_id}, timeout=240.0
             )
             uploaded_part = self._put(
-                create_part["url"], data=part_data, return_json=False, timeout=240.0
+                create_part["url"], content=part_data, return_json=False, timeout=240.0
             )
             parts.append({"PartNumber": part_number, "ETag": uploaded_part.headers["ETag"]})
             part_number += 1

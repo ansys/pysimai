@@ -29,14 +29,14 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.geometries import Geometry
 
 
-def test_geometries_list_no_parameter(simai_client, httpx_mock):
+def test_geometries_list_no_parameter(simai_client, httpx2_mock):
     expected_params = urllib.parse.urlencode(
         {
             "filters": {},
             "workspace": simai_client._current_workspace.id,
         }
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geometries/?{expected_params}",
         json={},
@@ -45,7 +45,7 @@ def test_geometries_list_no_parameter(simai_client, httpx_mock):
     list(simai_client.geometries.list())
 
 
-def test_geometries_filter(simai_client, httpx_mock):
+def test_geometries_filter(simai_client, httpx2_mock):
     expected_params = urllib.parse.urlencode(
         {
             "filters": json.dumps(
@@ -57,7 +57,7 @@ def test_geometries_filter(simai_client, httpx_mock):
             "workspace": simai_client._current_workspace.id,
         }
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geometries/?{expected_params}",
         json={},
@@ -66,8 +66,8 @@ def test_geometries_filter(simai_client, httpx_mock):
     list(simai_client.geometries.list(filters={"DIAMETER": 12.5, "SAUCE": "cream"}))
 
 
-def test_geometries_run_prediction(geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_geometries_run_prediction(geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
@@ -77,8 +77,8 @@ def test_geometries_run_prediction(geometry_factory, httpx_mock):
     geometry.run_prediction(Vx=10.5)
 
 
-def test_geometries_run_prediction_dict_bc(geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_geometries_run_prediction_dict_bc(geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
@@ -88,8 +88,8 @@ def test_geometries_run_prediction_dict_bc(geometry_factory, httpx_mock):
     geometry.run_prediction({"Vx": 10.5})
 
 
-def test_geometries_run_prediction_no_bc(geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_geometries_run_prediction_no_bc(geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/predictions",
         json={"id": "pred-0"},
@@ -99,23 +99,23 @@ def test_geometries_run_prediction_no_bc(geometry_factory, httpx_mock):
     geometry.run_prediction()
 
 
-def test_geometries_upload_point_cloud(geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_geometries_upload_point_cloud(geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geometries/geom-0/point-cloud",
         json={"point_cloud": {"id": "pc-0"}, "upload_id": "123"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="PUT",
         url="https://test.test/point-clouds/pc-0/part",
         json={"url": "https://s3.test/pc-0/part"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="PUT", url="https://s3.test/pc-0/part", headers={"ETag": "SaladeTomateOignon"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST", url="https://test.test/point-clouds/pc-0/complete", status_code=204
     )
 
@@ -125,8 +125,8 @@ def test_geometries_upload_point_cloud(geometry_factory, httpx_mock):
     assert geometry.point_cloud == {"id": "pc-0"}
 
 
-def test_geometries_delete_point_cloud(geometry_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_geometries_delete_point_cloud(geometry_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="DELETE", url="https://test.test/point-clouds/point-cloud-0", status_code=204
     )
 
@@ -136,9 +136,9 @@ def test_geometries_delete_point_cloud(geometry_factory, httpx_mock):
 
 
 def test_geometries_delete_point_cloud_cleares_pp_cache(
-    geometry_factory, prediction_factory, post_processing_factory, httpx_mock
+    geometry_factory, prediction_factory, post_processing_factory, httpx2_mock
 ):
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE", url="https://test.test/point-clouds/point-cloud-0", status_code=204
     )
 
@@ -157,17 +157,17 @@ def test_geometries_delete_point_cloud_cleares_pp_cache(
     assert custom_volume_point_cloud not in prediction.post._local_post_processings
 
 
-def test_geometries_rename(simai_client, httpx_mock):
+def test_geometries_rename(simai_client, httpx2_mock):
     geometry: Geometry = simai_client._geometry_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="PATCH",
         url="https://test.test/geometries/0011",
         status_code=204,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/0011",
         json={"id": "0011", "name": "fifi"},
@@ -178,8 +178,8 @@ def test_geometries_rename(simai_client, httpx_mock):
     assert geometry.name == "fifi"
 
 
-def test_geometries_list_predictions(geometry_factory, prediction_factory, httpx_mock):
-    httpx_mock.add_response(
+def test_geometries_list_predictions(geometry_factory, prediction_factory, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/geom-0/predictions",
         json=[

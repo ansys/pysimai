@@ -52,13 +52,13 @@ MODEL_RAW = {
 }
 
 
-def test_build(mocker, simai_client, httpx_mock):
+def test_build(mocker, simai_client, httpx2_mock):
     """WHEN I call build() with a working GeomAIModelConfiguration
     THEN I get a GeomAIModel object, its project_id matches the
     id of the project, and its configuration is a
     GeomAIModelConfiguration and its content matches the raw conf.
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/geomai/projects/{MODEL_RAW['project_id']}/models",
         json=MODEL_RAW,
@@ -81,13 +81,13 @@ def test_build(mocker, simai_client, httpx_mock):
     assert launched_model.configuration == GeomAIModelConfiguration(**MODEL_CONF_RAW)
 
 
-def test_build_with_config_as_dict(mocker, simai_client, httpx_mock):
+def test_build_with_config_as_dict(mocker, simai_client, httpx2_mock):
     """WHEN I call build() with a working dict as model configuration
     THEN I get a GeomAIModel object, its project_id matches the
     id of the project, and its configuration is a
     GeomAIModelConfiguration and its content matches the raw conf.
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/geomai/projects/{MODEL_RAW['project_id']}/models",
         json=MODEL_RAW,

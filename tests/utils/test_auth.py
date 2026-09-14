@@ -27,9 +27,9 @@ import time
 from datetime import datetime, timezone
 from math import ceil
 
-import httpx
+import httpx2
 import pytest
-from pytest_httpx import HTTPXMock
+from pytest_httpx2 import HTTPXMock
 
 from ansys.simai.core.errors import SimAIError
 from ansys.simai.core.utils.auth import (
@@ -49,9 +49,9 @@ DEFAULT_TOKENS = {
 }
 
 
-def test_request_auth_tokens_direct_grant_bad_credentials_raises(mocker, tmpdir, httpx_mock):
+def test_request_auth_tokens_direct_grant_bad_credentials_raises(mocker, tmpdir, httpx2_mock):
     mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="http://myauthserver.com/protocol/openid-connect/token",
         json={
@@ -62,7 +62,7 @@ def test_request_auth_tokens_direct_grant_bad_credentials_raises(mocker, tmpdir,
     )
     tokens_retriever = _AuthTokensRetriever(
         credentials=None,
-        session=httpx.Client(),
+        session=httpx2.Client(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="rando",
     )
@@ -71,9 +71,9 @@ def test_request_auth_tokens_direct_grant_bad_credentials_raises(mocker, tmpdir,
         tokens_retriever.get_tokens()
 
 
-def test_request_auth_tokens_direct_grant(mocker, tmpdir, httpx_mock):
+def test_request_auth_tokens_direct_grant(mocker, tmpdir, httpx2_mock):
     mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="http://myauthserver.com/protocol/openid-connect/token",
         json=DEFAULT_TOKENS,
@@ -81,7 +81,7 @@ def test_request_auth_tokens_direct_grant(mocker, tmpdir, httpx_mock):
     )
     tokens_retriever = _AuthTokensRetriever(
         credentials=None,
-        session=httpx.Client(),
+        session=httpx2.Client(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="rando",
     )
@@ -91,14 +91,14 @@ def test_request_auth_tokens_direct_grant(mocker, tmpdir, httpx_mock):
     assert tokens.access_token == DEFAULT_TOKENS["access_token"]
 
 
-def test_token_refresh_failure_triggers_reauth(mocker, tmpdir, httpx_mock):
+def test_token_refresh_failure_triggers_reauth(mocker, tmpdir, httpx2_mock):
     mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="http://myauthserver.com/protocol/openid-connect/token",
         status_code=418,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="http://myauthserver.com/protocol/openid-connect/token",
         json=DEFAULT_TOKENS,
@@ -115,18 +115,18 @@ def test_token_refresh_failure_triggers_reauth(mocker, tmpdir, httpx_mock):
         )
     tokens_retriever = _AuthTokensRetriever(
         credentials=Credentials(username="timmy", password=""),
-        session=httpx.Client(),
+        session=httpx2.Client(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="rando",
     )
     tokens = tokens_retriever.get_tokens()
     assert tokens.refresh_token == DEFAULT_TOKENS["refresh_token"]
     assert tokens.access_token == DEFAULT_TOKENS["access_token"]
-    # Note: With pytest-httpx, we can't easily check call counts like with responses
+    # Note: With pytest-httpx2, we can't easily check call counts like with responses
     # The test verifies that the tokens are retrieved correctly, which is the main goal
 
 
-def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir, httpx_mock):
+def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir, httpx2_mock):
     """WHEN A device auth flow is requested
     AND a (bad) refresh token is cached
     THEN SDK tries to use the cached refresh token
@@ -139,7 +139,7 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir, httpx_m
     device_code = "foxtrot uniform charlie kilo"
     realm_url = "http://myauthserver.com/my-realm"
     token_retriever = _AuthTokensRetriever(
-        credentials=None, session=httpx.Client(), realm_url=realm_url, auth_cache_hash="lol"
+        credentials=None, session=httpx2.Client(), realm_url=realm_url, auth_cache_hash="lol"
     )
     fake_cache = _AuthTokens(
         access_token="",
@@ -150,13 +150,13 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir, httpx_m
     with open(tmpdir / "tokens-lol.json", "w") as f:
         f.write(fake_cache.model_dump_json())
 
-    httpx_mock.add_response(  # error when app tries to use invalidated cached token
+    httpx2_mock.add_response(  # error when app tries to use invalidated cached token
         method="POST",
         url=token_retriever.token_url,
         json={"poop": "Ur token down the drain"},
         status_code=418,
     )
-    httpx_mock.add_response(  # device-auth flow start
+    httpx2_mock.add_response(  # device-auth flow start
         method="POST",
         url=token_retriever.device_auth_url,
         json={
@@ -167,7 +167,7 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir, httpx_m
         },
         status_code=200,
     )
-    httpx_mock.add_response(  # device-auth flow end
+    httpx2_mock.add_response(  # device-auth flow end
         method="POST",
         url=token_retriever.token_url,
         json=DEFAULT_TOKENS,
@@ -182,7 +182,7 @@ def test_request_auth_tokens_device_grant_with_bad_cache(mocker, tmpdir, httpx_m
     assert ceil(tokens.refresh_expires_in) == DEFAULT_TOKENS["refresh_expires_in"]
 
 
-def test_refresh_auth_tokens(mocker, tmpdir, httpx_mock):
+def test_refresh_auth_tokens(mocker, tmpdir, httpx2_mock):
     mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
     base_token = copy.deepcopy(DEFAULT_TOKENS)
     base_token["refresh_token"] = "kabam"
@@ -193,13 +193,13 @@ def test_refresh_auth_tokens(mocker, tmpdir, httpx_mock):
     expired_token.expiration = datetime(year=1970, month=1, day=1, tzinfo=timezone.utc)
     token_retriever = _AuthTokensRetriever(
         credentials=None,
-        session=httpx.Client(),
+        session=httpx2.Client(),
         realm_url="http://myauthserver.com",
         auth_cache_hash="popo",
     )
     token_retriever._get_token_from_cache = lambda: expired_token
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="http://myauthserver.com/protocol/openid-connect/token",
         json=final_token,
@@ -212,13 +212,13 @@ def test_refresh_auth_tokens(mocker, tmpdir, httpx_mock):
 
 
 def test_authenticator_automatically_refreshes_auth_before_requests_if_needed(
-    mocker, tmpdir, httpx_mock
+    mocker, tmpdir, httpx2_mock
 ):
     # Authentication request
     auth_tokens = copy.deepcopy(DEFAULT_TOKENS)
     auth_tokens["expires_in"] = 1
     auth_tokens["refresh_expires_in"] = 1800
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
         json=auth_tokens,
@@ -228,7 +228,7 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed(
     refresh_tokens = copy.deepcopy(DEFAULT_TOKENS)
     refresh_tokens["access_token"] = "check 1 2"
     refresh_tokens["refresh_token"] = "megazaur"
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
         json=refresh_tokens,
@@ -242,17 +242,17 @@ def test_authenticator_automatically_refreshes_auth_before_requests_if_needed(
             organization="13_monkeys",
             credentials=Credentials(username="timmy", password="key"),
         ),
-        httpx.Client(),
+        httpx2.Client(),
     )
 
-    req = httpx.Request("GET", "https://simai.ansys.com/v2/models")
+    req = httpx2.Request("GET", "https://simai.ansys.com/v2/models")
     req = next(auth.auth_flow(req))
     assert req.headers.get("Authorization") == "Bearer check 1 2"
     assert req.headers.get("X-Org") == "13_monkeys"
 
 
 def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires(
-    mocker, tmpdir, httpx_mock: HTTPXMock
+    mocker, tmpdir, httpx2_mock: HTTPXMock
 ):
     """
     Test that the Authenticator schedules and performs an automatic token refresh
@@ -268,30 +268,30 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
     tokens_direct_grant["access_token"] = "monkey-see"
     tokens_direct_grant["expires_in"] = TOKEN_REFRESH_BUFFER + 100
     tokens_direct_grant["refresh_expires_in"] = TOKEN_REFRESH_BUFFER + 1
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
         json=tokens_direct_grant,
         status_code=200,
     )
-    matcher_direct_grant = httpx_mock._callbacks[-1][0]
+    matcher_direct_grant = httpx2_mock._callbacks[-1][0]
 
     refreshed_tokens = DEFAULT_TOKENS.copy()
     refreshed_tokens["access_token"] = "TFou"
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
         json=refreshed_tokens,
         status_code=200,
     )
-    matcher_refresh = httpx_mock._callbacks[-1][0]
+    matcher_refresh = httpx2_mock._callbacks[-1][0]
     auth = Authenticator(
         ClientConfig(
             url="https://simai.ansys.com",
             organization="14_monkeys",
             credentials=Credentials(username="timmy", password="key"),
         ),
-        httpx.Client(),
+        httpx2.Client(),
     )
     initial_refresh_timer = auth.tokens_retriever.refresh_timer
     assert matcher_direct_grant.nb_calls == 1
@@ -307,11 +307,11 @@ def test_authenticator_automatically_refreshes_auth_before_refresh_token_expires
     assert auth.tokens_retriever.refresh_timer.is_alive()
 
 
-def test_requests_outside_user_api_are_not_authentified(mocker, tmpdir, httpx_mock):
+def test_requests_outside_user_api_are_not_authentified(mocker, tmpdir, httpx2_mock):
     mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
     # Authentication request
     keycloak_response_json = DEFAULT_TOKENS.copy()
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
         json=keycloak_response_json,
@@ -324,23 +324,23 @@ def test_requests_outside_user_api_are_not_authentified(mocker, tmpdir, httpx_mo
             organization="Justice",
             credentials={"username": "timmy", "password": "D.A.N.C.E"},
         ),
-        httpx.Client(),
+        httpx2.Client(),
     )
 
-    request = httpx.Request("GET", "https://amazonaws.com/bloc-party")
+    request = httpx2.Request("GET", "https://amazonaws.com/bloc-party")
     request = next(auth.auth_flow(request))
     assert request.headers.get("Authorization") is None
     assert request.headers.get("X-Org") is None
 
 
-def test_get_offline_token_direct_grant(httpx_mock):
+def test_get_offline_token_direct_grant(httpx2_mock):
     offline_tokens = {
         "access_token": "access",
         "expires_in": 300,
         "refresh_expires_in": 0,
         "refresh_token": "offline-refresh-token",
     }
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
         json=offline_tokens,
@@ -353,11 +353,11 @@ def test_get_offline_token_direct_grant(httpx_mock):
         credentials=Credentials(username="user", password="pass"),
     )
     assert token == "offline-refresh-token"
-    request = httpx_mock.get_request()
+    request = httpx2_mock.get_request()
     assert b"scope=openid+offline_access" in request.content
 
 
-def test_auth_with_offline_token(mocker, tmpdir, httpx_mock):
+def test_auth_with_offline_token(mocker, tmpdir, httpx2_mock):
     """WHEN authenticating with an offline token
     THEN the offline token is used to get access tokens via refresh grant.
     """
@@ -366,7 +366,7 @@ def test_auth_with_offline_token(mocker, tmpdir, httpx_mock):
     tokens_with_long_expiry = copy.deepcopy(DEFAULT_TOKENS)
     tokens_with_long_expiry["expires_in"] = 3600
     tokens_with_long_expiry["refresh_expires_in"] = 7200
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://simai.ansys.com/auth/realms/simai/protocol/openid-connect/token",
         json=tokens_with_long_expiry,
@@ -379,14 +379,14 @@ def test_auth_with_offline_token(mocker, tmpdir, httpx_mock):
             organization="test_org",
             offline_token="my-offline-token",
         ),
-        httpx.Client(),
+        httpx2.Client(),
     )
 
-    request = httpx_mock.get_request()
+    request = httpx2_mock.get_request()
     assert b"grant_type=refresh_token" in request.content
     assert b"refresh_token=my-offline-token" in request.content
 
-    req = httpx.Request("GET", "https://simai.ansys.com/v2/models")
+    req = httpx2.Request("GET", "https://simai.ansys.com/v2/models")
     req = next(auth.auth_flow(req))
     assert req.headers.get("Authorization") == f"Bearer {tokens_with_long_expiry['access_token']}"
     assert req.headers.get("X-Org") == "test_org"

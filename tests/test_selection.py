@@ -22,7 +22,7 @@
 
 import json
 
-import httpx
+import httpx2
 import pytest
 
 from ansys.simai.core.data.selections import Selection
@@ -86,7 +86,7 @@ def test_selection_get_predictions(four_geometries_test_set):
     assert point.scalars == {"Vx": 20.2}
 
 
-def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_mock):
+def test_selection_run_predictions(geometry_factory, prediction_factory, httpx2_mock):
     """WHEN calling run_prediction() on a selection
     THEN a POST request is launched for each not-existing prediction
     AND after the call, selection.predictions contains values for
@@ -120,7 +120,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_m
         scalars = payload["boundary_conditions"]
         # geometry1 had a pred for speed 4.5, it should not be recreated
         assert scalars["Vx"] in {5.5, 6.5}
-        return httpx.Response(
+        return httpx2.Response(
             200,
             json=(
                 {
@@ -136,7 +136,7 @@ def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_m
         scalars = payload["boundary_conditions"]
         # geometry2 had no pred, preds for all speed will be created
         assert scalars["Vx"] in {4.5, 5.5, 6.5}
-        return httpx.Response(
+        return httpx2.Response(
             200,
             json=(
                 {
@@ -148,13 +148,13 @@ def test_selection_run_predictions(geometry_factory, prediction_factory, httpx_m
         )
 
     for _ in range(2):
-        httpx_mock.add_callback(
+        httpx2_mock.add_callback(
             geometry1_pred_request_callback,
             method="POST",
             url="https://test.test/geometries/77777/predictions",
         )
     for _ in range(3):
-        httpx_mock.add_callback(
+        httpx2_mock.add_callback(
             geometry2_pred_request_callback,
             method="POST",
             url="https://test.test/geometries/88888/predictions",
@@ -200,7 +200,7 @@ def test_selection_tolerance(geometry_factory, prediction_factory):
     assert predictions[0].id == "here-i-am"
 
 
-def test_selection_run_prediction_error(geometry_factory, httpx_mock):
+def test_selection_run_prediction_error(geometry_factory, httpx2_mock):
     """WHEN calling run_predictions, and some calls return an error
     THEN all the predictions are ran nevertheless
     AND at the end a MultipleErrors is raised
@@ -218,7 +218,7 @@ def test_selection_run_prediction_error(geometry_factory, httpx_mock):
         scalars = payload["boundary_conditions"]
         # send 422 error for the first 2 calls, 200 for the last one
         if nb_calls < 3:
-            return httpx.Response(
+            return httpx2.Response(
                 422,
                 json=(
                     {
@@ -229,7 +229,7 @@ def test_selection_run_prediction_error(geometry_factory, httpx_mock):
                 ),
             )
         else:
-            return httpx.Response(
+            return httpx2.Response(
                 200,
                 json=(
                     {
@@ -241,7 +241,7 @@ def test_selection_run_prediction_error(geometry_factory, httpx_mock):
             )
 
     for _ in range(3):
-        httpx_mock.add_callback(
+        httpx2_mock.add_callback(
             pred_creation_callback,
             method="POST",
             url=f"https://test.test/geometries/{geometry.id}/predictions",
@@ -251,7 +251,7 @@ def test_selection_run_prediction_error(geometry_factory, httpx_mock):
         selection.run_predictions()
 
     # assert 3 calls have been made despite the first two having failed
-    assert len(httpx_mock.get_requests()) == 3
+    assert len(httpx2_mock.get_requests()) == 3
     assert len(selection.predictions) == 1
     assert selection.predictions[0].id == "saturn"
 

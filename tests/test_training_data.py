@@ -33,8 +33,8 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.training_data import TrainingData
 
 
-def test_training_data_iter(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_training_data_iter(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/training-data",
         headers={
@@ -51,8 +51,8 @@ def test_training_data_iter(simai_client, httpx_mock):
     assert len(it) == 998
 
 
-def test_training_data_list(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_training_data_list(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/training-data",
         headers={
@@ -62,7 +62,7 @@ def test_training_data_list(simai_client, httpx_mock):
         json=[{"id": "one"}],
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/training-data?last_id=one",
         json=[{"id": "two"}],
@@ -75,7 +75,7 @@ def test_training_data_list(simai_client, httpx_mock):
     assert td_list[1].id == "two"
 
 
-def test_training_data_list_with_filters(simai_client, httpx_mock):
+def test_training_data_list_with_filters(simai_client, httpx2_mock):
     expected_query = urlencode(
         [
             (
@@ -94,7 +94,7 @@ def test_training_data_list_with_filters(simai_client, httpx_mock):
             ),
         ]
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/training-data?{expected_query}",
         headers={
@@ -106,10 +106,10 @@ def test_training_data_list_with_filters(simai_client, httpx_mock):
 
     td = simai_client.training_data.list(filters=[("name", "EQ", "thingo"), ("size", "LT", 10000)])
     assert len(td) == 1
-    assert len(httpx_mock.get_requests()) == 1
+    assert len(httpx2_mock.get_requests()) == 1
 
 
-def test_training_data_list_created_by_me(simai_client, httpx_mock):
+def test_training_data_list_created_by_me(simai_client, httpx2_mock):
     user_uuid = "user-789"
     simai_client._api._session.auth._user_uuid = user_uuid
 
@@ -120,7 +120,7 @@ def test_training_data_list_created_by_me(simai_client, httpx_mock):
 
     raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
     query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/training-data?{query}",
         headers={"X-Pagination": json.dumps({"total_pages": 1})},
@@ -133,11 +133,11 @@ def test_training_data_list_created_by_me(simai_client, httpx_mock):
 
 
 def test_training_data_add_to_project(
-    simai_client, training_data_factory, project_factory, httpx_mock
+    simai_client, training_data_factory, project_factory, httpx2_mock
 ):
     td: TrainingData = training_data_factory(id="08080")
     project = project_factory(id="09090")
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="PUT",
         url=f"https://test.test/training-data/{td.id}/project/{project.id}/association",
         status_code=204,
@@ -146,11 +146,11 @@ def test_training_data_add_to_project(
 
 
 def test_training_data_remove_from_project(
-    simai_client, training_data_factory, project_factory, httpx_mock
+    simai_client, training_data_factory, project_factory, httpx2_mock
 ):
     td: TrainingData = training_data_factory(id="08080")
     project = project_factory(id="09090")
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE",
         url=f"https://test.test/training-data/{td.id}/project/{project.id}/association",
         status_code=204,
@@ -167,13 +167,13 @@ def test_training_data_remove_from_project(
         ({"id": "81", "name": "Diablo", "subset": None}),
     ],
 )
-def test_get_subset(training_data_factory, project_factory, td_factory_args, httpx_mock):
+def test_get_subset(training_data_factory, project_factory, td_factory_args, httpx2_mock):
     project = project_factory(id="e45y", name="coolest_proj")
     td_subset = td_factory_args.get("subset")
     td_factory_args["project"] = project
     td: TrainingData = training_data_factory(**td_factory_args)
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{project.id}/data/{td.id}/subset",
         status_code=200,
@@ -182,11 +182,11 @@ def test_get_subset(training_data_factory, project_factory, td_factory_args, htt
     assert td.get_subset(project=project) == td_subset
 
 
-def test_get_subset_fails_enum_check(training_data_factory, project_factory, httpx_mock):
+def test_get_subset_fails_enum_check(training_data_factory, project_factory, httpx2_mock):
     project = project_factory(id="bon5ai", name="coolest_proj")
     td: TrainingData = training_data_factory(project=project, id="415")
     td_subset = "Trainidation"
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{project.id}/data/{td.id}/subset",
         status_code=200,
@@ -197,12 +197,12 @@ def test_get_subset_fails_enum_check(training_data_factory, project_factory, htt
     assert str(e.value) == f"'{td_subset}' is not a valid SubsetEnum"
 
 
-def test_assign_subset(training_data_factory, project_factory, httpx_mock):
+def test_assign_subset(training_data_factory, project_factory, httpx2_mock):
     project = project_factory(id="n07e45y", name="bananarama")
     td: TrainingData = training_data_factory(project=project, subset=SubsetEnum.TRAINING)
 
     for _ in range(3):
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="PUT",
             url=f"https://test.test/projects/{project.id}/data/{td.id}/subset",
             status_code=200,
@@ -216,8 +216,8 @@ def test_assign_subset(training_data_factory, project_factory, httpx_mock):
     assert str(ve.value) == "Must be None or one of: 'Training', 'Test'."
 
 
-def test_get_training_data_by_id(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_get_training_data_by_id(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/training-data/td-123",
         json={"id": "td-123", "name": "My Training Data"},
@@ -228,8 +228,8 @@ def test_get_training_data_by_id(simai_client, httpx_mock):
     assert td.name == "My Training Data"
 
 
-def test_get_training_data_by_name(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_get_training_data_by_name(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/training-data/name/My%20Training%20Data",
         json={"id": "td-456", "name": "My Training Data"},
@@ -250,15 +250,15 @@ def test_get_training_data_invalid_arguments(simai_client):
     assert str(e.value) == "Cannot specify both 'id' and 'name' arguments."
 
 
-def test_rename_training_data(simai_client, httpx_mock, training_data_factory):
+def test_rename_training_data(simai_client, httpx2_mock, training_data_factory):
     td: TrainingData = training_data_factory(id="39646")
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="PATCH",
         url="https://test.test/training-data/39646",
         status_code=204,
     )
     # because rename triggers a reload of the object from the server
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/training-data/39646",
         json={"id": "39646", "name": "the new name"},

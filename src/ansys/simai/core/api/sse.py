@@ -26,8 +26,7 @@ import sys
 import time
 from threading import Event, Thread
 
-import httpx
-from httpx_sse import ServerSentEvent, connect_sse
+import httpx2
 
 from ansys.simai.core.api.mixin import ApiClientMixin
 from ansys.simai.core.errors import ApiClientError, ConnectionError
@@ -82,25 +81,24 @@ class SSEMixin(ApiClientMixin):
                     if last_event_id:
                         headers["Last-Event-ID"] = last_event_id
 
-                    with connect_sse(
-                        self._session, "GET", self._get_sse_url(), headers=headers, timeout=15
+                    with self._session.sse(
+                        self._get_sse_url(), headers=headers, timeout=15
                     ) as event_source:
                         _raise_for_status(event_source.response)
-                        event_source._check_content_type()
                         self._flag_sse_started.set()
 
-                        for sse in event_source.iter_sse():
+                        for sse in event_source:
                             last_event_id = sse.id
                             reconnection_delay = (sse.retry or 1000) / 1000
                             self._handle_sse_event(sse)
                             if self._stop_sse_threads:
                                 return
-                except httpx.ReadError as e:
+                except httpx2.ReadError as e:
                     logger.info(f"SSE disconnection: {e}")
-                except httpx.RemoteProtocolError as e:
+                except httpx2.RemoteProtocolError as e:
                     logger.info(f"SSE connection lost (incomplete response): {e}")
-                except httpx.HTTPError as e:
-                    if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 403:
+                except httpx2.HTTPError as e:
+                    if isinstance(e, httpx2.HTTPStatusError) and e.response.status_code == 403:
                         raise ConnectionError(e.response.text) from e
                     raise ConnectionError("Impossible to connect to event's endpoint.") from e
                 except Exception as e:
@@ -122,7 +120,7 @@ class SSEMixin(ApiClientMixin):
             exc_type, exc_value, exc_traceback = self._exception
             raise exc_value.with_traceback(exc_traceback)
 
-    def _handle_sse_event(self, event: ServerSentEvent):
+    def _handle_sse_event(self, event: httpx2.ServerSentEvent):
         try:
             if not event.data:
                 # often a message has an empty data: ignore it
@@ -191,13 +189,13 @@ class SSEMixin(ApiClientMixin):
         return self.build_full_url_for_endpoint(SSE_ENDPOINT)
 
 
-def _raise_for_status(resp: httpx.Response):
+def _raise_for_status(resp: httpx2.Response):
     """Wrapper for Response.raise_for_status().
 
     Reads the stream on error so err.response.text is loaded.
     """
     try:
         resp.raise_for_status()
-    except httpx.HTTPStatusError:
+    except httpx2.HTTPStatusError:
         resp.read()
         raise

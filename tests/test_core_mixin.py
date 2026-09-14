@@ -21,11 +21,11 @@
 # SOFTWARE.
 
 
-import httpcore
-import httpx
+import httpcore2
+import httpx2
 import pytest
 from pydantic import HttpUrl
-from pytest_httpx import HTTPXMock
+from pytest_httpx2 import HTTPXMock
 
 from ansys.simai.core import SimAIClient
 from ansys.simai.core.errors import ApiClientError, NotFoundError
@@ -46,32 +46,32 @@ def test_construct_default_url():
     assert client._api._url_prefix == HttpUrl("https://api.simai.ansys.com/v2/")
 
 
-def test_retry_on_5XX(api_client, httpx_mock: HTTPXMock):
+def test_retry_on_5XX(api_client, httpx2_mock: HTTPXMock):
     url = "https://try.me/"
-    httpx_mock.add_response(method="GET", url=url, status_code=503)
-    httpx_mock.add_response(method="GET", url=url, status_code=504)
-    httpx_mock.add_response(method="GET", url=url, status_code=200, json={"wat": "hyperdrama"})
+    httpx2_mock.add_response(method="GET", url=url, status_code=503)
+    httpx2_mock.add_response(method="GET", url=url, status_code=504)
+    httpx2_mock.add_response(method="GET", url=url, status_code=200, json={"wat": "hyperdrama"})
     resp = api_client._get(url)
     assert resp == {"wat": "hyperdrama"}
 
 
-def test_404_response_raises_not_found_error(api_client, httpx_mock: HTTPXMock):
+def test_404_response_raises_not_found_error(api_client, httpx2_mock: HTTPXMock):
     """WHEN ApiClient gets a 404 response
     THEN a NotFoundError is raised
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/expected_format",
         json={"message": "beep-boop"},
         status_code=404,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/only_status_format",
         json={"status": "not found"},
         status_code=404,
     )
-    httpx_mock.add_response(method="GET", url="https://test.test/no_content", status_code=404)
+    httpx2_mock.add_response(method="GET", url="https://test.test/no_content", status_code=404)
 
     with pytest.raises(NotFoundError) as exc_info:
         api_client._get("expected_format")
@@ -98,12 +98,12 @@ def test_404_response_raises_not_found_error(api_client, httpx_mock: HTTPXMock):
     ],
 )
 def test_4XX_5XX_responses_raise_api_client_error_no_json(
-    api_client, httpx_mock: HTTPXMock, code, reason
+    api_client, httpx2_mock: HTTPXMock, code, reason
 ):
     """WHEN ApiClient gets a 4XX or 5XX response without details in json
     THEN a ApiClientError is raised with the code and reason
     """
-    httpx_mock.add_response(method="GET", url=f"https://test.test/{code}", status_code=code)
+    httpx2_mock.add_response(method="GET", url=f"https://test.test/{code}", status_code=code)
     with disable_http_retry(api_client, "https://test.test/"):
         with pytest.raises(ApiClientError) as exc_info:
             api_client._get(f"{code}")
@@ -122,11 +122,11 @@ def test_4XX_5XX_responses_raise_api_client_error_no_json(
         (None, "Bad Request"),
     ],
 )
-def test_4XX_5XX_responses_raise_api_client_error_with_json(api_client, httpx_mock, json, message):
+def test_4XX_5XX_responses_raise_api_client_error_with_json(api_client, httpx2_mock, json, message):
     """WHEN ApiClient gets a 4XX or 5XX response without details in json
     THEN a ApiClientError is raised with the code and message from the json or fallback
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET", url="https://test.test/errors", json=json, status_code=400
     )
 
@@ -141,7 +141,7 @@ def test_use_system_proxies(mocker):
     """
     proxy_url = "https://bonzibuddy.org"
     mocker.patch(
-        "httpx._utils.getproxies",
+        "httpx2._utils.getproxies",
         return_value={"http": proxy_url},
     )
 
@@ -151,8 +151,8 @@ def test_use_system_proxies(mocker):
         skip_version_check=True,
         organization="ExtraBanane",
     )
-    transport = client._api._session._transport_for_url(httpx.URL("http://popo.org"))
-    assert transport._sync_transport._pool._proxy_url == httpcore.URL(proxy_url)
+    transport = client._api._session._transport_for_url(httpx2.URL("http://popo.org"))
+    assert transport._transport._pool._proxy_url == httpcore2.URL(proxy_url)
 
 
 def test_use_user_provided_proxies(mocker):
@@ -160,7 +160,7 @@ def test_use_user_provided_proxies(mocker):
     THEN the specific proxy is used (system proxies are ignored), the url is normalized
     """
     mocker.patch(
-        "httpx._utils.getproxies",
+        "httpx2._utils.getproxies",
         return_value={"https": "https://bonzibuddy.org"},
     )
 
@@ -171,5 +171,5 @@ def test_use_user_provided_proxies(mocker):
         organization="ExtraBanane",
         https_proxy="https://😛.com",
     )
-    transport = client._api._session._transport_for_url(httpx.URL("https://popo.org"))
-    assert transport._sync_transport._pool._proxy_url == httpcore.URL("https://xn--528h.com")
+    transport = client._api._session._transport_for_url(httpx2.URL("https://popo.org"))
+    assert transport._transport._pool._proxy_url == httpcore2.URL("https://xn--528h.com")
