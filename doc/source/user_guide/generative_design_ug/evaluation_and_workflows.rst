@@ -108,7 +108,7 @@ along each axis:
 
 - **Low resolution** (for example ``(50, 50, 50)``): fast generation, suitable for quick previews.
 - **Medium resolution** (for example ``(100, 100, 100)``): good balance for most use cases.
-- **High resolution** (for example ``(200, 200, 200)`` or above): captures fine details and sharp edges.
+- **High resolution** (for example ``(300, 300, 300)`` or above): captures fine details and sharp edges.
 
 The total number of voxels must not exceed 900 :sup:`3` (that is, ``x * y * z <= 729,000,000``).
 For the maximum resolution, prediction takes approximately 10 minutes.
@@ -193,8 +193,9 @@ Geometries are not correctly reconstructed
    distribution shifted high? A shifted distribution suggests the model needs more training time.
 3. Verify that the flagged training geometries meet the mesh requirements (watertight, manifold,
    no self-penetration). See :ref:`data_preparation_geomai`.
-4. If mesh quality is not the issue, try a longer build preset.
-5. If the geometry is valid but structurally very different from the rest of the dataset,
+4. If mesh quality is not the issue, try augmenting the resolution when testing the model.
+5. If mesh quality or resolution are not the issue, try a longer build preset to let the model focus on reconstruction.
+6. If the geometry is valid but structurally very different from the rest of the dataset,
    consider whether it should be included; it may be pulling the model in conflicting directions.
 
 Generated geometries are void or garbled
@@ -213,8 +214,8 @@ Generated geometries are void or garbled
 Lack of sharpness or explosion of parts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Increase the resolution parameter. The default ``(100, 100, 100)`` may be insufficient for
-  geometries with fine details or sharp edges. Try ``(150, 150, 150)`` or higher.
+- Increase the resolution parameter. The default autoresolution may be insufficient for
+  geometries with fine details or sharp edges. Try ``(300, 300, 300)`` or higher.
 - If parts are disconnecting unexpectedly, this is also often a resolution issue rather than a
   model quality problem.
 
