@@ -95,8 +95,8 @@ Each geometry in your training set has a corresponding latent code, and new geom
 by specifying new positions in the latent space.
 
 - The number of floats must match the ``nb_latent_param`` the model was configured with (default: 512).
-- Latent parameters typically range between -3 and +3 for meaningful results. Values too far from
-  known training codes may produce garbled or void geometries.
+- Latent parameters typically range between -3 and +3 for meaningful results. You can also check their distribution by plotting them for the training set. 
+  Values too far from known training latent parameters may produce garbled or void geometries.
 - You can retrieve the latent codes of all training geometries with
   :meth:`workspace.get_latent_parameters()<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace.get_latent_parameters>`.
   These serve as reference points for interpolation and exploration. Pass an optional ``n`` argument
