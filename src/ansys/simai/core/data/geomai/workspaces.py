@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import json
-import warnings
 from typing import TYPE_CHECKING, BinaryIO, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
@@ -34,7 +33,7 @@ from ansys.simai.core.data.types import (
     get_id_from_identifiable,
     to_raw_filters,
 )
-from ansys.simai.core.errors import InvalidArguments, PySimAIDepreciationWarning
+from ansys.simai.core.errors import InvalidArguments
 from ansys.simai.core.utils.files import write_file
 from ansys.simai.core.utils.pagination import DataModelIterator
 
@@ -103,13 +102,9 @@ class GeomAIWorkspace(DataModel):
         Returns:
             ``None`` if a file is specified or a binary file-object otherwise.
         """
-        warnings.warn(
-            "`download_latent_parameters_json` is deprecated. Use 'get_latent_parameters' instead.",
-            PySimAIDepreciationWarning,
-            stacklevel=2,
+        raise NotImplementedError(
+            "'download_latent_parameters_json' was removed after deprecation. Please use 'get_latent_parameters' instead."
         )
-        # We don't use `get_latent_parameters` here because it doesn't return a binary file-object when file is None
-        return self._client._api.download_geomai_workspace_latent_parameters(self.id, file)
 
     def get_latent_parameters(
         self,
