@@ -30,7 +30,7 @@ This example demonstrates how to generate random geometries using random latent 
 Before you begin
 -------------------------------------------
 
-- Complete ":ref:`ref_build_model`" to train a Generative Design model.
+- Complete ":ref:`ref_build_model`" to train a GeomAI model.
 - Ensure the model training completed successfully.
 
 """
