@@ -93,7 +93,7 @@ print(f"Output directory: {output_dir}")
 ###############################################################################
 # Generate random geometries
 # -------------------------------------------
-# Generate geometries by creating random latent parameter vectors.
+# Generate geometries by creating random latent parameters.
 # Each latent parameter is randomly sampled from a standard normal distribution.
 
 predictions: list[GeomAIPrediction] = []

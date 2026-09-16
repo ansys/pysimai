@@ -30,8 +30,8 @@ Understanding reconstruction vs. interpolation
 
 When training a GeomAI model, there is a fundamental trade-off between two objectives:
 
-- **Reconstruction**: how well the model reproduces the exact training geometries.
-- **Interpolation**: how well the model generates meaningful new geometries between known designs.
+- **Reconstruction**: how well the model reproduces the exact geometries as the ones used for training.
+- **Interpolation**: how well the model generates meaningful new geometries between known ones.
 
 A model that perfectly reconstructs training data may overfit and produce poor interpolations.
 Conversely, a model tuned for smooth interpolation may not perfectly reproduce every detail of your
@@ -83,7 +83,7 @@ You can also configure the number of training iterations directly through the ``
 ``nb_epochs`` corresponds to the number of times each training geometry is seen by the model, between 1 and 1000.
 
 ``nb_epochs`` is mutually exclusive with ``build_preset``: exactly one of the two must be set.
-Only experienced users should use``nb_epochs``.
+Only experienced users should use ``nb_epochs``.
 While it enables finer customization, it requires prior knowledge of the model's behavior on your data.
 A good approach is to start with ``build_preset`` and switch to ``nb_epochs`` only when further tuning is needed.
 

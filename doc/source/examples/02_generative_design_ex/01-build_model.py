@@ -54,8 +54,8 @@ BUILD_PRESET = "default"  # Options: "debug", "short", "default", "long"
 ###############################################################################
 # The ``BUILD_PRESET`` options correspond to:
 #
-# - ``"debug"``: Fast training for testing (only four training data and one epoch).
-# - ``"short"``: Quick training with reduced accuracy.
+# - ``"debug"``: Fast training for quick testing to confirm everything runs (only four training data and one epoch).
+# - ``"short"``: Fast training with reduced accuracy.
 # - ``"default"``: Balanced training time and quality.
 # - ``"long"``: Longer training for best quality.
 
@@ -92,9 +92,6 @@ if len(ready_data) < len(project_data):
 # To define the configuration for your model, you can either specify the build preset or the number
 # of epochs.
 # To do so, instead of ``build_preset``, you can specify the number of epochs directly. Example: ``nb_epochs=100``.
-#
-# The number of latent parameters defines the complexity of the model's latent space; start with a small number (e.g., 10) and adjust based on your needs.
-
 
 configuration = GeomAIModelConfiguration(
     build_preset=BUILD_PRESET,

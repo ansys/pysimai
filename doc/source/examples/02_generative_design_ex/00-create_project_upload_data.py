@@ -115,7 +115,7 @@ print("\nAll training data uploaded.")
 # Wait for data processing
 # -------------------------------------------
 # After uploading, the instance processes the geometries.
-# Wait for all data in the project to be ready.
+# Wait for all data in the project to be processed and ready.
 #
 # .. note::
 #    An "invalid geometry" failure means the geometry is not compatible with
@@ -143,5 +143,5 @@ print(f"\nProject '{PROJECT_NAME}': {ready_count}/{len(project_data)} training d
 ###############################################################################
 # Next steps
 # -------------------------------------------
-# Once all data is ready, you can proceed to build a model.
+# Once all data is ready, you can proceed to train a model.
 # See the next example: :ref:`ref_build_model`.

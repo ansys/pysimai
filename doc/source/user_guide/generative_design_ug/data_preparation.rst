@@ -24,8 +24,9 @@ Think of your training data as the vocabulary the model will use. The results it
 fall within the design language you have taught it.
 
 .. tip::
-   The model also captures implicit constraints from your data. For example, if all your training geometries
-   share a common plane or feature, the model will reproduce that feature across all generated designs.
+    The model also captures implicit constraints from your data. For example, if all your geometries
+    share a common plane or feature, the model will learn that feature and reproduce it across all generated
+    designs.
 
 
 Geometry requirements

@@ -71,11 +71,11 @@ GEOM_B_NAME = "geometry_name_b"  # Replace with actual geometry name
 ###############################################################################
 # Define the interpolation function
 # -------------------------------------------
-# Before running predictions, we need a function to interpolate between two latent vectors.
+# Before running predictions, you need a function to interpolate between two latent parameter vectors.
 
 
 def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> List[float]:
-    """Perform linear interpolation between two latent vectors.
+    """Perform linear interpolation between two latent parameter vectors.
 
     Parameters
     ----------

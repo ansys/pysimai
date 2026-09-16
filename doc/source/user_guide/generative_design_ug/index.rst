@@ -3,7 +3,7 @@
 Generate new designs
 ========================================================
 
-With SimAI, you generate new geometries based on existing ones using GeomAI.
+With GeomAI, you generate new geometries based on existing ones.
 
 .. note::
    GeomAI is designed to **generate geometries**. It does not use physical response data (forces,
@@ -27,12 +27,12 @@ The steps to follow are:
 
 1. Prepare and validate your geometries.
 #. Upload them as training data and assign them to a project.
-#. Configure and build your AI model.
+#. Configure and train your AI model.
 #. Evaluate the model quality.
 #. Generate new designs and integrate them into your workflow.
 
 .. tip::
-   Start with a small number of training geometries and the ``short`` build preset to quickly check
+   Start with a small number of geometries and the ``short`` build preset to quickly check
    if the model can learn and if the generated designs are meaningful.
    This helps detect issues early and saves time.
 
