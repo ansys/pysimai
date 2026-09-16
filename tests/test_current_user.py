@@ -28,11 +28,11 @@ from ansys.simai.core.data.current_user import Consent
 from ansys.simai.core.errors import NotFoundError
 
 
-def test_list_consents(simai_client, httpx_mock):
+def test_list_consents(simai_client, httpx2_mock):
     """WHEN listing consents
     THEN the API is called and consents are returned as Consent objects.
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/users/offline-tokens",
         json=[
@@ -66,11 +66,11 @@ def test_list_consents(simai_client, httpx_mock):
     assert consents[1].granted_scopes == ["openid"]
 
 
-def test_list_consents_empty(simai_client, httpx_mock):
+def test_list_consents_empty(simai_client, httpx2_mock):
     """WHEN listing consents and user has none
     THEN an empty list is returned.
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/users/offline-tokens",
         json=[],
@@ -82,11 +82,11 @@ def test_list_consents_empty(simai_client, httpx_mock):
     assert consents == []
 
 
-def test_revoke_consent(simai_client, httpx_mock):
+def test_revoke_consent(simai_client, httpx2_mock):
     """WHEN revoking a consent
     THEN the API is called with the correct client_id.
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE",
         url="https://test.test/users/offline-tokens/sdk",
         status_code=204,
@@ -94,16 +94,16 @@ def test_revoke_consent(simai_client, httpx_mock):
 
     simai_client.me.consents.revoke("sdk")
 
-    request = httpx_mock.get_request()
+    request = httpx2_mock.get_request()
     assert request.method == "DELETE"
     assert str(request.url) == "https://test.test/users/offline-tokens/sdk"
 
 
-def test_revoke_consent_not_found(simai_client, httpx_mock):
+def test_revoke_consent_not_found(simai_client, httpx2_mock):
     """WHEN revoking a non-existent consent
     THEN a NotFoundError is raised.
     """
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="DELETE",
         url="https://test.test/users/offline-tokens/nonexistent",
         json={"message": "No consent found for client: nonexistent"},

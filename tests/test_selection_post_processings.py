@@ -55,7 +55,7 @@ def test_selection(
     yield Selection(geometries, [bc])
 
 
-def test_selection_post_processing_global_coefficients(test_selection, httpx_mock):
+def test_selection_post_processing_global_coefficients(test_selection, httpx2_mock):
     """WHEN I call post.post.global_coefficients() on a selection
     THEN the /GlobalCoefficients endpoint is called for each prediction in the selection
     AND I get a list of GlobalCoefficients objects in return
@@ -63,7 +63,7 @@ def test_selection_post_processing_global_coefficients(test_selection, httpx_moc
     assert len(test_selection.points) == 2
 
     for num in [1, 2]:
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="POST",
             url=f"https://test.test/predictions/pred{num}/post-processings/GlobalCoefficients",
             json={"id": f"gc{num}", "state": "successful"},
@@ -77,7 +77,7 @@ def test_selection_post_processing_global_coefficients(test_selection, httpx_moc
         assert isinstance(pp, GlobalCoefficients)
 
 
-def test_selection_post_processing_surface_evolution(test_selection, httpx_mock):
+def test_selection_post_processing_surface_evolution(test_selection, httpx2_mock):
     """WHEN I call post.post.surface_evolution() on a selection
     THEN the /SurfaceEvol endpoint is called for each prediction in the selection
     AND I get a list of SurfaceEvolution objects in return
@@ -85,7 +85,7 @@ def test_selection_post_processing_surface_evolution(test_selection, httpx_mock)
     assert len(test_selection.points) == 2
 
     for num in [1, 2]:
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="POST",
             url=f"https://test.test/predictions/pred{num}/post-processings/SurfaceEvol",
             json={"id": f"se{num}", "state": "successful"},
@@ -98,20 +98,20 @@ def test_selection_post_processing_surface_evolution(test_selection, httpx_mock)
         assert isinstance(pp, SurfaceEvolution)
 
 
-def test_selection_post_processing_slice(test_selection, httpx_mock):
+def test_selection_post_processing_slice(test_selection, httpx2_mock):
     """WHEN I call post.post.slice() on a selection
     THEN the /Slice endpoint is called for each prediction in the selection
     AND I get a list of Slice objects in return
     """
     assert len(test_selection.points) == 2
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred1/post-processings/Slice",
         json={"id": "slice01", "status": "queued"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred2/post-processings/Slice",
         json={"id": "slice02", "status": "queued"},
@@ -124,20 +124,20 @@ def test_selection_post_processing_slice(test_selection, httpx_mock):
         assert isinstance(pp, Slice)
 
 
-def test_selection_post_processing_volume_vtu(test_selection, httpx_mock):
+def test_selection_post_processing_volume_vtu(test_selection, httpx2_mock):
     """WHEN I call post.post.volume_vtu() on a selection
     THEN the /VolumeVTU endpoint is called for each prediction in the selection
     AND I get a list of PostProcessingVTUExport objects in return
     """
     assert len(test_selection.points) == 2
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred1/post-processings/VolumeVTU",
         json={"id": "vtu01", "status": "queued"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred2/post-processings/VolumeVTU",
         json={"id": "vtu02", "status": "queued"},
@@ -150,20 +150,20 @@ def test_selection_post_processing_volume_vtu(test_selection, httpx_mock):
         assert isinstance(pp, VolumeVTU)
 
 
-def test_selection_post_processing_surface_vtp(test_selection, httpx_mock):
+def test_selection_post_processing_surface_vtp(test_selection, httpx2_mock):
     """WHEN I call post.post.surface_vtp() on a selection
     THEN the /SurfaceVTP endpoint is called for each prediction in the selection
     AND I get a list of PostProcessingVTUExport objects in return
     """
     assert len(test_selection.points) == 2
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred1/post-processings/SurfaceVTP",
         json={"id": "se1"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred2/post-processings/SurfaceVTP",
         json={"id": "se3"},
@@ -176,20 +176,20 @@ def test_selection_post_processing_surface_vtp(test_selection, httpx_mock):
         assert isinstance(pp, SurfaceVTP)
 
 
-def test_selection_post_processing_surface_vtp_td_location(test_selection, httpx_mock):
+def test_selection_post_processing_surface_vtp_td_location(test_selection, httpx2_mock):
     """WHEN I call post.post.surface_vtp() on a selection
     THEN the /SurfaceVTPTDLocation endpoint is called for each prediction in the selection
     AND I get a list of SurfaceVTPTDLocation objects in return
     """
     assert len(test_selection.points) == 2
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred1/post-processings/SurfaceVTPTDLocation",
         json={"id": "vtu01", "status": "queued"},
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred2/post-processings/SurfaceVTPTDLocation",
         json={"id": "vtu02", "status": "queued"},
@@ -202,7 +202,7 @@ def test_selection_post_processing_surface_vtp_td_location(test_selection, httpx
         assert isinstance(pp, SurfaceVTPTDLocation)
 
 
-def test_selection_post_processing_error(test_selection, httpx_mock):
+def test_selection_post_processing_error(test_selection, httpx2_mock):
     """WHEN I call post.post.volume_vtu() on a selection
     AND the first VTU fails
     THEN the second VTU is still executed
@@ -211,7 +211,7 @@ def test_selection_post_processing_error(test_selection, httpx_mock):
     """
     assert len(test_selection.points) == 2
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred1/post-processings/VolumeVTU",
         json={
@@ -220,7 +220,7 @@ def test_selection_post_processing_error(test_selection, httpx_mock):
         },
         status_code=422,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/predictions/pred2/post-processings/VolumeVTU",
         json={"id": "vtu03", "status": "queued"},
@@ -229,6 +229,6 @@ def test_selection_post_processing_error(test_selection, httpx_mock):
     with pytest.raises(ApiClientError):
         test_selection.post.volume_vtu()
 
-    # Note: pytest-httpx doesn't provide an easy way to check call counts like responses
+    # Note: pytest-httpx2 doesn't provide an easy way to check call counts like responses
     # The test still verifies that the error is raised and the second VTU is created
     assert test_selection.predictions[1].post.volume_vtu().id == "vtu03"

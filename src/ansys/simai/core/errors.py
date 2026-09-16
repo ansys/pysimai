@@ -22,7 +22,7 @@
 
 from typing import Any, Callable, Iterable, List, Optional, TypeVar
 
-import httpx
+import httpx2
 
 
 class SimAIError(Exception):
@@ -32,14 +32,14 @@ class SimAIError(Exception):
     """
 
 
-class ApiClientError(SimAIError, httpx.HTTPError):
+class ApiClientError(SimAIError, httpx2.HTTPError):
     """HTTP error from the SimAI API."""
 
     def __init__(
         self,
         message: str,
-        response: Optional[httpx.Response] = None,
-        request: Optional[httpx.Request] = None,
+        response: Optional[httpx2.Response] = None,
+        request: Optional[httpx2.Request] = None,
     ):
         super(ApiClientError, self).__init__(message)
         self.response = response
@@ -55,7 +55,7 @@ class NotFoundError(ApiClientError):
     """Required resource was not found on the server."""
 
 
-class ConnectionError(SimAIError, httpx.RequestError):
+class ConnectionError(SimAIError, httpx2.RequestError):
     """Could not communicate with the server."""
 
 

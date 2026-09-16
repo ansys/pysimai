@@ -21,11 +21,11 @@
 # SOFTWARE.
 
 
-def test_geomai_sample_prediction(simai_client, httpx_mock):
+def test_geomai_sample_prediction(simai_client, httpx2_mock):
     workspace_id = "ws-123"
     resolution = (32, 48, 64)
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/geomai/workspaces/ws-123/predictions/sample",
         json={"id": "pred-123"},

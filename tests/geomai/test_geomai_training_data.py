@@ -28,8 +28,8 @@ import pytest
 from ansys.simai.core.errors import InvalidArguments
 
 
-def test_get_geomai_training_data_by_id(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_get_geomai_training_data_by_id(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geomai/training-data/td-123",
         json={"id": "td-123", "name": "My Training Data"},
@@ -40,8 +40,8 @@ def test_get_geomai_training_data_by_id(simai_client, httpx_mock):
     assert td.name == "My Training Data"
 
 
-def test_get_geomai_training_data_by_name(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_get_geomai_training_data_by_name(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geomai/training-data/name/My%20Training%20Data",
         json={"id": "td-456", "name": "My Training Data"},
@@ -62,7 +62,7 @@ def test_get_geomai_training_data_invalid_arguments(simai_client):
     assert str(e.value) == "Cannot specify both 'id' and 'name' arguments."
 
 
-def test_training_data_list_created_by_me(simai_client, httpx_mock):
+def test_training_data_list_created_by_me(simai_client, httpx2_mock):
     user_uuid = "user-789"
     simai_client._api._session.auth._user_uuid = user_uuid
 
@@ -73,7 +73,7 @@ def test_training_data_list_created_by_me(simai_client, httpx_mock):
 
     raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
     query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/training-data?{query}",
         headers={"X-Pagination": json.dumps({"total_pages": 1})},

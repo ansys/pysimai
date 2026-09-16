@@ -33,17 +33,17 @@ if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.projects import GeomAIProject
 
 
-def test_project_rename(simai_client, httpx_mock):
+def test_project_rename(simai_client, httpx2_mock):
     project: GeomAIProject = simai_client.geomai._project_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="PATCH",
         url="https://test.test/geomai/projects/0011",
         status_code=204,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geomai/projects/0011",
         json={"id": "0011", "name": "fifi"},
@@ -54,12 +54,12 @@ def test_project_rename(simai_client, httpx_mock):
     assert project.name == "fifi"
 
 
-def test_project_list_training_data(simai_client, httpx_mock):
+def test_project_list_training_data(simai_client, httpx2_mock):
     project: GeomAIProject = simai_client.geomai._project_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         is_reusable=True,
         method="GET",
         url="https://test.test/geomai/projects/0011/training-data",
@@ -70,7 +70,7 @@ def test_project_list_training_data(simai_client, httpx_mock):
         status_code=200,
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         is_reusable=True,
         method="GET",
         url="https://test.test/geomai/projects/0011/training-data?last_id=first",
@@ -85,8 +85,8 @@ def test_project_list_training_data(simai_client, httpx_mock):
     assert [data.id for data in workspaces] == ["first", "second"]
 
 
-def test_geomai_project_iter(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_geomai_project_iter(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geomai/projects?",
         headers={"X-Pagination": json.dumps({"total": 999})},
@@ -103,8 +103,8 @@ def test_geomai_project_iter(simai_client, httpx_mock):
     assert len(project_iter) == 998
 
 
-def test_geomai_project_list(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_geomai_project_list(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         is_reusable=True,
         method="GET",
         url="https://test.test/geomai/projects?",
@@ -112,7 +112,7 @@ def test_geomai_project_list(simai_client, httpx_mock):
         json=[{"id": "one", "name": "Project One"}],
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         is_reusable=True,
         method="GET",
         url="https://test.test/geomai/projects?last_id=one",
@@ -145,7 +145,7 @@ def test_last_model_configuration(simai_client):
     assert project_last_conf.model_dump() == last_conf
 
 
-def test_cancel_build_for_specified_project_id(simai_client, httpx_mock):
+def test_cancel_build_for_specified_project_id(simai_client, httpx2_mock):
     """WHEN I call projects.cancel_build() for a specified project id
     THEN it returns None if there is an build in progress
     AND raises a ProcessingError otherwise
@@ -153,14 +153,14 @@ def test_cancel_build_for_specified_project_id(simai_client, httpx_mock):
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": True},
         status_code=200,
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{project.id}/cancel-training",
         json={"id": "e45y123", "is_being_trained": False},
@@ -169,7 +169,7 @@ def test_cancel_build_for_specified_project_id(simai_client, httpx_mock):
 
     simai_client.projects.cancel_build(project.id)
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": False},
@@ -181,21 +181,21 @@ def test_cancel_build_for_specified_project_id(simai_client, httpx_mock):
         assert "No build pending for this project" in excinfo.value
 
 
-def test_cancel_active_build_from_project(simai_client, httpx_mock):
+def test_cancel_active_build_from_project(simai_client, httpx2_mock):
     """WHEN I call cancel_build() from a project with an active build
     THEN returns None
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": True},
         status_code=200,
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{project.id}/cancel-training",
         json={"id": "e45y123"},
@@ -203,17 +203,17 @@ def test_cancel_active_build_from_project(simai_client, httpx_mock):
     )
 
     project.cancel_build()
-    assert len(httpx_mock.get_requests()) == 2
+    assert len(httpx2_mock.get_requests()) == 2
 
 
-def test_cancel_inactive_build_from_project(simai_client, httpx_mock):
+def test_cancel_inactive_build_from_project(simai_client, httpx2_mock):
     """WHEN I call cancel_build() from a project with an inactive build
     THEN it raises a ProcessingError
     """
 
     project = simai_client.projects._model_from({"id": "e45y123", "name": "proj"})
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{project.id}",
         json={"id": "e45y123", "is_being_trained": False},
@@ -223,13 +223,13 @@ def test_cancel_inactive_build_from_project(simai_client, httpx_mock):
     with pytest.raises(ProcessingError) as excinfo:
         project.cancel_build()
         assert "No build pending for this project" in excinfo.value
-    assert len(httpx_mock.get_requests()) == 1
+    assert len(httpx2_mock.get_requests()) == 1
 
 
-def test_geomai_project_list_workspaces(simai_client, httpx_mock):
+def test_geomai_project_list_workspaces(simai_client, httpx2_mock):
     project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/projects/{project.id}/workspaces",
         json=[{"id": "ws01", "name": "Workspace01"}, {"id": "ws02", "name": "Workspace02"}],
@@ -243,10 +243,10 @@ def test_geomai_project_list_workspaces(simai_client, httpx_mock):
     assert workspaces[1].id == "ws02"
 
 
-def test_geomai_project_list_models(simai_client, httpx_mock):
+def test_geomai_project_list_models(simai_client, httpx2_mock):
     project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/projects/{project.id}/models",
         json=[{"id": "model01"}, {"id": "model02"}],
@@ -260,7 +260,7 @@ def test_geomai_project_list_models(simai_client, httpx_mock):
     assert models[1].id == "model02"
 
 
-def test_geomai_project_list_created_by_me(simai_client, httpx_mock):
+def test_geomai_project_list_created_by_me(simai_client, httpx2_mock):
     user_uuid = "user123-abc"
     simai_client._api._session.auth._user_uuid = user_uuid
 
@@ -271,7 +271,7 @@ def test_geomai_project_list_created_by_me(simai_client, httpx_mock):
 
     raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
     query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/projects?{query}",
         json=raw_projects,
@@ -282,7 +282,7 @@ def test_geomai_project_list_created_by_me(simai_client, httpx_mock):
     assert [project.id for project in projects] == ["abc123", "123abc"]
 
 
-def test_geomai_project_get_last_workspace(simai_client, httpx_mock):
+def test_geomai_project_get_last_workspace(simai_client, httpx2_mock):
     project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
     expected_query = urlencode(
         [
@@ -303,7 +303,7 @@ def test_geomai_project_get_last_workspace(simai_client, httpx_mock):
             ("page_size", 1),
         ]
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/?{expected_query}",
         json=[{"id": "ws01", "name": "Workspace01"}],
@@ -316,7 +316,7 @@ def test_geomai_project_get_last_workspace(simai_client, httpx_mock):
     assert workspace.id == "ws01"
 
 
-def test_geomai_project_get_last_workspace_empty_returns_none(simai_client, httpx_mock):
+def test_geomai_project_get_last_workspace_empty_returns_none(simai_client, httpx2_mock):
     project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
     expected_query = urlencode(
         [
@@ -337,7 +337,7 @@ def test_geomai_project_get_last_workspace_empty_returns_none(simai_client, http
             ("page_size", 1),
         ]
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/geomai/workspaces/?{expected_query}",
         json=[],

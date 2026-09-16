@@ -22,7 +22,7 @@
 
 import json
 
-import httpx
+import httpx2
 import pytest
 
 from ansys.simai.core.data.downloads import DownloadableResult
@@ -43,7 +43,7 @@ def selection_factory(simai_client) -> Selection:
     return _factory
 
 
-def test_post_processing_export_global_coefficients(simai_client, httpx_mock):
+def test_post_processing_export_global_coefficients(simai_client, httpx2_mock):
     """WHEN I call export() on a GlobalCoefficients post-processing
     THEN I get a DownloadableResult object allowing me to download the content.
     """
@@ -52,14 +52,14 @@ def test_post_processing_export_global_coefficients(simai_client, httpx_mock):
         {"id": "zebu", "type": "GlobalCoefficients", "state": "successful"}
     )
 
-    def request_callback(request: httpx.Request):
+    def request_callback(request: httpx2.Request):
         payload = json.loads(request.content)
         # check export format and id are as expected
         assert payload["format"] == "json"
         assert payload["ids"] == ["zebu"]
-        return httpx.Response(200, json={"data": "it's here"})
+        return httpx2.Response(200, json={"data": "it's here"})
 
-    httpx_mock.add_callback(
+    httpx2_mock.add_callback(
         request_callback,
         method="POST",
         url="https://test.test/post-processings/export",
@@ -71,7 +71,7 @@ def test_post_processing_export_global_coefficients(simai_client, httpx_mock):
     assert json.loads(data.decode("ascii")) == {"data": "it's here"}
 
 
-def test_post_processing_export_surface_evolution_excel(simai_client, httpx_mock):
+def test_post_processing_export_surface_evolution_excel(simai_client, httpx2_mock):
     """WHEN I call export() on a SurfaceEvolution post-processing
     THEN I get a DownloadableResult object allowing me to download the content.
     """
@@ -80,14 +80,14 @@ def test_post_processing_export_surface_evolution_excel(simai_client, httpx_mock
         {"id": "mozeu", "type": "SurfaceEvolution", "state": "successful"}
     )
 
-    def request_callback(request: httpx.Request):
+    def request_callback(request: httpx2.Request):
         payload = json.loads(request.content)
         # check export format and id are as expected
         assert payload["format"] == "xlsx"
         assert payload["ids"] == ["mozeu"]
-        return httpx.Response(200, content=b"some binary excel data")
+        return httpx2.Response(200, content=b"some binary excel data")
 
-    httpx_mock.add_callback(
+    httpx2_mock.add_callback(
         request_callback,
         method="POST",
         url="https://test.test/post-processings/export",
@@ -100,7 +100,7 @@ def test_post_processing_export_surface_evolution_excel(simai_client, httpx_mock
 
 
 def test_post_processing_selection_export(
-    selection_factory, prediction_factory, post_processing_factory, httpx_mock
+    selection_factory, prediction_factory, post_processing_factory, httpx2_mock
 ):
     """WHEN I call export() on a selection.post.global_coefficients()
     THEN the post-processing/export is called with the ids of expected post-processings
@@ -123,14 +123,14 @@ def test_post_processing_selection_export(
         ]
     )
 
-    def request_callback(request: httpx.Request):
+    def request_callback(request: httpx2.Request):
         payload = json.loads(request.content)
         # check export format and id are as expected
         assert payload["format"] == "xlsx"
         assert payload["ids"] == [pp1.id, pp2.id]
-        return httpx.Response(200, content=b"some binary excel data")
+        return httpx2.Response(200, content=b"some binary excel data")
 
-    httpx_mock.add_callback(
+    httpx2_mock.add_callback(
         request_callback,
         method="POST",
         url="https://test.test/post-processings/export",

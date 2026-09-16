@@ -73,10 +73,10 @@ METADATA_RAW = {
 }
 
 
-def test_process_formula_success(global_coefficient_request_factory, httpx_mock):
+def test_process_formula_success(global_coefficient_request_factory, httpx2_mock):
     gc_formula = "max(Pressure)"
     project_id = "xX007Xx"
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{project_id}/process-formula",
         status_code=204,
@@ -118,11 +118,11 @@ def test_process_formula_success(global_coefficient_request_factory, httpx_mock)
     assert process_gc.result == compute_result
 
 
-def test_process_formula_success_with_cache(global_coefficient_request_factory, httpx_mock):
+def test_process_formula_success_with_cache(global_coefficient_request_factory, httpx2_mock):
     gc_formula = "max(Pressure)"
     project_id = "xX007Xx"
     compute_result = 0.25478328
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{project_id}/process-formula",
         status_code=200,
@@ -147,10 +147,10 @@ def test_process_formula_success_with_cache(global_coefficient_request_factory, 
 
 
 @pytest.mark.parametrize("action", ["check", "compute"])
-def test_process_formula_failure(global_coefficient_request_factory, action, httpx_mock):
+def test_process_formula_failure(global_coefficient_request_factory, action, httpx2_mock):
     gc_formula = "max(Pressure)"
     project_id = "xX007Xx"
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{project_id}/process-formula",
         status_code=204,

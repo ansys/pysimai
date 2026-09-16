@@ -25,7 +25,7 @@ import json
 import threading
 
 import pytest
-from httpx_sse import ServerSentEvent
+from httpx2 import ServerSentEvent
 
 from ansys.simai.core.data.optimizations import (
     LegacyOptimizationResult,
@@ -281,36 +281,36 @@ def test_validate_axial_symmetry_fails(axial_symmetry, symmetries):
 
 
 def test_run_non_parametric_optimization_legacy(
-    simai_client, geometry_factory, model_factory, httpx_mock
+    simai_client, geometry_factory, model_factory, httpx2_mock
 ):
     workspace_id = "insert_cool_reference"
     geometry = geometry_factory(workspace_id=workspace_id)
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
         status_code=200,
         json={"public": {"feature_flags": []}},
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/workspaces/{workspace_id}/optimizations",
         status_code=202,
         json={"id": "wow", "state": "requested", "trial_runs": []},
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/optimizations/wow/trial-runs",
         status_code=202,
         json={"id": "wow1", "state": "requested"},
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/optimizations/wow/trial-runs",
         status_code=202,
         json={"id": "wow2", "state": "requested"},
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url="https://test.test/optimizations/wow/trial-runs",
         status_code=202,
@@ -380,17 +380,19 @@ def test_run_non_parametric_optimization_legacy(
     assert results.optimization.id == "wow"
 
 
-def test_run_non_parametric_optimization(simai_client, geometry_factory, model_factory, httpx_mock):
+def test_run_non_parametric_optimization(
+    simai_client, geometry_factory, model_factory, httpx2_mock
+):
     workspace_id = "insert_cool_reference"
     geometry = geometry_factory(workspace_id=workspace_id)
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
         status_code=200,
         json={"feature_flags": ["server_side_optimization"]},
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/workspaces/{workspace_id}/server-side-optimizations",
         status_code=202,

@@ -46,7 +46,7 @@ def test_client_creation_invalid_config():
         ("1.0.9", "1.9.0", "required."),
     ],
 )
-def test_client_version_auto_warn(caplog, mocker, httpx_mock, local_ver, latest_ver, expected):
+def test_client_version_auto_warn(caplog, mocker, httpx2_mock, local_ver, latest_ver, expected):
     """WHEN the SDK version is slightly outdated compared to what the API responds
     THEN a warning is printed
     """
@@ -54,7 +54,7 @@ def test_client_version_auto_warn(caplog, mocker, httpx_mock, local_ver, latest_
         "ansys.simai.core.client.__version__",
         local_ver,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://pypi.org/pypi/ansys-simai-core/json",
         json={"info": {"version": latest_ver}},

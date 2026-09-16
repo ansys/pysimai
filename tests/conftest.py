@@ -27,8 +27,7 @@ import time
 from collections.abc import Callable
 from contextlib import contextmanager
 
-import httpx
-import httpx_retries
+import httpx2
 import pytest
 
 from ansys.simai.core import SimAIClient
@@ -44,6 +43,7 @@ from ansys.simai.core.data.projects import Project
 from ansys.simai.core.data.training_data import TrainingData
 from ansys.simai.core.data.workspaces import Workspace
 from ansys.simai.core.utils.configuration import ClientConfig
+from ansys.simai.core.utils.transport import Retry
 
 
 @pytest.fixture(scope="session")
@@ -301,9 +301,9 @@ def delayed_events():
 @contextmanager
 def disable_http_retry(clt: ApiClient, url: str):
     "Avoids slow tests due to retry backoff"
-    transport = clt._session._transport_for_url(httpx.URL(url))
+    transport = clt._session._transport_for_url(httpx2.URL(url))
     original_retry = transport.retry
-    transport.retry = httpx_retries.Retry(total=0)
+    transport.retry = Retry(total=0)
     try:
         yield
     finally:

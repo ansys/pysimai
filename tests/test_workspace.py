@@ -163,7 +163,7 @@ SAMPLE_RAW = {
 }
 
 
-def test_workspace_download_mer_data(simai_client, httpx_mock):
+def test_workspace_download_mer_data(simai_client, httpx2_mock):
     """WHEN downloading mer csv file
     THEN the content of the file matches the content of the response.
     """
@@ -171,7 +171,7 @@ def test_workspace_download_mer_data(simai_client, httpx_mock):
     workspace: Workspace = simai_client._workspace_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/workspaces/{workspace.id}/mer-data",
         content=b"mer-data-geometries",
@@ -183,17 +183,17 @@ def test_workspace_download_mer_data(simai_client, httpx_mock):
     assert data_in_file.decode("ascii") == "mer-data-geometries"
 
 
-def test_workspace_rename(simai_client, httpx_mock):
+def test_workspace_rename(simai_client, httpx2_mock):
     workspace: Workspace = simai_client._workspace_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="PATCH",
         url="https://test.test/workspaces/0011",
         status_code=204,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/workspaces/0011",
         json={"id": "0011", "name": "fifi"},
@@ -204,7 +204,9 @@ def test_workspace_rename(simai_client, httpx_mock):
     assert workspace.name == "fifi"
 
 
-def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, training_data_factory):
+def test_get_workspace_model_configuration(
+    mocker, simai_client, httpx2_mock, training_data_factory
+):
     workspace: Workspace = simai_client._workspace_directory._model_from(
         {"id": "0011", "name": "riri", "project": "project101"}
     )
@@ -214,13 +216,13 @@ def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, tra
         "name": "fifi",
         "sample": SAMPLE_RAW,
     }
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/projects/project101",
         json=raw_project,
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/workspaces/0011/model/configuration",
         json=MODEL_CONF_RAW,
@@ -234,7 +236,7 @@ def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, tra
     assert workspace.model_configuration._to_payload() == MODEL_CONF_RAW
 
 
-def test_workspace_list_predictions(simai_client, httpx_mock):
+def test_workspace_list_predictions(simai_client, httpx2_mock):
     workspace: Workspace = simai_client._workspace_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
@@ -243,7 +245,7 @@ def test_workspace_list_predictions(simai_client, httpx_mock):
         {"id": "pred1"},
         {"id": "pred2"},
     ]
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/predictions/?workspace=0011",
         json=raw_predictions,
@@ -256,7 +258,7 @@ def test_workspace_list_predictions(simai_client, httpx_mock):
     assert predictions[1].id == "pred2"
 
 
-def test_workspace_list_geometries(simai_client, httpx_mock):
+def test_workspace_list_geometries(simai_client, httpx2_mock):
     workspace: Workspace = simai_client._workspace_directory._model_from(
         {"id": "0011", "name": "riri"}
     )
@@ -265,7 +267,7 @@ def test_workspace_list_geometries(simai_client, httpx_mock):
         {"id": "geom1"},
         {"id": "geom2"},
     ]
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/geometries/?workspace=0011",
         json=raw_geometries,
@@ -278,8 +280,8 @@ def test_workspace_list_geometries(simai_client, httpx_mock):
     assert geometries[1].id == "geom2"
 
 
-def test_workspace_iter(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_workspace_iter(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         method="GET",
         url="https://test.test/workspaces/?",
         headers={"X-Pagination": json.dumps({"total": 999})},
@@ -296,8 +298,8 @@ def test_workspace_iter(simai_client, httpx_mock):
     assert len(workspace_iter) == 998
 
 
-def test_workspace_list(simai_client, httpx_mock):
-    httpx_mock.add_response(
+def test_workspace_list(simai_client, httpx2_mock):
+    httpx2_mock.add_response(
         is_reusable=True,
         method="GET",
         url="https://test.test/workspaces/?",
@@ -305,7 +307,7 @@ def test_workspace_list(simai_client, httpx_mock):
         json=[{"id": "one", "name": "Workspace One"}],
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         is_reusable=True,
         method="GET",
         url="https://test.test/workspaces/?last_id=one",
@@ -319,7 +321,7 @@ def test_workspace_list(simai_client, httpx_mock):
     assert [workspace.id for workspace in workspaces] == ["one", "two"]
 
 
-def test_workspace_list_created_by_me(simai_client, httpx_mock):
+def test_workspace_list_created_by_me(simai_client, httpx2_mock):
     user_uuid = "user-456"
     simai_client._api._session.auth._user_uuid = user_uuid
 
@@ -330,7 +332,7 @@ def test_workspace_list_created_by_me(simai_client, httpx_mock):
 
     raw_filters = [{"field": "created_by", "operator": "EQ", "value": user_uuid}]
     query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/workspaces/?{query}",
         json=raw_workspaces,

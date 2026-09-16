@@ -31,7 +31,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 from urllib.parse import urljoin
 
-import httpx
+import httpx2
 import jwt
 from filelock import FileLock
 from pydantic import BaseModel, ValidationError, model_validator
@@ -114,7 +114,7 @@ class _AuthTokens(BaseModel):
 
 
 def _request_tokens_direct_grant(
-    session: httpx.Client,
+    session: httpx2.Client,
     token_url: str,
     credentials: Credentials,
     scope: str = "openid",
@@ -132,7 +132,7 @@ def _request_tokens_direct_grant(
 
 
 def _request_tokens_device_auth(
-    session: httpx.Client,
+    session: httpx2.Client,
     token_url: str,
     device_auth_url: str,
     scope: str = "openid",
@@ -171,7 +171,7 @@ class _AuthTokensRetriever:
     def __init__(
         self,
         credentials: Optional["Credentials"],
-        session: httpx.Client,
+        session: httpx2.Client,
         auth_cache_hash: str,
         realm_url: str,
         offline_token: Optional[str] = None,
@@ -218,7 +218,7 @@ class _AuthTokensRetriever:
             return _AuthTokens(
                 **handle_response(self.session.post(self.token_url, data=request_params))
             )
-        except (httpx.ConnectError, ApiClientError) as e:
+        except (httpx2.ConnectError, ApiClientError) as e:
             logger.error(f"Could not refresh authentication tokens: {e}")
             return None
 
@@ -310,7 +310,7 @@ def _get_offline_token_private(
     if tls_ca_bundle:
         transport_kwargs["verify"] = tls_ca_bundle
 
-    with httpx.Client(**transport_kwargs) as session:
+    with httpx2.Client(**transport_kwargs) as session:
         if credentials:
             tokens = _request_tokens_direct_grant(
                 session, token_url, credentials, scope="openid offline_access", client_id=client_id
@@ -326,8 +326,8 @@ def _get_offline_token_private(
         return tokens.refresh_token
 
 
-class Authenticator(httpx.Auth):
-    def __init__(self, config: ClientConfig, session: httpx.Client) -> None:
+class Authenticator(httpx2.Auth):
+    def __init__(self, config: ClientConfig, session: httpx2.Client) -> None:
         self._session = session
         self._enabled = not getattr(config, "_disable_authentication", False)
         if not self._enabled:
@@ -351,7 +351,7 @@ class Authenticator(httpx.Auth):
         self._last_access_token = access_token
         self._user_uuid = _decode_user_uuid(access_token)
 
-    def auth_flow(self, request: httpx.Request):
+    def auth_flow(self, request: httpx2.Request):
         """Call to prepare the requests.
 
         Args:

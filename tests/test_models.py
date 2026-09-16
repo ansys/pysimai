@@ -202,14 +202,14 @@ SAMPLE_RAW = {
 create_sse_event = NamedTuple("SSEEvent", [("data", dict)])
 
 
-def test_build_with_last_config(mocker, simai_client, httpx_mock):
+def test_build_with_last_config(mocker, simai_client, httpx2_mock):
     """WHEN I call launch_build() with using the last build configuration
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
     ModelConfiguration and its content matches the raw conf.
     """
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/model?{MODEL_BUILD_DEFAULT_QUERY_PARAMS}",
         json=MODEL_RAW,
@@ -222,13 +222,13 @@ def test_build_with_last_config(mocker, simai_client, httpx_mock):
         "sample": SAMPLE_RAW,
     }
     for _ in range(2):
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url=f"https://test.test/projects/{MODEL_RAW['project_id']}",
             json=raw_project,
             status_code=200,
         )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
         json={"is_trainable": True},
@@ -252,7 +252,7 @@ def test_build_with_last_config(mocker, simai_client, httpx_mock):
     assert launched_model.configuration._to_payload() == MODEL_CONF_RAW
 
 
-def test_build_with_new_config(mocker, simai_client, httpx_mock):
+def test_build_with_new_config(mocker, simai_client, httpx2_mock):
     """WHEN I call launch_build() with using a new build configuration
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
@@ -265,13 +265,13 @@ def test_build_with_new_config(mocker, simai_client, httpx_mock):
         "sample": SAMPLE_RAW,
     }
     for _ in range(2):
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url=f"https://test.test/projects/{MODEL_RAW['project_id']}",
             json=raw_project,
             status_code=200,
         )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
         json={"is_trainable": True},
@@ -305,7 +305,7 @@ def test_build_with_new_config(mocker, simai_client, httpx_mock):
         simulation_volume=simulation_volume,
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/model?{MODEL_BUILD_DEFAULT_QUERY_PARAMS}",
         json=MODEL_RAW,
@@ -509,7 +509,7 @@ def test_sse_event_handler(simai_client, model_factory):
     assert model.is_ready
 
 
-def test_throw_error_when_volume_is_missing_from_sample(mocker, simai_client, httpx_mock):
+def test_throw_error_when_volume_is_missing_from_sample(mocker, simai_client, httpx2_mock):
     """WHEN there is no volume in the extracted_metadata of the reference sample
     AND the volume variables are set as model output
     THEN a ProcessingError is thrown.
@@ -544,7 +544,7 @@ def test_throw_error_when_volume_is_missing_from_sample(mocker, simai_client, ht
         )
 
 
-def test_post_process_input(mocker, simai_client, httpx_mock):
+def test_post_process_input(mocker, simai_client, httpx2_mock):
     """WHEN ModelConfiguration includes a specified pp_input arg
     THEN ModelConfiguration object and Model.configuration property return that exact pp_input
     """
@@ -555,13 +555,13 @@ def test_post_process_input(mocker, simai_client, httpx_mock):
         "sample": SAMPLE_RAW,
     }
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}",
         json=raw_project,
         status_code=200,
     )
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
         json={"is_trainable": True},
@@ -593,7 +593,7 @@ def test_post_process_input(mocker, simai_client, httpx_mock):
         pp_input=pp_input,
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{model_request['project_id']}/model?{MODEL_BUILD_DEFAULT_QUERY_PARAMS}",
         json=model_request,
@@ -620,7 +620,7 @@ def test_post_process_input(mocker, simai_client, httpx_mock):
     )
 
 
-def test_failed_build_with_resolution(simai_client, httpx_mock):
+def test_failed_build_with_resolution(simai_client, httpx2_mock):
     """WHEN I call launch_build() with using a new build configuration
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
@@ -633,7 +633,7 @@ def test_failed_build_with_resolution(simai_client, httpx_mock):
         "sample": SAMPLE_RAW,
     }
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
         json={"is_trainable": True},
@@ -671,7 +671,7 @@ def test_failed_build_with_resolution(simai_client, httpx_mock):
         "resolution": "This is a resolution.",
     }
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/model?{MODEL_BUILD_DEFAULT_QUERY_PARAMS}",
         json=response_json,
@@ -683,7 +683,7 @@ def test_failed_build_with_resolution(simai_client, httpx_mock):
     assert "This is a resolution." in str(e.value)
 
 
-def test_throw_error_when_unknown_variables(simai_client, httpx_mock):
+def test_throw_error_when_unknown_variables(simai_client, httpx2_mock):
     """WHEN input/output/pp_input variables are not found in the reference sample
     THEN a ProcessingError is raised.
     """
@@ -716,7 +716,7 @@ def test_throw_error_when_unknown_variables(simai_client, httpx_mock):
         assert ukn_var in str(e.value)
 
 
-def test_build_with_build_on_top_not_able(mocker, simai_client, httpx_mock):
+def test_build_with_build_on_top_not_able(mocker, simai_client, httpx2_mock):
     """WHEN I call launch_build() using last model conf and build on top
     WITH project not being able to use continuous learning
     THEN an InvalidArguments exception is raised
@@ -732,14 +732,14 @@ def test_build_with_build_on_top_not_able(mocker, simai_client, httpx_mock):
         },
     }
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
         json={"is_trainable": True},
         status_code=200,
     )
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/model/on-top?{MODEL_BUILD_DEFAULT_QUERY_PARAMS}",
         json={
@@ -769,7 +769,7 @@ def test_build_with_build_on_top_not_able(mocker, simai_client, httpx_mock):
         simai_client.models.build(project_last_conf)
 
 
-def test_build_with_build_on_top_previous_config(mocker, simai_client, httpx_mock):
+def test_build_with_build_on_top_previous_config(mocker, simai_client, httpx2_mock):
     """WHEN I call launch_build() using the last build configuration and build on top
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
@@ -784,14 +784,14 @@ def test_build_with_build_on_top_previous_config(mocker, simai_client, httpx_moc
         "training_capabilities": {"continuous_learning": {"able": True, "reasons": []}},
     }
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
         json={"is_trainable": True},
         status_code=200,
     )
     for _ in range(2):
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url=f"https://test.test/projects/{MODEL_RAW['project_id']}",
             json=raw_project,
@@ -810,7 +810,7 @@ def test_build_with_build_on_top_previous_config(mocker, simai_client, httpx_moc
     model_config_new["continuous"] = True
     model_raw_new["configuration"] = model_config_new
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/model/on-top?{MODEL_BUILD_DEFAULT_QUERY_PARAMS}",
         json=model_raw_new,
@@ -826,7 +826,7 @@ def test_build_with_build_on_top_previous_config(mocker, simai_client, httpx_moc
     assert launched_model.configuration._to_payload() == project_last_conf._to_payload()
 
 
-def test_build_with_build_on_top_minimal_config(mocker, simai_client, httpx_mock):
+def test_build_with_build_on_top_minimal_config(mocker, simai_client, httpx2_mock):
     """WHEN I call launch_build() using the minimal configuration and build on top
     THEN I get a Model object, its project_id matches the
     id of the project, and its configuration is a
@@ -841,14 +841,14 @@ def test_build_with_build_on_top_minimal_config(mocker, simai_client, httpx_mock
         "training_capabilities": {"continuous_learning": {"able": True, "reasons": []}},
     }
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="GET",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/trainable",
         json={"is_trainable": True},
         status_code=200,
     )
     for _ in range(2):
-        httpx_mock.add_response(
+        httpx2_mock.add_response(
             method="GET",
             url=f"https://test.test/projects/{MODEL_RAW['project_id']}",
             json=raw_project,
@@ -869,7 +869,7 @@ def test_build_with_build_on_top_minimal_config(mocker, simai_client, httpx_mock
     model_config_new["continuous"] = True
     model_raw_new["configuration"] = model_config_new
 
-    httpx_mock.add_response(
+    httpx2_mock.add_response(
         method="POST",
         url=f"https://test.test/projects/{MODEL_RAW['project_id']}/model/on-top?{MODEL_BUILD_DEFAULT_QUERY_PARAMS}",
         json=model_raw_new,
