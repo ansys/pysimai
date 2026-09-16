@@ -121,7 +121,7 @@ For the maximum resolution, prediction takes approximately 10 minutes.
 
 .. _reduced_latent_spaces_geomai:
 
-Working with reduced latent spaces
+Working with a reduced latent space
 ------------------------------------
 
 GeomAI orders latent dimensions by importance: the first dimensions capture the largest sources of

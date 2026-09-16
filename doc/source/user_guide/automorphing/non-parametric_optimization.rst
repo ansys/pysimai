@@ -16,7 +16,7 @@ SimAI uses this approach to automatically generate new geometries through goal-d
 directly applied to non-parameterized baseline geometries.
 
 Unlike traditional parametric methods, this approach requires no predefined design variables and
-enables you to optimize existing geometries seamlessly, directly within the SimAI platform.
+enables you to optimize existing geometries seamlessly, directly within the Ansys SimAI platform.
 
 Please note that the feature is currently available via SDK only through the
 :meth:`run_non_parametric()<ansys.simai.core.data.optimizations.OptimizationDirectory.run_non_parametric>`
