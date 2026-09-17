@@ -34,7 +34,7 @@ Before you begin
 
 - Complete ":ref:`ref_basic_build_model`" to train a SimAI model.
 - Ensure the model training completed successfully.
-- Have a dataset folder with subdirectories containing geometry files. These geometry files can come from a Generative Design model.
+- Have a dataset folder with subdirectories containing geometry files. These geometry files can come from a GeomAI model.
 - (Optional) Prepare scalar JSON files if your model requires them.
 
 """

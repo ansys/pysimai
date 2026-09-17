@@ -30,7 +30,7 @@ This example demonstrates how to generate random geometries using random latent 
 Before you begin
 -------------------------------------------
 
-- Complete ":ref:`ref_build_model`" to train a Generative Design model.
+- Complete ":ref:`ref_build_model`" to train a GeomAI model.
 - Ensure the model training completed successfully.
 
 """
@@ -93,7 +93,7 @@ print(f"Output directory: {output_dir}")
 ###############################################################################
 # Generate random geometries
 # -------------------------------------------
-# Generate geometries by creating random latent parameter vectors.
+# Generate geometries by creating random latent parameters.
 # Each latent parameter is randomly sampled from a standard normal distribution.
 
 predictions: list[GeomAIPrediction] = []
