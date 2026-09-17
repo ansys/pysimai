@@ -24,10 +24,11 @@
 
 import copy
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from math import ceil
 
 import httpx
+import jwt
 import pytest
 from pytest_httpx import HTTPXMock
 
@@ -47,6 +48,17 @@ DEFAULT_TOKENS = {
     "refresh_expires_in": 1800,
     "refresh_token": "kaboom",
 }
+
+
+def _make_access_token(sub: str = "service-account-test", expires_in: int = 3600) -> str:
+    return jwt.encode(
+        {
+            "sub": sub,
+            "exp": datetime.now(timezone.utc) + timedelta(seconds=expires_in),
+        },
+        "secret",
+        algorithm="HS256",
+    )
 
 
 def test_request_auth_tokens_direct_grant_bad_credentials_raises(mocker, tmpdir, httpx_mock):
@@ -419,6 +431,115 @@ def test_non_interactive_mode_accepts_offline_token():
     )
     assert config.offline_token == "my-offline-token"
     assert config.credentials is None
+
+
+def test_non_interactive_mode_accepts_access_token():
+    access_token = _make_access_token()
+    config = ClientConfig(
+        url="https://simai.ansys.com",
+        organization="test_org",
+        interactive=False,
+        access_token=access_token,
+    )
+    assert config.access_token == access_token
+    assert config.credentials is None
+
+
+def test_access_token_loaded_from_env(monkeypatch):
+    access_token = _make_access_token()
+    monkeypatch.setenv("SIMAI_ACCESS_TOKEN", access_token)
+    config = ClientConfig(
+        url="https://simai.ansys.com",
+        organization="test_org",
+        interactive=False,
+    )
+    assert config.access_token == access_token
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {
+            "credentials": Credentials(username="user", password="pass"),
+            "access_token": _make_access_token(),
+        },
+        {
+            "offline_token": "my-offline-token",
+            "access_token": _make_access_token(),
+        },
+    ],
+)
+def test_access_token_mutually_exclusive_with_other_auth_methods(kwargs):
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError, match="auth_conflict"):
+        ClientConfig(
+            url="https://simai.ansys.com",
+            organization="test_org",
+            **kwargs,
+        )
+
+
+def test_auth_with_access_token(mocker, tmpdir):
+    """WHEN authenticating with a pre-issued access token
+    THEN no token endpoint is called and the token is used as Bearer auth.
+    """
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
+    access_token = _make_access_token(sub="service-account-ci")
+
+    auth = Authenticator(
+        ClientConfig(
+            url="https://simai.ansys.com",
+            organization="test_org",
+            interactive=False,
+            access_token=access_token,
+            skip_version_check=True,
+        ),
+        httpx.Client(),
+    )
+
+    req = httpx.Request("GET", "https://simai.ansys.com/v2/models")
+    req = next(auth.auth_flow(req))
+    assert req.headers.get("Authorization") == f"Bearer {access_token}"
+    assert req.headers.get("X-Org") == "test_org"
+
+
+def test_expired_access_token_raises():
+    expired_token = _make_access_token(expires_in=-60)
+    with pytest.raises(RuntimeError, match="Access token has expired"):
+        _AuthTokensRetriever(
+            credentials=None,
+            session=httpx.Client(),
+            realm_url="http://myauthserver.com",
+            auth_cache_hash="expired",
+            access_token=expired_token,
+        )
+
+
+def test_access_token_reused_across_get_tokens_calls(mocker, tmpdir, httpx_mock):
+    """WHEN using a pre-issued access token
+    THEN get_tokens() returns the same cached token on every call without contacting the auth server.
+    """
+    mocker.patch("ansys.simai.core.utils.auth.get_cache_dir", return_value=tmpdir)
+    access_token = _make_access_token(sub="service-account-ci")
+
+    tokens_retriever = _AuthTokensRetriever(
+        credentials=None,
+        session=httpx.Client(),
+        realm_url="http://myauthserver.com",
+        auth_cache_hash="static",
+        access_token=access_token,
+    )
+
+    tokens_first = tokens_retriever.get_tokens()
+    tokens_second = tokens_retriever.get_tokens()
+    tokens_forced = tokens_retriever.get_tokens(force_refresh=True)
+
+    assert tokens_first.access_token == access_token
+    assert tokens_second.access_token == access_token
+    assert tokens_forced.access_token == access_token
+    assert tokens_first is tokens_second is tokens_forced
+    assert len(httpx_mock.get_requests()) == 0
 
 
 @pytest.mark.parametrize(
