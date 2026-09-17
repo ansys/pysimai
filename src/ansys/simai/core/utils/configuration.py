@@ -22,8 +22,9 @@
 
 import hashlib
 import logging
+import os
 from os import PathLike
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 from urllib.parse import urlparse, urlunparse
 
 from pydantic import (
@@ -101,6 +102,8 @@ class ClientConfig(BaseModel, extra="allow"):
     "Authenticate via username/password instead of the device authorization code."
     offline_token: Optional[str] = None
     "Authenticate via an offline token instead of credentials or device auth."
+    access_token: Optional[str] = None
+    "Authenticate with a pre-issued OIDC access token (e.g. CI federated JWT exchange)."
     skip_version_check: bool = False
     "Skip checking for updates."
     no_sse_connection: bool = False
@@ -133,6 +136,8 @@ class ClientConfig(BaseModel, extra="allow"):
             hasher.update(self.credentials.username.encode())
         if self.offline_token:
             hasher.update(self.offline_token.encode())
+        if self.access_token:
+            hasher.update(self.access_token.encode())
         config_file_profile = getattr(self, "_config_file_profile", None)
         if config_file_profile:
             hasher.update(config_file_profile.encode())
@@ -146,17 +151,29 @@ class ClientConfig(BaseModel, extra="allow"):
             val = prompt_if_interactive(interactive=info.data["interactive"], name="organization")
         return val
 
+    @model_validator(mode="before")
+    @classmethod
+    def load_access_token_from_env(cls, data: Any) -> Any:
+        if isinstance(data, dict) and not data.get("access_token"):
+            env_token = os.environ.get("SIMAI_ACCESS_TOKEN")
+            if env_token:
+                data = {**data, "access_token": env_token}
+        return data
+
     @model_validator(mode="after")
     def validate_auth_config(self):
         """Validate authentication configuration."""
-        if self.credentials and self.offline_token:
+        auth_methods = sum(
+            1 for method in (self.credentials, self.offline_token, self.access_token) if method
+        )
+        if auth_methods > 1:
             raise PydanticCustomError(
                 "auth_conflict",
-                """Cannot use both credentials and offline_token - choose one authentication method""",
+                """Cannot combine credentials, offline_token, and access_token - choose one authentication method""",
             )
-        if not self.interactive and not self.credentials and not self.offline_token:
+        if not self.interactive and auth_methods == 0:
             raise PydanticCustomError(
                 "auth_missing_in_non_interactive",
-                """Either credentials or offline_token must be provided when interactive is false""",
+                """Either credentials, offline_token, or access_token must be provided when interactive is false""",
             )
         return self

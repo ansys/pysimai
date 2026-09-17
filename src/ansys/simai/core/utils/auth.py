@@ -113,6 +113,26 @@ class _AuthTokens(BaseModel):
         return (self.refresh_expiration - datetime.now(timezone.utc)).total_seconds()
 
 
+def _tokens_from_access_token(access_token: str) -> _AuthTokens:
+    """Build auth tokens from a pre-issued access token (no refresh)."""
+    try:
+        claims = jwt.decode(access_token, options={"verify_signature": False})
+    except jwt.PyJWTError as e:
+        raise RuntimeError(f"Invalid access token: {e}") from e
+    exp = claims.get("exp")
+    if exp is None:
+        raise RuntimeError("Access token is missing the exp claim")
+    expiration = datetime.fromtimestamp(exp, timezone.utc)
+    if expiration <= datetime.now(timezone.utc):
+        raise RuntimeError("Access token has expired")
+    return _AuthTokens(
+        access_token=access_token,
+        expiration=expiration,
+        refresh_expiration=expiration,
+        refresh_token="",  # nosec B106  # no refresh token for pre-issued access tokens
+    )
+
+
 def _request_tokens_direct_grant(
     session: httpx.Client,
     token_url: str,
@@ -175,6 +195,7 @@ class _AuthTokensRetriever:
         auth_cache_hash: str,
         realm_url: str,
         offline_token: Optional[str] = None,
+        access_token: Optional[str] = None,
     ) -> None:
         self.credentials = credentials
         self.offline_token = offline_token
@@ -183,6 +204,7 @@ class _AuthTokensRetriever:
         self.device_auth_url = f"{realm_url}/protocol/openid-connect/auth/device"
         self.refresh_timer = threading.Timer(0, lambda: None)
         self.cache_file_path = str(get_cache_dir() / f"tokens-{auth_cache_hash}.json")
+        self._static_auth_tokens = _tokens_from_access_token(access_token) if access_token else None
 
     def _get_token_from_cache(self) -> Optional[_AuthTokens]:
         try:
@@ -236,7 +258,16 @@ class _AuthTokensRetriever:
         self.refresh_timer.daemon = True
         self.refresh_timer.start()
 
+    def _get_static_auth_tokens(self) -> _AuthTokens:
+        if self._static_auth_tokens is None:
+            raise RuntimeError("Static auth tokens are not configured")
+        if self._static_auth_tokens.expiration <= datetime.now(timezone.utc):
+            raise RuntimeError("Access token has expired")
+        return self._static_auth_tokens
+
     def get_tokens(self, force_refresh: bool = False) -> _AuthTokens:
+        if self._static_auth_tokens is not None:
+            return self._get_static_auth_tokens()
         auth = self._get_token_from_cache()
         if auth and not auth.must_refresh_tokens() and not force_refresh:
             # fast path: avoid locking the tokens, return early
@@ -342,7 +373,12 @@ class Authenticator(httpx.Auth):
         self._last_access_token = None
         auth_hash = config._auth_hash()
         self.tokens_retriever = _AuthTokensRetriever(
-            config.credentials, session, auth_hash, self._realm_url, config.offline_token
+            config.credentials,
+            session,
+            auth_hash,
+            self._realm_url,
+            config.offline_token,
+            config.access_token,
         )
         auth = self.tokens_retriever.get_tokens()
         self._update_user_uuid(auth.access_token)

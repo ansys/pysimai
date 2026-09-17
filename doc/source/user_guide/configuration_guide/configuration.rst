@@ -88,8 +88,8 @@ in case of missing configuration properties.
 Default behavior is `interactive=true`.
 
 It is important to note that login through web browser is turned off when `interactive=false`.
-This means that either ``credentials`` or ``offline_token`` must be provided, otherwise
-an error would be raised.
+This means that either ``credentials``, ``offline_token``, or ``access_token`` must be provided,
+otherwise an error would be raised.
 
 .. _offline_tokens:
 
@@ -98,7 +98,10 @@ Offline tokens
 
 Offline tokens are long-lived authentication tokens that can be used for non-interactive
 authentication. Unlike regular session tokens, offline tokens do not expire based on session
-timeouts, making them ideal for server-side scripts, CI/CD pipelines, and automated workflows.
+timeouts, making them ideal for server-side scripts and automated workflows.
+
+For CI pipelines that obtain a short-lived token via OIDC (for example, GitHub Actions
+federated with Keycloak), prefer :ref:`access_tokens` instead.
 
 Generating an offline token
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -143,6 +146,11 @@ Or in a configuration file:
     offline_token = "your-offline-token-here"
     interactive = false
 
+.. note::
+
+    You cannot combine ``credentials`` and ``offline_token``. See :ref:`access_tokens`
+    for the third non-interactive authentication option.
+
 Managing consents
 ^^^^^^^^^^^^^^^^^
 
@@ -159,7 +167,48 @@ to use offline tokens. You can list and revoke consents through the client:
     # Revoke a specific consent (invalidates associated offline tokens)
     simai_client.me.consents.revoke("sdk")
 
+.. _access_tokens:
+
+Access tokens
+-------------
+
+Pre-issued access tokens are short-lived OIDC bearer tokens. They are suited to CI/CD
+pipelines where an external step (for example, GitHub Actions OIDC exchanged with
+Keycloak) already obtained a token. Unlike ``offline_token``, access tokens are not
+refreshed by the SDK: when they expire, obtain a new token from your CI login step.
+
+Using an access token
+^^^^^^^^^^^^^^^^^^^^^
+
+Pass the token explicitly when creating the client:
+
+.. code-block:: python
+
+    import ansys.simai.core as asc
+
+    simai_client = asc.SimAIClient(
+        organization="my-company",
+        access_token="your-access-token-here",
+        interactive=False,
+    )
+
+Or set the ``SIMAI_ACCESS_TOKEN`` environment variable (useful in CI):
+
+.. code-block:: python
+
+    import ansys.simai.core as asc
+
+    simai_client = asc.SimAIClient(
+        organization="my-company",
+        interactive=False,
+    )
+
+.. warning::
+
+    Do not commit access tokens to source control or configuration files. Prefer
+    ``SIMAI_ACCESS_TOKEN`` in CI secrets or ephemeral job environment variables.
+
 .. note::
 
-    You cannot use both ``credentials`` and ``offline_token`` at the same time.
+    You cannot combine ``credentials``, ``offline_token``, and ``access_token``.
     Choose one authentication method.
