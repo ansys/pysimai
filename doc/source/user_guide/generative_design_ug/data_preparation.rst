@@ -64,7 +64,9 @@ You can use `PyVista <https://docs.pyvista.org/>`_ to check if your geometry is 
    if mesh.is_manifold and mesh.n_open_edges == 0:
        print("Geometry is manifold and watertight.")
    else:
-       print("Geometry has issues. Please fix holes, open edges, or non-manifold edges before uploading.")
+       print(
+           "Geometry has issues. Please fix holes, open edges, or non-manifold edges before uploading."
+       )
 
    # Visualize the mesh to inspect for issues
    mesh.plot(show_edges=True)
