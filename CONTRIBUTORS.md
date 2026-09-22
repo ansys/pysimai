@@ -14,6 +14,7 @@
 * [Jeremie Spiesser](https://github.com/jeremiespiesser-extrality)
 * [Kathy Pippert](https://github.com/PipKat)
 * [kliment-slice](https://github.com/kliment-slice)
+* [Maamoun Zertiti](https://github.com/mze1094)
 * [Maid Sultanovic](https://github.com/msd-11)
 * [Marie Lelandais](https://github.com/marielelandais)
 * [Maxime Rey](https://github.com/MaxJPRey)
