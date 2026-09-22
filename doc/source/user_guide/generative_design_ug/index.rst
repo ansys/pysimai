@@ -3,19 +3,17 @@
 Generate new designs
 ========================================================
 
-With GeomAI, you generate new geometries based on existing ones.
-
-.. note::
-   GeomAI is designed to **generate geometries**. It does not use physical response data (forces,
-   flow fields, pressure, etc.) and cannot predict them. If your goal is to predict physical
-   responses from geometries, use SimAI instead.
-
-The principle is that:
+With GeomAI, you generate new geometries based on existing ones. The principle is that:
 
 1. You provide a dataset of geometries.
 2. The AI model is trained to find a compressed representation of those geometries (the latent space).
 3. Once the representation is computed, the model can generate new geometries by working in this
    compressed representation space.
+
+.. note::
+   GeomAI is designed to **generate geometries**. It does not use physical response data (forces,
+   flow fields, pressure, etc.) and cannot predict them. If your goal is to predict physical
+   responses from geometries, use SimAI instead.
 
 **Key concepts**
 
@@ -31,15 +29,8 @@ The steps to follow are:
 #. Evaluate the model quality.
 #. Generate new designs and integrate them into your workflow.
 
-.. tip::
-   Start with a small number of geometries and the ``short`` build preset to quickly check
-   if the model can learn and if the generated designs are meaningful.
-   This helps detect issues early and saves time.
-
-   If the model performs well on the small set, you can scale up with the ``default`` or ``long``
-   build presets, depending on the complexity of the geometries used as training data.
-
 For practical examples and scripts to execute yourself, see :ref:`ref_examples`.
+Follow the user guide to have more explanation on each step.
 
 .. toctree::
    :maxdepth: 2
