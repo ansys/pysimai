@@ -118,9 +118,13 @@ class GeomAIWorkspace(DataModel):
     ) -> Union[dict[str, List[float]], None, BinaryIO]:
         """Get the mapping between geometry names and their latent parameter vectors for the model's training data.
 
+        By default, latent parameters are ordered by importance: the first ones capture the largest
+        sources of variation in the training data, while later ones capture increasingly finer details.
+
         Args:
             file: Binary file-object or the path of the file to put the content into.
-            n: Optional number of latent parameters to retrieve per geometry (the length of your latent code).
+            n: Optional number of latent parameters to retrieve per geometry (i.e., the length of
+                the returned vector).
                 If ``None``, all latent parameters are returned.
                 If specified, each vector is truncated to the first ``n`` elements.
                 Must not exceed the number of latent parameters used for model training.

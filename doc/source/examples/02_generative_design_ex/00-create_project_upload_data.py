@@ -59,7 +59,7 @@ PROJECT_NAME = "your_project_name"  # Replace with your project name
 # Create the client
 # -------------------------------------------
 # Create a client to use the PySimAI library. This client will be the
-# entrypoint for all Generative Design objects.
+# entrypoint for all GeomAI objects.
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
@@ -115,11 +115,11 @@ print("\nAll training data uploaded.")
 # Wait for data processing
 # -------------------------------------------
 # After uploading, the instance processes the geometries.
-# Wait for all data in the project to be ready.
+# Wait for all data in the project to be processed and ready.
 #
 # .. note::
 #    An "invalid geometry" failure means the geometry is not compatible with
-#    Generative Design. Check the file for watertightness and manifold issues.
+#    GeomAI. Check the file for watertightness and manifold issues.
 
 project_data = project.list_training_data()
 
@@ -143,5 +143,5 @@ print(f"\nProject '{PROJECT_NAME}': {ready_count}/{len(project_data)} training d
 ###############################################################################
 # Next steps
 # -------------------------------------------
-# Once all data is ready, you can proceed to build a model.
+# Once all data is ready, you can proceed to train a model.
 # See the next example: :ref:`ref_build_model`.
