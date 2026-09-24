@@ -27,8 +27,8 @@
 Non-parametric optimization
 ===========================
 
-This example demonstrates how to perform non-parametric optimization in SimAI
-using the automorphing feature. Non-parametric optimization improves the performance
+This example demonstrates how to perform non-parametric optimization in SimAI.
+Non-parametric optimization improves the performance
 of a baseline geometry by applying smooth, data-driven deformations based on
 predicted sensitivity maps.
 
@@ -357,7 +357,7 @@ for prediction in predictions:
 # - Add validated results as new training data for model improvement.
 #
 # For more details on configuration options, see the
-# :ref:`automorphing configuration guide <configure_automorphing>`.
+# :ref:`non-parametric optimization configuration guide <configure_npo>`.
 
 ###############################################################################
 # Other tools: Generate screenshots and GIFs

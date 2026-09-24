@@ -6,14 +6,11 @@ SimAI's non-parametric optimization feature is a process used to improve the per
 
 This approach is especially relevant when there are no predefined building parameters, and it would be too difficult to
 define them retroactively.
+
 In such cases, non-parametric optimization must be performed, as it enables you to optimize the provided shape directly
 by applying smooth and continuous deformations to the baseline geometry.
 This helps you explore the design space and make shape changes based on an objective function
 without generating new geometries themselves or reparametrizing existing designs.
-
-This is where automorphing comes in:
-SimAI uses this approach to automatically generate new geometries through goal-driven shape deformations
-directly applied to non-parameterized baseline geometries.
 
 Unlike traditional parametric methods, this approach requires no predefined design variables and
 enables you to optimize existing geometries seamlessly, directly within the Ansys SimAI platform.
@@ -62,8 +59,8 @@ Step 3. Optimization
 1. Perform a non-parametric optimization by calling the
    :meth:`run_non_parametric()<ansys.simai.core.data.optimizations.OptimizationDirectory.run_non_parametric>`
    function.
-#. | At each optimization loop, automorphed geometries are uploaded to the workspace.
-   | The number of automorphed geometries uploaded to the workspace depends on the ``n_iters`` configured.
+#. | At each optimization loop, deformed geometries are uploaded to the workspace.
+   | The number of deformed geometries uploaded to the workspace depends on the ``n_iters`` configured.
 #. Run predictions, postprocessings, etc. on the generated geometries, if needed.
 
 Step 4. Solver verification
