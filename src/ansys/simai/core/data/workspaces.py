@@ -113,6 +113,20 @@ class Workspace(DataModel):
         return self.fields["name"]
 
     @property
+    def description(self) -> Optional[str]:
+        """Description of the workspace."""
+        return self.fields.get("description")
+
+    def set_description(self, new_description: Optional[str]) -> None:
+        """Set the workspace description.
+
+        Args:
+            new_description: New description for the workspace.
+        """
+        self._client._api.update_workspace(self.id, description=new_description)
+        self.reload()
+
+    @property
     def model(self) -> ModelManifest:
         """Deprecated alias to :py:attr:`~model_manifest`."""
         warnings.warn(
@@ -269,14 +283,17 @@ class WorkspaceDirectory(Directory[Workspace]):
             return self._model_from(self._client._api.get_workspace(id))
         raise ValueError("Either 'id' or 'name' must be specified.")
 
-    def create(self, name: str, model_id: str) -> Workspace:
+    def create(self, name: str, model_id: str, description: Optional[str] = None) -> Workspace:
         """Create a workspace.
 
         Args:
             name: Name to give the new workspace.
             model_id: ID of the model for the workspace to use.
+            description: Optional description for the workspace.
         """
-        return self._model_from(self._client._api.create_workspace(name, model_id))
+        return self._model_from(
+            self._client._api.create_workspace(name, model_id, description=description)
+        )
 
     def delete(self, workspace: Identifiable[Workspace]) -> None:
         """Delete a workspace.

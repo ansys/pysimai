@@ -367,3 +367,62 @@ def test_geomai_project_last_model_none(simai_client):
     model = project.last_model
 
     assert model is None
+
+
+def test_geomai_project_description_get(simai_client):
+    """WHEN a GeomAI project has a description
+    THEN it can be retrieved via the description property."""
+    project = simai_client.geomai.projects._model_from(
+        {"id": "0011", "name": "riri", "description": "A geometry optimization study"}
+    )
+
+    assert project.description == "A geometry optimization study"
+
+
+def test_geomai_project_description_get_none(simai_client):
+    """WHEN a GeomAI project has no description
+    THEN the description property returns None."""
+    project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
+
+    assert project.description is None
+
+
+def test_geomai_project_description_set(simai_client, httpx_mock):
+    """WHEN setting a GeomAI project description
+    THEN a PATCH request is made with the description."""
+    project = simai_client.geomai.projects._model_from(
+        {"id": "0011", "name": "riri", "description": None}
+    )
+
+    httpx_mock.add_response(
+        method="PATCH",
+        url="https://test.test/geomai/projects/0011",
+        status_code=204,
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects/0011",
+        json={"id": "0011", "name": "riri", "description": "New description"},
+        status_code=200,
+    )
+
+    project.set_description("New description")
+    assert project.description == "New description"
+
+
+def test_geomai_project_create_with_description(simai_client, httpx_mock):
+    """WHEN creating a GeomAI project with a description
+    THEN the description is sent in the request."""
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/geomai/projects",
+        json={"id": "0011", "name": "my_project", "description": "My project description"},
+        status_code=200,
+    )
+
+    project = simai_client.geomai.projects.create(
+        name="my_project", description="My project description"
+    )
+
+    assert project.name == "my_project"
+    assert project.description == "My project description"

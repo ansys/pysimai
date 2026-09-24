@@ -50,10 +50,14 @@ class GeomAIProjectClientMixin(ApiClientMixin):
     def create_geomai_project(self, **kwargs):
         return self._post("geomai/projects", json=kwargs)
 
-    def update_geomai_project(self, project_id: str, name: str):
-        request_json = {}
-        request_json["name"] = name
-        self._patch(f"geomai/projects/{project_id}", json=request_json, return_json=False)
+    def update_geomai_project(self, project_id: str, **kwargs):
+        """Update a GeomAI project.
+
+        Args:
+            project_id: ID of the project.
+            **kwargs: Project fields to pass as keyword arguments.
+        """
+        self._patch(f"geomai/projects/{project_id}", json=kwargs, return_json=False)
 
     def iter_training_data_in_geomai_project(self, project_id: str) -> Iterator[Dict[str, Any]]:
         next_page = f"geomai/projects/{project_id}/training-data"

@@ -122,6 +122,20 @@ class Project(DataModel):
         """Name of project."""
         return self.fields["name"]
 
+    @property
+    def description(self) -> Optional[str]:
+        """Description of the project."""
+        return self.fields.get("description")
+
+    def set_description(self, new_description: Optional[str]) -> None:
+        """Set the project description.
+
+        Args:
+            new_description: New description for the project.
+        """
+        self._client._api.update_project(self.id, description=new_description)
+        self.reload()
+
     def rename(self, new_name: str) -> None:
         """Rename the project.
 
@@ -320,9 +334,16 @@ class ProjectDirectory(Directory[Project]):
 
         return list(self.iter(raw_filters))
 
-    def create(self, name: str) -> Project:
-        """Create a project."""
-        return self._model_from(self._client._api.create_project(name=name))
+    def create(self, name: str, description: Optional[str] = None) -> Project:
+        """Create a project.
+
+        Args:
+            name: Name to give to the project.
+            description: Optional description for the project.
+        """
+        return self._model_from(
+            self._client._api.create_project(name=name, description=description)
+        )
 
     def get(self, id: Optional[str] = None, name: Optional[str] = None) -> Project:
         """Get a project by either ID or name.
