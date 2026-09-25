@@ -1,12 +1,12 @@
-.. _ref_automorphing_guide:
+.. _ref_npo_guide:
 
 Optimize geometries
 ========================================================
 
-In SimAI, automorphing is a non-parametric deformation of a surface geometry.
+In SimAI, non-parametric optimization performs a deformation of a surface geometry.
 
 .. toctree::
    :maxdepth: 2
 
    non-parametric_optimization
-   configure_automorphing
+   configure_npo

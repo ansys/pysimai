@@ -247,9 +247,9 @@ class OptimizationDirectory(Directory[Optimization]):
         detail_level: Optional[int] = None,
         part_morphing: Optional[OptimizationPartMorphingSchema] = None,
     ) -> Union[Optimization, LegacyOptimizationResult]:
-        """Run an optimization to generate geometries, using automorphing.
-        Automorphing is a non-parametric deformation of a surface geometry.
-        If possible, the function will try to run the optimization loop server-side. If not possible, the function will fall back to running the optimization loop client-side (legacy).
+        """Run an optimization to generate geometries, using a non-parametric deformation of a surface geometry.
+        If possible, the function will try to run the optimization loop server-side.
+        If not possible, the function will fall back to running the optimization loop client-side (legacy).
 
         .. warning::
             The ``boundary_conditions`` parameter is deprecated.
@@ -271,7 +271,7 @@ class OptimizationDirectory(Directory[Optimization]):
                     ]
 
             n_iters: Required. The number of optimization iterations. This number must be a strictly positive integer.
-                It will define the number of automorphed geometries uploaded to the SimAI workspace.
+                It will define the number of deformed geometries uploaded to the SimAI workspace.
             offline_token: Optional. Offline token to use for authentication.
                 If not provided, the method will try to use the offline token defined in the client configuration. If no ``offline_token`` can be passed as function parameter or in the client configuration, server-side optimization will not work.
                 See :ref:`current_user` to generate an offline token.
@@ -581,8 +581,7 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
         show_progress: bool = False,
         boundary_conditions: Optional[Dict[str, float]] = None,
     ) -> LegacyOptimizationResult:
-        """Run an optimization loop to generate geometries, client-side, using automorphing.
-        Automorphing is a non-parametric deformation of a surface geometry.
+        """Run an optimization loop to generate geometries, client-side, using a non-parametric deformation of a surface geometry.
 
         Args:
             geometry: Required. The object (Geometry) or the ID (str) of the baseline geometry on which to perform
@@ -601,7 +600,7 @@ class LegacyOptimizationDirectory(Directory[LegacyOptimization]):
                     ]
 
             n_iters: Required. The number of optimization iterations. This number must be a strictly positive integer.
-                It will define the number of automorphed geometries uploaded to the SimAI workspace.
+                It will define the number of deformed geometries uploaded to the SimAI workspace.
             symmetries: Optional. The list of symmetry axes, axes being x, y, and z, defining a plane around which the geometry is mirrored.
 
                 - The planar symmetry is applied to all the ``bounding_boxes`` defined.

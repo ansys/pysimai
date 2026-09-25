@@ -9,5 +9,5 @@ User guide
 
    user_guide/configuration_guide/index
    user_guide/pysimai_ug/index
-   user_guide/automorphing/index
+   user_guide/optimization_guide/index
    user_guide/generative_design_ug/index

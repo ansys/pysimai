@@ -1,4 +1,4 @@
-.. _configure_automorphing:
+.. _configure_npo:
 
 How to configure the non-parametric optimization
 ==================================================
