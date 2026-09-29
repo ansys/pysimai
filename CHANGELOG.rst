@@ -1,6 +1,28 @@
 Changelog
 ---------
 
+0.4.7 (2026-09-29)
+******************
+
+New:
+
+- Add ``description`` support to SimAI and GeomAI projects and workspaces.
+- Support pre-issued access tokens for CI OIDC authentication.
+
+Changes:
+
+- ``download_latent_parameters_json`` on GeomAI workspaces now raises an error, as part of its deprecation process.
+
+Fixes:
+
+- Fix :py:meth:`get_last_workspace<ansys.simai.core.data.geomai.projects.GeomAIProject.get_last_workspace>` for GeomAI projects.
+
+Documentation:
+
+- Add a new user guide for generative design.
+- Rename the ``automorphing`` documentation section to ``optimization_guide``.
+- Update GeomAI documentation.
+
 0.4.6 (2026-08-14)
 ******************
 
