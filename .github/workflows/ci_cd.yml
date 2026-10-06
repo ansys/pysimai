@@ -166,7 +166,7 @@ jobs:
     permissions:
       contents: write # to allow GitHub Pages deployment
     steps:
-      - uses: ansys/actions/doc-deploy-stable@e2075e950bdec40b816670160e98c4c184c7b281 # v11.0.0
+      - uses: ansys/actions/doc-deploy-stable@7410037bfb276c79ae91eb3617b9f5d2876f0c94 # v11.0.8
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
