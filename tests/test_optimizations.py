@@ -31,6 +31,7 @@ from ansys.simai.core.data.optimizations import (
     LegacyOptimizationResult,
     Optimization,
     _get_expected_client_id_for_coreml_model,
+    _resolve_server_side_auth_tokens,
     _validate_axial_symmetry,
     _validate_bounding_boxes,
     _validate_global_coefficients_for_non_parametric,
@@ -39,6 +40,16 @@ from ansys.simai.core.data.optimizations import (
     _validate_outcome_constraints,
 )
 from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.utils.configuration import ClientConfig
+
+
+def _server_side_optimization_post_body(httpx_mock) -> dict:
+    post = next(
+        r
+        for r in httpx_mock.get_requests()
+        if r.method == "POST" and "server-side-optimizations" in str(r.url)
+    )
+    return json.loads(post.content)
 
 
 def test_validate_bounding_boxes_success():
@@ -397,11 +408,12 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
         json={"id": "theid", "job_id": "the_job_id"},
     )
 
+    offline_token_value = "offline_token_example"  # noqa: S105
     # ruff: noqa: S106
     result = simai_client.optimizations.run_non_parametric(
         geometry=geometry,
         max_displacement=[1.1],
-        offline_token="offline_token_example",
+        offline_token=offline_token_value,
         bounding_boxes=[[0.1, 1, 0.1, 1, 0.1, 1]],
         symmetries=["x", "y", "z"],
         minimize=["TotalForceX"],
@@ -412,6 +424,10 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
     assert isinstance(result, Optimization)
     assert not result.is_ready
     assert result.optimization.id == "theid"
+
+    body = _server_side_optimization_post_body(httpx_mock)
+    assert body["offline_token"] == offline_token_value
+    assert "access_token" not in body
 
     iteration_results = [
         {
@@ -445,6 +461,123 @@ def test_run_non_parametric_optimization(simai_client, geometry_factory, model_f
     )
     assert result.is_ready
     assert result.iteration_results == iteration_results
+
+
+def test_run_non_parametric_optimization_with_access_token(
+    simai_client, geometry_factory, httpx_mock, monkeypatch
+):
+    workspace_id = "insert_cool_reference"
+    geometry = geometry_factory(workspace_id=workspace_id)
+
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
+        status_code=200,
+        json={"feature_flags": ["server_side_optimization"]},
+    )
+    httpx_mock.add_response(
+        method="POST",
+        url=f"https://test.test/workspaces/{workspace_id}/server-side-optimizations",
+        status_code=202,
+        json={"id": "theid", "job_id": "the_job_id"},
+    )
+
+    access_token_value = "access_token_example"  # noqa: S105
+    monkeypatch.setenv("SIMAI_ACCESS_TOKEN", access_token_value)
+    simai_client.optimizations.run_non_parametric(
+        geometry=geometry,
+        max_displacement=[1.1],
+        bounding_boxes=[[0.1, 1, 0.1, 1, 0.1, 1]],
+        symmetries=["x", "y", "z"],
+        minimize=["TotalForceX"],
+        scalars={"VelocityX": 10.5},
+        n_iters=3,
+    )
+
+    body = _server_side_optimization_post_body(httpx_mock)
+    assert body["access_token"] == access_token_value
+    assert "offline_token" not in body
+
+
+def test_run_non_parametric_optimization_rejects_both_auth_tokens(
+    simai_client, geometry_factory, httpx_mock, monkeypatch
+):
+    workspace_id = "insert_cool_reference"
+    geometry = geometry_factory(workspace_id=workspace_id)
+
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/workspaces/{workspace_id}/model/manifest/public",
+        status_code=200,
+        json={"feature_flags": ["server_side_optimization"]},
+    )
+
+    monkeypatch.setenv("SIMAI_ACCESS_TOKEN", "access-from-env")
+    with pytest.raises(InvalidArguments, match="not both"):
+        simai_client.optimizations.run_non_parametric(
+            geometry=geometry,
+            max_displacement=[1.1],
+            offline_token="offline",
+            bounding_boxes=[[0.1, 1, 0.1, 1, 0.1, 1]],
+            minimize=["TotalForceX"],
+            n_iters=3,
+        )
+
+
+def test_resolve_server_side_auth_tokens_from_call_args():
+    config_with_offline = ClientConfig(
+        url="https://test.test/",
+        organization="ExtraCorp",
+        interactive=False,
+        offline_token="config-offline",
+    )
+    offline, access = _resolve_server_side_auth_tokens("call-offline", config_with_offline)
+    assert offline == "call-offline"
+    assert access is None
+
+
+def test_resolve_server_side_auth_tokens_uses_config_offline_when_args_omitted():
+    config = ClientConfig(
+        url="https://test.test/",
+        organization="ExtraCorp",
+        interactive=False,
+        offline_token="config-offline-token",
+    )
+    offline, access = _resolve_server_side_auth_tokens(None, config)
+    assert offline == "config-offline-token"
+    assert access is None
+
+
+def test_resolve_server_side_auth_tokens_uses_simai_access_token_env_when_offline_missing(
+    monkeypatch,
+):
+    monkeypatch.setenv("SIMAI_ACCESS_TOKEN", "env-access-token")
+    config = ClientConfig(
+        url="https://test.test/",
+        organization="ExtraCorp",
+        interactive=False,
+        access_token="env-access-token",
+    )
+    offline, access = _resolve_server_side_auth_tokens(None, config)
+    assert offline is None
+    assert access == "env-access-token"
+
+
+def test_resolve_server_side_auth_tokens_rejects_both(monkeypatch):
+    monkeypatch.setenv("SIMAI_ACCESS_TOKEN", "access-from-env")
+    config = ClientConfig(url="https://test.test/", organization="ExtraCorp")
+    with pytest.raises(InvalidArguments, match="not both"):
+        _resolve_server_side_auth_tokens("offline", config)
+
+
+def test_resolve_server_side_auth_tokens_rejects_neither(monkeypatch):
+    monkeypatch.delenv("SIMAI_ACCESS_TOKEN", raising=False)
+    config = ClientConfig(
+        url="https://test.test/",
+        organization="ExtraCorp",
+    )
+    with pytest.raises(InvalidArguments, match="Please provide an offline token"):
+        _resolve_server_side_auth_tokens(None, config)
 
 
 @pytest.mark.parametrize(
