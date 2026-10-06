@@ -196,7 +196,7 @@ jobs:
           packages-dir: ${{ env.LIBRARY_NAME }}-artifacts
           skip-existing: false
       - name: "Release to GitHub"
-        uses: ansys/actions/release-github@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
+        uses: ansys/actions/release-github@7410037bfb276c79ae91eb3617b9f5d2876f0c94 # v11.0.8
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
