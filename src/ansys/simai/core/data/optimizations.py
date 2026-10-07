@@ -72,6 +72,19 @@ def _resolve_server_side_auth_tokens(
     return offline, access
 
 
+def _server_side_optimization_job_auth_fields(
+    offline_token: Optional[str],
+) -> Dict[str, str]:
+    """Build the single auth field for the server-side optimization POST body."""
+    offline = (offline_token or "").strip() or None
+    if offline is not None:
+        return {"offline_token": offline}
+    access = (os.environ.get("SIMAI_ACCESS_TOKEN") or "").strip() or None
+    if access is not None:
+        return {"access_token": access}
+    raise InvalidArguments("Please provide an offline token.")
+
+
 class _LegacyOptimizationTrialRun(ComputableDataModel):
     """Provides the local representation of an optimization trial run object.
 
@@ -297,10 +310,9 @@ class OptimizationDirectory(Directory[Optimization]):
 
             n_iters: Required. The number of optimization iterations. This number must be a strictly positive integer.
                 It will define the number of deformed geometries uploaded to the SimAI workspace.
-            offline_token: Optional. Offline (refresh) token for server-side optimization.
-                See :ref:`current_user` to generate an offline token. If omitted, the client
-                uses ``ClientConfig.offline_token``. For CI, set the ``SIMAI_ACCESS_TOKEN``
-                environment variable instead of passing an offline token; see :ref:`access_tokens`.
+            offline_token: Optional. Offline token to use for authentication.
+                If not provided, the method will try to use the offline token defined in the client configuration. If no ``offline_token`` can be passed as function parameter or in the client configuration, server-side optimization will not work.
+                For CI, set the ``SIMAI_ACCESS_TOKEN`` environment variable instead of passing an offline token.
             symmetries: Optional. The list of symmetry axes, axes being x, y, and z, defining a plane around which the geometry is mirrored.
 
                 - The planar symmetry is applied to all the ``bounding_boxes`` defined.
@@ -451,7 +463,6 @@ class OptimizationDirectory(Directory[Optimization]):
                 bounding_boxes=bounding_boxes,
                 n_iters=n_iters,
                 offline_token=resolved_offline,
-                access_token=resolved_access,
                 symmetries=symmetries,
                 axial_symmetry=axial_symmetry,
                 scalars=scalars,
@@ -496,7 +507,6 @@ class OptimizationDirectory(Directory[Optimization]):
         n_iters: int,
         max_displacement: List[float],
         offline_token: Optional[str] = None,
-        access_token: Optional[str] = None,
         symmetries: Optional[List[Literal["x", "y", "z", "X", "Y", "Z"]]] = None,
         axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
         scalars: Optional[Dict[str, float]] = None,
@@ -518,14 +528,6 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_bounding_boxes(bounding_boxes)
         _validate_max_displacement(max_displacement, bounding_boxes)
         _validate_axial_symmetry(axial_symmetry, symmetries)
-        offline = (offline_token or "").strip() or None
-        access = (access_token or "").strip() or None
-        if offline is None and access is None:
-            raise InvalidArguments("At least one of offline_token or access_token must be provided")
-        if offline is not None and access is not None:
-            raise InvalidArguments("Provide either offline_token or access_token, not both")
-        offline_token = offline
-        access_token = access
         objective = _build_objective(minimize, maximize)
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
         server_side_optimization_parameters: Dict[str, Any] = {
@@ -538,11 +540,8 @@ class OptimizationDirectory(Directory[Optimization]):
             "n_iters": n_iters,
             "objective": objective,
             "scalars": scalars or {},
+            **_server_side_optimization_job_auth_fields(offline_token),
         }
-        if offline_token:
-            server_side_optimization_parameters["offline_token"] = offline_token
-        if access_token:
-            server_side_optimization_parameters["access_token"] = access_token
         if part_morphing:
             server_side_optimization_parameters["part_morphing"] = {
                 "part_ids": part_morphing["part_ids"]
