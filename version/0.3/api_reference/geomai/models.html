@@ -1,0 +1,890 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>GeomAIModels &#8212; simai</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=300e4a82" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=300e4a82" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../_static/documentation_options.js?v=d9c7ed7f"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_reference/geomai/models';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://simai.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GeomAIPredictions" href="predictions.html" />
+    <link rel="prev" title="GeomAIClient" href="client.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.3.10" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="AI" />
+  <link rel="canonical" href="https://simai.docs.pyansys.com/version/stable/api_reference/geomai/models.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="simai - Home"/>
+    <img src="../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="simai - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="simai home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../api_reference.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pysimai" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="simai home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../api_reference.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pysimai" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../current_user.html">Current user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_types.html">Data types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geometries.html">Geometries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../global_coefficients_requests.html">Global coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model_configuration.html">Model configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizations.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../post_processings.html">Postprocessings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../predictions.html">Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../selections.html">Selections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training_data.html">TrainingData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training_data_parts.html">TrainingDataParts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workspaces.html">Workspaces</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="client.html">GeomAIClient</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">GeomAIModels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="predictions.html">GeomAIPredictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="projects.html">GeomAIProjects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_data.html">GeomAITrainingData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_data_parts.html">GeomAITrainingDataParts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workspaces.html">GeomAIWorkspaces</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../api_reference.html" class="nav-link">API reference</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">GeomAIModels</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-ansys.simai.core.data.geomai.models">
+<span id="geomaimodels"></span><span id="geomai-models"></span><h1>GeomAIModels<a class="headerlink" href="#module-ansys.simai.core.data.geomai.models" title="Link to this heading">#</a></h1>
+<p>To build a GeomAI model, use <a class="reference internal" href="projects.html#ansys.simai.core.data.geomai.projects.GeomAIProject.build_model" title="ansys.simai.core.data.geomai.projects.GeomAIProject.build_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GeomAIProject.build_model</span></code></a>.</p>
+<section id="directory">
+<h2>Directory<a class="headerlink" href="#directory" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModelDirectory">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeomAIModelDirectory</span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModelDirectory" title="Link to this definition">#</a></dt>
+<dd><p>Provides a collection of methods related to building models.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModelDirectory.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="projects.html#ansys.simai.core.data.geomai.projects.GeomAIProject" title="ansys.simai.core.data.geomai.projects.GeomAIProject"><span class="pre">GeomAIProject</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration" title="ansys.simai.core.data.geomai.models.GeomAIModelConfiguration"><span class="pre">GeomAIModelConfiguration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel" title="ansys.simai.core.data.geomai.models.GeomAIModel"><span class="pre">GeomAIModel</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModelDirectory.build" title="Link to this definition">#</a></dt>
+<dd><p>Launches a GeomAI build with the given configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="projects.html#ansys.simai.core.data.geomai.projects.GeomAIProject" title="ansys.simai.core.data.geomai.projects.GeomAIProject"><em>GeomAIProject</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The GeomAI project in which to run the training.</p></li>
+<li><p><strong>configuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration" title="ansys.simai.core.data.geomai.models.GeomAIModelConfiguration"><em>GeomAIModelConfiguration</em></a>) – a <a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration" title="ansys.simai.core.data.geomai.models.GeomAIModelConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeomAIModelConfiguration</span></code></a> object that contains the properties to be used in the build.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.simai.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">asc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.simai.core.data.geomai.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeomAIModelConfiguration</span>
+
+<span class="n">simai_client</span> <span class="o">=</span> <span class="n">asc</span><span class="o">.</span><span class="n">from_config</span><span class="p">()</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">simai_client</span><span class="o">.</span><span class="n">geomai</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;new_secret_project&quot;</span><span class="p">)</span>
+<span class="n">configuration</span> <span class="o">=</span> <span class="n">GeomAIModelConfiguration</span><span class="p">(</span><span class="n">build_preset</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">simai_client</span><span class="o">.</span><span class="n">geomai</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use a previous configuration for a new build in the same project:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a_project</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">geomai</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;project_A&quot;</span><span class="p">)</span>
+<span class="n">build_conf</span> <span class="o">=</span> <span class="n">a_project</span><span class="o">.</span><span class="n">last_model_configuration</span>
+<span class="n">new_model</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">geomai</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">build_conf</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use a previous configuration for a new build in another project:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a_project</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">geomai</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;project_A&quot;</span><span class="p">)</span>
+<span class="n">build_conf</span> <span class="o">=</span> <span class="n">a_project</span><span class="o">.</span><span class="n">last_model_configuration</span>
+<span class="n">b_project</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">geomai</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;project_B&quot;</span><span class="p">)</span>
+<span class="n">new_model</span> <span class="o">=</span> <span class="n">simai</span><span class="o">.</span><span class="n">geomai</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">build_conf</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="model">
+<h2>Model<a class="headerlink" href="#model" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeomAIModel</span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel" title="Link to this definition">#</a></dt>
+<dd><p>GeomAI model representation.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.reload" title="Link to this definition">#</a></dt>
+<dd><p>Refresh the object with its representation from the server.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.wait">
+<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.wait" title="Link to this definition">#</a></dt>
+<dd><p>Wait for all jobs concerning the object to either finish
+or fail.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><em>None</em>) – Maximum amount of time in seconds to wait. The default is
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, it means that there is no maximum on the time to wait.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the computation has finished, <code class="docutils literal notranslate"><span class="pre">False</span></code> if the operation timed out.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.configuration">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">configuration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration" title="ansys.simai.core.data.geomai.models.GeomAIModelConfiguration"><span class="pre">GeomAIModelConfiguration</span></a></em><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.configuration" title="Link to this definition">#</a></dt>
+<dd><p>Build configuration of a model.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.failure_reason">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">failure_reason</span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.failure_reason" title="Link to this definition">#</a></dt>
+<dd><p>Optional message giving the causes for why the
+creation of the object failed.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.has_failed" title="ansys.simai.core.data.geomai.models.GeomAIModel.has_failed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">has_failed</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.fields">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></em><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.fields" title="Link to this definition">#</a></dt>
+<dd><p>Dictionary containing the raw object representation.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.has_failed">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_failed</span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.has_failed" title="Link to this definition">#</a></dt>
+<dd><p>Boolean indicating if the creation of the object failed.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.failure_reason" title="ansys.simai.core.data.geomai.models.GeomAIModel.failure_reason"><code class="xref py py-attr docutils literal notranslate"><span class="pre">failure_reason</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.wait" title="ansys.simai.core.data.geomai.models.GeomAIModel.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.is_ready" title="ansys.simai.core.data.geomai.models.GeomAIModel.is_ready"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_ready</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.is_pending" title="ansys.simai.core.data.geomai.models.GeomAIModel.is_pending"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_pending</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.id">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.id" title="Link to this definition">#</a></dt>
+<dd><p>ID of the object on the server.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.is_pending">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_pending</span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.is_pending" title="Link to this definition">#</a></dt>
+<dd><p>Boolean indicating if the object is still in creation.
+The value becomes <code class="docutils literal notranslate"><span class="pre">False</span></code> once object creation is either successful
+or has failed.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.wait" title="ansys.simai.core.data.geomai.models.GeomAIModel.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.is_ready" title="ansys.simai.core.data.geomai.models.GeomAIModel.is_ready"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_ready</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.has_failed" title="ansys.simai.core.data.geomai.models.GeomAIModel.has_failed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">has_failed</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.is_ready">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.is_ready" title="Link to this definition">#</a></dt>
+<dd><p>Boolean indicating if the object has finished creating without error.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.wait" title="ansys.simai.core.data.geomai.models.GeomAIModel.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.is_pending" title="ansys.simai.core.data.geomai.models.GeomAIModel.is_pending"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_pending</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ansys.simai.core.data.geomai.models.GeomAIModel.has_failed" title="ansys.simai.core.data.geomai.models.GeomAIModel.has_failed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">has_failed</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModel.project_id">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModel.project_id" title="Link to this definition">#</a></dt>
+<dd><p>The ID of the GeomAI project where the model exists.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="geomaimodelconfiguration">
+<h2>GeomAIModelConfiguration<a class="headerlink" href="#geomaimodelconfiguration" title="Link to this heading">#</a></h2>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModelConfiguration">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeomAIModelConfiguration</span></span><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration" title="Link to this definition">#</a></dt>
+<dd><p>Raises <a class="reference internal" href="../errors.html#ansys.simai.core.errors.InvalidArguments" title="ansys.simai.core.errors.InvalidArguments"><code class="xref py py-exc docutils literal notranslate"><span class="pre">InvalidArguments</span></code></a> if the input data cannot be validated to from a valid model.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.build_preset">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_preset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'debug'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'short'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'default'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'long'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.build_preset" title="Link to this definition">#</a></dt>
+<dd><p>The preset to use for the model training duration. One of <cite>debug</cite>, <cite>short</cite>, <cite>default</cite>, <cite>long</cite>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code>: 4 minutes + 15 sec per geometry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">short</span></code>: 45 minutes + 15 sec per geometry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default</span></code>: 3 hours + 15 sec per geometry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">long</span></code>: 15 hours + 15 sec per geometry.</p></li>
+</ul>
+<p>Mutually exclusive with <code class="docutils literal notranslate"><span class="pre">nb_epochs</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.nb_epochs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nb_epochs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.nb_epochs" title="Link to this definition">#</a></dt>
+<dd><p>The number of times each training data is seen by the model during the training, between 1 and 1000.</p>
+<p>Mutually exclusive with <code class="docutils literal notranslate"><span class="pre">build_preset</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.nb_latent_param">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nb_latent_param</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">512</span></em><a class="headerlink" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.nb_latent_param" title="Link to this definition">#</a></dt>
+<dd><p>An <strong>optional</strong> integer that defines the dimension of the latent space between 2 and 1024.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The default value of 512 is highly recommended if you are a non-expert user.</p>
+</div>
+<p>If you are an expert user, ready to experiment and assess correctly your models performance for different latent parameter value,
+and your use case has specific constraints, you can change this parameter, keeping the following in mind:</p>
+<ul class="simple">
+<li><p>If the number is too low, geometries might become too coarse, and the reconstruction performance might degrade.</p></li>
+<li><p>If the number is too high, the model will not be able to generate new geometries correctly.</p></li>
+</ul>
+<p>The default value of <code class="docutils literal notranslate"><span class="pre">512</span></code> is used if <code class="docutils literal notranslate"><span class="pre">nb_latent_param</span></code> is not set.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#directory">Directory</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModelDirectory"><code class="docutils literal notranslate"><span class="pre">GeomAIModelDirectory</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModelDirectory.build"><code class="docutils literal notranslate"><span class="pre">GeomAIModelDirectory.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model">Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel"><code class="docutils literal notranslate"><span class="pre">GeomAIModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.reload"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.reload()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.wait"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.wait()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.configuration"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.configuration</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.failure_reason"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.failure_reason</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.fields"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.fields</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.has_failed"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.has_failed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.id"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.is_pending"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.is_pending</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.is_ready"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.is_ready</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModel.project_id"><code class="docutils literal notranslate"><span class="pre">GeomAIModel.project_id</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geomaimodelconfiguration">GeomAIModelConfiguration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration"><code class="docutils literal notranslate"><span class="pre">GeomAIModelConfiguration</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.build_preset"><code class="docutils literal notranslate"><span class="pre">GeomAIModelConfiguration.build_preset</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.nb_epochs"><code class="docutils literal notranslate"><span class="pre">GeomAIModelConfiguration.nb_epochs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.simai.core.data.geomai.models.GeomAIModelConfiguration.nb_latent_param"><code class="docutils literal notranslate"><span class="pre">GeomAIModelConfiguration.nb_latent_param</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/api_reference/geomai/models.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.1. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
