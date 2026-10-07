@@ -312,6 +312,7 @@ class OptimizationDirectory(Directory[Optimization]):
                 It will define the number of deformed geometries uploaded to the SimAI workspace.
             offline_token: Optional. Offline token to use for authentication.
                 If not provided, the method will try to use the offline token defined in the client configuration. If no ``offline_token`` can be passed as function parameter or in the client configuration, server-side optimization will not work.
+                See :ref:`current_user` to generate an offline token.
                 For CI, set the ``SIMAI_ACCESS_TOKEN`` environment variable instead of passing an offline token.
             symmetries: Optional. The list of symmetry axes, axes being x, y, and z, defining a plane around which the geometry is mirrored.
 
@@ -505,8 +506,8 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry: Identifiable[Geometry],
         bounding_boxes: List[List[float]],
         n_iters: int,
+        offline_token: Optional[str],
         max_displacement: List[float],
-        offline_token: Optional[str] = None,
         symmetries: Optional[List[Literal["x", "y", "z", "X", "Y", "Z"]]] = None,
         axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
         scalars: Optional[Dict[str, float]] = None,
