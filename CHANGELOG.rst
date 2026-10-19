@@ -1,6 +1,17 @@
 Changelog
 ---------
 
+0.4.8 (2026-10-19)
+******************
+
+Fixes:
+
+- Do not log an ``Invalid resource state`` error on geometry metadata update.
+
+Documentation:
+
+- Update the ``download_latent_parameters_json`` warning on GeomAI workspaces to state that the feature was removed.
+
 0.4.7 (2026-09-29)
 ******************
 
