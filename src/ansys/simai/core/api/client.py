@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.simai.core.api.geomai.geometries import GeomAIGeometryClientMixin
 from ansys.simai.core.api.geomai.predictions import GeomAIPredictionClientMixin
+from ansys.simai.core.api.geomai.projections import GeomAIProjectionClientMixin
 from ansys.simai.core.api.geomai.projects import GeomAIProjectClientMixin
 from ansys.simai.core.api.geomai.training_data import GeomAITrainingDataClientMixin
 from ansys.simai.core.api.geomai.training_data_parts import GeomAITrainingDataPartClientMixin
@@ -50,8 +52,10 @@ class ApiClient(
     TrainingDataPartClientMixin,
     UserClientMixin,
     WorkspaceClientMixin,
+    GeomAIGeometryClientMixin,
     GeomAIPredictionClientMixin,
     GeomAIProjectClientMixin,
+    GeomAIProjectionClientMixin,
     GeomAITrainingDataClientMixin,
     GeomAITrainingDataPartClientMixin,
     GeomAIWorkspaceClientMixin,

@@ -39,6 +39,7 @@ from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.predictions import GeomAIPrediction
+    from ansys.simai.core.data.geomai.projections import GeomAIProjection
     from ansys.simai.core.data.geomai.projects import GeomAIProject
 
 
@@ -99,6 +100,10 @@ class GeomAIWorkspace(DataModel):
             self._client.geomai.predictions._model_from(prediction)
             for prediction in self._client._api.geomai_predictions(self.id)
         ]
+
+    def list_projections(self) -> List["GeomAIProjection"]:
+        """List all the projections onto the model of the workspace."""
+        return self._client.geomai.projections.list(workspace=self)
 
     def set_as_current_workspace(self) -> None:
         """Configure the client to use this workspace instead of the one currently configured."""
