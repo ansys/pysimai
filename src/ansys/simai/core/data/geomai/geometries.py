@@ -176,10 +176,6 @@ class GeomAIGeometryDirectory(Directory[GeomAIGeometry]):
 
         The supported file formats are ``vtp``, ``zip``, ``stl``, and ``cgns``.
 
-        The geometry is processed asynchronously once uploaded: use
-        :meth:`~ansys.simai.core.data.base.ComputableDataModel.wait` to wait for
-        the processing to be over.
-
         Args:
             file: :obj:`~ansys.simai.core.data.types.NamedFile` to upload.
             monitor_callback: Optional callback for monitoring the progress of the upload.
