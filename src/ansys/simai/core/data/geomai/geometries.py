@@ -92,9 +92,6 @@ class GeomAIGeometry(ComputableDataModel):
     ) -> "GeomAIProjection":
         """Project the geometry onto the model of the given workspace.
 
-        The method waits for the geometry to be processed before requesting the
-        projection, as a geometry that failed to be processed cannot be projected.
-
         Args:
             workspace: Optional ID or :class:`model <.workspaces.GeomAIWorkspace>` of the
                 target workspace. Defaults to the current workspace if set.
@@ -200,7 +197,7 @@ class GeomAIGeometryDirectory(Directory[GeomAIGeometry]):
         return _upload_geomai_geometry(file, self._client, monitor_callback)
 
     def delete(self, geometry: Identifiable[GeomAIGeometry]) -> None:
-        """Delete a :class:`GeomAIGeometry` object and all its data from server.
+        """Delete a :class:`GeomAIGeometry` object and all its data from the server.
 
         Args:
             geometry: ID or :class:`model <GeomAIGeometry>` of the geometry.
