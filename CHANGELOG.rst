@@ -10,7 +10,7 @@ Fixes:
 
 Documentation:
 
-- Update the ``download_latent_parameters_json`` warning on GeomAI workspaces to state that the feature was removed.
+- Update the ``download_latent_parameters_json`` warning on GeomAI workspaces to state that the feature was decommissioned.
 
 0.4.7 (2026-09-29)
 ******************

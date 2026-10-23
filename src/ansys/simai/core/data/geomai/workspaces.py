@@ -108,7 +108,7 @@ class GeomAIWorkspace(DataModel):
         """Download the JSON file containing the latent parameters for the model's training data.
 
         Warning:
-            This feature was removed. Please use :py:meth:`~get_latent_parameters` instead.
+            This feature was decommissioned. Please use :py:meth:`~get_latent_parameters` instead.
 
         Args:
             file: Binary file-object or the path of the file to put the content into.
@@ -117,7 +117,7 @@ class GeomAIWorkspace(DataModel):
             ``None`` if a file is specified or a binary file-object otherwise.
         """
         raise DeprecationError(
-            "'download_latent_parameters_json' was removed after deprecation. Please use 'get_latent_parameters' instead."
+            "'download_latent_parameters_json' was decommissioned. Please use 'get_latent_parameters' instead."
         )
 
     def get_latent_parameters(
