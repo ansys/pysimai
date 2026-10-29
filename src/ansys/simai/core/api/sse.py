@@ -175,6 +175,10 @@ class SSEMixin(ApiClientMixin):
             self.simai_client.geomai.predictions._handle_sse_event(data)
         elif target["type"] == "geomai_training_data":
             self.simai_client.geomai.training_data._handle_sse_event(data)
+        elif target["type"] == "geomai_geometry":
+            self.simai_client.geomai.geometries._handle_sse_event(data)
+        elif target["type"] == "geomai_projection":
+            self.simai_client.geomai.projections._handle_sse_event(data)
 
         else:
             logger.debug(
