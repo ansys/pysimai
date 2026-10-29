@@ -48,18 +48,7 @@ class GeomAIProjection(ComputableDataModel):
         """ID of the workspace the projection was run in."""
         return self.fields["workspace_id"]
 
-    @property
-    def latent_code(self) -> Optional[List[float]]:
-        """Coordinates of the geometry in the latent space of the model.
-
-        The value is ``None`` until the projection has finished successfully or if the projection fails.
-
-        See Also:
-            :meth:`~get_latent_code`
-        """
-        return self.fields.get("latent_code")
-
-    def get_latent_code(self, n: Optional[int] = None) -> Optional[List[float]]:
+    def get_latent_parameters(self, n: Optional[int] = None) -> Optional[List[float]]:
         """Get the coordinates of the geometry in the latent space of the model.
 
         By default, latent parameters are ordered by importance: the first ones capture
@@ -72,28 +61,25 @@ class GeomAIProjection(ComputableDataModel):
                 Must not exceed the number of latent parameters used for model training.
 
         Returns:
-            The latent code of the geometry, truncated to its first ``n`` values if ``n``
+            The latent parameters of the geometry, truncated to its first ``n`` values if ``n``
             is provided. ``None`` until the projection has finished successfully, or if
             the projection failed.
 
         Raises:
             InvalidArguments: If ``n`` exceeds the number of latent parameters used for
                 model training. Note that this check can only be performed once the
-                projection has finished successfully; while the latent code is ``None``,
+                projection has finished successfully; while the latent parameters is ``None``,
                 ``n`` is not validated.
-
-        See Also:
-            :attr:`~latent_code`
         """
-        latent_code = self.latent_code
-        if latent_code is None or n is None:
-            return latent_code
+        latent_parameters = self.fields.get("latent_code")
+        if latent_parameters is None or n is None:
+            return latent_parameters
 
-        if n > len(latent_code):
+        if n > len(latent_parameters):
             raise InvalidArguments(
-                f"n ({n}) exceeds the number of latent parameters used for model training ({len(latent_code)})."
+                f"n ({n}) exceeds the number of latent parameters used for model training ({len(latent_parameters)})."
             )
-        return latent_code[:n]
+        return latent_parameters[:n]
 
     def delete(self) -> None:
         """Delete the projection from the server."""
@@ -184,7 +170,7 @@ class GeomAIProjectionDirectory(Directory[GeomAIProjection]):
 
                 projection = simai_client.geomai.projections.run(geometry, workspace)
                 projection.wait()
-                print(projection.latent_code)
+                print(projection.get_latent_code())
         """
         workspace_id = get_id_from_identifiable(
             workspace, default=self._client.geomai._current_workspace
