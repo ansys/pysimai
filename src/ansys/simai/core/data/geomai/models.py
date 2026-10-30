@@ -70,9 +70,15 @@ class GeomAIModelConfiguration(BaseModel):
         The execution is limited to a subset of four training data and one epoch,
         reducing runtime while allowing verification of the processing workflow.
     """
-    nb_epochs: Optional[int] = Field(default=None, ge=1, le=1000)
+    nb_epochs: Optional[int] = Field(default=None, ge=1)
     """
-    The number of times each training data is seen by the model during the training, between 1 and 1000.
+    The number of times the model processes the training dataset during training. A minimum of 1 epoch is required.
+    
+    .. note::
+
+        To keep training within the maximum runtime of 72 hours, the system may automatically reduce the requested epoch count.
+        As a result, the actual number of epochs used may be lower than the number requested.
+        To compare the requested and effective epoch counts, refer to the Model Manifest generated for the trained model.
 
     Mutually exclusive with ``build_preset``.
     """
