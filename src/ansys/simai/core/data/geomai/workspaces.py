@@ -69,7 +69,7 @@ class GeomAIModelManifest:
 
     @property
     def nb_epochs(self) -> int:
-        """Number of epochs the model was actually trained for."""
+        """Number of epochs the model actually used to train the model."""
         return self._raw["nb_epochs"]
 
     @property
