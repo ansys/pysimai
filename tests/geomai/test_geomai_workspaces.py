@@ -28,7 +28,7 @@ from urllib.parse import urlencode
 import pytest
 
 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
-from ansys.simai.core.errors import InvalidArguments
+from ansys.simai.core.errors import InvalidArguments, NotFoundError
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.workspaces import GeomAIWorkspace
@@ -196,6 +196,49 @@ def test_get_workspace_model_configuration(mocker, simai_client, httpx_mock, tra
 
     assert workspace.model_configuration.model_dump() == MODEL_CONF_RAW
     assert isinstance(workspace.model_configuration, GeomAIModelConfiguration)
+
+
+def test_get_workspace_model_manifest(simai_client, httpx_mock):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "0011", "name": "riri"}
+    )
+
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/workspaces/0011/model/manifest/public",
+        json={
+            "model_name": "my-model",
+            "coreml_version": "1.2.3",
+            "nb_latent_param": 512,
+            "build_preset": None,
+            "nb_epochs": 42,
+            "requested_nb_epochs": 50,
+        },
+        status_code=200,
+    )
+
+    manifest = workspace.model_manifest
+    assert manifest.name == "my-model"
+    assert manifest.nb_latent_param == 512
+    assert manifest.build_preset is None
+    assert manifest.nb_epochs == 42
+    assert manifest.requested_nb_epochs == 50
+    assert workspace.model_manifest is manifest
+
+
+def test_get_workspace_model_manifest_missing(simai_client, httpx_mock):
+    workspace: GeomAIWorkspace = simai_client.geomai._workspace_directory._model_from(
+        {"id": "0011", "name": "riri"}
+    )
+
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/workspaces/0011/model/manifest/public",
+        status_code=404,
+    )
+
+    with pytest.raises(NotFoundError):
+        _ = workspace.model_manifest
 
 
 def test_geomai_workspace_list_predictions(simai_client, httpx_mock):
