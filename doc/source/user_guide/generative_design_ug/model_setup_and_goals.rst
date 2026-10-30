@@ -79,8 +79,16 @@ The right preset depends on your dataset and your goal:
 Number of epochs
 ----------------
 
-You can also configure the number of training iterations directly through the ``nb_epochs`` parameter.
-``nb_epochs`` corresponds to the number of times each training geometry is seen by the model, between 1 and 1000.
+You can also configure the number of training iterations used to build your model through the ``nb_epochs`` parameter.
+``nb_epochs`` represents the number of times the model processes the entire training dataset during training. A minimum of 1 epoch is required.
+
+.. note::
+   Training is subject to a maximum runtime of 72 hours. If the requested number of epochs results in a training duration exceeding this limit,
+   the system may automatically reduce the epoch count.
+   
+   As a result, the effective number of epochs completed during training may be lower than the number of epochs originally requested.
+   
+   To compare the requested and effective epoch counts, refer to the Model Manifest generated for the trained model.
 
 ``nb_epochs`` is mutually exclusive with ``build_preset``: exactly one of the two must be set.
 Only experienced users should use ``nb_epochs``.
