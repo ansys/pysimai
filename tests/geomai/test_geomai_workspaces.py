@@ -219,7 +219,7 @@ def test_get_workspace_model_manifest(simai_client, httpx_mock):
 
     manifest = workspace.model_manifest
     assert manifest.name == "my-model"
-    assert manifest.nb_latent_param == 512
+    assert manifest.nb_latent_parameters == 512
     assert manifest.build_preset is None
     assert manifest.nb_epochs == 42
     assert manifest.requested_nb_epochs == 50

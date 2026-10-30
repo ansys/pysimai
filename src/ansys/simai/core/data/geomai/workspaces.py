@@ -58,7 +58,7 @@ class GeomAIModelManifest:
         return self._raw["model_name"]
 
     @property
-    def nb_latent_param(self) -> int:
+    def nb_latent_parameters(self) -> int:
         """Number of latent parameters of the model."""
         return self._raw["nb_latent_param"]
 
@@ -69,7 +69,7 @@ class GeomAIModelManifest:
 
     @property
     def nb_epochs(self) -> int:
-        """Number of epochs the model was actually trained for."""
+        """Number of epochs the model actually used to train the model."""
         return self._raw["nb_epochs"]
 
     @property
