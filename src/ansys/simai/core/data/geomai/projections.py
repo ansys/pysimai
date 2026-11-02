@@ -170,7 +170,7 @@ class GeomAIProjectionDirectory(Directory[GeomAIProjection]):
 
                 projection = simai_client.geomai.projections.run(geometry, workspace)
                 projection.wait()
-                print(projection.get_latent_code())
+                print(projection.get_latent_parameters())
         """
         workspace_id = get_id_from_identifiable(
             workspace, default=self._client.geomai._current_workspace
