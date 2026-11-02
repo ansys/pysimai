@@ -59,7 +59,7 @@ def test_run_geomai_projection(simai_client, httpx_mock):
     assert projection.id == "proj-123"
     assert projection.geometry_id == "geom-1"
     assert projection.workspace_id == "ws-1"
-    assert projection.latent_code == [0.1, 0.2, 0.3, 0.4]
+    assert projection.get_latent_parameters() == [0.1, 0.2, 0.3, 0.4]
     assert json.loads(httpx_mock.get_requests()[0].content) == {"geometry": "geom-1"}
 
 
@@ -133,10 +133,10 @@ def test_get_geomai_projection(simai_client, httpx_mock):
         status_code=200,
     )
     projection = simai_client.geomai.projections.get("proj-123")
-    assert projection.latent_code == [0.1, 0.2, 0.3, 0.4]
+    assert projection.get_latent_parameters() == [0.1, 0.2, 0.3, 0.4]
 
 
-def test_geomai_projection_get_latent_code(simai_client, httpx_mock):
+def test_geomai_projection_get_latent_parameters(simai_client, httpx_mock):
     httpx_mock.add_response(
         method="GET",
         url="https://test.test/geomai/projections/proj-123",
@@ -144,10 +144,10 @@ def test_geomai_projection_get_latent_code(simai_client, httpx_mock):
         status_code=200,
     )
     projection = simai_client.geomai.projections.get("proj-123")
-    assert projection.get_latent_code() == [0.1, 0.2, 0.3, 0.4]
-    assert projection.get_latent_code(n=2) == [0.1, 0.2]
+    assert projection.get_latent_parameters() == [0.1, 0.2, 0.3, 0.4]
+    assert projection.get_latent_parameters(n=2) == [0.1, 0.2]
     with pytest.raises(InvalidArguments):
-        projection.get_latent_code(n=5)
+        projection.get_latent_parameters(n=5)
 
 
 def test_geomai_projection_failure(simai_client, httpx_mock):
