@@ -113,22 +113,11 @@ jobs:
     needs: [doc-style]
     timeout-minutes: 10
     steps:
-      - name: Setup uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          python-version: ${{ matrix.python-version }}
-          enable-cache: false
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Generate doc requirements
-        run: uv export --only-group docs -o doc_requirements.txt
       - uses: ansys/actions/doc-build@7410037bfb276c79ae91eb3617b9f5d2876f0c94 # v11.0.8
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          checkout: false
           check-links: false
-          requirements-file: doc_requirements.txt
+          group-dependencies-name: docs
 
   build-library:
     name: "Build library basic example"
