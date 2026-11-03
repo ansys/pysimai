@@ -284,7 +284,7 @@ sensitivity analysis, and parameter studies:
 - **Parameterize a non-parametric geometry**:
    Use the latent parameters as design variables to explore geometry variations. Evaluate the
    resulting designs with simulation or sensitivity analysis to assess their physical performance.
-  
+
 Before projection, GeomAI validates that the geometry is compatible with the model. Validation
 includes checking that the mesh is PolyData and that both the original and triangulated meshes
 are watertight. If the geometry passes validation, GeomAI computes its latent representation in 
@@ -292,3 +292,15 @@ the model's latent space.
 
 Projection results are cached for each geometry and model. Repeating a projection can reuse the
 existing result without repeating the computation.
+
+As for prediction, you can work with a reduced dimensional space.
+For more information, see :ref:`reduced_latent_space_geomai`.
+You can reduce the dimensionality of the returned vector by passing ``n`` to
+``projection.get_latent_parameters(n=n)``. The method returns the first ``n`` parameters,
+which are ordered by importance, so the most influential dimensions are retained first. If
+``n`` is omitted, all parameters are returned; ``n`` must not exceed the number of latent
+parameters used to train the model. For example:
+
+.. code-block:: python
+
+  latent_parameters = projection.get_latent_parameters(n=10)
