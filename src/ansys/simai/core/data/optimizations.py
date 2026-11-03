@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+import os
 import re
 import warnings
 from dataclasses import dataclass
@@ -45,6 +46,43 @@ from ansys.simai.core.utils.auth import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_server_side_auth_tokens(
+    offline_token: Optional[str],
+    client_config,
+) -> tuple[Optional[str], Optional[str]]:
+    """Resolve exactly one server-side optimization credential.
+
+    Uses ``offline_token`` from the call (after strip), then
+    ``ClientConfig.offline_token``. If still missing, uses ``SIMAI_ACCESS_TOKEN``
+    from the environment for CI. Raises :class:`~ansys.simai.core.errors.InvalidArguments`
+    if both offline and env access token are set, or if neither is available.
+    """
+    offline = (offline_token or "").strip() or None
+    if offline is None:
+        offline = (client_config.offline_token or "").strip() or None
+    access = (os.environ.get("SIMAI_ACCESS_TOKEN") or "").strip() or None
+    if offline is not None and access is not None:
+        raise InvalidArguments(
+            "Provide either offline_token or SIMAI_ACCESS_TOKEN for server-side optimization, not both"
+        )
+    if offline is None and access is None:
+        raise InvalidArguments("Please provide an offline token.")
+    return offline, access
+
+
+def _server_side_optimization_job_auth_fields(
+    offline_token: Optional[str],
+) -> Dict[str, str]:
+    """Build the single auth field for the server-side optimization POST body."""
+    offline = (offline_token or "").strip() or None
+    if offline is not None:
+        return {"offline_token": offline}
+    access = (os.environ.get("SIMAI_ACCESS_TOKEN") or "").strip() or None
+    if access is not None:
+        return {"access_token": access}
+    raise InvalidArguments("Please provide an offline token.")
 
 
 class _LegacyOptimizationTrialRun(ComputableDataModel):
@@ -275,6 +313,7 @@ class OptimizationDirectory(Directory[Optimization]):
             offline_token: Optional. Offline token to use for authentication.
                 If not provided, the method will try to use the offline token defined in the client configuration. If no ``offline_token`` can be passed as function parameter or in the client configuration, server-side optimization will not work.
                 See :ref:`current_user` to generate an offline token.
+                For CI, set the ``SIMAI_ACCESS_TOKEN`` environment variable instead of passing an offline token.
             symmetries: Optional. The list of symmetry axes, axes being x, y, and z, defining a plane around which the geometry is mirrored.
 
                 - The planar symmetry is applied to all the ``bounding_boxes`` defined.
@@ -375,24 +414,28 @@ class OptimizationDirectory(Directory[Optimization]):
 
         if use_server_side_optimization:
             logger.debug("Using server-side optimization")
-            offline_token = offline_token or self._client._config.offline_token
-            if not offline_token:
-                raise InvalidArguments(
-                    "No offline_token specified as argument or client configuration"
-                )
+            resolved_offline, resolved_access = _resolve_server_side_auth_tokens(
+                offline_token,
+                self._client._config,
+            )
+            auth_token = resolved_offline if resolved_offline is not None else resolved_access
 
             if coreml_version := manifest.get("coreml_version", None):
                 expected_client_id = _get_expected_client_id_for_coreml_model(coreml_version)
                 if expected_client_id is not None:
-                    current_client_id = _decode_authorized_party(offline_token)
+                    current_client_id = _decode_authorized_party(auth_token)
 
                     if expected_client_id != current_client_id:
                         logger.warning(
-                            f"Provided offline token for optimization has client_id == '{current_client_id}', while model named '{manifest.get('model_name', '')}' only works with client_id == '{expected_client_id}' . Requesting a new token with client_id == '{expected_client_id}'"
+                            f"Provided token for optimization has client_id == "
+                            f"'{current_client_id}', while model named "
+                            f"'{manifest.get('model_name', '')}' only works with client_id "
+                            f"== '{expected_client_id}' . Requesting a new token with "
+                            f"client_id == '{expected_client_id}'"
                         )
 
                         client_config = self._client._config
-                        offline_token = _get_offline_token_private(
+                        resolved_offline = _get_offline_token_private(
                             url=str(client_config.url),
                             credentials=client_config.credentials,
                             https_proxy=str(client_config.https_proxy)
@@ -403,6 +446,7 @@ class OptimizationDirectory(Directory[Optimization]):
                             else None,
                             client_id=expected_client_id,
                         )
+                        resolved_access = None
 
             if not max_displacement:
                 raise InvalidArguments("max_displacement must be provided")
@@ -419,7 +463,7 @@ class OptimizationDirectory(Directory[Optimization]):
                 geometry=geometry,
                 bounding_boxes=bounding_boxes,
                 n_iters=n_iters,
-                offline_token=offline_token,
+                offline_token=resolved_offline,
                 symmetries=symmetries,
                 axial_symmetry=axial_symmetry,
                 scalars=scalars,
@@ -462,7 +506,7 @@ class OptimizationDirectory(Directory[Optimization]):
         geometry: Identifiable[Geometry],
         bounding_boxes: List[List[float]],
         n_iters: int,
-        offline_token: str,
+        offline_token: Optional[str],
         max_displacement: List[float],
         symmetries: Optional[List[Literal["x", "y", "z", "X", "Y", "Z"]]] = None,
         axial_symmetry: Optional[Literal["x", "y", "z"]] = None,
@@ -487,7 +531,7 @@ class OptimizationDirectory(Directory[Optimization]):
         _validate_axial_symmetry(axial_symmetry, symmetries)
         objective = _build_objective(minimize, maximize)
         geometry = get_object_from_identifiable(geometry, self._client._geometry_directory)
-        server_side_optimization_parameters = {
+        server_side_optimization_parameters: Dict[str, Any] = {
             "geometry": geometry.id,
             "bounding_boxes": bounding_boxes,
             "symmetries": symmetries,
@@ -495,9 +539,9 @@ class OptimizationDirectory(Directory[Optimization]):
             "axial_symmetry": axial_symmetry,
             "detail_level": detail_level,
             "n_iters": n_iters,
-            "offline_token": offline_token,
             "objective": objective,
             "scalars": scalars or {},
+            **_server_side_optimization_job_auth_fields(offline_token),
         }
         if part_morphing:
             server_side_optimization_parameters["part_morphing"] = {
