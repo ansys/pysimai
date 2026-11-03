@@ -186,7 +186,6 @@ space reduces the search space and speeds up convergence.
     dimensions. Geometries reconstructed from a reduced space are close approximations of the originals,
     not exact replicas. The fewer dimensions retained, the coarser the approximation.
 
-
 Troubleshooting and improving your model
 -----------------------------------------
 
@@ -304,3 +303,37 @@ parameters used to train the model. For example:
 .. code-block:: python
 
   latent_parameters = projection.get_latent_parameters(n=10)
+
+Glossary of latent terms
+=========================
+
+Latent Space
+  A compact mathematical representation of the important variation in a set of geometries. Each
+  geometry is represented by a position in this space, and nearby positions generally correspond
+  to geometries that are similar according to what the model learned. Latent space is not a
+  physical coordinate system: its axes usually do not correspond directly to dimensions such as
+  length, width, or angle.
+
+Latent Vector
+  The ordered collection of latent parameters for one geometry. A latent vector is the numerical
+  "code" that the model uses to describe a geometry in latent space and to generate a corresponding
+  shape. It can sometimes be referred to as a "latent code".
+
+Latent Parameter
+  One numerical value of the latent vector.
+
+Number of Latent Parameters (Latent Dimension)
+  The GeomAI model setting ``nb_latent_param`` controls how many values are in each geometry's
+  latent vector; this count is also called the latent dimension.
+
+Example:
+    For a model configured with ``nb_latent_param=3``, consider:
+
+    .. code-block:: python
+
+        latent_parameters = [0.8, -1.2, 2.1]
+
+    - ``0.8``, ``-1.2``, and ``2.1`` are **latent parameters**.
+    - The list of latent parameters is a **latent vector**.
+    - It has three **latent dimensions**.
+    - It represents one point in the **latent space**.
