@@ -23,7 +23,7 @@
 """.. _ref_project_geometries:
 
 Projecting Geometries onto a Model
-=================================
+==================================
 
 This example demonstrates how to project a geometry onto a trained GeomAI model
 and retrieve its latent parameters.
@@ -33,7 +33,7 @@ Before you begin
 
 - Complete ":ref:`ref_build_model`" to train a GeomAI model.
 - Ensure that the model training has completed successfully and that its workspace is available.
-- Prepare a geometry file in ``VTP``, ``ZIP``, ``STL``, or ``CGNS`` format.
+- Prepare a geometry file in ``VTP`` or ``STL`` format.
 
 """
 
@@ -52,7 +52,7 @@ from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfigurati
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
 WORKSPACE_NAME = "new-bracket-project #1"  # Replace with your trained model workspace
-GEOMETRY_FILE = "./td/bracket_264.vtp"  # VTP, ZIP, STL, or CGNS file to project
+GEOMETRY_FILE = "./td/bracket_264.vtp"  # VTP or STL file to project
 
 ###############################################################################
 # Initialize the client and get the workspace

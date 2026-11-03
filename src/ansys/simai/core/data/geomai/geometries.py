@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-SUPPORTED_GEOMETRY_FORMATS = ("vtp", "zip", "stl", "cgns")
+SUPPORTED_GEOMETRY_FORMATS = ("vtp", "stl")
 """File formats accepted by the GeomAI geometry upload."""
 
 
@@ -171,7 +171,7 @@ class GeomAIGeometryDirectory(Directory[GeomAIGeometry]):
     ) -> GeomAIGeometry:
         """Upload a geometry to the server.
 
-        The supported file formats are ``vtp``, ``zip``, ``stl``, and ``cgns``.
+        The supported file formats are ``vtp`` and ``stl``.
 
         Args:
             file: :obj:`~ansys.simai.core.data.types.NamedFile` to upload.
