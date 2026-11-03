@@ -42,10 +42,8 @@ Before you begin
 # Import necessary libraries
 # ---------------------------
 
-import os
-from typing import List
-
 import ansys.simai.core as asc
+from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
 
 ###############################################################################
 # Configure your settings
@@ -87,11 +85,28 @@ projection.wait()
 latent_parameters = projection.get_latent_parameters()
 print(f"Projection {projection.id} on model {projection.workspace_id}")
 print(f"Retrieved {len(latent_parameters)} latent parameters")
-print(f"First three parameters: {projection.get_latent_parameters(n=min(3, len(latent_parameters)))}")
+
+###############################################################################
+# Reconstruct the geometry from its latent parameters
+# ---------------------------------------------------
+# The latent parameters can be passed to a prediction configuration to
+# regenerate the geometry from the model.
+
+config = GeomAIPredictionConfiguration(
+    latent_params=latent_parameters,
+)
+prediction = geomai_client.predictions.run(config, workspace)
+print(f"Prediction {prediction.id} started...")
+prediction.wait()
+
+output_path = f"reconstructed_{prediction.id}.vtp"
+geomai_client.predictions.download(prediction.id, output_path)
+print(f"Saved reconstructed geometry to {output_path}")
+
 
 ###############################################################################
 # Look up an existing projection
-# ------------------------------
+# -------------------------------------
 # Retrieve a projection without starting a new computation. The result is
 # ``None`` if the geometry has not been projected onto this workspace's model.
 
@@ -101,37 +116,16 @@ if existing_projection is None:
     print("Geometry has not yet been projected onto this workspace's model.")
 else:
     print(f"Existing projection: {existing_projection.id}")
+    print(f"First three parameters: {existing_projection.get_latent_parameters(n=3)}")
 
 ###############################################################################
 # List projections in the workspace
-# ---------------------------------
+# ----------------------------------------
 
 projections = workspace.list_projections()
 print(f"\n{len(projections)} projections in {workspace.name}")
-
-print("\nProjections for the uploaded geometry:")
-geometry_projections = geomai_client.projections.list(workspace=workspace, geometry=geometry)
-for geometry_projection in geometry_projections:
-    print(f"Projection {geometry_projection.id}: {geometry_projection.get_latent_parameters()}")
-
-###############################################################################
-# Count geometries projected in this workspace
-# ---------------------------------------------
-
-all_geometries = geomai_client.geometries.list()
-projected_geometry_ids = {projection.geometry_id for projection in projections}
-print(f"{len(projected_geometry_ids)}/{len(all_geometries)} geometries projected here")
-
-###############################################################################
-# Use the latent parameters for a prediction
-# ------------------------------------------
-# The parameters can be passed to a prediction to reconstruct the geometry:
-#
-prediction = geomai_client.predictions.run(
-    {"latent_params": latent_parameters}, workspace
-)
-prediction.wait()
-geomai_client.predictions.download(prediction.id, f"reconstructed_{geometry.name}.vtp")
+for proj in projections:
+    print(f"- {proj.id}")
 
 ###############################################################################
 # Next steps
