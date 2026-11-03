@@ -102,7 +102,7 @@ class GeomAIWorkspace(DataModel):
         ]
 
     def list_projections(self) -> List["GeomAIProjection"]:
-        """List all the projections onto the model of the workspace."""
+        """List all the projections associated to the model of the workspace."""
         return self._client.geomai.projections.list(workspace=self)
 
     def set_as_current_workspace(self) -> None:

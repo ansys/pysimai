@@ -45,14 +45,14 @@ class GeomAIProjection(ComputableDataModel):
 
     @property
     def workspace_id(self) -> str:
-        """ID of the workspace the projection was run in."""
+        """ID of the workspace whose model the geometry was projected onto."""
         return self.fields["workspace_id"]
 
     def get_latent_parameters(self, n: Optional[int] = None) -> Optional[List[float]]:
         """Get the coordinates of the geometry in the latent space of the model.
 
         By default, latent parameters are ordered by importance: the first ones capture
-        the largest sources of variation in the training data, while later ones capture
+        the largest sources of variation in the geometry , while later ones capture
         increasingly finer details.
 
         Args:
@@ -108,7 +108,7 @@ class GeomAIProjectionDirectory(Directory[GeomAIProjection]):
         workspace: Optional[Identifiable[GeomAIWorkspace]] = None,
         geometry: Optional[Identifiable[GeomAIGeometry]] = None,
     ) -> List[GeomAIProjection]:
-        """List the projections onto the model of the specified workspace or the configured one.
+        """List the projections associated with the model of the specified workspace, or of the configured workspace if none is specified.
 
         Args:
             workspace: ID or :class:`model <.workspaces.GeomAIWorkspace>` of the workspace to

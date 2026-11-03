@@ -31,7 +31,7 @@ class GeomAIProjectionClientMixin(ApiClientMixin):
     def geomai_projections(
         self, workspace_id: str, geometry_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        """Get the list of the projections onto the model of a workspace.
+        """Get the list of the projections associated with the model of a workspace.
 
         Args:
             workspace_id: ID of the workspace.
