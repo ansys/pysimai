@@ -268,26 +268,29 @@ The key trade-off is:
 Use the **Parameter Importance** section of the MER to decide how many dimensions capture enough
 geometric variation for your use case.
 
-Using GeomAI to project geometries onto a model's latent space
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Project geometries onto your model's latent space
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The Projection feature of GeomAI projects an existing geometry onto the latent design space of
 a trained GeomAI model and returns the latent parameters that represent it.
+For more information on how to use it, see :ref:`Projections <geomai_projections>`.
+
 The resulting latent parameters support workflows such as optimization, design exploration,
 sensitivity analysis, and parameter studies:
 
 - **Start optimization from an existing design**:
-   Use the projected parameters of your meaningful baseline design instead of starting from
-   a randomly generated geometry. This can help
-   accelerate convergence and maintain continuity with existing engineering designs.
-- **Parameterize a non-parametric geometry**:
-   Use the latent parameters as design variables to explore geometry variations. Evaluate the
-   resulting designs with simulation or sensitivity analysis to assess their physical performance.
+   Use the latent parameters obtained by projecting an existing design as the
+   starting point for optimization, rather than a randomly generated geometry.
+   This provides a meaningful baseline and can help accelerate convergence.
+- **Parametrize a non-parametric geometry for downstream modeling**:
+   Represent a geometry as a compact set of latent parameters that can serve as inputs to other models.
+   These models can predict performance, classify shapes, supporting design exploration and optimization.
 
-Before projection, GeomAI validates that the geometry is compatible with the model. Validation
-includes checking that the mesh is PolyData and that both the original and triangulated meshes
-are watertight. If the geometry passes validation, GeomAI computes its latent representation in
-the model's latent space.
+New geometries uploaded for projection must meet the same requirements as the training data:
+they must be provided in ``.vtp`` or ``.stl`` format and represent a watertight,
+manifold surface with no self-intersections. For more information, see :ref:`geometry_requirements`.
+If validation succeeds, GeomAI can compute the geometry's latent representation
+in the model's latent space; otherwise, the geometry is marked as invalid.
 
 Projection results are cached for each geometry and model. Repeating a projection can reuse the
 existing result without repeating the computation.
