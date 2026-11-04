@@ -277,8 +277,8 @@ The resulting latent parameters support workflows such as optimization, design e
 sensitivity analysis, and parameter studies:
 
 - **Start optimization from an existing design**:
-   Use the projected parameters of your meaningful baseline design instead of starting from 
-   a randomly generated geometry. This can help 
+   Use the projected parameters of your meaningful baseline design instead of starting from
+   a randomly generated geometry. This can help
    accelerate convergence and maintain continuity with existing engineering designs.
 - **Parameterize a non-parametric geometry**:
    Use the latent parameters as design variables to explore geometry variations. Evaluate the
@@ -286,7 +286,7 @@ sensitivity analysis, and parameter studies:
 
 Before projection, GeomAI validates that the geometry is compatible with the model. Validation
 includes checking that the mesh is PolyData and that both the original and triangulated meshes
-are watertight. If the geometry passes validation, GeomAI computes its latent representation in 
+are watertight. If the geometry passes validation, GeomAI computes its latent representation in
 the model's latent space.
 
 Projection results are cached for each geometry and model. Repeating a projection can reuse the
