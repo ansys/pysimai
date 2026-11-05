@@ -85,9 +85,9 @@ You can also configure the number of training iterations used to build your mode
 .. note::
    Training is subject to a maximum runtime of 72 hours. If the requested number of epochs results in a training duration exceeding this limit,
    the system may automatically reduce the epoch count.
-   
+
    As a result, the effective number of epochs completed during training may be lower than the number of epochs originally requested.
-   
+
    To compare the requested and effective epoch counts, refer to the Model Manifest generated for the trained model.
 
 ``nb_epochs`` is mutually exclusive with ``build_preset``: exactly one of the two must be set.
