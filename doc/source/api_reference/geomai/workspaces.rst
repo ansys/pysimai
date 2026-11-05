@@ -23,3 +23,9 @@ Model
 .. autoclass:: GeomAIWorkspace()
     :members:
     :inherited-members:
+
+GeomAIModelManifest
+-------------------
+
+.. autoclass:: GeomAIModelManifest()
+    :members:

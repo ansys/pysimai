@@ -126,3 +126,15 @@ class GeomAIWorkspaceClientMixin(ApiClientMixin):
             ansys.simai.core.errors.ApiClientError: On other HTTP errors.
         """
         return self._get(f"geomai/workspaces/{workspace_id}/model/configuration")
+
+    def get_geomai_workspace_model_manifest(self, workspace_id: str):
+        """Get the public part of the manifest for the given GeomAI workspace.
+
+        Args:
+            workspace_id: ID of the workspace.
+
+        Raises:
+            ansys.simai.core.errors.NotFoundError: If no workspace with that ID exists.
+            ansys.simai.core.errors.ApiClientError: On other HTTP errors.
+        """
+        return self._get(f"geomai/workspaces/{workspace_id}/model/manifest/public")
