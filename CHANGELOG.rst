@@ -1,6 +1,23 @@
 Changelog
 ---------
 
+0.4.9 (2026-11-05)
+******************
+
+New:
+
+- Add GeomAI geometries and projections support.
+- Add :py:attr:`model_manifest<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace.model_manifest>` to GeomAI workspaces, exposing information about the trained model.
+
+Changes:
+
+- Remove the upper limit of 1000 on ``nb_epochs`` in :py:class:`GeomAIModelConfiguration<ansys.simai.core.data.geomai.models.GeomAIModelConfiguration>`.
+
+Documentation:
+
+- Update the beta warning of GeomAI sample predictions.
+- Add a GeomAI example on projecting geometries.
+
 0.4.8 (2026-10-19)
 ******************
 
