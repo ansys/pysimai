@@ -22,8 +22,10 @@
 import logging
 from typing import TYPE_CHECKING
 
+from ansys.simai.core.data.geomai.geometries import GeomAIGeometryDirectory
 from ansys.simai.core.data.geomai.models import GeomAIModelDirectory
 from ansys.simai.core.data.geomai.predictions import GeomAIPredictionDirectory
+from ansys.simai.core.data.geomai.projections import GeomAIProjectionDirectory
 from ansys.simai.core.data.geomai.projects import GeomAIProject, GeomAIProjectDirectory
 from ansys.simai.core.data.geomai.training_data import GeomAITrainingDataDirectory
 from ansys.simai.core.data.geomai.training_data_parts import GeomAITrainingDataPartDirectory
@@ -47,6 +49,8 @@ class GeomAIClient:
         self.client = simai_client
         self._model_directory = GeomAIModelDirectory(client=simai_client)
         self._prediction_directory = GeomAIPredictionDirectory(client=simai_client)
+        self._geometry_directory = GeomAIGeometryDirectory(client=simai_client)
+        self._projection_directory = GeomAIProjectionDirectory(client=simai_client)
         self._project_directory = GeomAIProjectDirectory(client=simai_client)
         self._workspace_directory = GeomAIWorkspaceDirectory(client=simai_client)
         self._training_data_directory = GeomAITrainingDataDirectory(client=simai_client)
@@ -178,3 +182,17 @@ class GeomAIClient:
         For more information, see :ref:`geomai_predictions`.
         """
         return self._prediction_directory
+
+    @property
+    def geometries(self) -> GeomAIGeometryDirectory:
+        """Representation of all GeomAI geometries on the server.
+        For more information, see :ref:`geomai_geometries`.
+        """
+        return self._geometry_directory
+
+    @property
+    def projections(self) -> GeomAIProjectionDirectory:
+        """Representation of all GeomAI projections on the server.
+        For more information, see :ref:`geomai_projections`.
+        """
+        return self._projection_directory

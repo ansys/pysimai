@@ -28,6 +28,7 @@ fall within the design language you have taught it.
     share a common plane or feature, the model will learn that feature and reproduce it across all generated
     designs.
 
+.. _geometry_requirements:
 
 Geometry requirements
 ---------------------

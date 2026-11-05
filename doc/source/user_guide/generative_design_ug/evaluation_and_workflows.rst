@@ -186,7 +186,6 @@ space reduces the search space and speeds up convergence.
     dimensions. Geometries reconstructed from a reduced space are close approximations of the originals,
     not exact replicas. The fewer dimensions retained, the coarser the approximation.
 
-
 Troubleshooting and improving your model
 -----------------------------------------
 
@@ -268,3 +267,76 @@ The key trade-off is:
 
 Use the **Parameter Importance** section of the MER to decide how many dimensions capture enough
 geometric variation for your use case.
+
+Project geometries onto your model's latent space
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Projection feature of GeomAI projects an existing geometry onto the latent design space of
+a trained GeomAI model and returns the latent parameters that represent it.
+For more information on how to use it, see :ref:`Projections <geomai_projections>`.
+
+The resulting latent parameters can be used in workflows such as optimization, design exploration,
+sensitivity analysis, and parameter studies:
+
+- **Start optimization from an existing design**:
+   Use the latent parameters obtained by projecting an existing design as the
+   starting point for optimization, rather than a randomly generated geometry.
+   This provides a meaningful baseline and can help accelerate convergence.
+- **Parametrize a non-parametric geometry for downstream modeling**:
+   Represent a geometry as a compact set of latent parameters that can serve as inputs to other models.
+   These models can predict performance, classify shapes, supporting design exploration and optimization.
+
+New geometries uploaded for projection must meet the same requirements as the training data:
+they must be provided in ``.vtp`` or ``.stl`` format and represent a watertight,
+manifold surface with no self-intersections. For more information, see :ref:`geometry_requirements`.
+If validation succeeds, GeomAI can compute the geometry's latent representation
+in the model's latent space; otherwise, the geometry is marked as invalid.
+
+Projection results are cached for each geometry and model. Repeating a projection can reuse the
+existing result without repeating the computation.
+
+As for prediction, you can work with a reduced dimensional space.
+For more information, see :ref:`reduced_latent_space_geomai`.
+You can reduce the dimensionality of the returned vector by passing ``n`` to
+``projection.get_latent_parameters(n=n)``. The method returns the first ``n`` parameters,
+which are ordered by importance, so the most influential dimensions are retained first. If
+``n`` is omitted, all parameters are returned; ``n`` must not exceed the number of latent
+parameters used to train the model. For example:
+
+.. code-block:: python
+
+  latent_parameters = projection.get_latent_parameters(n=10)
+
+Glossary of latent terms
+=========================
+
+Latent Space
+  A compact mathematical representation of the important variation in a set of geometries. Each
+  geometry is represented by a position in this space, and nearby positions generally correspond
+  to geometries that are similar according to what the model learned. Latent space is not a
+  physical coordinate system: its axes usually do not correspond directly to dimensions such as
+  length, width, or angle.
+
+Latent Vector
+  The ordered collection of latent parameters for one geometry. A latent vector is the numerical
+  "code" that the model uses to describe a geometry in latent space and to generate a corresponding
+  shape. It can sometimes be referred to as a "latent code".
+
+Latent Parameter
+  One numerical value of the latent vector.
+
+Number of Latent Parameters (Latent Dimension)
+  The GeomAI model setting ``nb_latent_param`` controls how many values are in each geometry's
+  latent vector; this count is also called the latent dimension.
+
+Example:
+    For a model configured with ``nb_latent_param=3``, consider:
+
+    .. code-block:: python
+
+        latent_parameters = [0.8, -1.2, 2.1]
+
+    - ``0.8``, ``-1.2``, and ``2.1`` are **latent parameters**.
+    - The list of latent parameters is a **latent vector**.
+    - It has three **latent dimensions**.
+    - It represents one point in the **latent space**.
