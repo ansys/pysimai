@@ -275,7 +275,7 @@ The Projection feature of GeomAI projects an existing geometry onto the latent d
 a trained GeomAI model and returns the latent parameters that represent it.
 For more information on how to use it, see :ref:`Projections <geomai_projections>`.
 
-The resulting latent parameters support workflows such as optimization, design exploration,
+The resulting latent parameters can be used in workflows such as optimization, design exploration,
 sensitivity analysis, and parameter studies:
 
 - **Start optimization from an existing design**:
