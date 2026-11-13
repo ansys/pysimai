@@ -91,7 +91,7 @@ def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> L
     List[float]
         Interpolated latent parameter vector.
     """
-    return [(1 - alpha) * x + alpha * y for x, y in zip(vec1, vec2)]
+    return [(1 - alpha) * x + alpha * y for x, y in zip(vec1, vec2, strict=True)]
 
 
 ###############################################################################
