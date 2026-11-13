@@ -426,3 +426,96 @@ def test_geomai_project_create_with_description(simai_client, httpx_mock):
 
     assert project.name == "my_project"
     assert project.description == "My project description"
+
+
+def test_geomai_project_starred_property(simai_client):
+    project = simai_client.geomai.projects._model_from(
+        {"id": "0011", "name": "riri", "starred": True}
+    )
+
+    assert project.starred is True
+
+
+def test_geomai_project_list_starred(simai_client, httpx_mock):
+    raw_projects = [
+        {"id": "abc123", "name": "Starred one", "starred": True},
+        {"id": "123abc", "name": "Starred two", "starred": True},
+    ]
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects/starred?",
+        json=raw_projects,
+        status_code=200,
+    )
+
+    projects = simai_client.geomai.projects.list(starred=True)
+
+    assert [project.id for project in projects] == ["abc123", "123abc"]
+    assert all(project.starred for project in projects)
+
+
+def test_geomai_project_list_starred_with_filters(simai_client, httpx_mock):
+    raw_filters = [{"field": "name", "operator": "EQ", "value": "Starred one"}]
+    query = urlencode([("filter[]", json.dumps(f, separators=(",", ":"))) for f in raw_filters])
+    httpx_mock.add_response(
+        method="GET",
+        url=f"https://test.test/geomai/projects/starred?{query}",
+        json=[{"id": "abc123", "name": "Starred one", "starred": True}],
+        status_code=200,
+    )
+
+    projects = simai_client.geomai.projects.list(filters={"name": "Starred one"}, starred=True)
+
+    assert [project.id for project in projects] == ["abc123"]
+
+
+def test_geomai_project_iter_starred(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects/starred?",
+        headers={"X-Pagination": json.dumps({"total": 999})},
+        json=[{"id": "one", "name": "Project One", "starred": True}],
+        status_code=200,
+    )
+
+    project_iter = simai_client.geomai.projects.iter(starred=True)
+
+    assert len(project_iter) == 999
+    assert next(project_iter).id == "one"
+    assert len(project_iter) == 998
+
+
+def test_geomai_project_star(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="PUT", url="https://test.test/geomai/projects/0011/starred", status_code=204
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects/0011",
+        json={"id": "0011", "name": "riri", "starred": True},
+        status_code=200,
+    )
+    project = simai_client.geomai.projects._model_from({"id": "0011", "name": "riri"})
+
+    project.star()
+
+    assert project.starred is True
+
+
+def test_geomai_project_unstar(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="DELETE", url="https://test.test/geomai/projects/0011/starred", status_code=204
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geomai/projects/0011",
+        json={"id": "0011", "name": "riri", "starred": False},
+        status_code=200,
+    )
+    project = simai_client.geomai.projects._model_from(
+        {"id": "0011", "name": "riri", "starred": True}
+    )
+
+    project.unstar()
+
+    assert project.starred is False
