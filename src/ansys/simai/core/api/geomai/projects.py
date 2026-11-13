@@ -32,14 +32,17 @@ if TYPE_CHECKING:
 
 
 class GeomAIProjectClientMixin(ApiClientMixin):
-    def geomai_projects(self, filters: Optional["RawFilters"]):
-        return list(self.iter_geomai_projects(filters))
+    def geomai_projects(self, filters: Optional["RawFilters"], starred: bool = False):
+        return list(self.iter_geomai_projects(filters, starred=starred))
 
-    def iter_geomai_projects(self, filters: Optional["RawFilters"]) -> PaginatedAPIRawIterator:
+    def iter_geomai_projects(
+        self, filters: Optional["RawFilters"], starred: bool = False
+    ) -> PaginatedAPIRawIterator:
         query = urlencode(
             [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
         )
-        return PaginatedAPIRawIterator(self, f"geomai/projects?{query}")
+        path = "geomai/projects/starred" if starred else "geomai/projects"
+        return PaginatedAPIRawIterator(self, f"{path}?{query}")
 
     def get_geomai_project(self, id: str):
         return self._get(f"geomai/projects/{id}")
@@ -68,6 +71,12 @@ class GeomAIProjectClientMixin(ApiClientMixin):
 
     def delete_geomai_project(self, project_id: str):
         self._delete(f"geomai/projects/{project_id}", return_json=False)
+
+    def star_geomai_project(self, project_id: str):
+        self._put(f"geomai/projects/{project_id}/starred", return_json=False)
+
+    def unstar_geomai_project(self, project_id: str):
+        self._delete(f"geomai/projects/{project_id}/starred", return_json=False)
 
     def get_geomai_project_related_workspaces(self, project_id: str):
         return self._get(f"geomai/projects/{project_id}/workspaces")
