@@ -886,3 +886,50 @@ def test_build_with_build_on_top_minimal_config(mocker, simai_client, httpx_mock
     assert isinstance(launched_model.configuration, ModelConfiguration)
     assert launched_model.project_id == MODEL_RAW["project_id"]
     assert launched_model.configuration._to_payload() == project_last_conf._to_payload()
+
+
+@pytest.mark.parametrize(
+    "remove_pressure_from_output",
+    [
+        lambda conf: setattr(conf, "output", ModelOutput(surface=["TurbulentViscosity"])),
+        lambda conf: conf.output.surface.remove("Pressure"),
+    ],
+    ids=["output-reassigned", "output-mutated-in-place"],
+)
+def test_build_with_gc_variable_not_in_configuration(
+    mocker, simai_client, remove_pressure_from_output
+):
+    """WHEN a global coefficient uses a variable removed from the configuration after it was set
+    THEN build raises a ProcessingError before sending any request."""
+
+    raw_project = {"id": MODEL_RAW["project_id"], "name": "fifi", "sample": SAMPLE_RAW}
+    project: Project = simai_client._project_directory._model_from(raw_project)
+    mocker.patch.object(project, "process_gc_formula", autospec=True)
+
+    conf = ModelConfiguration(
+        project=project,
+        output=ModelOutput(surface=["Pressure", "TurbulentViscosity"]),
+        global_coefficients=[("max(Pressure)", "maxpress")],
+    )
+    remove_pressure_from_output(conf)
+
+    with pytest.raises(ProcessingError, match="Global Coefficient 'maxpress' uses variables"):
+        simai_client.models.build(conf)
+
+
+def test_compute_global_coefficient(mocker, simai_client):
+    """WHEN compute_global_coefficient is called
+    THEN each global coefficient formula is processed with the configuration variables."""
+
+    raw_project = {"id": MODEL_RAW["project_id"], "name": "fifi", "sample": SAMPLE_RAW}
+    project: Project = simai_client._project_directory._model_from(raw_project)
+    process_gc_formula = mocker.patch.object(
+        project, "process_gc_formula", autospec=True, return_value=0.5
+    )
+
+    model_conf = ModelConfiguration._from_payload(project=project, **MODEL_CONF_RAW)
+
+    assert model_conf.compute_global_coefficient() == [0.5]
+    process_gc_formula.assert_called_with(
+        "max(Pressure)", ["Vx", "Vy"], ["Pressure", "WallShearStress_0"], "cells"
+    )

@@ -26,8 +26,10 @@ import pytest
 from ansys.simai.core.data.model_configuration import (
     GlobalCoefficientDefinition,
     ModelConfiguration,
+    ModelInput,
     ModelOutput,
     SupportedBuildPresets,
+    _formula_variables,
 )
 from ansys.simai.core.errors import InvalidArguments, ProcessingError
 
@@ -222,4 +224,60 @@ def test_model_output_scalars_same_name_gc(mocker, simai_client):
     assert (
         str(e.value)
         == "Scalar variables 'conflict_name' have the same name as global coefficients."
+    )
+
+
+@pytest.mark.parametrize(
+    "formula,variables",
+    [
+        ("max(Pressure)", {"Pressure"}),
+        ("max(Pressure) / Vx", {"Pressure", "Vx"}),
+        ('min("alpha.water")', {"alpha.water"}),
+        ("sum(WallShearStress[X] * Area)", {"WallShearStress", "Area"}),
+        ('"Wall Shear Stress"[Y] + 2e5', {"Wall Shear Stress"}),
+        ("foo.bar", {"foo"}),
+    ],
+)
+def test_formula_variables(formula, variables):
+    assert _formula_variables(formula) == variables
+
+
+def test_gc_with_variable_not_in_configuration(mocker, simai_client):
+    """WHEN a global coefficient uses a sample variable that is not in the configuration
+    THEN a ProcessingError is raised without processing the formula."""
+
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
+    project = simai_client._project_directory._model_from(raw_project)
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
+
+    with pytest.raises(ProcessingError) as e:
+        ModelConfiguration(
+            project=project,
+            output=ModelOutput(surface=["TurbulentViscosity"]),
+            global_coefficients=[GlobalCoefficientDefinition("max(Pressure)", "maxpress")],
+        )
+    assert str(e.value) == (
+        "Global Coefficient 'maxpress' uses variables that are not model inputs, "
+        "model outputs or post-processing inputs: Pressure."
+    )
+    process_gc_formula.assert_not_called()
+
+
+def test_gc_with_input_surface_variable(mocker, simai_client):
+    """WHEN a global coefficient uses an input surface variable
+    THEN the variable is sent as a surface variable to process the formula."""
+
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
+    project = simai_client._project_directory._model_from(raw_project)
+    process_gc_formula = mocker.patch.object(project, "process_gc_formula", autospec=True)
+
+    ModelConfiguration(
+        project=project,
+        input=ModelInput(surface=["Pressure"]),
+        output=ModelOutput(surface=["TurbulentViscosity"]),
+        global_coefficients=[GlobalCoefficientDefinition("max(Pressure)", "maxpress")],
+    )
+
+    process_gc_formula.assert_called_once_with(
+        "max(Pressure)", [], ["TurbulentViscosity", "Pressure"], "cells"
     )

@@ -105,6 +105,9 @@ class ModelDirectory(Directory[Model]):
         if not configuration.project:
             raise InvalidArguments("The model configuration does not have a project set")
 
+        if not configuration.build_on_top:
+            configuration._validate_global_coefficients()
+
         is_trainable = configuration.project.is_trainable()
         if not is_trainable:
             raise InvalidArguments(f"Cannot train model because: {is_trainable.reason}")

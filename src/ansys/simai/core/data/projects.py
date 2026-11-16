@@ -248,10 +248,13 @@ class Project(DataModel):
 
         sample_metadata = self.sample.fields.get("extracted_metadata")
 
+        gc_process_id = f"{self.id}-process-{gc_formula}-{gc_location}"
+        # A registered request would be reused with its previous variables
+        self._client._process_gc_formula_directory._unregister_item_with_id(gc_process_id)
         gc_process: ProcessGlobalCoefficient = (
             self._client._process_gc_formula_directory._model_from(
                 data={
-                    "id": f"{self.id}-process-{gc_formula}-{gc_location}",
+                    "id": gc_process_id,
                 },
                 project_id=self.id,
                 gc_formula=gc_formula,

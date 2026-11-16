@@ -655,3 +655,24 @@ def test_project_create_with_description(simai_client, httpx_mock):
 
     assert project.name == "my_project"
     assert project.description == "My project description"
+
+
+def test_process_gc_formula_sends_latest_variables(simai_client, httpx_mock):
+    """WHEN the same formula is processed twice with different variables
+    THEN the second request is built from the second set of variables."""
+    raw_project = {"id": "xX007Xx", "name": "fifi", "sample": SAMPLE_RAW}
+    project: Project = simai_client._project_directory._model_from(raw_project)
+    for _ in range(2):
+        httpx_mock.add_response(
+            method="POST",
+            url=f"https://test.test/projects/{project.id}/process-formula",
+            status_code=200,
+            json={"formula": "max(Pressure)", "result": 0.25478328},
+        )
+
+    project.process_gc_formula("max(Pressure)", ["Vx"], ["Pressure"])
+    project.process_gc_formula("max(Pressure)", [], ["TurbulentViscosity"])
+
+    payload = json.loads(httpx_mock.get_requests()[-1].content)
+    assert payload["bc_list"] == []
+    assert [fd["name"] for fd in payload["surface_field_list"]] == ["TurbulentViscosity"]
