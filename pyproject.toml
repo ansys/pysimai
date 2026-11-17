@@ -56,7 +56,10 @@ docs = [
     "sphinx-gallery",
     "blacken-docs>=1.16.0",
     "sphinx_design>=0.6.1",
-    "sphinx-copybutton>=0.5.2"
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-markdown-builder>=0.6.11",
+    "sphinx-sitemap>=2.9.0",
+    "sphinx-reredirects>=0.1.6"
 ]
 tests = [
     "pytest>=7.0.0",

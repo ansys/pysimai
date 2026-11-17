@@ -1,7 +1,6 @@
+PySimAI utilities for SimAI models
+----------------------------------
 
-
-PySimAI utilities
--------------------------
-
-This section provides a collection of practical script examples illustrating SimAI functionalities and use cases.
-They serve as a reference guide for users to implement similar solutions in their projects.
+These examples cover specific tasks for SimAI models: reuse a model configuration, rebuild a
+SimAI model, assign subsets, run a non-parametric optimization, and upload training data in
+parallel processes.

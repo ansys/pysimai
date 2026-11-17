@@ -35,6 +35,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -52,6 +53,7 @@ copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 cname = os.getenv("DOCUMENTATION_CNAME", "simai.docs.pyansys.com")
 
 SOURCE_PATH = Path(__file__).parent.resolve().absolute()
+sys.path.insert(0, str(SOURCE_PATH / "_ext"))
 ANSYS_SIMAI_THUMBNAIL = str(os.path.join(SOURCE_PATH, "_static", "ansys_simai.png"))
 
 # -- General configuration ---------------------------------------------------
@@ -68,6 +70,10 @@ extensions = [
     "sphinxcontrib.autodoc_pydantic",
     "sphinx_gallery.gen_gallery",
     "sphinx_copybutton",
+    "sphinx_sitemap",
+    "sphinx_markdown_builder",
+    "llms_outputs",
+    "sphinx_reredirects",
 ]
 # Sphinx Gallery Options
 
@@ -142,6 +148,62 @@ html_logo = pyansys_logo_black
 html_favicon = ansys_favicon
 html_static_path = ["_static"]
 
+# Canonical URL of the published documentation, used by the sitemap and llms.txt.
+html_baseurl = f"https://{cname}/version/{'dev' if 'dev' in version else 'stable'}/"
+sitemap_url_scheme = "{link}"
+sitemap_excludes = [
+    "search.html",
+    "genindex.html",
+    "py-modindex.html",
+    "sg_execution_times.html",
+    "_examples/sg_execution_times.html",
+    "_examples/00_basic_simai_ex/sg_execution_times.html",
+    "_examples/01_pysimai_ex/sg_execution_times.html",
+    "_examples/02_generative_design_ex/sg_execution_times.html",
+]
+
+# -- Outputs for AI assistants -----------------------------------------------
+# Build the Markdown pages first (see the doc environment in tox.ini), then the
+# HTML. The llms_outputs extension publishes each page as <page>.md and writes
+# llms.txt and llms-full.txt.
+
+llms_markdown_dir = os.getenv("LLMS_MARKDOWN_DIR")
+llms_txt_title = "PySimAI"
+llms_txt_exclude = ["sg_execution_times", "*/sg_execution_times"]
+llms_txt_summary = (
+    "PySimAI (package ansys-simai-core) is the Python SDK for Ansys SimAI. "
+    "Use it to upload training data, build SimAI models and GeomAI models, "
+    "run predictions and postprocessings, and generate geometries."
+)
+llms_txt_rules = [
+    (
+        "Install the package with `pip install ansys-simai-core` and import it with "
+        "`import ansys.simai.core as asc`."
+    ),
+    (
+        "Create the PySimAI client and name it `simai_client`: "
+        '`simai_client = asc.SimAIClient(organization="<your_organization>")`.'
+    ),
+    (
+        "GeomAI models have their own client, `GeomAIClient`: get it with "
+        "`geomai_client = simai_client.geomai`, then use its directories, such as "
+        "`geomai_client.projects` and `geomai_client.models`."
+    ),
+    (
+        "`wait()` returns False on timeout and raises "
+        "`ansys.simai.core.errors.ProcessingError` when the processing fails."
+    ),
+    (
+        "Never pass `build_on_top` or `boundary_conditions`: both are deprecated. "
+        "Use `workspace.model_manifest`, not `workspace.model`."
+    ),
+    (
+        "For SimAI models, always pass `build_preset` explicitly: `debug` is a test build; "
+        "`1_day`, `2_days` and `7_days` are production builds with that build duration. "
+        "The default of `ModelConfiguration` is `debug`."
+    ),
+]
+
 suppress_warnings = ["config.cache"]
 
 html_context = {
@@ -163,7 +225,8 @@ html_theme_options = {
         "json_url": f"https://{cname}/versions.json",
         "version_match": get_version_match(version),
     },
-    "show_nav_level": 2,
+    "show_nav_level": 1,
+    "header_links_before_dropdown": 6,
     "navigation_depth": -1,
     "collapse_navigation": False,
 }
@@ -174,3 +237,25 @@ html_theme_options = {
 # https://stackoverflow.com/questions/5422997/sphinx-docs-remove-blank-pages-from-generated-pdfs/5741112#5741112
 
 latex_elements = {"extraclassoptions": "openany,oneside"}
+
+# -- Redirects from the URLs of the previous documentation structure -----------
+
+redirects = {
+    "user_guide": "/user-guide/index.html",
+    "user_guide/configuration_guide/index": "/getting-started/index.html",
+    "user_guide/configuration_guide/installation": "/getting-started/install.html",
+    "user_guide/configuration_guide/configuration": "/getting-started/configure-the-client.html",
+    "user_guide/configuration_guide/config_file": "/getting-started/use-a-configuration-file.html",
+    "user_guide/configuration_guide/proxy": "/getting-started/work-behind-a-proxy.html",
+    "user_guide/pysimai_ug/index": "/user-guide/simai-models/index.html",
+    "user_guide/pysimai_ug/building_a_model": "/user-guide/simai-models/build-a-model.html",
+    "user_guide/pysimai_ug/data_exploration": "/user-guide/simai-models/explore-predictions-with-selections.html",
+    "user_guide/pysimai_ug/best_practices": "/user-guide/common-tasks/work-asynchronously.html",
+    "user_guide/optimization_guide/index": "/user-guide/simai-models/optimization-overview.html",
+    "user_guide/optimization_guide/non-parametric_optimization": "/user-guide/simai-models/optimize-a-design.html",
+    "user_guide/optimization_guide/configure_npo": "/user-guide/simai-models/configure-an-optimization.html",
+    "user_guide/generative_design_ug/index": "/user-guide/geomai-models/index.html",
+    "user_guide/generative_design_ug/data_preparation": "/user-guide/geomai-models/prepare-training-data.html",
+    "user_guide/generative_design_ug/model_setup_and_goals": "/user-guide/geomai-models/configure-a-model.html",
+    "user_guide/generative_design_ug/evaluation_and_workflows": "/user-guide/geomai-models/evaluate-a-model.html",
+}
