@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#
+
 # ruff: noqa: S105, S106
 
 import copy
@@ -30,6 +30,7 @@ from math import ceil
 import httpx
 import jwt
 import pytest
+from pydantic import ValidationError
 from pytest_httpx import HTTPXMock
 
 from ansys.simai.core.errors import SimAIError
@@ -39,6 +40,7 @@ from ansys.simai.core.utils.auth import (
     _AuthTokens,
     _AuthTokensRetriever,
     _decode_authorized_party,
+    get_offline_token,
 )
 from ansys.simai.core.utils.configuration import ClientConfig, Credentials
 
@@ -358,8 +360,6 @@ def test_get_offline_token_direct_grant(httpx_mock):
         json=offline_tokens,
         status_code=200,
     )
-    from ansys.simai.core.utils.auth import get_offline_token
-
     token = get_offline_token(
         url="https://simai.ansys.com",
         credentials=Credentials(username="user", password="pass"),
@@ -408,8 +408,6 @@ def test_offline_token_and_credentials_mutually_exclusive():
     """WHEN both credentials and offline_token are provided
     THEN a validation error is raised.
     """
-    from pydantic import ValidationError
-
     with pytest.raises(ValidationError, match="auth_conflict"):
         ClientConfig(
             url="https://simai.ansys.com",
@@ -470,8 +468,6 @@ def test_access_token_loaded_from_env(monkeypatch):
     ],
 )
 def test_access_token_mutually_exclusive_with_other_auth_methods(kwargs):
-    from pydantic import ValidationError
-
     with pytest.raises(ValidationError, match="auth_conflict"):
         ClientConfig(
             url="https://simai.ansys.com",

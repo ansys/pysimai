@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import warnings
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, List, Literal, Optional
@@ -301,7 +302,7 @@ class ModelConfiguration:
 
     project: "Optional[Project]" = None
     build_on_top: bool = False
-    domain_of_analysis: DomainOfAnalysis = field(default_factory=lambda: DomainOfAnalysis())
+    domain_of_analysis: DomainOfAnalysis = field(default_factory=DomainOfAnalysis)
 
     def __set_gc(self, gcs: list[GlobalCoefficientDefinition]):
         verified_gcs = []

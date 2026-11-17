@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -51,7 +51,7 @@ class PPList(List, Generic[T]):
         self._selection = selection
         # Even in case of errors, all post-processings will be queued.
         # but if some fail, an exception will be raised.
-        post_processings = _map_despite_errors(lambda pred: post(pred), self._selection.predictions)
+        post_processings = _map_despite_errors(post, self._selection.predictions)
         super().__init__(post_processings)
 
     @property
