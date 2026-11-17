@@ -94,7 +94,7 @@ Before committing to long runs, you should monitor the convergence trend to ensu
 Objective: Minimize or Maximize
 --------------------------------
 
-When defining an objective, focus on the most relevant performance indicator, for example, minimizing drag or maximizing lift.
+When defining an objective, focus on the most relevant performance indicator (for example, minimizing drag or maximizing lift).
 For non-parametric optimization, only one objective can be defined.
 
 Maximum displacement

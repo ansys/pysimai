@@ -7,7 +7,7 @@ Model configuration
 
 This module contains a collection of classes for creating a model configuration.
 The model configuration defines the model's inputs, outputs, Global Coefficients,
-build duration and project. The resulting
+build duration, and project. The resulting
 (:py:class:`ModelConfiguration<ansys.simai.core.data.model_configuration.ModelConfiguration>`)
 object is subsequently used to train a model.
 
