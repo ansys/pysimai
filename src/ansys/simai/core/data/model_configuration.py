@@ -19,10 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import re
 import warnings
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, List, Literal, Optional
 
+from ansys.simai.core.data.global_coefficients_requests import EXTRA_CALCULETTE_FIELDS
 from ansys.simai.core.errors import InvalidArguments, ProcessingError, PySimAIDepreciationWarning
 from ansys.simai.core.utils.misc import dict_get
 
@@ -35,6 +37,23 @@ SupportedBuildPresets = {
     "2_days": "default",
     "7_days": "long",
 }
+
+
+def _formula_variables(formula: str) -> set[str]:
+    """Names a Global Coefficient formula may refer to as variables."""
+    # Quoted names, e.g. "Wall Shear Stress"
+    variables = set(re.findall(r'"([^"]*)"', formula))
+    formula = re.sub(r'"[^"]*"', " ", formula)
+
+    # Then drop what is not a variable: vector components (field[X]),
+    # property accesses (foo.bar) and function names (max(...))
+    formula = re.sub(r"\[[^\]]*\]", " ", formula)
+    formula = re.sub(r"\.\s*\w+", " ", formula)
+    formula = re.sub(r"\w+\s*\(", " ", formula)
+
+    # Numbers such as 2e5 are not identifiers
+    variables.update(word for word in re.findall(r"\w+", formula) if word.isidentifier())
+    return variables
 
 
 @dataclass
@@ -314,12 +333,10 @@ class ModelConfiguration:
                 )
 
             self.__validate_global_coefficient_name(gc_unit.name)
+            self.__validate_global_coefficient_variables(gc_unit)
 
             self.project.process_gc_formula(
-                gc_unit.formula,
-                (self.input.scalars or []) + (self.output.scalars or []),
-                (self.output.surface or []) + (self.pp_input.surface or []),
-                gc_unit.gc_location,
+                gc_unit.formula, *self.__gc_variables(), gc_unit.gc_location
             )
             verified_gcs.append(gc_unit)
         self.__dict__["global_coefficients"] = verified_gcs
@@ -377,6 +394,32 @@ class ModelConfiguration:
             raise ProcessingError(
                 f"Global Coefficient '{gc_name}' has the same name as an output scalar variable."
             )
+
+    def __gc_variables(self) -> tuple[list[str], list[str]]:
+        scalars = (self.input.scalars or []) + (self.output.scalars or [])
+        surface_variables = (
+            (self.output.surface or []) + (self.pp_input.surface or []) + (self.input.surface or [])
+        )
+        return scalars, surface_variables
+
+    def __validate_global_coefficient_variables(self, gc: GlobalCoefficientDefinition):
+        # Only names known by the sample are checked, as anything else in
+        # the formula may belong to the formula grammar
+        sample_variables = {
+            name for names in (self.project.get_variables() or {}).values() for name in names
+        }
+        scalars, surface_variables = self.__gc_variables()
+        allowed_variables = {*scalars, *surface_variables, *EXTRA_CALCULETTE_FIELDS}
+        unlisted_variables = (_formula_variables(gc.formula) & sample_variables) - allowed_variables
+        if unlisted_variables:
+            raise ProcessingError(
+                f"Global Coefficient '{gc.name}' uses variables that are not model inputs, "
+                f"model outputs or post-processing inputs: {', '.join(sorted(unlisted_variables))}."
+            )
+
+    def _validate_global_coefficients(self):
+        for gc in self.global_coefficients or []:
+            self.__validate_global_coefficient_variables(gc)
 
     def __validate_predict_scalar_variables(self, vars_to_validate: list[str]):
         # Predict scalars can't have the same name as a global coefficient
@@ -628,7 +671,7 @@ class ModelConfiguration:
             )
 
         return [
-            self.project.compute_gc_formula(gc.formula, self.input.scalars, self.output.surface)
+            self.project.process_gc_formula(gc.formula, *self.__gc_variables(), gc.gc_location)
             for gc in self.global_coefficients
         ]
 

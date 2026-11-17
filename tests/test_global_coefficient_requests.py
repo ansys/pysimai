@@ -182,3 +182,21 @@ def test_process_formula_failure(global_coefficient_request_factory, action, htt
 
     assert process_gc.has_failed
     assert all(keyword in process_gc.failure_reason for keyword in [reason_of_failure, gc_formula])
+
+
+def test_calculette_payload_does_not_keep_previous_surface_variables(
+    global_coefficient_request_factory,
+):
+    """WHEN two requests are composed with different surface variables
+    THEN the second one only contains its own surface variables."""
+    for gc_id, surface_variables in [("first", ["Pressure"]), ("second", None)]:
+        process_gc: ProcessGlobalCoefficient = global_coefficient_request_factory(
+            data={"id": gc_id},
+            project_id="xX007Xx",
+            gc_formula="max(Pressure)",
+            sample_metadata=METADATA_RAW,
+            surface_variables=surface_variables,
+            gc_location="cells",
+        )
+
+    assert process_gc._calculette_payload["surface_field_list"] == []

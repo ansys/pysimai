@@ -77,9 +77,7 @@ class GlobalCoefficientRequest(ABC, ComputableDataModel):
     ) -> dict[str, Any]:
         """Composes the payload for a calculette request."""
 
-        surface_vars_list = EXTRA_CALCULETTE_FIELDS
-        if surface_variables:
-            surface_vars_list += surface_variables
+        surface_vars_list = [*EXTRA_CALCULETTE_FIELDS, *(surface_variables or [])]
 
         return {
             "formula": gc_formula,
