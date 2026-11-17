@@ -2,7 +2,7 @@ Installation
 ============
 
 .. note::
-    PySimAI requires Python 3.9 or later.
+    PySimAI requires Python 3.10 or later.
 
 
 Install PySimAI with this command:
