@@ -114,7 +114,7 @@ along each axis:
 
 - **Low resolution** (for example ``(50, 50, 50)``): fast generation, suitable for quick previews.
 - **Medium resolution** (for example ``(100, 100, 100)``): good balance for most use cases.
-- **High resolution** (for example ``(300, 300, 300)`` or above): captures fine details and sharp edges.
+- **High resolution** (for example ``(300, 300, 300)`` or higher): captures fine details and sharp edges.
 
 The total number of voxels must not exceed 900 :sup:`3` (that is, ``x * y * z <= 729,000,000``).
 For the maximum resolution, prediction takes approximately 10 minutes.
@@ -165,8 +165,7 @@ When ``n`` is omitted, the full list of latent parameters is returned.
 Generating geometries from a reduced space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Reduced latent parameters can be passed directly to :class:`GeomAIPredictionConfiguration
-<ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration>`.
+Reduced latent parameters can be passed directly to :class:`~ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration`.
 The remaining dimensions are automatically discarded; no additional handling is required.
 
 .. code-block:: python
@@ -196,7 +195,7 @@ Geometries are not correctly reconstructed
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. Open the MER and check which geometries are flagged by the chamfer distance thresholds.
-2. Inspect the histogram: are poorly-reconstructed geometries outliers, or is the whole
+2. Inspect the histogram: are poorly reconstructed geometries outliers, or is the whole
    distribution shifted high? A shifted distribution suggests the model needs more training time.
 3. Verify that the flagged training geometries meet the mesh requirements (watertight, manifold,
    no self-penetration). See :ref:`data_preparation_geomai`.
@@ -284,7 +283,7 @@ sensitivity analysis, and parameter studies:
    This provides a meaningful baseline and can help accelerate convergence.
 - **Parametrize a non-parametric geometry for downstream modeling**:
    Represent a geometry as a compact set of latent parameters that can serve as inputs to other models.
-   These models can predict performance, classify shapes, supporting design exploration and optimization.
+   These models can predict performance and classify shapes to support design exploration and optimization.
 
 New geometries uploaded for projection must meet the same requirements as the training data:
 they must be provided in ``.vtp`` or ``.stl`` format and represent a watertight,
@@ -320,7 +319,7 @@ Latent Space
 Latent Vector
   The ordered collection of latent parameters for one geometry. A latent vector is the numerical
   "code" that the model uses to describe a geometry in latent space and to generate a corresponding
-  shape. It can sometimes be referred to as a "latent code".
+  shape. It can sometimes be referred to as a *latent code*.
 
 Latent Parameter
   One numerical value of the latent vector.

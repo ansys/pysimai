@@ -50,8 +50,8 @@ How to check and fix your geometries
 
 Before uploading, validate your geometries to avoid processing failures.
 
-Check watertightness and manifoldness with PyVista.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Check watertightness and manifoldness with PyVista
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can use `PyVista <https://docs.pyvista.org/>`_ to check if your geometry is watertight and manifold:
 
