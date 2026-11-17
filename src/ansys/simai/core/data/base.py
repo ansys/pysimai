@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -335,5 +335,5 @@ class UploadableResourceMixin:
             ProcessingError(
                 f"Could not complete upload because: {data.get('reason', 'Upload failed')}"
             )
-        elif state not in ["updated"]:
+        elif state != "updated":
             logger.error("Invalid resource state.")
