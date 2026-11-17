@@ -57,6 +57,7 @@ The gallery has runnable scripts for the main steps: :ref:`ref_basic_create_proj
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
 
    prepare-training-data
    upload-training-data
