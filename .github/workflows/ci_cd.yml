@@ -135,7 +135,7 @@ jobs:
     needs: [doc-build, tests]
     timeout-minutes: 10
     steps:
-      - uses: ansys/actions/build-library@7410037bfb276c79ae91eb3617b9f5d2876f0c94 # v11.0.8
+      - uses: ansys/actions/build-library@f5e1481b9c128197a30d1dc1dfc52b8cd6865555 # v11.1.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
