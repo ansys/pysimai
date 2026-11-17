@@ -11,7 +11,7 @@ maintainers = [
 license = "MIT"
 license-files = ["LICENSE"]
 readme = "README.rst"
-requires-python = ">=3.9,<4"
+requires-python = ">=3.10,<4"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -19,7 +19,6 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Scientific/Engineering :: Physics",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -33,7 +32,7 @@ dependencies = [
     "tqdm>=4.66.1",
     "filelock>=3.10.7",
     "typing_extensions>=4.12.0",
-    "truststore>=0.10.0; python_version >= '3.10'",
+    "truststore>=0.10.0",
     "httpx>=0.28.1",
     "httpx-sse>=0.4.1",
     "httpx-retries>=0.4.2",
@@ -82,7 +81,7 @@ doc = "sphinx-build doc/source _build/html --color -vW -bhtml"
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [
