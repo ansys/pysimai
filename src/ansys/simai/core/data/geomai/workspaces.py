@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 import json
-from typing import TYPE_CHECKING, BinaryIO, List, Optional, Union
+from pprint import pformat
+from typing import TYPE_CHECKING, Any, BinaryIO, Dict, List, Optional, Union
 
 from ansys.simai.core.data.base import DataModel, Directory
 from ansys.simai.core.data.geomai.models import GeomAIModelConfiguration
@@ -39,7 +40,43 @@ from ansys.simai.core.utils.pagination import DataModelIterator
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geomai.predictions import GeomAIPrediction
+    from ansys.simai.core.data.geomai.projections import GeomAIProjection
     from ansys.simai.core.data.geomai.projects import GeomAIProject
+
+
+class GeomAIModelManifest:
+    """Provides information about a model associated with a GeomAI workspace."""
+
+    def __init__(self, raw_manifest: Dict[str, Any]):
+        self._raw = raw_manifest
+
+    def __repr__(self) -> str:
+        return pformat(self._raw)
+
+    @property
+    def name(self) -> str:
+        """Name of the model."""
+        return self._raw["model_name"]
+
+    @property
+    def nb_latent_parameters(self) -> int:
+        """Number of latent parameters of the model."""
+        return self._raw["nb_latent_param"]
+
+    @property
+    def build_preset(self) -> Optional[str]:
+        """Build preset used to train the model, or ``None`` if no build preset was used."""
+        return self._raw["build_preset"]
+
+    @property
+    def nb_epochs(self) -> int:
+        """Number of epochs the model actually used to train the model."""
+        return self._raw["nb_epochs"]
+
+    @property
+    def requested_nb_epochs(self) -> int:
+        """Number of epochs requested for the model training."""
+        return self._raw["requested_nb_epochs"]
 
 
 class GeomAIWorkspace(DataModel):
@@ -73,6 +110,21 @@ class GeomAIWorkspace(DataModel):
         self.reload()
 
     @property
+    def model_manifest(self) -> GeomAIModelManifest:
+        """:class:`~ansys.simai.core.data.geomai.workspaces.GeomAIModelManifest` instance containing
+        information about the model associated with the workspace.
+
+        Raises:
+            NotFoundError: If the workspace's model has no manifest, which is the case for models
+                built before manifests were introduced.
+        """
+        if self._model_manifest is None:
+            self._model_manifest = GeomAIModelManifest(
+                self._client._api.get_geomai_workspace_model_manifest(self.id)
+            )
+        return self._model_manifest
+
+    @property
     def model_configuration(self) -> GeomAIModelConfiguration:
         """Model configuration used in the workspace."""
         if self._model_configuration is None:
@@ -99,6 +151,10 @@ class GeomAIWorkspace(DataModel):
             self._client.geomai.predictions._model_from(prediction)
             for prediction in self._client._api.geomai_predictions(self.id)
         ]
+
+    def list_projections(self) -> List["GeomAIProjection"]:
+        """List all the projections associated to the model of the workspace."""
+        return self._client.geomai.projections.list(workspace=self)
 
     def set_as_current_workspace(self) -> None:
         """Configure the client to use this workspace instead of the one currently configured."""
