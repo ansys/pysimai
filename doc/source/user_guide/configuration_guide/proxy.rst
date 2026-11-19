@@ -34,7 +34,7 @@ proxy is not trusted by your computer.
 
 There are multiple ways to fix this issue:
 
-1. Try ``tls_ca_bundle="system"`` (requires ``python>=3.10``, see :ref:`configuration`).
+1. Try ``tls_ca_bundle="system"`` (see :ref:`configuration`).
 2. Extract the required CA certificate:
 
     a. Extract the certificates used by your company-configured browser on ``https://simai.ansys.com``.

@@ -115,7 +115,7 @@ class ClientConfig(BaseModel, extra="allow"):
     Custom TLS CA certificate configuration. Possible values:
 
     * ``None``: use secure defaults
-    * ``"system"``: uses system CA certificates (python >= 3.10)
+    * ``"system"``: uses system CA certificates
     * A ``PathLike`` object: use a custom CA
     * ``"unsecure-none"``: no TLS certificate validation
     """
