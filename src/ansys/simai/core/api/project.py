@@ -32,14 +32,17 @@ if TYPE_CHECKING:
 
 
 class ProjectClientMixin(ApiClientMixin):
-    def projects(self, filters: Optional["RawFilters"]):
-        return list(self.iter_projects(filters))
+    def projects(self, filters: Optional["RawFilters"], starred: bool = False):
+        return list(self.iter_projects(filters, starred=starred))
 
-    def iter_projects(self, filters: Optional["RawFilters"]) -> PaginatedAPIRawIterator:
+    def iter_projects(
+        self, filters: Optional["RawFilters"], starred: bool = False
+    ) -> PaginatedAPIRawIterator:
         query = urlencode(
             [("filter[]", json.dumps(f, separators=(",", ":"))) for f in (filters or [])]
         )
-        return PaginatedAPIRawIterator(self, f"projects?{query}")
+        path = "projects/starred" if starred else "projects"
+        return PaginatedAPIRawIterator(self, f"{path}?{query}")
 
     def get_project(self, id: str):
         return self._get(f"projects/{id}")
@@ -72,6 +75,12 @@ class ProjectClientMixin(ApiClientMixin):
             json={"training_data": training_data_id},
             return_json=False,
         )
+
+    def star_project(self, project_id: str):
+        self._put(f"projects/{project_id}/starred", return_json=False)
+
+    def unstar_project(self, project_id: str):
+        self._delete(f"projects/{project_id}/starred", return_json=False)
 
     def get_project_related_workspaces(self, project_id: str):
         return self._get(f"projects/{project_id}/workspaces")

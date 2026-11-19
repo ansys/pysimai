@@ -136,6 +136,21 @@ class Project(DataModel):
         self._client._api.update_project(self.id, description=new_description)
         self.reload()
 
+    @property
+    def starred(self) -> bool:
+        """Whether the current user has starred this project."""
+        return self.fields.get("starred", False)
+
+    def star(self) -> None:
+        """Star the project for the current user."""
+        self._client._api.star_project(self.id)
+        self.reload()
+
+    def unstar(self) -> None:
+        """Unstar the project for the current user."""
+        self._client._api.unstar_project(self.id)
+        self.reload()
+
     def rename(self, new_name: str) -> None:
         """Rename the project.
 
@@ -299,27 +314,43 @@ class ProjectDirectory(Directory[Project]):
 
             simai_client = asc.from_config()
             simai_client.projects.list()
+
+        List only the projects starred by the current user::
+
+            simai_client.projects.list(starred=True)
     """
 
     _data_model = Project
 
-    def iter(self, filters: Optional[Filters] = None) -> SizedIterator[Project]:
+    def iter(
+        self, filters: Optional[Filters] = None, starred: bool = False
+    ) -> SizedIterator[Project]:
         """Iterate over all :class`Project` objects on the server.
 
         Args:
             filters: Optional :obj:`~.types.Filters` to apply.
+            starred: Whether to only return the projects starred by the current user.
 
         Returns:
             Iterator over all :class:`Project` objects on the server.
         """
         raw_filters = to_raw_filters(filters)
-        raw_iterable = self._client._api.iter_projects(raw_filters)
+        raw_iterable = self._client._api.iter_projects(raw_filters, starred=starred)
         return DataModelIterator(raw_iterable, self)
 
     def list(
-        self, filters: Optional[Filters] = None, created_by_me: Optional[bool] = None
+        self,
+        filters: Optional[Filters] = None,
+        created_by_me: Optional[bool] = None,
+        starred: bool = False,
     ) -> list[Project]:
-        """List all projects available on the server."""
+        """List all projects available on the server.
+
+        Args:
+            filters: Optional :obj:`~.types.Filters` to apply.
+            created_by_me: Whether to only return the projects created by the current user.
+            starred: Whether to only return the projects starred by the current user.
+        """
         raw_filters = to_raw_filters(filters)
         if created_by_me:
             user_uuid = self._client._api._session.auth._user_uuid
@@ -332,7 +363,7 @@ class ProjectDirectory(Directory[Project]):
                 else:
                     raw_filters = created_by_me_filter
 
-        return list(self.iter(raw_filters))
+        return list(self.iter(raw_filters, starred=starred))
 
     def create(self, name: str, description: Optional[str] = None) -> Project:
         """Create a project.
