@@ -23,17 +23,6 @@ web app, for both types of :term:`AI model` that the platform trains:
 PySimAI is part of the `PyAnsys <https://docs.pyansys.com>`_ ecosystem, so you can combine it
 with other PyAnsys libraries and any Python library.
 
-Install PySimAI
----------------
-
-Install PySimAI with pip:
-
-.. code-block:: bash
-
-   pip install ansys-simai-core --upgrade
-
-PySimAI requires Python 3.9 or later.
-
 Who PySimAI is for
 ------------------
 
@@ -87,6 +76,18 @@ What do you want to do?
 
         Install the ``ansys-simai-core`` package, then configure and authenticate the client.
 
+    .. grid-item-card:: :octicon:`play` Browse the example scripts
+        :link: /_examples/index
+        :link-type: doc
+
+        Copy and adapt complete scripts for SimAI models and GeomAI models.
+
+    .. grid-item-card:: :octicon:`file-code` Look up a class or method
+        :link: /api_reference
+        :link-type: doc
+
+        Find the parameters, return values, and exceptions of the public API.
+
     .. grid-item-card:: :octicon:`rocket` Build a first SimAI model
         :link: /getting-started/quickstart-simai-model
         :link-type: doc
@@ -99,23 +100,29 @@ What do you want to do?
 
         Upload a geometry to a workspace and predict its physical fields.
 
+    .. grid-item-card:: :octicon:`zap` Optimize a design with a SimAI model
+        :link: /user-guide/simai-models/optimize-a-design
+        :link-type: doc
+
+        Run a non-parametric optimization that deforms a baseline geometry to improve a global coefficient.
+
+    .. grid-item-card:: :octicon:`beaker` Build a first GeomAI model
+        :link: /getting-started/quickstart-geomai-model
+        :link-type: doc
+
+        Run one script that uploads geometries, builds a GeomAI model, and generates new geometries.
+
     .. grid-item-card:: :octicon:`package` Generate geometries with a GeomAI model
         :link: /user-guide/geomai-models/generate-geometries
         :link-type: doc
 
         Generate new geometries from the latent space of a trained GeomAI model.
 
-    .. grid-item-card:: :octicon:`play` Browse the example scripts
-        :link: /_examples/index
+    .. grid-item-card:: :octicon:`git-compare` Interpolate and project geometries
+        :link: /user-guide/geomai-models/interpolate-and-project
         :link-type: doc
 
-        Copy and adapt complete scripts for SimAI models and GeomAI models.
-
-    .. grid-item-card:: :octicon:`file-code` Look up a class or method
-        :link: /api_reference
-        :link-type: doc
-
-        Find the parameters, return values, and exceptions of the public API.
+        Interpolate between two geometries in the latent space, or project a geometry onto it.
 
 .. toctree::
    :maxdepth: 1
