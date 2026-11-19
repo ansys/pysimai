@@ -335,5 +335,5 @@ class UploadableResourceMixin:
             ProcessingError(
                 f"Could not complete upload because: {data.get('reason', 'Upload failed')}"
             )
-        elif state != "updated":
+        elif state not in ("updated", "deleted"):
             logger.error("Invalid resource state.")
