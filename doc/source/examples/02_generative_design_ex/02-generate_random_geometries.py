@@ -22,33 +22,35 @@
 
 """.. _ref_generate_random_geometries:
 
-Generating Random Geometries
-==========================================
+Generate random geometries with a GeomAI model
+==============================================
 
-This example demonstrates how to generate random geometries using random latent parameters.
+This example generates geometries with a GeomAI model from random latent parameters
+and downloads them as VTP files.
 
-Before you begin
--------------------------------------------
+Prerequisites to generate random geometries with a GeomAI model
+---------------------------------------------------------------
 
-- Complete ":ref:`ref_build_model`" to train a GeomAI model.
-- Ensure the model training completed successfully.
+- Complete ":ref:`ref_build_model`" to build a GeomAI model.
+- Make sure that the model build completed successfully.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# -------------------------------------------
+# Import the classes to generate geometries with a GeomAI model
+# -------------------------------------------------------------
 
 import os
 import random
 
 import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.predictions import GeomAIPrediction, GeomAIPredictionConfiguration
+from ansys.simai.core.errors import ProcessingError
 
 ###############################################################################
-# Configure your settings
-# -------------------------------------------
-# Update these variables with your specific settings:
+# Set the workspace and output folder for the random geometries
+# -------------------------------------------------------------
+# Replace these values with your own:
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
 PROJECT_NAME = "new-bracket-project"  # Replace with your project name
@@ -57,24 +59,25 @@ OUTPUT_DIR = "random_geometries"  # Directory to save generated geometries
 NUM_GEOMETRIES = 5  # Number of random geometries to generate
 
 ###############################################################################
-# Initialize the client and get the workspace
-# -------------------------------------------
-# Connect to the instance:
+# Get the workspace of the GeomAI model
+# -------------------------------------
+# Connect to Ansys SimAI:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
 
 ###############################################################################
-# Retrieve the trained workspace by its name:
+# Get the workspace of the built GeomAI model by its name:
 
 workspace = geomai_client.workspaces.get(name=WORKSPACE_NAME)
 print(f"Using workspace: {workspace.name}")
 
 
 ###############################################################################
-# Get the number of latent parameters
-# -------------------------------------------
-# The number of latent parameters is defined during model training:
+# Get the number of latent parameters of the GeomAI model
+# -------------------------------------------------------
+# The number of latent parameters is set in the GeomAI model configuration
+# (``nb_latent_param``) before the model build:
 
 latent_dict = workspace.get_latent_parameters()
 
@@ -82,17 +85,17 @@ nb_latent_params = len(next(iter(latent_dict.values())))
 print(f"Workspace uses {nb_latent_params} latent parameters")
 
 ###############################################################################
-# Create output directory
+# Create the folder for the random geometries
 # -------------------------------------------
-# Create a directory to save the generated geometries:
+# Create a folder to save the generated geometries:
 
 output_dir = os.path.join(OUTPUT_DIR, workspace.name)
 os.makedirs(output_dir, exist_ok=True)
 print(f"Output directory: {output_dir}")
 
 ###############################################################################
-# Generate random geometries
-# -------------------------------------------
+# Run GeomAI model predictions with random latent parameters
+# ----------------------------------------------------------
 # Generate geometries by creating random latent parameters.
 # Each latent parameter is randomly sampled from a standard normal distribution.
 
@@ -115,40 +118,47 @@ for i in range(NUM_GEOMETRIES):
 
 
 ###############################################################################
-# Download generated geometries
-# -------------------------------------------
+# Download the random geometries
+# ------------------------------
+# Wait for each prediction, then download the generated geometry.
 
 for i, prediction in enumerate(predictions):
-    # Wait for prediction to complete
-    if prediction.wait(timeout=600):  # Wait up to 10 minutes
-        if prediction.has_failed:
-            print(f"✗ Prediction {i + 1} failed: {prediction.failure_reason}")
+    # wait() returns False on timeout and raises ProcessingError if the prediction fails.
+    try:
+        if not prediction.wait(timeout=600):  # Wait up to 10 minutes
+            print(f"✗ Prediction {i + 1} timed out")
             continue
+    except ProcessingError:
+        print(f"✗ Prediction {i + 1} failed: {prediction.failure_reason}")
+        continue
 
-        # Download the generated geometry
-        output_path = os.path.join(output_dir, f"random_{i + 1:02d}_{prediction.id}.vtp")
-        geomai_client.predictions.download(prediction.id, output_path)
-        print(f"✓ Saved geometry to {output_path}")
-    else:
-        print(f"✗ Prediction {i + 1} timed out")
+    # Download the generated geometry
+    output_path = os.path.join(output_dir, f"random_{i + 1:02d}_{prediction.id}.vtp")
+    geomai_client.predictions.download(prediction.id, output_path)
+    print(f"✓ Saved geometry to {output_path}")
 
 ###############################################################################
-# The downloaded VTP files can be used for:
+# You can use the downloaded VTP files for:
 #
 # - Visualization in your usual solver.
-# - SimAI training data or predictions.
-# - Further analysis and post-processing.
+# - Training data or predictions for a SimAI model.
+# - Further analysis and postprocessing.
 
 ###############################################################################
-# Tips for better results
-# -------------------------------------------
+# Improve random geometries generated by a GeomAI model
+# -----------------------------------------------------
 #
 # - Latent parameters typically range from -3 to +3 for meaningful results.
-# - Increasing resolution improves the geometry resolution and helps capture finer details. However, this will also increase the prediction time.
-# - Increase timeout for complex geometries.
-# - Use the workspace's latent space statistics (min, max) for better sampling.
+# - A higher ``resolution`` in ``GeomAIPredictionConfiguration`` captures finer details,
+#   but it also increases the prediction time.
+# - Increase the timeout for complex geometries.
+# - To sample in a realistic range, compute the minimum and maximum of each latent
+#   parameter over the training geometries returned by ``workspace.get_latent_parameters()``.
 
 ###############################################################################
-# Next steps
-# -------------------------------------------
-# To generate geometries with more control, see :ref:`ref_interpolate_geometries`.
+# Control the geometries generated by a GeomAI model
+# --------------------------------------------------
+# To generate geometries with more control, interpolate between existing
+# geometries: :ref:`ref_interpolate_geometries`.
+#
+# For the complete task, see :doc:`/user-guide/geomai-models/generate-geometries`.

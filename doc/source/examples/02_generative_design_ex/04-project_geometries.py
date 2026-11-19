@@ -22,41 +22,41 @@
 
 """.. _ref_project_geometries:
 
-Projecting Geometries onto a Model
-==================================
+Project a geometry onto a GeomAI model
+======================================
 
-This example demonstrates how to project a geometry onto a trained GeomAI model
-and retrieve its latent parameters.
+This example projects a geometry onto a built GeomAI model, gets its latent parameters,
+and regenerates the geometry from them.
 
-Before you begin
-----------------
+Prerequisites to project a geometry onto a GeomAI model
+-------------------------------------------------------
 
-- Complete ":ref:`ref_build_model`" to train a GeomAI model.
-- Ensure that the model training has completed successfully and that its workspace is available.
-- Prepare a geometry file in ``VTP`` or ``STL`` format.
+- Complete ":ref:`ref_build_model`" to build a GeomAI model.
+- Make sure that the model build completed successfully and that its workspace is available.
+- A geometry file in ``VTP`` or ``STL`` format.
 
 """
 
 
 ###############################################################################
-# Import necessary libraries
-# ---------------------------
+# Import the classes to project a geometry onto a GeomAI model
+# ------------------------------------------------------------
 
 import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.predictions import GeomAIPredictionConfiguration
 
 ###############################################################################
-# Configure your settings
-# -----------------------
-# Update these variables with your specific settings:
+# Set the workspace and the geometry file to project
+# --------------------------------------------------
+# Replace these values with your own:
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
-WORKSPACE_NAME = "new-bracket-project #1"  # Replace with your trained model workspace
+WORKSPACE_NAME = "new-bracket-project #1"  # Replace with the workspace of your GeomAI model
 GEOMETRY_FILE = "./td/bracket_264.vtp"  # VTP or STL file to project
 
 ###############################################################################
-# Initialize the client and get the workspace
-# -------------------------------------------
+# Get the workspace of the GeomAI model
+# -------------------------------------
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
@@ -64,8 +64,8 @@ workspace = geomai_client.workspaces.get(name=WORKSPACE_NAME)
 print(f"Using workspace: {workspace.name}")
 
 ###############################################################################
-# Upload a geometry
-# -----------------
+# Upload the geometry to project
+# ------------------------------
 
 print("Uploading geometry...")
 geometry = geomai_client.geometries.upload(GEOMETRY_FILE)
@@ -73,10 +73,10 @@ geometry.wait()
 print(f"Uploaded {geometry.name} with id {geometry.id}")
 
 ###############################################################################
-# Project the geometry onto the workspace model
-# ----------------------------------------------
-# The projection operation is idempotent: if this geometry has already been
-# projected onto the model, the existing projection is returned.
+# Project the geometry onto the GeomAI model
+# ------------------------------------------
+# The projection operation is idempotent: if this geometry is already
+# projected onto the GeomAI model, the existing projection is returned.
 
 print("Running projection...")
 projection = geometry.run_projection(workspace)
@@ -87,10 +87,10 @@ print(f"Projection {projection.id} on model {projection.workspace_id}")
 print(f"Retrieved {len(latent_parameters)} latent parameters")
 
 ###############################################################################
-# Reconstruct the geometry from its latent parameters
-# ---------------------------------------------------
-# The latent parameters can be passed to a prediction configuration to
-# regenerate the geometry from the model.
+# Regenerate the geometry from its latent parameters
+# --------------------------------------------------
+# Pass the latent parameters to a prediction configuration to regenerate
+# the geometry with the GeomAI model.
 
 config = GeomAIPredictionConfiguration(
     latent_params=latent_parameters,
@@ -105,10 +105,10 @@ print(f"Saved reconstructed geometry to {output_path}")
 
 
 ###############################################################################
-# Look up an existing projection
-# -------------------------------------
-# Retrieve a projection without starting a new computation. The result is
-# ``None`` if the geometry has not been projected onto this workspace's model.
+# Get an existing projection of the geometry
+# ------------------------------------------
+# Get a projection without starting a new computation. The result is
+# ``None`` if the geometry is not projected onto the GeomAI model of this workspace.
 
 print("\nLooking up an existing projection...")
 existing_projection = geometry.get_projection(workspace)
@@ -119,8 +119,8 @@ else:
     print(f"First three parameters: {existing_projection.get_latent_parameters(n=3)}")
 
 ###############################################################################
-# List projections in the workspace
-# ----------------------------------------
+# List the projections in the GeomAI model workspace
+# --------------------------------------------------
 
 projections = workspace.list_projections()
 print(f"\n{len(projections)} projections in {workspace.name}")
@@ -128,9 +128,11 @@ for proj in projections:
     print(f"- {proj.id}")
 
 ###############################################################################
-# Next steps
-# ----------
-# To explore the model further, you can:
+# Generate geometries from the projected latent parameters
+# --------------------------------------------------------
+# To explore the GeomAI model further, you can:
 #
-# - Generate geometries from latent parameters.
+# - Generate geometries from latent parameters: :ref:`ref_generate_random_geometries`.
 # - Interpolate between geometries: :ref:`ref_interpolate_geometries`.
+#
+# For the complete task, see :doc:`/user-guide/geomai-models/interpolate-and-project`.

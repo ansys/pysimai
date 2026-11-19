@@ -23,50 +23,58 @@
 """
 .. _ref_subset_assignment:
 
-Subset assignment
-=================
+Assign a subset to a SimAI model training data point
+====================================================
 
-This example demonstrates how to assign a subset
-to a training data.
+This example assigns the Test or Training subset to one training data point
+of a SimAI model project.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# --------------------------
+# Import PySimAI and create the client to assign a subset
+# -------------------------------------------------------
 
 import ansys.simai.core as asc
 
 simai_client = asc.from_config()
 
 ###############################################################################
-# Select a training data
-# ----------------------
-# Example of a training_data_id associated with a project_id.
+# Set the IDs of the training data point and its project
+# ------------------------------------------------------
+# Replace these example IDs with the ID of a training data point and the ID
+# of a project that contains it.
 
 training_data_id = "k4z77qzq"
 project_id = "k9756vw0"
 
 ###############################################################################
-# Get subset assignment
-# ---------------------
-# Get and print the current subset assigned for this training_data_id.
+# Get the current subset of the training data point
+# -------------------------------------------------
+# Get and print the subset assigned to the training data point in the project.
 
 current_subset = simai_client.training_data.get(id=training_data_id).get_subset(project=project_id)
 print(current_subset)
 
 ###############################################################################
-# Assign a new subset (two options)
-# ---------------------------------
-# Manually assign a new subset to the training data.
+# Assign a new subset to the training data point
+# ----------------------------------------------
+# Assign the subset by its name, as a string:
 
 simai_client.training_data.get(id=training_data_id).assign_subset(project=project_id, subset="Test")
 
 ###############################################################################
-# Alternatively, use SubsetEnum to assign a valid enum value to the training data.
+# Alternatively, assign the subset with a ``SubsetEnum`` value:
 
 from ansys.simai.core.data.types import SubsetEnum
 
 simai_client.training_data.get(id=training_data_id).assign_subset(
     project=project_id, subset=SubsetEnum.TEST
 )
+
+###############################################################################
+# Assign subsets to many SimAI model training data points
+# -------------------------------------------------------
+# To assign subsets from a list of names, see :ref:`ref_list_based_subset_assignment`.
+#
+# For the complete task, see :doc:`/user-guide/simai-models/assign-subsets`.

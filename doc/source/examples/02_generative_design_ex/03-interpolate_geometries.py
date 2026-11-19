@@ -22,40 +22,42 @@
 
 """.. _ref_interpolate_geometries:
 
-Interpolating Between Geometries
-==============================================
+Interpolate between geometries with a GeomAI model
+==================================================
 
-This example demonstrates how to interpolate between two geometries in latent space.
+This example interpolates between two geometries in the latent space of a GeomAI model
+and downloads the intermediate geometries as VTP files.
 
-Latent space interpolation allows you to:
+Latent space interpolation lets you:
 
 - Create smooth transitions between existing designs.
 - Explore the design space systematically.
 - Generate variations that blend features from multiple geometries.
 
-Before you begin
--------------------------------------------
+Prerequisites to interpolate geometries with a GeomAI model
+-----------------------------------------------------------
 
-- Complete ":ref:`ref_build_model`" to train a GeomAI model.
-- Ensure that the model training has been completed successfully. To do so, verify if a new workspace was created for the trained model.
+- Complete ":ref:`ref_build_model`" to build a GeomAI model.
+- Make sure that the model build completed successfully: a new workspace exists for the GeomAI model.
 
 """
 
 
 ###############################################################################
-# Import necessary libraries
-# -------------------------------------------
+# Import the classes to interpolate geometries with a GeomAI model
+# ----------------------------------------------------------------
 
 import os
 from typing import List
 
 import ansys.simai.core as asc
 from ansys.simai.core.data.geomai.predictions import GeomAIPrediction, GeomAIPredictionConfiguration
+from ansys.simai.core.errors import ProcessingError
 
 ###############################################################################
-# Configure your settings
-# -------------------------------------------
-# Update these variables with your specific settings:
+# Set the workspace and the two geometries to interpolate
+# -------------------------------------------------------
+# Replace these values with your own:
 
 ORGANIZATION = "my_organization"  # Replace with your organization name
 PROJECT_NAME = "new-bracket-project"  # Replace with your project name
@@ -69,9 +71,10 @@ GEOM_B_NAME = "geometry_name_b"  # Replace with actual geometry name
 
 
 ###############################################################################
-# Define the interpolation function
-# -------------------------------------------
-# Before running predictions, you need a function to interpolate between two latent parameter vectors.
+# Define a linear interpolation function for latent parameters
+# ------------------------------------------------------------
+# Before you run predictions, define a function that interpolates between two
+# latent parameter vectors.
 
 
 def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> List[float]:
@@ -95,9 +98,9 @@ def interpolate_latents(vec1: List[float], vec2: List[float], alpha: float) -> L
 
 
 ###############################################################################
-# Initialize the client and get the workspace
-# --------------------------------------------------
-# Connect to GeomAI and retrieve your trained workspace:
+# Get the workspace of the GeomAI model
+# -------------------------------------
+# Connect to Ansys SimAI and get the workspace of the built GeomAI model:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
@@ -106,15 +109,15 @@ workspace = geomai_client.workspaces.get(name=WORKSPACE_NAME)
 print(f"Using workspace: {workspace.name}")
 
 ###############################################################################
-# Get latent parameters for all geometries
-# -----------------------------------------------
-# Download the latent parameters of all training geometries in the workspace:
+# Get the latent parameters of the training geometries
+# ----------------------------------------------------
+# Get the latent parameters of all training geometries in the workspace:
 
 latent_dict = workspace.get_latent_parameters()
 
 ###############################################################################
-# Display available geometries
-# ----------------------------------
+# List the geometries available for interpolation
+# -----------------------------------------------
 # List all geometries available for interpolation:
 
 print("\nAvailable geometries:")
@@ -122,9 +125,9 @@ for i, name in enumerate(latent_dict.keys()):
     print(f"  [{i}] {name}")
 
 ###############################################################################
-# Validate selected geometries
-# -------------------------------------------
-# Check if the selected geometries exist:
+# Check that the two selected geometries exist in the workspace
+# -------------------------------------------------------------
+# Stop the script if a selected geometry does not exist:
 
 if GEOM_A_NAME not in latent_dict:
     print(f"Error: Geometry '{GEOM_A_NAME}' not found in workspace.")
@@ -139,9 +142,9 @@ if GEOM_B_NAME not in latent_dict:
 print(f"\nInterpolating from '{GEOM_A_NAME}' to '{GEOM_B_NAME}' in {NUM_STEPS} steps.")
 
 ###############################################################################
-# Interpolate in latent space and generate geometries
-# ----------------------------------------------------------
-# Generate intermediate geometries by linearly interpolating in latent space:
+# Run GeomAI model predictions along the interpolation path
+# ---------------------------------------------------------
+# Generate intermediate geometries with a linear interpolation in latent space:
 
 vec_a = latent_dict[GEOM_A_NAME]
 vec_b = latent_dict[GEOM_B_NAME]
@@ -161,35 +164,42 @@ for i in range(NUM_STEPS + 1):
 
 
 ###############################################################################
-# Download generated geometries
-# -------------------------------------------
+# Download the interpolated geometries
+# ------------------------------------
+# Wait for each prediction, then download the generated geometry.
 
 for i, prediction in enumerate(predictions):
-    if prediction.wait(timeout=600):  # Wait up to 10 minutes
-        if prediction.has_failed:
-            print(f"✗ Prediction {i} failed: {prediction.failure_reason}")
+    # wait() returns False on timeout and raises ProcessingError if the prediction fails.
+    try:
+        if not prediction.wait(timeout=600):  # Wait up to 10 minutes
+            print(f"✗ Prediction {i} timed out.")
             continue
+    except ProcessingError:
+        print(f"✗ Prediction {i} failed: {prediction.failure_reason}")
+        continue
 
-        # Save result
-        out_dir = os.path.join(OUTPUT_DIR, workspace.name)
-        os.makedirs(out_dir, exist_ok=True)
-        out_path = os.path.join(out_dir, f"prediction_{i:02d}_{prediction.id}.vtp")
-        geomai_client.predictions.download(prediction.id, out_path)
-        print(f"✓ Saved prediction to {out_path}")
-    else:
-        print(f"✗ Prediction {i} timed out.")
+    # Save result
+    out_dir = os.path.join(OUTPUT_DIR, workspace.name)
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, f"prediction_{i:02d}_{prediction.id}.vtp")
+    geomai_client.predictions.download(prediction.id, out_path)
+    print(f"✓ Saved prediction to {out_path}")
 
 ###############################################################################
-# The downloaded VTP files can be used for:
+# You can use the downloaded VTP files for:
 #
 # - Visualization in your usual solver.
-# - SimAI training data or predictions.
-# - Further analysis and post-processing.
+# - Training data or predictions for a SimAI model.
+# - Further analysis and postprocessing.
 
 ###############################################################################
-# Next steps
-# -------------------------------------------
+# Extend the interpolation with a GeomAI model
+# --------------------------------------------
 # To go further, you can:
 #
 # - Interpolate between more than two geometries.
 # - Combine interpolation with optimization for specific design goals.
+# - Project a new geometry onto the GeomAI model to get its latent parameters:
+#   :ref:`ref_project_geometries`.
+#
+# For the complete task, see :doc:`/user-guide/geomai-models/interpolate-and-project`.

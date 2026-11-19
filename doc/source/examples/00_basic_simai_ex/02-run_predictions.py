@@ -22,26 +22,26 @@
 
 """.. _ref_basic_run_predictions:
 
-Running Physics Predictions
-================================================
+Run predictions with a SimAI model
+==================================
 
-This example demonstrates how to upload geometries to a workspace and run predictions
-using a trained SimAI model. It also shows how to extract and save prediction results,
-including global coefficients and confidence scores.
+This example uploads geometries to the workspace of a SimAI model, runs a prediction on each
+geometry, and saves the global coefficients and confidence score of each prediction.
 
-Before you begin
-----------------------------------------------------
+Prerequisites to run predictions with a SimAI model
+---------------------------------------------------
 
-- Complete ":ref:`ref_basic_build_model`" to train a SimAI model.
-- Ensure the model training completed successfully.
-- Have a dataset folder with subdirectories containing geometry files. These geometry files can come from a GeomAI model.
-- (Optional) Prepare scalar JSON files if your model requires them.
+- Complete ":ref:`ref_basic_build_model`" to build a SimAI model.
+- Make sure that the model build completed successfully.
+- A dataset folder whose subdirectories each contain a ``surface.vtp`` geometry file.
+  The geometries can come from a GeomAI model.
+- (Optional) A ``scalars.json`` scalar file in each subdirectory, if the SimAI model uses scalars.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# ----------------------------------------------------
+# Import the classes to run SimAI model predictions
+# -------------------------------------------------
 
 import json
 import os
@@ -51,18 +51,18 @@ from ansys.simai.core.data.geometries import Geometry
 from ansys.simai.core.data.predictions import Prediction
 
 ###############################################################################
-# Configure your settings
-# ----------------------------------------------------
-# Update these variables with your specific settings:
+# Set the workspace and dataset path for the SimAI model predictions
+# ------------------------------------------------------------------
+# Replace these values with your own:
 
 ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
 WORKSPACE_NAME = "<your_workspace_name>"  # Replace with your workspace name
 DATASET_PATH = "<your_dataset>"  # Path to your dataset directory
 
 ###############################################################################
-# Initialize the client and set workspace
-# ----------------------------------------------------
-# Connect to SimAI and set the workspace to use for predictions:
+# Set the workspace of the SimAI model as the current workspace
+# -------------------------------------------------------------
+# Connect to Ansys SimAI and set the workspace to use for predictions:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
@@ -74,20 +74,21 @@ current_workspace = simai_client.current_workspace
 print(f"Using workspace: {current_workspace.name}")
 
 ###############################################################################
-# A workspace contains a trained model and is created when a model build completes successfully.
+# A workspace contains a built SimAI model. Ansys SimAI creates the workspace when a
+# model build completes successfully.
 
 ###############################################################################
-# Prepare data structures
-# ----------------------------------------------------
-# Create lists to store geometries and their scalars:
+# Prepare lists for the geometries and their scalars
+# --------------------------------------------------
+# Create lists to store the geometries and their scalars:
 
 geometries: list[Geometry] = []
 scalars: list[dict] = []
 
 ###############################################################################
-# Upload geometries and load scalars
-# ----------------------------------------------------
-# Process each subdirectory in the dataset:
+# Upload the geometries and load their scalars
+# --------------------------------------------
+# Process each subdirectory of the dataset:
 
 for dir in os.listdir(f"{DATASET_PATH}"):
     print(f"Processing directory: {dir}")
@@ -96,7 +97,7 @@ for dir in os.listdir(f"{DATASET_PATH}"):
     # The file is uploaded with a specific name for easy identification
     file = (
         f"{DATASET_PATH}/{dir}/surface.vtp",  # Local file path
-        f"{dir}.vtp",  # Name to use in SimAI
+        f"{dir}.vtp",  # Name to use in Ansys SimAI
     )
 
     # Check if this geometry already exists in the workspace
@@ -115,10 +116,10 @@ for dir in os.listdir(f"{DATASET_PATH}"):
         geometries.append(geom)
 
     ###########################################################################
-    # Load scalars (if applicable)
-    # ----------------------------------------------------
-    # This section is optional and only needed if your model requires scalars.
-    # If your model does not use scalars, you can skip this section.
+    # Load the scalars of each geometry (optional)
+    # --------------------------------------------
+    # Load scalars only if the SimAI model uses scalars as model inputs.
+    # Otherwise, skip this step.
 
     try:
         with open(f"{DATASET_PATH}/{dir}/scalars.json", "r") as f:
@@ -130,8 +131,8 @@ for dir in os.listdir(f"{DATASET_PATH}"):
         scalars.append({})
 
 ###############################################################################
-# Run predictions on all geometries
-# ----------------------------------------------------
+# Run a SimAI model prediction on each geometry
+# ---------------------------------------------
 # Wait for all geometries to be processed, then run predictions:
 
 preds: list[Prediction] = []
@@ -152,9 +153,9 @@ for geom in geometries:
         print(f"Prediction started for geometry {geom.name}.")
 
 ###############################################################################
-# Collect prediction results
-# ----------------------------------------------------
-# Wait for all predictions to complete and extract results:
+# Collect the global coefficients and confidence scores of the predictions
+# ------------------------------------------------------------------------
+# Wait for all predictions to complete and extract the results:
 
 results = {}
 
@@ -170,8 +171,8 @@ for pred in preds:
     results[geom_name]["confidence_score"] = pred.raw_confidence_score
 
 ###############################################################################
-# Save results to file
-# ----------------------------------------------------
+# Save the SimAI model prediction results to a JSON file
+# ------------------------------------------------------
 # Export all prediction results to a JSON file for further analysis:
 
 print("\nSaving results to results.json...")
@@ -181,22 +182,22 @@ with open("results.json", "w") as f:
 print("Results saved successfully!")
 
 ###############################################################################
-# Understanding the results
-# ----------------------------------------------------
-# The results dictionary contains:
+# Read the SimAI model prediction results
+# ---------------------------------------
+# The results dictionary contains, for each geometry:
 #
-# - Global coefficients: Scalar values computed from the prediction,
-# - Confidence score: A measure of how familiar this prediction is for the model.
+# - Global coefficients: scalar values computed from the prediction.
+# - Confidence score: a measure of how familiar this prediction is for the SimAI model.
 #
-# You can also download full field results (VTP files) for visualization:
+# You can also download full field results (VTP and VTU files) for visualization:
 #
 # - Use ``pred.post.surface_vtp()`` to get surface fields.
 # - Use ``pred.post.volume_vtu()`` to get volume fields.
 
 ###############################################################################
-# Example: Download surface VTP for visualization
-# ----------------------------------------------------
-# Run the following code to download the first prediction's surface VTP:
+# Download the surface VTP file of the first SimAI model prediction
+# -----------------------------------------------------------------
+# Download the surface VTP file of the first prediction:
 
 if preds:
     first_pred = preds[0]
@@ -206,11 +207,14 @@ if preds:
     print(f"Downloaded surface VTP to {output_path}")
 
 ###############################################################################
-# Next steps
-# ----------------------------------------------------
+# Analyze and reuse the SimAI model predictions
+# ---------------------------------------------
 # With your prediction results, you can:
 #
 # - Analyze global coefficients to evaluate design performance.
 # - Visualize field results in ParaView or similar tools.
 # - Compare predictions against validation data.
-# - Use results to guide design optimization.
+# - Optimize a design: :doc:`/user-guide/simai-models/optimize-a-design`.
+#
+# For the complete tasks, see :doc:`/user-guide/simai-models/run-predictions` and
+# :doc:`/user-guide/simai-models/postprocess-predictions`.

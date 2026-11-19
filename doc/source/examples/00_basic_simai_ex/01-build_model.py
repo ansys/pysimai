@@ -22,25 +22,25 @@
 
 """.. _ref_basic_build_model:
 
-Building a SimAI Model
-============================================
+Build a SimAI model
+===================
 
-This example demonstrates how to configure a SimAI model with inputs, outputs, global coefficients,
-and domain of analysis, then start the model training process.
+This example configures a SimAI model with model inputs, model outputs, global coefficients,
+and a Domain of Analysis (DoA), then starts the model build.
 
-Before you begin
--------------------------------------------
+Prerequisites to build a SimAI model
+------------------------------------
 
 - Complete ":ref:`ref_basic_create_project_upload_data`" to create a project with training data.
-- Ensure all training data in your project are ready (processed successfully).
-- Know the names of surfaces and boundary conditions in your training data.
-- Determine which global coefficients you want to calculate.
+- Make sure that all training data points in the project are ready (processed successfully).
+- Know the names of the surfaces and scalars in your training data.
+- Decide which global coefficients you want to calculate.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# -------------------------------------------
+# Import the classes to build a SimAI model
+# -----------------------------------------
 
 import ansys.simai.core as asc
 from ansys.simai.core.data.model_configuration import (
@@ -52,17 +52,17 @@ from ansys.simai.core.data.model_configuration import (
 )
 
 ###############################################################################
-# Configure your settings
-# -------------------------------------------
-# Update these variables with your specific settings:
+# Set the project and organization names for the SimAI model build
+# ----------------------------------------------------------------
+# Replace these values with your own:
 
 ORGANIZATION_NAME = "<your_organization>"  # Replace with your organization name
 PROJECT_NAME = "<your_project_name>"  # Replace with your project name
 
 ###############################################################################
-# Initialize the client and get the project
-# -------------------------------------------
-# Connect to SimAI:
+# Get the project that contains the SimAI model training data
+# -----------------------------------------------------------
+# Connect to Ansys SimAI:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
@@ -73,9 +73,9 @@ project = simai_client.projects.get(name=PROJECT_NAME)
 print(f"Using existing project: {PROJECT_NAME}")
 
 ###############################################################################
-# Configure model inputs
-# -------------------------------------------
-# Define which surfaces and boundary conditions the model will use as inputs.
+# Define the model inputs of the SimAI model
+# ------------------------------------------
+# Define the surfaces and scalars that the SimAI model uses as model inputs.
 # Replace the placeholder names with the actual names from your training data:
 
 model_input = ModelInput(
@@ -84,9 +84,9 @@ model_input = ModelInput(
 )
 
 ###############################################################################
-# Configure model outputs
+# Define the model outputs of the SimAI model
 # -------------------------------------------
-# Define which surfaces the model will predict.
+# Define the surfaces that the SimAI model predicts.
 # These are typically the same surfaces as the inputs, but you can specify different ones:
 
 model_output = ModelOutput(
@@ -94,13 +94,13 @@ model_output = ModelOutput(
 )
 
 ###############################################################################
-# Define global coefficients
-# -------------------------------------------
+# Define the global coefficients of the SimAI model
+# -------------------------------------------------
 #
 # Global coefficients are scalar values calculated from the prediction results.
 # They can be used to extract key performance indicators from your simulations.
 #
-# In this example, we calculate the integral of a field called "Pressure".
+# This example calculates the integral of the ``Pressure`` field.
 # You can define multiple global coefficients with different formulas.
 #
 # Available locations: ``"points"`` or ``"cells"``.
@@ -114,42 +114,42 @@ global_coefficients = [
 ]
 
 ###############################################################################
-# Define domain of analysis
-# -------------------------------------------
-# The domain of analysis specifies the spatial extent that the model will analyze.
-# Values can be specified as absolute dimensions or relative to minimum values.
+# Define the Domain of Analysis (DoA) of the SimAI model
+# ------------------------------------------------------
+# The Domain of Analysis (DoA) sets the spatial extent that the SimAI model analyzes.
+# Each dimension is either absolute or relative to the minimum, maximum, or center
+# of the geometry.
 #
-# Format: reference_type, min_value, max_value
+# Format: ``(position, value, length)``
 #
-# - ``reference_type``: ``"relative_to_min"``, ``"relative_to_max"``, ``"relative_to_center``" or ``"absolute"``.
-# - ``min_value``: minimum dimension value.
-# - ``max_value``: maximum dimension value.
+# - ``position``: ``"relative_to_min"``, ``"relative_to_max"``, ``"relative_to_center"`` or ``"absolute"``.
+# - ``value``: distance of the anchor from the position.
+# - ``length``: length of the Domain of Analysis along the axis.
 #
-# You can find appropriate values by analyzing your training data in the SimAI platform.
+# To find appropriate values, analyze your training data in Ansys SimAI.
 
 doa = DomainOfAnalysis(
-    length=("relative_to_min", 0.102, 1.219),  # Length bounds
-    width=("relative_to_min", 0.102, 1.219),  # Width bounds
-    height=("relative_to_min", 0.134, 1.61),  # Height bounds
+    length=("relative_to_min", 0.102, 1.219),  # (position, value, length)
+    width=("relative_to_min", 0.102, 1.219),  # (position, value, length)
+    height=("relative_to_min", 0.134, 1.61),  # (position, value, length)
 )
 
 ###############################################################################
-# Create model configuration
-# -------------------------------------------
-# Combine all the configuration elements into a ModelConfiguration object.
+# Create the model configuration of the SimAI model
+# -------------------------------------------------
+# Combine all the configuration elements into a ``ModelConfiguration`` object.
 #
-# Build presets determine the training duration:
+# The ``build_preset`` parameter sets the build setting and the build duration:
 #
-# - ``debug``: Quick training for testing.
-# - ``1_day``: Short training.
-# - ``2_days``: Standard training (recommended).
-# - ``7_days``: Maximum training for best accuracy.
+# - ``debug``: debug mode, less than 30 minutes, 4 training data points. Not for production.
+# - ``1_day``: production mode, build duration of up to 24 hours.
+# - ``2_days``: production mode, build duration of up to 48 hours (default).
+# - ``7_days``: production mode, build duration of up to 7 days.
 
 
 mdl_conf = ModelConfiguration(
     project=project,  # Project containing the training data
-    build_preset="1_day",  # Duration of the build
-    build_on_top=False,  # Start training from scratch
+    build_preset="1_day",  # Production build with a build duration of up to 24 hours
     input=model_input,  # Model input configuration
     output=model_output,  # Model output configuration
     global_coefficients=global_coefficients,  # Global coefficient definitions
@@ -157,28 +157,30 @@ mdl_conf = ModelConfiguration(
 )
 
 ###############################################################################
-# Verify and build the model
-# -------------------------------------------
-# Before building, check if the project meets all requirements for training:
+# Check that the project is trainable and build the SimAI model
+# -------------------------------------------------------------
+# Before the model build, check that the project meets all requirements:
 
 if project.is_trainable():
     print("Project is trainable. Starting model build...")
     new_model = simai_client.models.build(mdl_conf)
     print(f"Model build started with ID: {new_model.id}")
     print(
-        "The model will take some time to train. You can monitor its progress in the SimAI platform."
+        "The model build takes some time. You can monitor its progress in Ansys SimAI."
     )
 else:
     print("Project is not trainable. Please check the following:")
     print("- All training data must be processed successfully.")
     print("- The project must have enough training data.")
-    print("- All required surfaces and boundary conditions must exist in the training data.")
+    print("- All required surfaces and scalars must exist in the training data.")
 
 ###############################################################################
-# Next steps
-# -------------------------------------------
-# Once your model is trained, you can:
+# Run predictions with the built SimAI model
+# ------------------------------------------
+# When the model build is complete, you can:
 #
-# - Monitor the training progress in the SimAI platform.
 # - Run predictions on new geometries: :ref:`ref_basic_run_predictions`.
-# - Evaluate model performance using validation data.
+# - Evaluate the SimAI model: :doc:`/user-guide/simai-models/evaluate-a-model`.
+#
+# For the complete tasks, see :doc:`/user-guide/simai-models/configure-a-model` and
+# :doc:`/user-guide/simai-models/build-a-model`.

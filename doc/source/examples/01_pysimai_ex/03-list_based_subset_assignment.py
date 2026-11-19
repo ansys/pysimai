@@ -23,42 +23,43 @@
 """
 .. _ref_list_based_subset_assignment:
 
-List-based subset assignment
-============================
+Assign subsets from a list of training data points for a SimAI model
+====================================================================
 
-This example demonstrates how to distribute your dataset between Test
-and Training subsets using lists.
+This example splits the training data of a SimAI model project between the Test
+and Training subsets with a list of the training data points to test.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# --------------------------
+# Import PySimAI to assign subsets from a list
+# --------------------------------------------
 
 import ansys.simai.core as asc
 
 ###############################################################################
-# Create lists
-# ------------
-# List the data to be used for the test set.
+# List the training data points of the Test subset
+# ------------------------------------------------
+# List the names of the training data points to assign to the Test subset.
 
 # CAUTION:
-# All training data that are not included into the following list will be
-# assigned the training subset
+# Every training data point that is not in the following list is
+# assigned to the Training subset.
 TEST_LIST = ["My_td_1", "My_td_2"]
 
 ###############################################################################
-# Connect to the platform
-# ------------------------
-# Connect to the SimAI platform. Refer to the :ref:`anchor-credentials`
-# section of the documentation to adapt the connection type.
+# Connect to Ansys SimAI and get the SimAI model project
+# ------------------------------------------------------
+# Connect to Ansys SimAI. To change how the client authenticates,
+# see :ref:`anchor-credentials`.
 
 simai_client = asc.SimAIClient(organization="My_organization_name")
 project = simai_client.projects.get(name="My_project_name")
 ###############################################################################
-# Assign subsets
-# --------------
-# Assign a subset to each dataset (list) you created.
+# Assign the Test or Training subset to each training data point
+# --------------------------------------------------------------
+# Assign the Test subset to the training data points in the list and the
+# Training subset to all other training data points.
 
 td_list = project.list_training_data()
 for td in td_list:
@@ -66,3 +67,8 @@ for td in td_list:
         td.assign_subset(project, "Test")
     else:
         td.assign_subset(project, "Training")
+
+###############################################################################
+# Learn more about subsets of SimAI model training data
+# -----------------------------------------------------
+# For the complete task, see :doc:`/user-guide/simai-models/assign-subsets`.

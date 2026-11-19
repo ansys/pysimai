@@ -22,51 +22,53 @@
 
 """.. _ref_create_project_upload_data:
 
-Creating a GeomAI Project and Uploading Training Data
-===========================================================
+Create a project and upload training data for a GeomAI model
+============================================================
 
-This example demonstrates how to connect to the instance, create a new project, and upload geometry files as training data.
+This example creates a GeomAI model project in Ansys SimAI, uploads geometry files as
+training data, and waits for Ansys SimAI to process the training data.
 
-Before you begin
--------------------------------------------
+Prerequisites to upload training data for a GeomAI model
+--------------------------------------------------------
 
 Make sure you have:
 
-- Valid SimAI credentials and organization access.
-- A folder containing geometry files (.vtp or .stl format).
+- Valid Ansys SimAI credentials and access to an organization.
+- A folder of geometry files in ``.vtp`` or ``.stl`` format.
 - The ``ansys-simai-core`` library installed.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# -------------------------------------------
+# Import the modules to upload GeomAI model training data
+# -------------------------------------------------------
 
 import os
 
 import ansys.simai.core as asc
+from ansys.simai.core.errors import ProcessingError
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
-# Configure your settings
-# -------------------------------------------
-# Update these variables with your specific settings:
+# Set the project and dataset path for the GeomAI model training data
+# -------------------------------------------------------------------
+# Replace these values with your own:
 ORGANIZATION = "my_organization"  # Replace with your organization name
 DATASET_PATH = "path/to/your/data/folder"  # Folder with .vtp or .stl files
 PROJECT_NAME = "your_project_name"  # Replace with your project name
 
 ###############################################################################
-# Create the client
-# -------------------------------------------
-# Create a client to use the PySimAI library. This client will be the
-# entrypoint for all GeomAI objects.
+# Create the PySimAI client and its GeomAI client
+# -----------------------------------------------
+# Create a PySimAI client. Its ``geomai`` attribute is the entry point for
+# all GeomAI model objects.
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION)
 geomai_client = simai_client.geomai
 
 ###############################################################################
-# Create or retrieve a project
-# -------------------------------------------
+# Get or create the project for the GeomAI model
+# ----------------------------------------------
 # Try to get an existing project by name, or create it if it does not exist:
 
 try:
@@ -77,10 +79,10 @@ except NotFoundError:
     print(f"Created new project: {PROJECT_NAME}")
 
 ###############################################################################
-# Upload training data to the project
-# -------------------------------------------
+# Upload the geometry files as GeomAI model training data
+# -------------------------------------------------------
 # Loop through all geometry files in your dataset folder and upload them.
-# Each file should be a .vtp or .stl geometry.
+# Each file must be a .vtp or .stl geometry.
 #
 # .. note::
 #    If training data with the same name already exists, it is added to the
@@ -112,36 +114,38 @@ for fname in os.listdir(DATASET_PATH):
 print("\nAll training data uploaded.")
 
 ###############################################################################
-# Wait for data processing
-# -------------------------------------------
-# After uploading, the instance processes the geometries.
-# Wait for all data in the project to be processed and ready.
+# Wait for Ansys SimAI to process the GeomAI model training data
+# --------------------------------------------------------------
+# After the upload, Ansys SimAI processes the geometries.
+# Wait for all training data points in the project to be ready.
 #
 # .. note::
 #    An "invalid geometry" failure means the geometry is not compatible with
-#    GeomAI. Check the file for watertightness and manifold issues.
+#    GeomAI models. Check that the geometry is watertight and manifold.
 
 project_data = project.list_training_data()
 
 print("\nWaiting for data processing to complete...")
 for data in project_data:
     print(f"  Processing '{data.name}'...")
-    data.wait()
-
-    if data.is_ready:
+    # wait() raises ProcessingError if the processing of the data fails.
+    try:
+        data.wait()
         print(f"  '{data.name}' is ready.")
-    else:
+    except ProcessingError:
         print(f"  '{data.name}' failed: {data.failure_reason}")
 
 ###############################################################################
-# Display project summary
-# -------------------------------------------
+# Print how many GeomAI model training data points are ready
+# ----------------------------------------------------------
 
 ready_count = sum(1 for d in project_data if d.is_ready)
 print(f"\nProject '{PROJECT_NAME}': {ready_count}/{len(project_data)} training data ready.")
 
 ###############################################################################
-# Next steps
-# -------------------------------------------
-# Once all data is ready, you can proceed to train a model.
-# See the next example: :ref:`ref_build_model`.
+# Build a GeomAI model from the uploaded training data
+# ----------------------------------------------------
+# When all training data points are ready, build a GeomAI model:
+# :ref:`ref_build_model`.
+#
+# For the complete task, see :doc:`/user-guide/geomai-models/upload-training-data`.

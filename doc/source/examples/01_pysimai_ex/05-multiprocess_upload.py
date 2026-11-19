@@ -22,31 +22,32 @@
 
 """.. _ref_multiprocess_upload:
 
-Multiprocess training data upload
-==================================
+Upload training data for a SimAI model with parallel processes
+==============================================================
 
-This example demonstrates how to upload training data to a SimAI project using
-multiple parallel processes. It skips items that are already present in the
-project, so it is safe to run repeatedly without creating duplicates.
+This example uploads training data to a SimAI model project with several parallel
+processes. It skips the training data points that are already in the project, so
+you can run it again without creating duplicates.
 
-Before you begin
-----------------
+Prerequisites to upload SimAI model training data in parallel
+-------------------------------------------------------------
 
 Make sure you have:
 
-- Valid SimAI credentials and organization access.
-- A dataset folder where each subdirectory is one training data sample.
+- Valid Ansys SimAI credentials and access to an organization.
+- A dataset folder where each subdirectory is the simulation folder of one training data point.
 - The ``ansys-simai-core`` library installed.
 
 """
 
 ###############################################################################
-# Configure your settings
-# --------------------------------
-# Update these variables before running the script:
+# Set the project, dataset path, and number of upload processes
+# -------------------------------------------------------------
+# Replace these values with your own before you run the script:
 
 import os
 from multiprocessing import Pool
+from typing import Optional
 
 import ansys.simai.core as asc
 
@@ -60,12 +61,12 @@ MAX_PROCESSES = 2
 MAX_CHUNK = 2
 
 ###############################################################################
-# Define upload functions for multiprocessing
-# --------------------------------------------
-# ``_worker`` holds per-worker state (one SimAI client per process).
-# The initializer sets up the SimAI client and project for each worker process.
+# Define the functions that each upload process runs
+# --------------------------------------------------
+# ``_worker`` holds per-worker state (one PySimAI client per process).
+# The initializer sets up the PySimAI client and project for each worker process.
 # The upload function uploads one item and returns any error message instead of
-# raising exceptions, so that one failure does not abort the whole batch.
+# raising exceptions, so that one failure does not stop the whole batch.
 
 _worker: dict = {}
 
@@ -77,18 +78,18 @@ def _initializer(organization: str, dataset_path: str, project_name: str) -> Non
     _worker["dataset_path"] = dataset_path
 
 
-def _upload_one(item_name: str) -> tuple[str, str | None]:
-    """Upload one training-data folder.
+def _upload_one(item_name: str) -> tuple[str, Optional[str]]:
+    """Upload one simulation folder as a training data point.
 
     Returns a ``(item_name, error_message)`` tuple so that a single failed
-    upload does not abort the rest of the batch.
+    upload does not stop the rest of the batch.
     """
     try:
-        simai = _worker["simai"]
+        simai_client = _worker["simai"]
         project = _worker["project"]
         dataset_path = _worker["dataset_path"]
-        training_data = simai.training_data.create(item_name, project)
-        simai.training_data.upload_folder(
+        training_data = simai_client.training_data.create(item_name, project)
+        simai_client.training_data.upload_folder(
             training_data, folder_path=os.path.join(dataset_path, item_name)
         )
         return item_name, None
@@ -97,17 +98,17 @@ def _upload_one(item_name: str) -> tuple[str, str | None]:
 
 
 ###############################################################################
-# Main entry point
-# ----------------
-# All SimAI calls and pool creation are inside ``main()`` and guarded by
+# Start the parallel upload from the main function
+# ------------------------------------------------
+# All PySimAI calls and pool creation are inside ``main()`` and guarded by
 # ``if __name__ == "__main__"``.  This prevents worker processes from
 # re-executing the setup logic when they import this module on Windows/macOS.
 
 
 def main() -> None:
     """Run the parallel upload."""
-    simai = asc.SimAIClient(organization=ORGANIZATION_NAME)
-    project = simai.projects.get(name=PROJECT_NAME)
+    simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
+    project = simai_client.projects.get(name=PROJECT_NAME)
 
     # Compare the local folder contents against what is already in the project
     # and keep only the items that are missing.
@@ -145,3 +146,11 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+###############################################################################
+# Build a SimAI model from the uploaded training data
+# ---------------------------------------------------
+# When all training data points are ready, build a SimAI model:
+# :ref:`ref_basic_build_model`.
+#
+# For the complete task, see :doc:`/user-guide/simai-models/upload-training-data`.

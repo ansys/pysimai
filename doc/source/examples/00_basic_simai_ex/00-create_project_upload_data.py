@@ -22,50 +22,52 @@
 
 """.. _ref_basic_create_project_upload_data:
 
-Creating a SimAI Project and Uploading Training Data
-=======================================================
+Create a project and upload training data for a SimAI model
+===========================================================
 
-This example demonstrates how to connect to SimAI, create a new project, and upload training data folders.
+This example creates a project in Ansys SimAI, uploads simulation folders as training data
+for a SimAI model, and waits for Ansys SimAI to process the training data.
 
-Before you begin
--------------------
+Prerequisites to upload training data for a SimAI model
+-------------------------------------------------------
 
 Make sure you have:
 
-- Valid SimAI credentials and organization access.
-- A dataset folder containing subdirectories with your training data.
+- Valid Ansys SimAI credentials and access to an organization.
+- A dataset folder that contains one simulation folder per training data point.
 - The ``ansys-simai-core`` library installed.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# ----------------------------------
+# Import the modules to upload SimAI model training data
+# ------------------------------------------------------
 
 import os
 
 import ansys.simai.core as asc
+from ansys.simai.core.errors import ProcessingError
 from ansys.simai.core.errors import NotFoundError
 
 ###############################################################################
-# Configure your settings
-# ----------------------------------
-# Update these variables with your specific settings:
+# Set the project and dataset path for the SimAI model training data
+# ------------------------------------------------------------------
+# Replace these values with your own:
 
 ORGANIZATION_NAME = "your_organization"  # Replace with your organization name
 PROJECT_NAME = "your_project_name"  # Your project name
 DATASET_PATH = "path/to/your/data/folder"  # Directory containing subdirectories with training data
 
 ###############################################################################
-# Initialize the SimAI client
-# ----------------------------------
-# Create a client to connect to the SimAI platform:
+# Create the PySimAI client to upload SimAI model training data
+# -------------------------------------------------------------
+# Create a client that connects to Ansys SimAI:
 
 simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
 ###############################################################################
-# Set up the project
-# ----------------------------------
+# Get or create the project for the SimAI model
+# ---------------------------------------------
 # Try to get an existing project by name, or create it if it does not exist:
 
 try:
@@ -76,13 +78,14 @@ except NotFoundError:
     print(f"Created new project: {PROJECT_NAME}")
 
 ###############################################################################
-# Upload training data
-# ----------------------------------
-# Upload all directories from the dataset path as training data.
-# Each subdirectory should contain the files for one training data sample.
+# Upload the simulation folders as SimAI model training data
+# ----------------------------------------------------------
+# Upload all subdirectories of the dataset path as training data.
+# Each subdirectory is a simulation folder that contains the files of one
+# training data point.
 #
 # .. note::
-#    If training data with the same name already exists, the API will raise an error.
+#    If training data with the same name already exists, the API raises an error.
 #    You can use ``simai_client.training_data.get(name=dir_name)`` to check beforehand.
 
 print("\nUploading training data files:")
@@ -109,32 +112,34 @@ for dir_name in os.listdir(DATASET_PATH):
 print("\nAll training data uploaded.")
 
 ###############################################################################
-# Wait for data processing
-# -------------------------------------
-# After uploading, SimAI processes the training data.
-# Wait for all data in the project to be ready.
+# Wait for Ansys SimAI to process the SimAI model training data
+# -------------------------------------------------------------
+# After the upload, Ansys SimAI processes the training data.
+# Wait for all training data points in the project to be ready.
 
 project_data = project.list_training_data()
 
 print("\nWaiting for data processing to complete...")
 for data in project_data:
     print(f"  Processing '{data.name}'...")
-    data.wait()
-
-    if data.is_ready:
+    # wait() raises ProcessingError if the processing of the data fails.
+    try:
+        data.wait()
         print(f"  '{data.name}' is ready.")
-    else:
+    except ProcessingError:
         print(f"  '{data.name}' failed: {data.failure_reason}")
 
 ###############################################################################
-# Display project summary
-# -------------------------------------
+# Print how many SimAI model training data points are ready
+# ---------------------------------------------------------
 
 ready_count = sum(1 for d in project_data if d.is_ready)
 print(f"\nProject '{PROJECT_NAME}': {ready_count}/{len(project_data)} training data ready.")
 
 ###############################################################################
-# Next steps
-# ----------------------------------
-# Once all data are ready, you can proceed to configure and build a model.
-# See the next tutorial: :ref:`ref_basic_build_model`
+# Build a SimAI model from the uploaded training data
+# ---------------------------------------------------
+# When all training data points are ready, configure and build a SimAI model:
+# :ref:`ref_basic_build_model`.
+#
+# For the complete task, see :doc:`/user-guide/simai-models/upload-training-data`.

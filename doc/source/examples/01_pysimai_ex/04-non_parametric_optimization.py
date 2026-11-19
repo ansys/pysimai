@@ -24,63 +24,62 @@
 
 """.. _ref_non_parametric_optimization:
 
-Non-parametric optimization
-===========================
+Run a non-parametric optimization with a SimAI model
+====================================================
 
-This example demonstrates how to perform non-parametric optimization in SimAI.
-Non-parametric optimization improves the performance
-of a baseline geometry by applying smooth, data-driven deformations based on
-predicted sensitivity maps.
+This example runs a non-parametric optimization with a SimAI model to improve the
+performance of a baseline geometry. Non-parametric optimization applies smooth,
+data-driven deformations based on predicted sensitivity maps.
 
 This approach is especially useful when there are no predefined design parameters,
 as it enables you to optimize the geometry directly by applying smooth and continuous
 deformations without generating new geometries or reparametrizing existing designs.
 
-Before you begin
-----------------
+Prerequisites for a non-parametric optimization with a SimAI model
+------------------------------------------------------------------
 
 Make sure you have:
 
-- A trained SimAI model with an associated workspace.
+- A built SimAI model and its workspace.
 - A baseline geometry uploaded to the workspace (supported formats: ``vtp``, ``stl``, ``zip``, ``cgns``).
-- Defined bounding boxes that specify regions where deformations can occur.
+- Bounding boxes that define the regions where deformations can occur.
 - The ``ansys-simai-core`` library installed.
 - (Optional) The ``pyvista`` library (or your preferred CAD tool) installed for bounding box visualization.
 
-Key concepts
-------------
+Key concepts of non-parametric optimization
+-------------------------------------------
 
-**Baseline geometry**: The geometry to optimize. Choose a representative geometry from your dataset.
+**Baseline geometry**: the geometry to optimize. Choose a representative geometry from your dataset.
 
-**Bounding boxes**: Define the regions where deformations can occur.
+**Bounding boxes**: define the regions where deformations can occur.
 Bounding boxes are specified as ``[xmin, xmax, ymin, ymax, zmin, zmax]``.
 Start with boxes covering areas most likely to influence performance improvements.
 
-**Symmetries**: Optional constraints to reduce computational costs. Can be planar (e.g., ``["X"]``
-for YZ plane symmetry) or axial.
+**Symmetries**: optional constraints to reduce computational costs. Can be planar (for example,
+``["X"]`` for YZ plane symmetry) or axial.
 
-**Scalars**: Must correspond to the scalars defined in the SimAI workspace configuration.
+**Scalars**: must match the scalars defined in the configuration of the SimAI model of the workspace.
 
-**Number of iterations**: Determines how many rounds of improvement are executed.
+**Number of iterations**: determines how many rounds of improvement are executed.
 Use 5 iterations for quick tests, or 100+ for production runs.
 
-**Objective**: The performance indicator to optimize (e.g., minimize drag, maximize lift).
+**Objective**: the performance indicator to optimize (for example, minimize drag or maximize lift).
 Only one objective can be defined for non-parametric optimization.
 
-**Offline token**: Required for server-side optimization. Allows the server to authenticate
-on your behalf while uploading geometries at each iteration. Generated via
-``simai.me.generate_offline_token()`` and valid for 30 days.
+**Offline token**: required for server-side optimization. Allows the server to authenticate
+on your behalf while it uploads geometries at each iteration. Generated with
+``simai_client.me.generate_offline_token()``. The token expires.
 
-**Detail level**: Controls deformation refinement (integer from 1 to 10, default: 5).
+**Detail level**: controls deformation refinement (integer from 1 to 10, default: 5).
 Low values produce coarse shape changes; high values allow fine local adjustments.
 
-**Part morphing**: Optional constraint that restricts deformation to specific geometry parts
+**Part morphing**: optional constraint that restricts deformation to specific geometry parts
 identified by a ``PartId`` cell field.
 """
 
 ###############################################################################
-# Visualize bounding boxes (optional)
-# -----------------------------------
+# Visualize the bounding boxes on the baseline geometry (optional)
+# ----------------------------------------------------------------
 # Before running the optimization, you can visualize the bounding boxes
 # on your geometry using PyVista to ensure they cover the correct regions.
 
@@ -104,11 +103,11 @@ for bounds in BOUNDING_BOXES:
 plotter.show()
 
 ###############################################################################
-# Run non-parametric optimization
-# ----------------------------------
+# Set the parameters of the non-parametric optimization
+# -----------------------------------------------------
 # **This is the only section you need to edit.**
-# Update the variables below to match your setup and the rest of the script
-# will run automatically without any further changes.
+# Update the following variables to match your setup. The rest of the script
+# runs without any further changes.
 #
 # The one exception is if you want to **minimize** the objective instead of
 # maximizing it: replace ``maximize=OBJECTIVE`` with ``minimize=OBJECTIVE``
@@ -129,9 +128,9 @@ BOUNDING_BOXES = [[-0.07, 0.15, -0.06, 0.12, -0.09, 0.15]]
 NUMBER_OF_ITERATIONS = 10
 # Maximum displacement per bounding box (one value per box, same unit as geometry)
 MAX_DISPLACEMENT = [0.1]
-# Symmetry constraints (e.g., ["X"] for YZ plane symmetry)
+# Symmetry constraints (for example, ["X"] for YZ plane symmetry)
 SYMMETRIES = []
-SCALARS = {}  # Scalars must match your workspace configuration
+SCALARS = {}  # Scalars must match the SimAI model configuration of the workspace
 # Objective to maximize (use minimize parameter for minimization)
 OBJECTIVE = ["<global_coefficient_objective>"]
 # Detail level controls deformation refinement (integer from 1 to 10, default: 5)
@@ -140,8 +139,8 @@ DETAIL_LEVEL = 5
 OUTPUT_FOLDER = "simai_output"
 
 ###############################################################################
-# Part morphing (optional)
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Restrict deformations to geometry parts with part morphing (optional)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Part morphing restricts deformation to specific parts of the geometry
 # identified by a ``PartId`` cell field. The ``continuity_constraint``
 # parameter (0 to 1) controls how smoothly the deformed region blends
@@ -159,40 +158,40 @@ PART_MORPHING = OptimizationPartMorphingSchema(
 )
 
 ###############################################################################
-# Initialize SimAI client and workspace
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Connect to SimAI and retrieve the workspace and baseline geometry:
+# Get the workspace and baseline geometry for the optimization
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Connect to Ansys SimAI and get the workspace and baseline geometry:
 
-simai = asc.SimAIClient(organization=ORGANIZATION_NAME)
+simai_client = asc.SimAIClient(organization=ORGANIZATION_NAME)
 
-workspace = simai.workspaces.get(name=WORKSPACE_NAME)
+workspace = simai_client.workspaces.get(name=WORKSPACE_NAME)
 print(f"Using workspace: {workspace.name}")
 
-geometry = simai.geometries.get(workspace=workspace, name=CHOSEN_GEOMETRY_NAME)
+geometry = simai_client.geometries.get(workspace=workspace, name=CHOSEN_GEOMETRY_NAME)
 print(f"Baseline geometry: {geometry.name}")
 
 ###############################################################################
-# Generate an offline token
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Generate an offline token for the server-side optimization
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The optimization runs server-side. At each iteration the geometry
 # corresponding to the current step is uploaded to your workspace.
 # An ``offline_token`` is required so that the server can authenticate
 # on your behalf during this process.
 #
 # Generating the token requires a manual action (browser login).
-# Once generated, the token is valid for 30 days. You can generate as many
-# tokens as needed.
+# The token expires. You can generate as many tokens as needed.
 
-offline_token = simai.me.generate_offline_token()
+# TODO: confirm the offline token lifetime with the product team.
+offline_token = simai_client.me.generate_offline_token()
 
 ###############################################################################
-# Start the optimization
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Launch the optimization with the configured parameters.
-# The optimization will generate new geometries at each iteration
+# Start the non-parametric optimization
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Start the optimization with the configured parameters.
+# The optimization generates new geometries at each iteration
 # by applying smooth deformations to the baseline geometry.
 
-optimization = simai.optimizations.run_non_parametric(
+optimization = simai_client.optimizations.run_non_parametric(
     geometry=geometry,
     offline_token=offline_token,
     bounding_boxes=BOUNDING_BOXES,
@@ -205,11 +204,14 @@ optimization = simai.optimizations.run_non_parametric(
     show_progress=True,
     # part_morphing=PART_MORPHING,  # Uncomment to enable part morphing
 )
-optimization.wait()
+# A server-side optimization runs in the background: wait for it to finish.
+# A legacy optimization has already finished when run_non_parametric() returns.
+if isinstance(optimization, Optimization):
+    optimization.wait()
 
 ###############################################################################
-# Display optimization results
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Print the geometries and objective values of the optimization
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Get the optimization ID for either a server-side or legacy optimization,
 # and print the generated geometries and objective values:
 
@@ -223,8 +225,8 @@ print(f"Objectives: {optimization.list_objectives()}")
 
 
 ###############################################################################
-# Visualize optimization progression
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plot the progression of the optimization objective
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Plot the objective value at each iteration alongside the baseline and
 # ±5 % reference bands.
 
@@ -232,8 +234,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ###############################################################################
-# Get the baseline objective value
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Predict the objective value of the baseline geometry
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Run a prediction on the original baseline geometry to obtain the
 # reference objective value used for the ±5 % horizontal bands.
 
@@ -249,8 +251,8 @@ baseline_value = float(baseline_gc_data[OBJECTIVE[0]]["data"])
 print(f"Baseline {OBJECTIVE[0]}: {baseline_value:.4f}")
 
 ###############################################################################
-# Collect per-iteration objective values
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Collect the objective value of each optimization iteration
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The optimization records the scalar objective at each iteration.
 
 raw_objectives = optimization.list_objectives()
@@ -259,8 +261,8 @@ obj_values = [float(obj[OBJECTIVE[0]]) for obj in raw_objectives]
 iterations = range(1, len(obj_values) + 1)
 
 ###############################################################################
-# Chart 1 – Objective progression over iterations
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plot the objective value against the optimization iterations
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The dashed and dotted horizontal lines mark a ±5 % band around the baseline.
 
 fig, ax = plt.subplots(figsize=(10, 5))
@@ -292,9 +294,10 @@ plt.savefig(f"{CHARTS_FOLDER}/objective_progression.png", dpi=150)
 plt.show()
 
 ###############################################################################
-# Run predictions on optimized geometries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# You can get back your optimization from its ID when done asynchronously.
+# Run SimAI model predictions on the optimized geometries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# If you ran the optimization asynchronously, get it back from its ID with
+# ``simai_client.optimizations.get()``.
 # Run predictions on all generated geometries to evaluate their performance:
 
 predictions: list[Prediction] = []
@@ -305,8 +308,8 @@ for geom in optimization.list_geometries():
     predictions.append(prediction)
 
 ###############################################################################
-# Analyze the results from an optimization run
-# ----------------------------------------------
+# Download the surface VTP files of the optimized geometries
+# ----------------------------------------------------------
 # Download surface VTP files for each prediction:
 
 VTPS_FOLDER = f"{OUTPUT_FOLDER}/optimization_{optimization_id}/VTPs"
@@ -329,39 +332,40 @@ for prediction in predictions:
 
 
 ###############################################################################
-# Tips for effective optimization
-# ------------------------------------------------------
+# Improve the results of a non-parametric optimization
+# ----------------------------------------------------
 #
-# **Data preparation**: Ensure the maximum magnitude within simulation data matches
+# **Data preparation**: ensure the maximum magnitude within simulation data matches
 # the minimal optimization gain you want. For example, for a 4% drag reduction,
 # ensure there is around 4% drag difference between the best and worst training data.
 #
-# **Bounding boxes**: Start with boxes covering areas most likely to influence performance.
+# **Bounding boxes**: start with boxes covering areas most likely to influence performance.
 # If results do not improve, increase box size or add more boxes. Avoid excessively large
 # boxes that may cause unrealistic deformations.
 #
-# **Baseline geometry**: If optimization does not improve after several iterations,
+# **Baseline geometry**: if optimization does not improve after several iterations,
 # try a different geometry from the training data. Ensure the geometry is clean
 # and of high quality.
 #
-# **Iterative workflow**: For best results, run the optimization, verify results
-# with your solver, add optimums as new training data, rebuild the model, and repeat
+# **Iterative workflow**: for best results, run the optimization, verify results
+# with your solver, add optimums as new training data, rebuild the SimAI model, and repeat
 # at least 3 times.
 
 ###############################################################################
-# Next steps
-# ------------------------------------------------------
+# Verify and reuse the optimized geometries
+# -----------------------------------------
 #
 # - Visualize the surface VTP files.
 # - Run solver verification on selected optimized geometries.
-# - Add validated results as new training data for model improvement.
+# - Add validated results as new training data to improve the SimAI model.
 #
-# For more details on configuration options, see the
+# For the complete task, see :doc:`/user-guide/simai-models/optimize-a-design`. For more details
+# on configuration options, see the
 # :ref:`non-parametric optimization configuration guide <configure_npo>`.
 
 ###############################################################################
-# Other tools: Generate screenshots and GIFs
-# ------------------------------------------------------
+# Render screenshots and GIFs of the optimized geometries
+# -------------------------------------------------------
 # For every optimized geometry, render a screenshot from each camera angle.
 # Then assemble one GIF per angle so the deformation is
 # clearly visible.

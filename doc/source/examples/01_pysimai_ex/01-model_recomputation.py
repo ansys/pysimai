@@ -23,46 +23,52 @@
 """
 .. _ref_model_recomputation:
 
-Model recomputation
-===================
+Rebuild a SimAI model with the latest model configuration
+=========================================================
 
-This example demonstrates how to relaunch a model build using the latest
-model configuration in a same project.
+This example starts a new SimAI model build in a project with the latest
+model configuration of that same project.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# --------------------------
+# Import PySimAI and create the client to rebuild a SimAI model
+# -------------------------------------------------------------
 
 import ansys.simai.core as asc
 
 simai_client = asc.from_config()
 
 ###############################################################################
-# Get the project from the server
-# -------------------------------
+# Get the project of the SimAI model to rebuild
+# ---------------------------------------------
 
 my_project = simai_client.projects.get(name="old-ps")
 
 ###############################################################################
-# Get the model configuration
-# ---------------------------
+# Get the latest model configuration of the project
+# -------------------------------------------------
 # Get the latest model configuration of the project.
 
 last_build_config = my_project.last_model_configuration
 
 ###############################################################################
-# Verify the project requirements
-# -------------------------------
-# Verify that the project meets the requirements for training (model building).
+# Check that the project is trainable before the SimAI model rebuild
+# ------------------------------------------------------------------
+# Check that the project meets the requirements for a model build.
 
 is_trainable_check = my_project.is_trainable()
 
 ###############################################################################
-# If the project met the requirements, launch a model build.
-# Otherwise, print the reasons the project does not meet the requirements.
+# If the project meets the requirements, start the model build.
+# Otherwise, print the reason why the project does not meet the requirements.
 if is_trainable_check:
     new_model = simai_client.models.build(last_build_config)
 else:
     print(is_trainable_check.reason)
+
+###############################################################################
+# Monitor and evaluate the rebuilt SimAI model
+# --------------------------------------------
+# For the complete tasks, see :doc:`/user-guide/simai-models/build-a-model` and
+# :doc:`/user-guide/simai-models/evaluate-a-model`.

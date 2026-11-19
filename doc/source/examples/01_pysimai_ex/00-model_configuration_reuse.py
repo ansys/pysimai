@@ -22,25 +22,25 @@
 
 """.. _ref_model_configuration_reuse:
 
-Model configuration reuse
-=========================
+Reuse a model configuration to build a SimAI model in another project
+=====================================================================
 
-This example demonstrates how to retrieve the latest model configuration
-of a project and use it to launch a model build in another project.
+This example gets the latest model configuration of a SimAI model project and uses it
+to start a SimAI model build in another project.
 
 """
 
 ###############################################################################
-# Import necessary libraries
-# --------------------------
+# Import PySimAI and create the client to reuse a model configuration
+# -------------------------------------------------------------------
 
 import ansys.simai.core as asc
 
 simai_client = asc.from_config()
 
 ###############################################################################
-# Create a project and allocate training data
-# -------------------------------------------
+# Create a project and add training data points to it
+# ---------------------------------------------------
 # Define the project name.
 new_project_name = "new-project"
 
@@ -49,7 +49,7 @@ new_project_name = "new-project"
 new_project = simai_client.projects.create(new_project_name)
 
 ###############################################################################
-# Set the names of the data samples to be associated with the created project.
+# Set the names of the training data points to add to the new project.
 training_samples_name = [
     "TrainingData_001",
     "TrainingData_002",
@@ -58,29 +58,34 @@ training_samples_name = [
 ]
 
 ###############################################################################
-# Retrieve the desired training data samples and associate them with
-# the new project.
+# Get each training data point and add it to the new project.
 for td_name in training_samples_name:
     filt = {"name": td_name}
     td = simai_client.training_data.list(filters=filt)
     td[0].add_to_project(new_project)
 
 ###############################################################################
-# Select a model configuration and associate it with the newly created project
-# ----------------------------------------------------------------------------
-# Retrieve the model configuration from another project that you wish to reuse.
+# Copy the model configuration of another project to the new project
+# ------------------------------------------------------------------
+# Get the latest model configuration of the project that you want to reuse.
 old_project = "old-ps"
 my_project = simai_client.projects.get(name=old_project)
 
 last_build_config = my_project.last_model_configuration
 
 ###############################################################################
-# If the new project meets the requirements for training, associate
-# the project's ID with the configuration and launch a model build.
+# If the new project meets the requirements for a model build, assign the
+# new project to the model configuration and start a SimAI model build.
 if new_project.is_trainable():
-    # Assign the new project's ID to the configuration to transfer the
+    # Assign the new project to the configuration to transfer the
     # configuration from the old project to the new one
-    last_build_config.project_id = new_project.id
+    last_build_config.project = new_project
 
-    # Launch a model build for the new project
+    # Start a SimAI model build for the new project
     new_model = simai_client.models.build(last_build_config)
+
+###############################################################################
+# Learn more about SimAI model configurations
+# -------------------------------------------
+# For the complete tasks, see :doc:`/user-guide/simai-models/configure-a-model` and
+# :doc:`/user-guide/simai-models/build-a-model`.
