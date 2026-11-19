@@ -13,7 +13,7 @@ Prerequisites
 -------------
 
 - Python 3.9 or later.
-- An account in an Ansys SimAI organization, to use PySimAI after installation.
+- An account in your :term:`organization`, to use PySimAI after installation.
 
 Install the package
 -------------------

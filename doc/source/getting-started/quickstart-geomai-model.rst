@@ -17,7 +17,7 @@ Prerequisites
 -------------
 
 - PySimAI is installed. See :doc:`/getting-started/install`.
-- You have an account in an Ansys SimAI organization.
+- You have an account in an :term:`organization` in Ansys SimAI.
 - A folder on your computer holds your geometries, one file per geometry, in VTP (``.vtp``) or
   STL (``.stl``) format. For the requirements, see :doc:`/user-guide/geomai-models/prepare-training-data`.
 

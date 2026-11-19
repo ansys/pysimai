@@ -9,7 +9,7 @@ Authenticate with Ansys SimAI
 **Applies to:** SimAI models and GeomAI models
 
 The :class:`~ansys.simai.core.client.SimAIClient` instance must be authenticated before it can
-access your Ansys SimAI organization. You can sign in through the web browser, pass
+access your :term:`organization`. You can sign in through the web browser, pass
 credentials, or use a token for scripts that run without prompts. The GeomAI client, ``simai_client.geomai``, uses the authentication of the PySimAI client: you
 authenticate once for both types of AI model.
 

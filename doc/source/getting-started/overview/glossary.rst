@@ -80,7 +80,8 @@ Concepts common to both types of AI model
       and as a ZIP file for a GeomAI model.
 
    organization
-      The account that groups the users of one company in Ansys SimAI. All the training data
+      The account that groups the users of one company in Ansys SimAI. Users are added to an
+      organization and receive an email invitation to sign in to Ansys SimAI. All the training data
       uploaded in an organization is shared between its users, and data can't be shared between
       organizations. SimAI models and GeomAI models belong to the same organization. Its name
       appears in the web app URL, ``https://simai.ansys.com/<organization-name>``, and is the

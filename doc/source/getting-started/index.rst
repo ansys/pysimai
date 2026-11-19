@@ -6,7 +6,7 @@ Getting started
 ===============
 
 Start here to learn the concepts of Ansys SimAI and PySimAI, then install PySimAI, connect it to your
-Ansys SimAI organization, and run a first complete script.
+:term:`organization`, and run a first complete script.
 
 Overview
 --------

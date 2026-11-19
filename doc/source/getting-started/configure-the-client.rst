@@ -9,7 +9,7 @@ Configure the PySimAI client
 **Applies to:** SimAI models and GeomAI models
 
 Every PySimAI script starts with a :class:`~ansys.simai.core.client.SimAIClient` instance,
-which connects to your Ansys SimAI organization and gives access to all the other objects.
+which connects to your :term:`organization` and gives access to all the other objects.
 This page shows how to create the client, configure it for SimAI models and for GeomAI models,
 and which configuration options it accepts. To sign in without a browser or run scripts without
 prompts, see :doc:`/getting-started/authenticate`.
@@ -18,7 +18,7 @@ Create the client
 -----------------
 
 To create a :class:`~ansys.simai.core.client.SimAIClient` instance, pass the configuration
-parameters to its constructor. The ``organization`` parameter is the name of your Ansys SimAI
+parameters to its constructor. The ``organization`` parameter is the name of your
 organization, as it appears in the web app URL: ``https://simai.ansys.com/<organization-name>``.
 
 .. code-block:: python
@@ -122,7 +122,7 @@ The :class:`~ansys.simai.core.client.SimAIClient` constructor accepts the option
    * - Option
      - Description
    * - ``organization``
-     - Name of your Ansys SimAI organization. Required.
+     - Name of your organization. Required.
    * - ``project``, ``workspace``
      - Names of the project and workspace of SimAI models to use by default.
    * - ``geomai_project``, ``geomai_workspace``
