@@ -71,12 +71,14 @@ distinguished_name = req_distinguished_name
 [req_distinguished_name]
 
 [server_ext]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
 basicConstraints = CA:FALSE
 keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth
 subjectAltName = DNS:localhost
 """)
-    subprocess.run(["openssl", "x509", "-req", "-in", tmp_path / "server_csr.pem", "-CA", tmp_path / "test_ca.pem", "-CAkey", tmp_path / "ca_key.pem", "-CAcreateserial", "-out", tmp_path / "server_cert.pem", "-days", "3650", "-extensions", "server_ext", "-extfile", tmp_path / "server_openssl.cnf"], check=False)  # fmt: skip # noqa: S607, S603
+    subprocess.run(["openssl", "x509", "-req", "-in", tmp_path / "server_csr.pem", "-CA", tmp_path / "test_ca.pem", "-CAkey", tmp_path / "ca_key.pem", "-CAcreateserial", "-out", tmp_path / "server_cert.pem", "-days", "365", "-extensions", "server_ext", "-extfile", tmp_path / "server_openssl.cnf"], check=False)  # fmt: skip # noqa: S607, S603
 
     return {
         "ca": tmp_path / "test_ca.pem",
@@ -121,10 +123,6 @@ BASE_CLT_ARGS = {
 #
 # TESTS
 #
-@pytest.mark.skipif(
-    sys.version_info < (3, 11),
-    reason='"system" requires Python >= 3.10, "patch" is broken in python 3.10',
-)
 def test_client_config_tls_ca_bundle_system(tls_root_certificate, https_server):
     clt = SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="system")
     with disable_http_retry(clt._api, https_server):
@@ -142,14 +140,6 @@ def test_client_config_tls_ca_bundle_system(tls_root_certificate, https_server):
             "truststore._api._configure_context", side_effect=load_test_ca_as_truststore_system_ca
         ):
             clt._api._get(https_server, return_json=False)
-
-
-@pytest.mark.skipif(
-    sys.version_info >= (3, 10), reason="The error is only raised for python < 3.10"
-)
-def test_client_config_tls_ca_bundle_system_on_usupported_python_version():
-    with pytest.raises(err.ConfigurationError, match="python >= 3.10"):
-        SimAIClient(**BASE_CLT_ARGS, tls_ca_bundle="system")
 
 
 def test_client_config_tls_ca_bundle_unsecure_none(https_server):

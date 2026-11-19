@@ -34,7 +34,7 @@ from httpx_retries import RetryTransport
 
 from ansys.simai.core import __version__
 from ansys.simai.core.data.types import APIResponse, File, MonitorCallback
-from ansys.simai.core.errors import ConfigurationError, ConnectionError
+from ansys.simai.core.errors import ConnectionError
 from ansys.simai.core.utils.auth import Authenticator
 from ansys.simai.core.utils.configuration import ClientConfig
 from ansys.simai.core.utils.files import file_path_to_obj_file
@@ -53,8 +53,6 @@ class ApiClientMixin:
         transport_args = {"retries": 3}
 
         if config.tls_ca_bundle == "system":
-            if sys.version_info < (3, 10):
-                raise ConfigurationError("The system CA store can only be used with python >= 3.10")
             import truststore  # noqa: PLC0415
 
             transport_args["verify"] = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)

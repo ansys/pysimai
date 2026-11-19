@@ -41,7 +41,7 @@ For more information, see the `Ansys SimAI User's guide <https://ansyshelp.ansys
 Requirements
 ------------
 
-PySimAI requires Python 3.10 or later.
+PySimAI requires Python 3.11 or later.
 
 
 .. toctree::
