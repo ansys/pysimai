@@ -29,3 +29,5 @@ n_iters
 Synopsys
 synopsys
 optiSLang
+(?i)geomai
+Keycloak

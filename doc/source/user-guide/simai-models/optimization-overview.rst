@@ -20,7 +20,7 @@ When to use non-parametric optimization
 
 Use non-parametric optimization when your designs have no predefined design parameters, and
 defining them afterward would be too difficult. The optimization deforms the baseline geometry
-directly, with smooth and continuous deformations. You explore the design space and change the
+directly with smooth and continuous deformations. You explore the design space and change the
 shape based on one objective, without generating new geometries or reparametrizing existing
 designs.
 

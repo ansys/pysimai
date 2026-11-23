@@ -76,7 +76,7 @@ Model Evaluation Report. It takes the same ``file`` parameter:
 Expected result when you download the Model Evaluation Report of a SimAI model
 ------------------------------------------------------------------------------
 
-The code that saves the report to a file, in "Download the report to a file or to memory",
+The code in "Download the report to a file or to memory" saves the report to a file. It
 writes ``model_evaluation_report.pdf`` in the current folder and prints:
 
 .. code-block:: text

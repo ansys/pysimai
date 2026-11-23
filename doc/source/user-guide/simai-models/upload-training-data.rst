@@ -17,7 +17,7 @@ several projects.
 Script to upload the training data of a SimAI model
 ---------------------------------------------------
 
-This script creates a project, uploads each subfolder of a dataset folder as one training data
+This script creates a project, uploads each folder inside a dataset folder as one training data
 point, adds it to the project, and waits for Ansys SimAI to process it.
 
 .. code-block:: python

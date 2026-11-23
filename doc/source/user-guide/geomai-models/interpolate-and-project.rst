@@ -75,7 +75,7 @@ Interpolate between two geometries with a GeomAI model
 
 A linear interpolation creates smooth transitions between two existing designs and blends their
 features. It's also a good check of a GeomAI model: the intermediate shapes should change
-gradually, without abrupt jumps or garbled geometries.
+gradually and have no abrupt jumps or garbled geometries.
 
 #. Get the latent vectors of the training geometries with ``workspace.get_latent_parameters()``.
    The method returns a dictionary that maps each geometry name to its latent vector.
