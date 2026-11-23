@@ -90,7 +90,7 @@ Concepts common to both types of AI model
    prediction
       The result of running a trained AI model in a workspace. For a SimAI model, it's the
       physical fields predicted on one geometry with one set of scalars. For a GeomAI model,
-      it's a new geometry generated from a set of :term:`latent parameters`. PySimAI classes:
+      it's a new geometry generated with a configuration. PySimAI classes:
       :class:`~ansys.simai.core.data.predictions.Prediction` for SimAI models,
       :class:`~ansys.simai.core.data.geomai.predictions.GeomAIPrediction` for GeomAI models.
 

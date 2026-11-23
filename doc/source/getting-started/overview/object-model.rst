@@ -27,6 +27,10 @@ The objects follow the workflow of an AI model:
                                └── prediction
                                    └── postprocessing
 
+The tree shows the objects of a SimAI model. For a GeomAI model, a prediction generates a
+geometry instead of running on one, there are no postprocessings, and a projection computes the
+latent parameters of an existing geometry.
+
 Organization
    The account that groups the users of one company. All the training data uploaded in an
    organization is shared between its users. You choose it with the ``organization`` parameter
@@ -48,15 +52,19 @@ Workspace
    The place where you use a built AI model.
 
 Geometry
-   The 3D surface mesh of a design. In the workspace of a SimAI model, you upload geometries and
-   run predictions on them.
+   The 3D surface mesh of a design. Its role depends on the type of AI model. For a SimAI model,
+   you upload geometries to the workspace and run predictions on them. For a GeomAI model,
+   geometries are the training data and the result of a generation, and you can also upload a
+   geometry to the workspace to project it.
 
 Prediction
-   The result of running a SimAI model on one geometry with one set of scalars.
+   The result of running a trained AI model in a workspace. For a SimAI model, it's the
+   predicted physical fields of one geometry with one set of scalars. For a GeomAI model, it's a
+   new geometry generated with a configuration.
 
 Postprocessing
-   An analysis or export of a prediction, such as global coefficients or the predicted surface
-   fields in VTP format.
+   An analysis or export of the prediction of a SimAI model, such as global coefficients or the
+   predicted surface fields in VTP format. GeomAI models have no postprocessings.
 
 Classes and access for SimAI models
 -----------------------------------
