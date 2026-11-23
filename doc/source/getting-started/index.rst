@@ -17,8 +17,8 @@ Overview
 - :doc:`/getting-started/overview/web-app-or-pysimai`: when to use the web app and when to use PySimAI.
 - :doc:`/getting-started/overview/glossary`: the terms of Ansys SimAI and PySimAI.
 
-Getting started
----------------
+How to start
+------------
 
 #. :doc:`/getting-started/install`
 #. :doc:`/getting-started/configure-the-client`, either in your script or in a
