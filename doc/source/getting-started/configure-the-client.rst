@@ -19,7 +19,8 @@ Create the client
 
 To create a :class:`~ansys.simai.core.client.SimAIClient` instance, pass the configuration
 parameters to its constructor. The ``organization`` parameter is the name of your
-organization, as it appears in the web app URL: ``https://simai.ansys.com/<organization-name>``.
+organization, as it appears in the web app URL, for example
+``https://simai.ansys.com/<organization-name>``.
 
 .. code-block:: python
 

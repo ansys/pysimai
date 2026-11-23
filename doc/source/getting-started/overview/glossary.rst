@@ -36,7 +36,7 @@ Concepts common to both types of AI model
       User's Guide, which documents the web app.
 
    Ansys SimAI
-      The SaaS platform for building and using AI models in industrial design. It offers two
+      The platform for building and using AI models in industrial design. It offers two
       types of AI model: SimAI models and GeomAI models. You use it from the web app at
       https://simai.ansys.com or from Python with :term:`PySimAI`.
 
@@ -84,7 +84,7 @@ Concepts common to both types of AI model
       organization and receive an email invitation to sign in to Ansys SimAI. All the training data
       uploaded in an organization is shared between its users, and data can't be shared between
       organizations. SimAI models and GeomAI models belong to the same organization. Its name
-      appears in the web app URL, ``https://simai.ansys.com/<organization-name>``, and is the
+      appears in the web app URL, for example ``https://simai.ansys.com/<organization-name>``, and is the
       ``organization`` parameter of :class:`~ansys.simai.core.client.SimAIClient`.
 
    prediction

@@ -7,7 +7,7 @@ Key concepts of Ansys SimAI
 
 **Applies to:** SimAI models and GeomAI models
 
-Ansys SimAI is a SaaS platform for building and using AI models in industrial design. You use
+Ansys SimAI is a platform for building and using AI models in industrial design. You use
 it from the web app at https://simai.ansys.com, or from Python with PySimAI. Ansys SimAI trains
 two types of :term:`AI model`, SimAI models and GeomAI models, which have separate data. For how
 the two types are kept apart, see :doc:`/getting-started/overview/architecture`.

@@ -44,7 +44,7 @@ How to start
    overview/glossary
 
 .. toctree::
-   :caption: Getting started
+   :caption: How to start
    :maxdepth: 1
    :hidden:
 
