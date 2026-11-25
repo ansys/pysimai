@@ -39,8 +39,8 @@ The MER of a GeomAI model contains:
 - Quality histograms: visual indicators of which geometries are well reconstructed.
 - Interpolation examples: interpolations between pairs of training geometries, computed
   automatically.
-- Parameter Importance: how much each latent dimension contributes to the variability of the
-  training data. Use it to work with a reduced latent space. For more information, see
+- Parameter Importance: how much each :term:`latent dimension` contributes to the variability of the
+  training data. Use it to work with a reduced :term:`latent space`. For more information, see
   :ref:`reduced_latent_space_geomai`.
 
 Read the chamfer distance of a GeomAI model
@@ -116,7 +116,7 @@ Fix void or garbled geometries from a GeomAI model
 
 If generated geometries are void or garbled:
 
-- Stay close to known latent parameters. Use the
+- Stay close to known :term:`latent parameters <latent parameter>`. Use the
   :meth:`sample()<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.sample>`
   method or interpolate between training geometries instead of choosing arbitrary latent
   parameters.

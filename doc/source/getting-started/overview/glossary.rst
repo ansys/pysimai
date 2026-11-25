@@ -120,14 +120,21 @@ Concepts common to both types of AI model
       data points.
 
    training data point
-      One case uploaded as training data. For a SimAI model, it's one simulation case: it always
-      has a surface file, and can also have a volume file and a scalar file. For a GeomAI model,
-      it's one geometry file. PySimAI classes:
-      :class:`~ansys.simai.core.data.training_data.TrainingData` for SimAI models and
+      One unit of training data, made of one or more :term:`training data parts <training data part>`.
+      For a SimAI model, it's one simulation case: it always has a surface file, and can also
+      have a volume file and a scalar file. For a GeomAI model, it's one geometry file. PySimAI
+      classes: :class:`~ansys.simai.core.data.training_data.TrainingData` for SimAI models and
       :class:`~ansys.simai.core.data.geomai.training_data.GeomAITrainingData` for GeomAI models.
-      Each file of a training data point is a
-      :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart` or a
-      :class:`~ansys.simai.core.data.geomai.training_data_parts.GeomAITrainingDataPart`.
+      The PySimAI API reference sometimes calls it a training data object.
+
+   training data part
+      One file of a training data point. For a SimAI model, it's the :term:`surface file`, the
+      :term:`volume file`, or the :term:`scalar file`. For a GeomAI model, it's the geometry file.
+      A training data point that has only a surface file has one part. The web app lists the files
+      of each training data point by type, in the Files column. PySimAI classes:
+      :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart` for SimAI models and
+      :class:`~ansys.simai.core.data.geomai.training_data_parts.GeomAITrainingDataPart` for
+      GeomAI models.
 
    workspace
       The place where you use a built AI model. Ansys SimAI creates one workspace when it
@@ -243,8 +250,9 @@ SimAI models
       ``geometry.run_prediction(scalars={"Vx": 10.5})``. A SimAI model can also output scalars.
 
    scalar file
-      The optional JSON file (``.json``) of a training data point for a SimAI model. It lists the
-      scalars of the case as name and value pairs, without units.
+      The optional file of a training data point for a SimAI model. It lists the scalars of the
+      case as name and value pairs, without units. For the accepted formats, see
+      :doc:`/user-guide/simai-models/prepare-training-data`.
 
    SimAI model
       The type of AI model that trains on simulation data and predicts physical fields for new
@@ -258,9 +266,9 @@ SimAI models
       :meth:`TrainingData.upload_folder() <ansys.simai.core.data.training_data.TrainingData.upload_folder>`.
 
    surface file
-      The required file of a training data point for a SimAI model, in VTP format (``.vtp``). It
-      describes the geometry and the surface fields. If one geometry has several surface files,
-      merge them before upload.
+      The required file of a training data point for a SimAI model. It describes the geometry and
+      the surface fields. If one geometry has several surface files, merge them before upload.
+      For the accepted formats, see :doc:`/user-guide/simai-models/prepare-training-data`.
 
    test subset
       The group of training data points that a model build doesn't learn from, and on which the
@@ -280,8 +288,9 @@ SimAI models
       :meth:`Project.get_variables() <ansys.simai.core.data.projects.Project.get_variables>`.
 
    volume file
-      The optional file of a training data point for a SimAI model, in VTU format (``.vtu``). It
-      holds the volume (3D) fields and is needed only to predict volume fields.
+      The optional file of a training data point for a SimAI model. It holds the volume (3D)
+      fields and is needed only to predict volume fields. For the accepted formats, see
+      :doc:`/user-guide/simai-models/prepare-training-data`.
 
 .. _glossary_geomai_models:
 
@@ -294,19 +303,9 @@ GeomAI models
    build preset of a GeomAI model
       The preset that sets the training duration of a GeomAI model: the ``build_preset``
       parameter of :class:`~ansys.simai.core.data.geomai.models.GeomAIModelConfiguration`.
-      According to the PySimAI code, its values are:
-
-      - ``debug``: 4 minutes plus 15 seconds per geometry. The code describes it as a mode for
-        pipeline testing and debugging, limited to a subset of four training data points and
-        one :term:`epoch`.
-      - ``short``: 45 minutes plus 15 seconds per geometry.
-      - ``default``: 3 hours plus 15 seconds per geometry.
-      - ``long``: 15 hours plus 15 seconds per geometry.
-
-      Instead of a build preset, you can set the number of epochs with ``nb_epochs``. A model
-      configuration takes exactly one of ``build_preset`` and ``nb_epochs``. The build presets
-      of GeomAI models differ from the ``build_preset`` values of SimAI models: see
-      :term:`build setting`.
+      Instead of a build preset, you can set the number of epochs with ``nb_epochs``. For the
+      values and how to choose, see :ref:`geomai_models_build_preset`. The build presets of GeomAI
+      models differ from the ``build_preset`` values of SimAI models: see :term:`build setting`.
 
       .. TODO: confirm what the debug build preset does for GeomAI models with the product team.
 
@@ -339,11 +338,34 @@ GeomAI models
       which supports the VTP and STL formats. PySimAI class:
       :class:`~ansys.simai.core.data.geomai.geometries.GeomAIGeometry`.
 
+   latent dimension
+   number of latent parameters
+      The number of values in each :term:`latent vector`, which is also the number of
+      :term:`latent parameters <latent parameter>` of a geometry. The ``nb_latent_param``
+      parameter of
+      :class:`~ansys.simai.core.data.geomai.models.GeomAIModelConfiguration` sets it, from 2 to
+      1024, 512 by default. A GeomAI model orders the latent dimensions by importance: the
+      first ones capture the largest variations of the geometry, and the later ones capture finer
+      details. Keep the default value unless you can assess the performance of your models for
+      other values.
+
+      Example:
+         For a model configured with ``nb_latent_param=3``, consider:
+
+         .. code-block:: python
+
+            latent_parameters = [0.8, -1.2, 2.1]
+
+         - ``0.8``, ``-1.2``, and ``2.1`` are :term:`latent parameters <latent parameter>`.
+         - The list of latent parameters is a :term:`latent vector`.
+         - It has three latent dimensions.
+         - It represents one point in the :term:`latent space`.
+
+   latent parameter
    latent parameters
-      The coordinates of a geometry in the :term:`latent space` of a GeomAI model: a list of
-      floats that describes the shape in a compressed form. The first latent parameters capture
-      the largest variations of the geometry, and the later ones capture finer details. To
-      generate a geometry, pass latent parameters as ``latent_params`` to
+      One numerical value of a :term:`latent vector`. The latent parameters of a geometry are its
+      coordinates in the :term:`latent space` of a GeomAI model, and they describe the shape in
+      a compressed form. To generate a geometry, pass latent parameters as ``latent_params`` to
       :class:`~ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration`. Their
       number can be less than or equal to the number of latent parameters of the model, which
       ``workspace.model_manifest.nb_latent_parameters`` returns.
@@ -351,14 +373,19 @@ GeomAI models
    latent space
       The compressed representation of the geometries that a GeomAI model learns during its
       model build. Each geometry is a point of the latent space, described by its
-      :term:`latent parameters`. Its dimension is the ``nb_latent_param`` parameter of
-      :class:`~ansys.simai.core.data.geomai.models.GeomAIModelConfiguration`, from 2 to 1024,
-      512 by default. Keep the default value unless you can assess the performance of your
-      models for other values.
+      :term:`latent parameters <latent parameter>`, and nearby points generally correspond to
+      similar geometries. The latent space isn't a physical coordinate system: its axes usually
+      don't correspond to dimensions such as length, width, or angle. Its dimension is the
+      :term:`latent dimension`.
+
+   latent vector
+      The ordered list of the :term:`latent parameters <latent parameter>` of one geometry. A
+      latent vector is the numerical code that a GeomAI model uses to describe a geometry in the
+      latent space and to generate the corresponding shape. It's sometimes called a latent code.
 
    projection
-      The computation of the :term:`latent parameters` of an existing geometry in the latent
-      space of a GeomAI model. In PySimAI, run it with
+      The computation of the :term:`latent parameters <latent parameter>` of an existing
+      geometry in the latent space of a GeomAI model. In PySimAI, run it with
       :meth:`GeomAIProjectionDirectory.run() <ansys.simai.core.data.geomai.projections.GeomAIProjectionDirectory.run>`,
       then read the result with
       :meth:`GeomAIProjection.get_latent_parameters() <ansys.simai.core.data.geomai.projections.GeomAIProjection.get_latent_parameters>`.

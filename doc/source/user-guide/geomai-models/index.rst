@@ -8,7 +8,7 @@ GeomAI user guide
 **Applies to:** GeomAI models
 
 A GeomAI model is an AI model trained on geometries only. It learns a compressed representation of
-your training geometries, called the latent space, and generates new geometries that share the
+your training geometries, called the :term:`latent space`, and generates new geometries that share the
 same design language. With PySimAI, you access GeomAI models through
 ``geomai_client = simai_client.geomai``, an instance of
 :class:`~ansys.simai.core.data.geomai.client.GeomAIClient`.
@@ -68,43 +68,9 @@ For complete scripts that you can run, see the GeomAI model examples, starting w
    generate-geometries
    interpolate-and-project
 
-.. _geomai_models_latent_glossary:
-
-Glossary of latent terms
-------------------------
-
-Latent space
-  A compact mathematical representation of the important variation in a set of geometries. Each
-  geometry is represented by a position in this space, and nearby positions generally correspond
-  to geometries that are similar according to what the GeomAI model learned. The latent space
-  isn't a physical coordinate system: its axes usually don't correspond directly to dimensions
-  such as length, width, or angle.
-
-Latent vector
-  The ordered list of latent parameters for one geometry. A latent vector is the numerical code
-  that the GeomAI model uses to describe a geometry in the latent space and to generate the
-  corresponding shape. It's sometimes called a latent code.
-
-Latent parameter
-  One numerical value of the latent vector.
-
-Number of latent parameters (latent dimension)
-  The GeomAI model setting ``nb_latent_param`` controls how many values each latent vector
-  contains. This count is also called the latent dimension.
-
-For a GeomAI model configured with ``nb_latent_param=3``, consider this list:
-
-.. code-block:: python
-
-   latent_parameters = [0.8, -1.2, 2.1]
-
-- ``0.8``, ``-1.2``, and ``2.1`` are latent parameters.
-- The list is a latent vector.
-- The latent vector has three latent dimensions.
-- The latent vector represents one point in the latent space.
-
 More about GeomAI models
 ------------------------
 
 - :doc:`/user-guide/simai-models/index`
+- :doc:`/getting-started/overview/glossary`
 - :doc:`/api_reference`

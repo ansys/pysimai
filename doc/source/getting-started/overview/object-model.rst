@@ -18,18 +18,22 @@ The objects follow the workflow of an AI model:
 .. code-block:: text
 
    organization
-   ├── training data (training data points, shared by all the projects)
-   └── project
+   ├── training data (shared by all the projects)
+   │   ├── training data points for SimAI models
+   │   └── training data points for GeomAI models
+   ├── SimAI project
+   │   ├── training data points added to the project
+   │   ├── model configuration
+   │   └── model build ──> workspace
+   │                       └── geometry
+   │                           └── prediction
+   │                               └── postprocessing
+   └── GeomAI project
        ├── training data points added to the project
        ├── model configuration
        └── model build ──> workspace
-                           └── geometry
-                               └── prediction
-                                   └── postprocessing
-
-The tree shows the objects of a SimAI model. For a GeomAI model, a prediction generates a
-geometry instead of running on one, there are no postprocessings, and a projection computes the
-latent parameters of an existing geometry.
+                           ├── prediction (a generated geometry)
+                           └── geometry ──> projection
 
 Organization
    The account that groups the users of one company. All the training data uploaded in an
@@ -40,9 +44,13 @@ Project
    The place where you gather training data and a model configuration to build AI models.
 
 Training data
-   The data that trains an AI model: simulation cases for a SimAI model, geometries for a GeomAI
-   model. Each case is a training data point. A training data point belongs to the organization,
-   and you add it to one or more projects.
+   The data that trains an AI model: simulation results for a SimAI model, geometries for a GeomAI
+   model. "Training data" is a mass noun, so you count it in training data points.
+
+Training data point
+   One unit of training data, made of one or more training data parts. It belongs to the
+   organization, and you add it to one or more projects. In PySimAI, it's a ``TrainingData``
+   object, and each of its parts is a ``TrainingDataPart`` object.
 
 Model build
    The process that trains an AI model from the training data and the model configuration of a
@@ -66,6 +74,28 @@ Postprocessing
    An analysis or export of the prediction of a SimAI model, such as global coefficients or the
    predicted surface fields in VTP format. GeomAI models have no postprocessings.
 
+Structure of the training data
+------------------------------
+
+Training data is made of training data points, and each training data point is made of training
+data parts, which are its files:
+
+.. code-block:: text
+
+   training data
+   ├── training data points for SimAI models
+   │   ├── training data point
+   │   │   ├── training data part: surface file
+   │   │   ├── training data part: volume file
+   │   │   └── training data part: scalar file
+   │   ├── training data point
+   │   │   └── training data part: surface file
+   │   └── ...
+   └── training data points for GeomAI models
+       ├── training data point
+       │   └── training data part: geometry file
+       └── ...
+
 Classes and access for SimAI models
 -----------------------------------
 
@@ -84,7 +114,7 @@ In the table, ``simai_client`` is a :class:`~ansys.simai.core.client.SimAIClient
    * - Training data point
      - :class:`~ansys.simai.core.data.training_data.TrainingData`
      - ``simai_client.training_data``, ``project.list_training_data()``
-   * - File of a training data point
+   * - Training data part (file of a training data point)
      - :class:`~ansys.simai.core.data.training_data_parts.TrainingDataPart`
      - ``simai_client.training_data_parts``, ``training_data.parts``
    * - Model configuration
@@ -129,7 +159,7 @@ projecting an existing geometry onto the model of a workspace is a projection.
    * - Training data point
      - :class:`~ansys.simai.core.data.geomai.training_data.GeomAITrainingData`
      - ``geomai_client.training_data``, ``project.list_training_data()``
-   * - File of a training data point
+   * - Training data part (file of a training data point)
      - :class:`~ansys.simai.core.data.geomai.training_data_parts.GeomAITrainingDataPart`
      - ``geomai_client.training_data_parts``, ``training_data.parts``
    * - Model configuration

@@ -47,8 +47,8 @@ With GeomAI models, PySimAI lets you:
 
 - Create projects and upload geometry files as training data.
 - Configure and build GeomAI models.
-- Generate new geometries from latent parameters, and project existing geometries onto the
-  latent space of a model.
+- Generate new geometries from :term:`latent parameters <latent parameter>`, and project existing
+  geometries onto the :term:`latent space` of a model.
 
 For both types of AI model, PySimAI lets you download the Model Evaluation Report, wait for
 objects, handle errors, and list, rename, or delete resources.

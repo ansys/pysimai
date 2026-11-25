@@ -1,4 +1,4 @@
-:description: Organize simulation results into simulation folders with a surface file, a volume file, and a scalar file before you upload them as training data for a SimAI model.
+:description: Organize simulation results into simulation folders that follow the file requirements of Ansys SimAI before you upload them as training data for a SimAI model.
 
 .. _simai_models_prepare_training_data:
 
@@ -14,15 +14,16 @@ represented in PySimAI by a :class:`~ansys.simai.core.data.training_data.Trainin
 Structure of a simulation folder
 --------------------------------
 
-A simulation folder holds the files of one simulation case. Each file type appears at most
-once in a simulation folder.
+A simulation folder holds the files of one simulation case. The roles of the files are the
+surface, the volume, and the scalars. Each role appears at most once in a simulation folder.
+The table lists the accepted formats of each file.
 
 .. list-table::
    :header-rows: 1
-   :widths: 20 15 15 50
+   :widths: 18 20 12 50
 
    * - File
-     - Format
+     - Accepted formats
      - Required
      - Content and naming rule
    * - Surface file
@@ -30,7 +31,7 @@ once in a simulation folder.
      - Yes
      - The geometry and the surface fields. The filename contains ``surface``.
    * - Volume file
-     - ``.vtu``
+     - ``.vtu`` or ``.vtp``
      - No
      - The volume fields. Add it only if the SimAI model must predict volume fields.
        The filename contains ``volume``.

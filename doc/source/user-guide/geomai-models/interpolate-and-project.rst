@@ -7,10 +7,10 @@ Interpolate and project geometries with a GeomAI model
 
 **Applies to:** GeomAI models
 
-To interpolate between two geometries, mix their latent vectors from
+To interpolate between two geometries, mix their :term:`latent vectors <latent vector>` from
 :meth:`workspace.get_latent_parameters()<ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace.get_latent_parameters>`
-and generate a geometry for each mix. To get the latent parameters of a geometry that isn't in the
-training data, upload it and project it onto the GeomAI model with
+and generate a geometry for each mix. To get the :term:`latent parameters <latent parameter>` of a
+geometry that isn't in the training data, upload it and project it onto the GeomAI model with
 :meth:`geomai_client.projections.run()<ansys.simai.core.data.geomai.projections.GeomAIProjectionDirectory.run>`.
 
 Complete script for an interpolation
@@ -84,7 +84,7 @@ gradually and have no abrupt jumps or garbled geometries.
 #. Run one prediction for each value of ``alpha`` with
    :meth:`geomai_client.predictions.run()<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.run>`.
 
-To interpolate in a reduced latent space, pass ``n`` to ``get_latent_parameters()``. For more
+To interpolate in a reduced :term:`latent space`, pass ``n`` to ``get_latent_parameters()``. For more
 information, see :ref:`reduced_latent_space_geomai`.
 
 If the interpolation path doesn't look as expected, the training data probably has too few

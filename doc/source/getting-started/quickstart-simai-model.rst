@@ -20,8 +20,9 @@ Prerequisites
 - PySimAI is installed. See :doc:`/getting-started/install`.
 - You have an account in an :term:`organization` in Ansys SimAI.
 - A folder on your computer holds one simulation folder per simulation case. Each simulation
-  folder holds a surface file (``.vtp``) and, when needed, a volume file (``.vtu``) and a scalar
-  file (``.json``). For the requirements, see :doc:`/user-guide/simai-models/prepare-training-data`.
+  folder holds a surface file and, when needed, a volume file and a scalar file. For the
+  accepted formats and the requirements, see
+  :doc:`/user-guide/simai-models/prepare-training-data`.
 - You have a new geometry to predict on, in VTP format.
 - You know the names of the variables in your data: the surface fields and the scalars.
 

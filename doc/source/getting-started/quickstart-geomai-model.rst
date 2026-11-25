@@ -171,7 +171,7 @@ At the end of a successful build, Ansys SimAI creates a workspace for the new Ge
 :meth:`GeomAIProject.get_last_workspace() <ansys.simai.core.data.geomai.projects.GeomAIProject.get_last_workspace>`
 returns it. The ``nb_latent_parameters`` property of its
 :attr:`~ansys.simai.core.data.geomai.workspaces.GeomAIWorkspace.model_manifest` gives the number
-of latent parameters of the model.
+of :term:`latent parameters <latent parameter>` of the model.
 
 .. code-block:: python
 

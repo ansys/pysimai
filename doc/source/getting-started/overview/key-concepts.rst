@@ -37,7 +37,7 @@ GeomAI models
 -------------
 
 A :term:`GeomAI model` trains on geometries only, with no simulation data. It learns a compressed
-representation of the geometries, the latent space, and generates new geometries in the same
+representation of the geometries, the :term:`latent space`, and generates new geometries in the same
 design language as its training data. A GeomAI model doesn't predict physical fields.
 
 In PySimAI, you work with GeomAI models through their own client,

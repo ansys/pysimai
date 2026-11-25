@@ -20,7 +20,7 @@ share the same design language. As a result:
 - If you only provide square-looking shapes, the GeomAI model doesn't generate circles.
 - If you only provide two geometries, the GeomAI model can only interpolate between them, without
   learning specific geometric features.
-- The more diverse and representative your training data, the richer the latent space and the
+- The more diverse and representative your training data, the richer the :term:`latent space` and the
   more meaningful the generated geometries.
 
 The results of a GeomAI model always fall within the design language that its training data

@@ -10,7 +10,7 @@ Configure a GeomAI model
 To configure a GeomAI model, create a
 :class:`~ansys.simai.core.data.geomai.models.GeomAIModelConfiguration` object. Set exactly one of
 ``build_preset`` or ``nb_epochs`` to control the training duration, and optionally set
-``nb_latent_param`` to change the dimension of the latent space.
+``nb_latent_param`` to change the :term:`latent dimension`.
 
 Choose a configuration for your use case
 ----------------------------------------
@@ -43,6 +43,8 @@ A GeomAI model that reconstructs the training data perfectly may overfit and pro
 interpolations. A GeomAI model tuned for smooth interpolation may not reproduce every detail of
 the original geometries. The build preset that you choose sets where the GeomAI model falls
 between these two objectives.
+
+.. _geomai_models_build_preset:
 
 Set the build preset of a GeomAI model
 --------------------------------------
@@ -140,9 +142,9 @@ the GeomAI model behaves on your training data. Start with ``build_preset`` and 
 Set the number of latent parameters of a GeomAI model
 -----------------------------------------------------
 
-The ``nb_latent_param`` parameter defines the dimension of the latent space, that is, the length of
-the latent vector that represents each geometry. Valid values are between 2 and 1024. The default
-value is 512.
+The ``nb_latent_param`` parameter defines the :term:`latent dimension`, that is, the length of
+the :term:`latent vector` that represents each geometry in the :term:`latent space`. Valid values
+are between 2 and 1024. The default value is 512.
 
 Keep the default value of 512 unless your use case has specific constraints. A higher value lets
 the GeomAI model encode more complex variations and fine geometric details, but raises the risk of
@@ -152,8 +154,6 @@ too low can make geometries too coarse and degrade reconstruction.
 .. code-block:: python
 
    configuration = GeomAIModelConfiguration(build_preset="default", nb_latent_param=256)
-
-For definitions of latent terms, see :ref:`geomai_models_latent_glossary`.
 
 Reuse the last GeomAI model configuration of a project
 ------------------------------------------------------

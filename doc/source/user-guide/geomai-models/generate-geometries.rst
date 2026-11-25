@@ -8,8 +8,8 @@ Generate geometries with a GeomAI model
 **Applies to:** GeomAI models
 
 To generate a geometry with a trained GeomAI model, pass a
-:class:`~ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration` object with latent
-parameters to
+:class:`~ansys.simai.core.data.geomai.predictions.GeomAIPredictionConfiguration` object with
+:term:`latent parameters <latent parameter>` to
 :meth:`geomai_client.predictions.run()<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.run>`,
 or call
 :meth:`geomai_client.predictions.sample()<ansys.simai.core.data.geomai.predictions.GeomAIPredictionDirectory.sample>`
@@ -89,8 +89,8 @@ automatically from the closest training geometry.
 Generate a geometry from latent parameters with a GeomAI model
 --------------------------------------------------------------
 
-For more control, choose the position of the new geometry in the latent space. Each training
-geometry has a latent vector, and a new latent vector gives a new geometry:
+For more control, choose the position of the new geometry in the :term:`latent space`. Each training
+geometry has a :term:`latent vector`, and a new latent vector gives a new geometry:
 
 .. code-block:: python
 
@@ -171,9 +171,10 @@ prediction takes about 10 minutes.
 Work with a reduced latent space of a GeomAI model
 --------------------------------------------------
 
-A GeomAI model orders latent dimensions by importance. The first dimensions capture the largest
-sources of variation in the training data, and later dimensions capture finer and finer details.
-For exploration, interpolation, or optimization, you can often work with the first dimensions only.
+A GeomAI model orders :term:`latent dimensions <latent dimension>` by importance. The first
+dimensions capture the largest sources of variation in the training data, and later dimensions
+capture finer and finer details. For exploration, interpolation, or optimization, you can often
+work with the first dimensions only.
 
 To choose how many dimensions to keep, read the Parameter Importance section of the MER. If the
 first 10 latent parameters account for most of the variance, ``n=10`` gives a compact space with
