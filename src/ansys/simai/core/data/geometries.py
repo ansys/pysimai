@@ -368,6 +368,10 @@ class GeometryDirectory(Directory[Geometry]):
 
     _data_model = Geometry
 
+    def __init__(self, client):
+        self._accepted_geometry_extensions: list[str] | None = None
+        super().__init__(client)
+
     def list(
         self,
         workspace: Optional[Identifiable[Workspace]] = None,
@@ -535,11 +539,14 @@ class GeometryDirectory(Directory[Geometry]):
             workspace, self._client.workspaces, default=self._client._current_workspace
         )
 
-        accepted_file_formats = ["vtp", "zip", "stl", "cgns"]
+        if not self._accepted_geometry_extensions:
+            self._accepted_geometry_extensions = self._client._api.get_accepted_file_extensions()
+        accepted_file_extensions = self._accepted_geometry_extensions
+
         with unpack_named_file(file) as (readable_file, name, extension):
-            if extension not in accepted_file_formats:
+            if extension not in accepted_file_extensions:
                 raise InvalidArguments(
-                    f"Got a file with {extension} extension but expected one of : {accepted_file_formats}"
+                    f"Got a file with {extension} extension but expected one of : {accepted_file_extensions}"
                 )
             (geometry_fields, upload_id) = self._client._api.create_geometry(
                 workspace.id, name, extension, metadata
