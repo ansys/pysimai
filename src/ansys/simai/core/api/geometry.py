@@ -127,6 +127,14 @@ class GeometryClientMixin(ApiClientMixin):
         )
         return (response["geometry"], response["upload_id"])
 
+    def get_accepted_file_extensions(self):
+        """Get the list of accepted file extensions for geometries.
+
+        Returns:
+            List of accepted file extensions.
+        """
+        return self._get("geometries/accepted_extensions")["extensions"]
+
     def complete_geometry_upload(self, id: str, upload_id: str, parts: List[Dict[str, Any]]):
         self._post(f"geometries/{id}/complete", json={"upload_id": upload_id, "parts": parts})
 

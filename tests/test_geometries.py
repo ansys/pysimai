@@ -21,9 +21,14 @@
 # SOFTWARE.
 
 import json
+import tempfile
 import urllib.parse
 from io import BytesIO
 from typing import TYPE_CHECKING
+
+import pytest
+
+from ansys.simai.core.errors import InvalidArguments
 
 if TYPE_CHECKING:
     from ansys.simai.core.data.geometries import Geometry
@@ -97,6 +102,59 @@ def test_geometries_run_prediction_no_bc(geometry_factory, httpx_mock):
     )
     geometry = geometry_factory(id="geom-0")
     geometry.run_prediction()
+
+
+def test_upload_geometry(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geometries/accepted_extensions",
+        json={"extensions": ["stl"]},
+    )
+    httpx_mock.add_response(
+        method="POST",
+        url="https://test.test/geometries/",
+        json={"geometry": {"name": "my-geometry.stl", "id": "le 4"}, "upload_id": "le 3"},
+    )
+    httpx_mock.add_response(
+        method="PUT",
+        url="https://test.test/geometries/le 4/part",
+        json={"url": "https://s3.test/le 4/part"},
+    )
+    httpx_mock.add_response(
+        method="PUT",
+        url="https://s3.test/le 4/part",
+        headers={"ETag": "SaladeTomateOignon"},
+    )
+    httpx_mock.add_response(
+        method="POST", url="https://test.test/geometries/le 4/complete", json={}
+    )
+
+    with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+        file_path = tmpfile.name
+    with open(file_path, "wb") as f:
+        f.write(b"Hello World")
+    simai_client.geometries.upload(
+        file=(file_path, "my-geometry.stl"),
+        metadata={"DIAMETER": 12.5},
+    )
+
+
+def test_upload_non_accepted_geometry(simai_client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://test.test/geometries/accepted_extensions",
+        json={"extensions": ["stl"]},
+    )
+
+    with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+        file_path = tmpfile.name
+    with open(file_path, "wb") as f:
+        f.write(b"Hello World")
+    with pytest.raises(InvalidArguments):
+        simai_client.geometries.upload(
+            file=(file_path, "my-geometry.txt"),
+            metadata={"DIAMETER": 12.5},
+        )
 
 
 def test_geometries_upload_point_cloud(geometry_factory, httpx_mock):
